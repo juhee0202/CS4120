@@ -72,6 +72,7 @@ SingleCharacter = [^\n\'\\\"]
   "bool"                         { return symbol(sym.BOOLEAN); }
   "else"                         { return symbol(sym.ELSE); }
   "if"                           { return symbol(sym.IF); }
+  "int"                          { return symbol(sym.INT); }
   "return"                       { return symbol(sym.RETURN); }
   "while"                        { return symbol(sym.WHILE); }
   

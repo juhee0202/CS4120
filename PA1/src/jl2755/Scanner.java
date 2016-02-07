@@ -434,8 +434,9 @@ public class Scanner implements java_cup.runtime.Scanner {
    * @precondition hex must be of the form "\x" followed
    * by two hex digits. Additionally, hex must be printable
    */
-  private Char parseHex(String hex) {
-    return (char) Integer.decode("0" + hex.substring(1));
+  private char parseHex(String hex) {
+    int num = Integer.decode("0" + hex.substring(1));
+    return (char) num; 
   }
 
 

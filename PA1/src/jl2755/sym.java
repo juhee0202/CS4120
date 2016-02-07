@@ -3,6 +3,7 @@ package jl2755;
 
 
 
+
 public class sym {
   /* terminals */
   public static final int BOOLEAN = 1;

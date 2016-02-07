@@ -18,10 +18,7 @@ import java_cup.runtime.*;
 
 %{  
   StringBuilder string = new StringBuilder();
-<<<<<<< HEAD
-=======
 
->>>>>>> branch 'master' of https://github.com/juhee0202/CS4120.git
   private Symbol symbol(int type) {
     return new Symbol(type, yyline+1, yycolumn+1);
   }
@@ -58,7 +55,6 @@ Identifier = [:letter:]([:letter:]|[:digit:]|"_"|"'")*
 IntegerLiteral = 0 | [1-9][0-9]*
 
 /* hexadecimal literals */
-HexLetter = [A-F]|[a-f]
 HexLiteral = ( ([0-9]|[A-F]) ([0-9]|[A-F]) )
 PrintableHexLiteral = ( [2-6]([0-9]|[A-F]) ) | ( "7"([0-9]|[A-E]) )
 

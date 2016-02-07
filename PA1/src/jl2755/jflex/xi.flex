@@ -1,22 +1,4 @@
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
- * Copyright (C) 1998-2015  Gerwin Klein <lsf@jflex.de>                    *
- * All rights reserved.                                                    *
- *                                                                         *
- * License: BSD                                                            *
- *                                                                         *
- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-
-/* Java 1.2 language lexer specification */
-
-/* Use together with unicode.flex for Unicode preprocesssing */
-/* and java12.cup for a Java 1.2 parser                      */
-
-/* Note that this lexer specification is not tuned for speed.
-   It is in fact quite slow on integer and floating point literals, 
-   because the input is read twice and the methods used to parse
-   the numbers are not very fast. 
-   For a production quality application (e.g. a Java compiler) 
-   this could be optimized */
+/* Xi language lexer specification */
 
 
 import java_cup.runtime.*;
@@ -36,16 +18,24 @@ import java_cup.runtime.*;
 
 %{  
   StringBuilder string = new StringBuilder();
-<<<<<<< HEAD
-=======
 
->>>>>>> 0917ea3ab252f94179e8fd628be07b55470fdedf
   private Symbol symbol(int type) {
     return new Symbol(type, yyline+1, yycolumn+1);
   }
 
   private Symbol symbol(int type, Object value) {
     return new Symbol(type, yyline+1, yycolumn+1, value);
+  }
+
+  /*
+   * Returns the ASCII character converted from hex.
+   *
+   * @param hex the string to be converted to ASCII
+   * @precondition hex must be of the form "\x" followed
+   * by two hex digits. Additionally, hex must be printable
+   */
+  private Char parseHex(String hex) {
+    return (char) Integer.decode("0" + hex.substring(1));
   }
 %}
 
@@ -63,7 +53,11 @@ Identifier = [:letter:]([:letter:]|[:digit:]|"_"|"'")*
 
 /* integer literals */
 IntegerLiteral = 0 | [1-9][0-9]*
-HexLiteral = ([0-6]([0-9]|[A-F])) | ("7"([0-9]|[A-E]))
+
+/* hexadecimal literals */
+HexLetter = [A-F]|[a-f]
+HexLiteral = ( ([0-9]|[A-F]) ([0-9]|[A-F]) )
+PrintableHexLiteral = ( [2-6]([0-9]|[A-F]) ) | ( "7"([0-9]|[A-E]) )
 
 /* string and character literals */
 SingleCharacter = [^\n\'\\\"]
@@ -146,6 +140,7 @@ SingleCharacter = [^\n\'\\\"]
   "\\n"                          { string.append( '\n' ); }
   "\\'"                          { string.append( '\'' ); }
   "\\\\"                         { string.append( '\\' ); }
+  \\[x]{PrintableHexLiteral}     { string.append( parseHex(yytext()) ); }
   \\[xX]{HexLiteral}             { string.append( yytext() ); }
   
   /* error cases */
@@ -160,6 +155,7 @@ SingleCharacter = [^\n\'\\\"]
   "\\n"\'                        { yybegin(YYINITIAL); return symbol(sym.CHARACTER_LITERAL, '\n'); }
   "\\'"\'                        { yybegin(YYINITIAL); return symbol(sym.CHARACTER_LITERAL, '\''); }
   "\\\\"\'                       { yybegin(YYINITIAL); return symbol(sym.CHARACTER_LITERAL, '\\'); }
+  \\[x]{PrintableHexLiteral}     { yybegin(YYINITIAL); return symbol(sym.CHARACTER_LITERAL, parseHex(yytext())); }  
   \\[xX]{HexLiteral}             { yybegin(YYINITIAL); return symbol(sym.CHARACTER_LITERAL, yytext()); }
   
   /* error cases */

@@ -55,7 +55,6 @@ Identifier = [:letter:]([:letter:]|[:digit:]|"_"|"'")*
 IntegerLiteral = 0 | [1-9][0-9]*
 
 /* hexadecimal literals */
-HexLetter = [A-F]|[a-f]
 HexLiteral = ( ([0-9]|[A-F]) ([0-9]|[A-F]) )
 PrintableHexLiteral = ( [2-6]([0-9]|[A-F]) ) | ( "7"([0-9]|[A-E]) )
 

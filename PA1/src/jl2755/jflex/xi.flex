@@ -18,7 +18,10 @@ import java_cup.runtime.*;
 
 %{  
   StringBuilder string = new StringBuilder();
+<<<<<<< HEAD
+=======
 
+>>>>>>> branch 'master' of https://github.com/juhee0202/CS4120.git
   private Symbol symbol(int type) {
     return new Symbol(type, yyline+1, yycolumn+1);
   }
@@ -82,8 +85,8 @@ SingleCharacter = [^\n\'\\\"]
   
   
   /* separators */
-  "("                            { return symbol(sym.LPAREN); }
-  ")"                            { return symbol(sym.RPAREN); }
+  "("                            { return symbol(sym.LPAREN, "("); }
+  ")"                            { return symbol(sym.RPAREN, ")"); }
   "{"                            { return symbol(sym.LBRACE); }
   "}"                            { return symbol(sym.RBRACE); }
   "["                            { return symbol(sym.LBRACK); }

@@ -82,8 +82,8 @@ SingleCharacter = [^\n\'\\\"]
   
   
   /* separators */
-  "("                            { return symbol(sym.LPAREN, "("); }
-  ")"                            { return symbol(sym.RPAREN, ")"); }
+  "("                            { return symbol(sym.LPAREN); }
+  ")"                            { return symbol(sym.RPAREN); }
   "{"                            { return symbol(sym.LBRACE); }
   "}"                            { return symbol(sym.RBRACE); }
   "["                            { return symbol(sym.LBRACK); }

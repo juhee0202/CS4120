@@ -74,6 +74,7 @@ SingleCharacter = [^\n\'\\\"]
   "if"                           { return symbol(sym.IF); }
   "int"                          { return symbol(sym.INT); }
   "return"                       { return symbol(sym.RETURN); }
+  "use"                          { return symbol(sym.USE); }
   "while"                        { return symbol(sym.WHILE); }
   
   /* boolean literals */
@@ -138,9 +139,9 @@ SingleCharacter = [^\n\'\\\"]
   {SingleCharacter}+             { string.append( yytext() ); }
   
   /* escape sequences */
-  "\\n"                          { string.append( '\n' ); }
-  "\\'"                          { string.append( '\'' ); }
-  "\\\\"                         { string.append( '\\' ); }
+  "\\n"                          { string.append( '\\n' ); }
+  "\\'"                          { string.append( '\\'' ); }
+  "\\\\"                         { string.append( '\\\\' ); }
   \\[x]{PrintableHexLiteral}     { string.append( parseHex(yytext()) ); }
   \\[xX]{HexLiteral}             { string.append( yytext() ); }
   
@@ -153,9 +154,9 @@ SingleCharacter = [^\n\'\\\"]
   {SingleCharacter}\'            { yybegin(YYINITIAL); return symbol(sym.CHARACTER_LITERAL, yytext().charAt(0)); }
   
   /* escape sequences */
-  "\\n"\'                        { yybegin(YYINITIAL); return symbol(sym.CHARACTER_LITERAL, '\n'); }
-  "\\'"\'                        { yybegin(YYINITIAL); return symbol(sym.CHARACTER_LITERAL, '\''); }
-  "\\\\"\'                       { yybegin(YYINITIAL); return symbol(sym.CHARACTER_LITERAL, '\\'); }
+  "\\n"\'                        { yybegin(YYINITIAL); return symbol(sym.CHARACTER_LITERAL, "\\n"); }
+  "\\'"\'                        { yybegin(YYINITIAL); return symbol(sym.CHARACTER_LITERAL, "\\'"); }
+  "\\\\"\'                       { yybegin(YYINITIAL); return symbol(sym.CHARACTER_LITERAL, "\\\\"); }
   \\[x]{PrintableHexLiteral}     { yybegin(YYINITIAL); return symbol(sym.CHARACTER_LITERAL, parseHex(yytext())); }  
   \\[xX]{HexLiteral}             { yybegin(YYINITIAL); return symbol(sym.CHARACTER_LITERAL, yytext()); }
   

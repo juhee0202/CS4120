@@ -54,10 +54,10 @@ public class PA1 {
 	}
 	
 	public static void lex(String filename) throws IOException {
-		Symbol sym;
 		Scanner lexer = new Scanner(new FileReader(filename));
 
-		for (sym = lexer.next_token(); sym.sym != 0; sym = lexer.next_token()) {
+		Symbol sym = lexer.next_token();
+		while (sym.sym != 0) {
 			String tokentype;
 			switch (sym.sym) {
 			case 8:		tokentype = "id ";
@@ -74,7 +74,15 @@ public class PA1 {
 				
 			String val = sym.value == null ? lexer.yytext() : sym.value.toString();
 			System.out.println(sym.left + ":" + sym.right + " "+ tokentype + val);
-//			System.out.println("val: " + sym.sym);
+			
+			try {
+				sym = lexer.next_token();
+			}
+			catch (RuntimeException ex) {
+				System.err.println(lexer.yyline() + ":" + lexer.yycolumn() + 
+						" error: " + ex.getMessage());
+				return;
+			}
 		}
 	}
 }

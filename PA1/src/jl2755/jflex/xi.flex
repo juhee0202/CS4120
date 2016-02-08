@@ -154,9 +154,9 @@ SingleCharacter = [^\n\'\\\"]
   {SingleCharacter}\'            { yybegin(YYINITIAL); return symbol(sym.CHARACTER_LITERAL, yytext().charAt(0)); }
   
   /* escape sequences */
-  "\\n"\'                        { yybegin(YYINITIAL); return symbol(sym.CHARACTER_LITERAL, '\\n'); }
-  "\\'"\'                        { yybegin(YYINITIAL); return symbol(sym.CHARACTER_LITERAL, '\\''); }
-  "\\\\"\'                       { yybegin(YYINITIAL); return symbol(sym.CHARACTER_LITERAL, '\\\\'); }
+  "\\n"\'                        { yybegin(YYINITIAL); return symbol(sym.CHARACTER_LITERAL, "\\n"); }
+  "\\'"\'                        { yybegin(YYINITIAL); return symbol(sym.CHARACTER_LITERAL, "\\'"); }
+  "\\\\"\'                       { yybegin(YYINITIAL); return symbol(sym.CHARACTER_LITERAL, "\\\\"); }
   \\[x]{PrintableHexLiteral}     { yybegin(YYINITIAL); return symbol(sym.CHARACTER_LITERAL, parseHex(yytext())); }  
   \\[xX]{HexLiteral}             { yybegin(YYINITIAL); return symbol(sym.CHARACTER_LITERAL, yytext()); }
   

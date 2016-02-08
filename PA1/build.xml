@@ -29,11 +29,16 @@
     </target>
     <target name="jar" depends="build">
       <mkdir dir="bin/jar"/>
-      <jar destfile="bin/jar/PA1.jar" basedir="bin">
-        <manifest>
-          <attribute name="Main-Class" value="jl2755/PA1"/>
-        </manifest>
-      </jar>
+	  <jar destfile="bin/jar/PA1.jar" filesetmanifest="mergewithoutmain">
+	  	<manifest>
+	  		<attribute name="Main-Class" value="jl2755.PA1"/>
+	  		<attribute name="Class-Path" value="."/>
+	  	</manifest>
+	  	<fileset dir="bin"/>
+	  	<zipfileset excludes="META-INF/*.SF" src="lib/commons-cli-1.3.1.jar"/>
+        <zipfileset excludes="META-INF/*.SF" src="lib/java-cup-11b-runtime.jar"/>
+        <zipfileset excludes="META-INF/*.SF" src="lib/jflex-1.6.1.jar"/>
+	  </jar>
     </target>
     <target name="clean">
         <delete dir="bin"/>

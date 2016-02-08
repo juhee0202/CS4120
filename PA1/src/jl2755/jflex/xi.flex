@@ -131,9 +131,6 @@ SingleCharacter = [^\n\'\\\"]
   \'                             { yybegin(CHARLITERAL); }
 
   /* numeric literals */
-
-  /* This is matched together with the minus, because the number is too big to 
-     be represented by a positive integer. */
   {IntegerLiteral}               { return symbol(sym.INTEGER_LITERAL, new Integer(yytext())); }
   
   /* comments */

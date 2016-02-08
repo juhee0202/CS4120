@@ -37,6 +37,15 @@ import java_cup.runtime.*;
     int num = Integer.decode("0" + hex.substring(1));
     return (char) num; 
   }
+
+  /*
+  public int yyline() {
+    return yyline + 1;
+  }
+
+  public int yycolumn() {
+    return yycolumn + 1;
+  }
 %}
 
 /* main character classes */

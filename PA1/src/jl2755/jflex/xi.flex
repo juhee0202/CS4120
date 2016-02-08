@@ -139,9 +139,9 @@ SingleCharacter = [^\n\'\\\"]
   {SingleCharacter}+             { string.append( yytext() ); }
   
   /* escape sequences */
-  "\\n"                          { string.append( '\\n' ); }
-  "\\'"                          { string.append( '\\'' ); }
-  "\\\\"                         { string.append( '\\\\' ); }
+  "\\n"                          { string.append( "\\n" ); }
+  "\\'"                          { string.append( "\\'" ); }
+  "\\\\"                         { string.append( "\\\\" ); }
   \\[x]{PrintableHexLiteral}     { string.append( parseHex(yytext()) ); }
   \\[xX]{HexLiteral}             { string.append( yytext() ); }
   

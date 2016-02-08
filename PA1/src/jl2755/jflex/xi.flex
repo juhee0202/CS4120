@@ -141,7 +141,7 @@ SingleCharacter = [^\n\'\\\"]
   /* escape sequences */
   "\\n"                          { string.append( "\\n" ); }
   "\\'"                          { string.append( "\\'" ); }
-  "\\\\"                         { string.append( "\\\\" ); }
+  "\\\\"                         { string.append( "\\" ); }
   \\[x]{PrintableHexLiteral}     { string.append( parseHex(yytext()) ); }
   \\[xX]{HexLiteral}             { string.append( yytext() ); }
   
@@ -156,7 +156,7 @@ SingleCharacter = [^\n\'\\\"]
   /* escape sequences */
   "\\n"\'                        { yybegin(YYINITIAL); return symbol(sym.CHARACTER_LITERAL, "\\n"); }
   "\\'"\'                        { yybegin(YYINITIAL); return symbol(sym.CHARACTER_LITERAL, "\\'"); }
-  "\\\\"\'                       { yybegin(YYINITIAL); return symbol(sym.CHARACTER_LITERAL, "\\\\"); }
+  "\\\\"\'                       { yybegin(YYINITIAL); return symbol(sym.CHARACTER_LITERAL, "\\"); }
   \\[x]{PrintableHexLiteral}     { yybegin(YYINITIAL); return symbol(sym.CHARACTER_LITERAL, parseHex(yytext())); }  
   \\[xX]{HexLiteral}             { yybegin(YYINITIAL); return symbol(sym.CHARACTER_LITERAL, yytext()); }
   

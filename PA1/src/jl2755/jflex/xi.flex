@@ -39,10 +39,15 @@ import java_cup.runtime.*;
   }
 
   /*
+   * Returns the current line number of the scanner
+   */
   public int yyline() {
     return yyline + 1;
   }
 
+  /*
+   * Returns the current column number of the scanner
+   */
   public int yycolumn() {
     return yycolumn + 1;
   }

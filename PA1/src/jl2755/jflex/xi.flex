@@ -1,6 +1,5 @@
 /* Xi language lexer specification */
 
-
 import java_cup.runtime.*;
 
 %%
@@ -41,8 +40,8 @@ import java_cup.runtime.*;
 %}
 
 /* main character classes */
-LineTerminator = \n
-InputCharacter = [^\n]
+LineTerminator = \r|\n|\r\n
+InputCharacter = [^\r\n]
 
 WhiteSpace = {LineTerminator} | [ \t\f]
 

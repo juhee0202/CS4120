@@ -74,6 +74,7 @@ SingleCharacter = [^\n\'\\\"]
   "if"                           { return symbol(sym.IF); }
   "int"                          { return symbol(sym.INT); }
   "return"                       { return symbol(sym.RETURN); }
+  "use"                          { return symbol(sym.USE); }
   "while"                        { return symbol(sym.WHILE); }
   
   /* boolean literals */

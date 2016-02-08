@@ -80,7 +80,7 @@ public class PA1 {
 			}
 			catch (RuntimeException ex) {
 				System.err.println(lexer.yyline() + ":" + lexer.yycolumn() + 
-						" error: " + ex.getMessage());
+						" error: Illegal input \"" + lexer.yytext() + "\"");
 				return;
 			}
 		}

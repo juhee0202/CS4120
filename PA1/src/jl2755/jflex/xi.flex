@@ -1,6 +1,5 @@
 /* Xi language lexer specification */
 
-
 import java_cup.runtime.*;
 
 %%
@@ -38,11 +37,25 @@ import java_cup.runtime.*;
     int num = Integer.decode("0" + hex.substring(1));
     return (char) num; 
   }
+
+  /*
+   * Returns the current line number of the scanner
+   */
+  public int yyline() {
+    return yyline + 1;
+  }
+
+  /*
+   * Returns the current column number of the scanner
+   */
+  public int yycolumn() {
+    return yycolumn + 1;
+  }
 %}
 
 /* main character classes */
-LineTerminator = \n
-InputCharacter = [^\n]
+LineTerminator = \r|\n|\r\n
+InputCharacter = [^\r\n]
 
 WhiteSpace = {LineTerminator} | [ \t\f]
 

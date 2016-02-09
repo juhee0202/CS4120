@@ -110,7 +110,6 @@ public class PA1 {
 			bw.write(content);
 			bw.close();
 
-			System.out.println("Done");
 
 		} catch (IOException e) {
 			e.printStackTrace();

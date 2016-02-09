@@ -17,6 +17,7 @@ import java_cup.runtime.*;
 
 %{  
   StringBuilder string = new StringBuilder();
+  int stringCounter = 0;
 
   private Symbol symbol(int type) {
     return new Symbol(type, yyline+1, yycolumn+1);
@@ -24,6 +25,10 @@ import java_cup.runtime.*;
 
   private Symbol symbol(int type, Object value) {
     return new Symbol(type, yyline+1, yycolumn+1, value);
+  }
+
+  private Symbol symbol(int type, int column, Object value) {
+    return new Symbol(type, yyline+1, column, value);
   }
 
   /*
@@ -63,7 +68,7 @@ WhiteSpace = {LineTerminator} | [ \t\f]
 Comment = "//" {InputCharacter}* {LineTerminator}
 
 /* identifiers */
-Identifier = [:letter:]([:letter:]|[:digit:]|"_"|"'")*
+Identifier = [:letter:] ([:letter:]|[:digit:]|"_"|"'")*
 
 /* integer literals */
 IntegerLiteral = (0 | [1-9][0-9]*)
@@ -86,6 +91,7 @@ SingleCharacter = [^\n\'\\\"]
   "else"                         { return symbol(sym.ELSE); }
   "if"                           { return symbol(sym.IF); }
   "int"                          { return symbol(sym.INT); }
+  "length"                       { return symbol(sym.LENGTH); }
   "return"                       { return symbol(sym.RETURN); }
   "use"                          { return symbol(sym.USE); }
   "while"                        { return symbol(sym.WHILE); }
@@ -123,9 +129,10 @@ SingleCharacter = [^\n\'\\\"]
   "|"                            { return symbol(sym.OR); }
   "%"                            { return symbol(sym.MOD); }
   "*>>"                          { return symbol(sym.HIGHMULT); }
+  "_"                            { return symbol(sym.UNDERSCORE); }
   
   /* string literal */
-  \"                             { yybegin(STRING); string.setLength(0); }
+  \"                             { yybegin(STRING); string.setLength(0); stringCounter = 0; }
 
   /* character literal */
   \'                             { yybegin(CHARLITERAL); }
@@ -145,16 +152,16 @@ SingleCharacter = [^\n\'\\\"]
 }
 
 <STRING> {
-  \"                             { yybegin(YYINITIAL); return symbol(sym.STRING_LITERAL, string.toString()); } // empty string
+  \"                             { yybegin(YYINITIAL); return symbol(sym.STRING_LITERAL, yycolumn-stringCounter, string.toString()); } // empty string
   
-  {SingleCharacter}+             { string.append( yytext() ); }
+  {SingleCharacter}+             { string.append( yytext() ); stringCounter+=yytext().length(); }
   
   /* escape sequences */
-  "\\n"                          { string.append( "\\n" ); }
-  "\\'"                          { string.append( "\\'" ); }
-  "\\\\"                         { string.append( "\\" ); }
-  \\[x]{PrintableHexLiteral}     { string.append( parseHex(yytext()) ); }
-  \\[x]{HexLiteral}              { string.append( yytext() ); }
+  "\\n"                          { string.append( "\\n" ); stringCounter+=2; }
+  "\\'"                          { string.append( "\\'" ); stringCounter+=2; }
+  "\\\\"                         { string.append( "\\" ); stringCounter++; }
+  \\[x]{PrintableHexLiteral}     { string.append( parseHex(yytext()) ); stringCounter+=4; }
+  \\[x]{HexLiteral}              { string.append( yytext() ); stringCounter+=yytext().length(); }
   
   /* error cases */
   \\.                            { throw new RuntimeException("Illegal escape sequence \""+yytext()+"\""); }
@@ -162,7 +169,7 @@ SingleCharacter = [^\n\'\\\"]
 }
 
 <CHARLITERAL> {
-  {SingleCharacter}\'            { yybegin(YYINITIAL); return symbol(sym.CHARACTER_LITERAL, yytext().charAt(0)); }
+  {SingleCharacter}\'            { yybegin(YYINITIAL); return symbol(sym.CHARACTER_LITERAL, yycolumn, yytext().charAt(0)); }
   
   /* escape sequences */
   "\\n"\'                        { yybegin(YYINITIAL); return symbol(sym.CHARACTER_LITERAL, "\\n"); }

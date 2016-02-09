@@ -48,5 +48,7 @@ public class sym {
   public static final int MOD = 40;
   public static final int HIGHMULT = 41;
   public static final int COLON = 42;
-  
+  public static final int LENGTH = 43;
+  public static final int UNDERSCORE = 44;
+
 }

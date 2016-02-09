@@ -1,2 +1,3 @@
 #!/bin/bash
+# this is the xic script
 java -jar bin/jar/PA1.jar "$@"

@@ -167,8 +167,8 @@ SingleCharacter = [^\n\'\\\"]
   "\\n"\'                        { yybegin(YYINITIAL); return symbol(sym.CHARACTER_LITERAL, "\\n"); }
   "\\'"\'                        { yybegin(YYINITIAL); return symbol(sym.CHARACTER_LITERAL, "\\'"); }
   "\\\\"\'                       { yybegin(YYINITIAL); return symbol(sym.CHARACTER_LITERAL, "\\"); }
-  \\[x]{PrintableHexLiteral}     { yybegin(YYINITIAL); return symbol(sym.CHARACTER_LITERAL, parseHex(yytext())); }  
-  \\[xX]{HexLiteral}             { yybegin(YYINITIAL); return symbol(sym.CHARACTER_LITERAL, yytext()); }
+  \\[x]{PrintableHexLiteral}\'   { yybegin(YYINITIAL); return symbol(sym.CHARACTER_LITERAL, parseHex(yytext())); }  
+  \\[xX]{HexLiteral}\'           { yybegin(YYINITIAL); return symbol(sym.CHARACTER_LITERAL, yytext()); }
   
   /* error cases */
   \\.                            { throw new RuntimeException("Illegal escape sequence \""+yytext()+"\""); }

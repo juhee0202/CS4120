@@ -17,6 +17,7 @@ import java_cup.runtime.*;
 
 %{  
   StringBuilder string = new StringBuilder();
+  int stringCounter = 0;
 
   private Symbol symbol(int type) {
     return new Symbol(type, yyline+1, yycolumn+1);
@@ -128,6 +129,7 @@ SingleCharacter = [^\n\'\\\"]
   "|"                            { return symbol(sym.OR); }
   "%"                            { return symbol(sym.MOD); }
   "*>>"                          { return symbol(sym.HIGHMULT); }
+  "_"                            { return symbol(sym.UNDERSCORE); }
   
   /* string literal */
   \"                             { yybegin(STRING); string.setLength(0); }

@@ -66,7 +66,7 @@ Comment = "//" {InputCharacter}* {LineTerminator}
 Identifier = [:letter:]([:letter:]|[:digit:]|"_"|"'")*
 
 /* integer literals */
-IntegerLiteral = (0 | [1-9][0-9]*) [1L]
+IntegerLiteral = (0 | [1-9][0-9]*)
 
 /* hexadecimal literals */
 HexLiteral = ( ([0-9]|[A-F]) ([0-9]|[A-F]) )
@@ -131,7 +131,8 @@ SingleCharacter = [^\n\'\\\"]
   \'                             { yybegin(CHARLITERAL); }
 
   /* numeric literals */
-  {IntegerLiteral}               { return symbol(sym.INTEGER_LITERAL, new Long(yytext().substring(0,yylength()-1))); }
+  "-9223372036854775808"         { return symbol(sym.INTEGER_LITERAL, new Long(Long.MIN_VALUE)); }
+  {IntegerLiteral}               { return symbol(sym.INTEGER_LITERAL, new Long(yytext())); }
   
   /* comments */
   {Comment}                      { /* ignore */ }
@@ -153,7 +154,7 @@ SingleCharacter = [^\n\'\\\"]
   "\\'"                          { string.append( "\\'" ); }
   "\\\\"                         { string.append( "\\" ); }
   \\[x]{PrintableHexLiteral}     { string.append( parseHex(yytext()) ); }
-  \\[xX]{HexLiteral}             { string.append( yytext() ); }
+  \\[x]{HexLiteral}              { string.append( yytext() ); }
   
   /* error cases */
   \\.                            { throw new RuntimeException("Illegal escape sequence \""+yytext()+"\""); }
@@ -167,8 +168,8 @@ SingleCharacter = [^\n\'\\\"]
   "\\n"\'                        { yybegin(YYINITIAL); return symbol(sym.CHARACTER_LITERAL, "\\n"); }
   "\\'"\'                        { yybegin(YYINITIAL); return symbol(sym.CHARACTER_LITERAL, "\\'"); }
   "\\\\"\'                       { yybegin(YYINITIAL); return symbol(sym.CHARACTER_LITERAL, "\\"); }
-  \\[x]{PrintableHexLiteral}\'   { yybegin(YYINITIAL); return symbol(sym.CHARACTER_LITERAL, parseHex(yytext())); }  
-  \\[xX]{HexLiteral}\'           { yybegin(YYINITIAL); return symbol(sym.CHARACTER_LITERAL, yytext()); }
+  \\[x]{PrintableHexLiteral}\'   { yybegin(YYINITIAL); return symbol(sym.CHARACTER_LITERAL, parseHex(yytext().substring(0, yylength()-1))); }  
+  \\[x]{HexLiteral}\'            { yybegin(YYINITIAL); return symbol(sym.CHARACTER_LITERAL, yytext().substring(0, yylength()-1)); }
   
   /* error cases */
   \\.                            { throw new RuntimeException("Illegal escape sequence \""+yytext()+"\""); }

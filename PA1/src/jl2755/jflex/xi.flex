@@ -63,7 +63,7 @@ WhiteSpace = {LineTerminator} | [ \t\f]
 Comment = "//" {InputCharacter}* {LineTerminator}
 
 /* identifiers */
-Identifier = [:letter:]([:letter:]|[:digit:]|"_"|"'")*
+Identifier = ([:letter:]|"_"|"'")([:letter:]|[:digit:]|"_"|"'")*
 
 /* integer literals */
 IntegerLiteral = (0 | [1-9][0-9]*)
@@ -86,6 +86,7 @@ SingleCharacter = [^\n\'\\\"]
   "else"                         { return symbol(sym.ELSE); }
   "if"                           { return symbol(sym.IF); }
   "int"                          { return symbol(sym.INT); }
+  "length"                       { return symbol(sym.LENGTH); }
   "return"                       { return symbol(sym.RETURN); }
   "use"                          { return symbol(sym.USE); }
   "while"                        { return symbol(sym.WHILE); }

@@ -1,2 +1,3 @@
 #!/bin/bash
-java -jar /home/vagrant/shared/pa1/bin/jar/PA1.jar "$@"
+# this is the xic script
+java -jar bin/jar/PA1.jar "$@"

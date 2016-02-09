@@ -3,6 +3,7 @@ package jl2755;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.nio.file.Paths;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -92,14 +93,16 @@ public class PA1 {
 		
 		// write content to output file
 		try {
-			int index = filename.lastIndexOf('.');
+			String currentDirAbsPath = Paths.get(".").toAbsolutePath().normalize().toString();
+			String[] tokens = filename.split("[\\\\|/]");
+			String outputFileName = tokens[tokens.length-1];
+			int index = outputFileName.lastIndexOf('.');
 			if (index == -1) {
-				index = filename.length();
+				index = outputFileName.length();
 			}
-			
-			String rmExtension = filename.substring(0,index);
-			File file = new File(rmExtension + ".lexed");
-
+			outputFileName = outputFileName.substring(0,index);
+			File file = new File(currentDirAbsPath + "/" + outputFileName + ".lexed");
+			System.out.println(file.getAbsolutePath());
 			if (!file.exists()) {
 				file.createNewFile();
 			}

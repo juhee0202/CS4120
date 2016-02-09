@@ -85,7 +85,7 @@ public class PA1 {
 				sym = lexer.next_token();
 			}
 			catch (RuntimeException ex) {
-				content += lexer.yyline() + ":" + lexer.yycolumn() + 
+				content += lexer.origLine + ":" + lexer.origCol + 
 						" error: Illegal input \"" + lexer.yytext() + "\"";
 				break;
 			}
@@ -93,16 +93,14 @@ public class PA1 {
 		
 		// write content to output file
 		try {
-			String currentDirAbsPath = Paths.get(".").toAbsolutePath().normalize().toString();
-			String[] tokens = filename.split("[\\\\|/]");
-			String outputFileName = tokens[tokens.length-1];
-			int index = outputFileName.lastIndexOf('.');
+			int index = filename.lastIndexOf('.');
 			if (index == -1) {
-				index = outputFileName.length();
+				index = filename.length();
 			}
-			outputFileName = outputFileName.substring(0,index);
-			File file = new File(currentDirAbsPath + "/" + outputFileName + ".lexed");
-			System.out.println(file.getAbsolutePath());
+			
+			String rmExtension = filename.substring(0,index);
+			File file = new File(rmExtension + ".lexed");
+
 			if (!file.exists()) {
 				file.createNewFile();
 			}
@@ -117,5 +115,6 @@ public class PA1 {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+
 	}
 }

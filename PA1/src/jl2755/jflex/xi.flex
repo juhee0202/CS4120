@@ -66,7 +66,7 @@ Comment = "//" {InputCharacter}* {LineTerminator}
 Identifier = [:letter:]([:letter:]|[:digit:]|"_"|"'")*
 
 /* integer literals */
-IntegerLiteral = 0 | [1-9][0-9]*
+IntegerLiteral = (0 | [1-9][0-9]*) [1L]
 
 /* hexadecimal literals */
 HexLiteral = ( ([0-9]|[A-F]) ([0-9]|[A-F]) )
@@ -131,7 +131,7 @@ SingleCharacter = [^\n\'\\\"]
   \'                             { yybegin(CHARLITERAL); }
 
   /* numeric literals */
-  {IntegerLiteral}               { return symbol(sym.INTEGER_LITERAL, new Integer(yytext())); }
+  {IntegerLiteral}               { return symbol(sym.INTEGER_LITERAL, new Long(yytext().substring(0,yylength()-1))); }
   
   /* comments */
   {Comment}                      { /* ignore */ }

@@ -26,6 +26,10 @@ import java_cup.runtime.*;
     return new Symbol(type, yyline+1, yycolumn+1, value);
   }
 
+  private Symbol symbol(int type, int column, Object value) {
+    return new Symbol(type, yyline+1, column, value);
+  }
+
   /*
    * Returns the ASCII character converted from hex.
    *
@@ -146,7 +150,7 @@ SingleCharacter = [^\n\'\\\"]
 }
 
 <STRING> {
-  \"                             { yybegin(YYINITIAL); return symbol(sym.STRING_LITERAL, string.toString()); } // empty string
+  \"                             { yybegin(YYINITIAL); return symbol(sym.STRING_LITERAL, yycolumn-string.toString().length(), string.toString()); } // empty string
   
   {SingleCharacter}+             { string.append( yytext() ); }
   

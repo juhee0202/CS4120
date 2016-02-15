@@ -1,0 +1,31 @@
+1:1 use
+1:5 id io
+2:1 id main
+2:5 (
+2:6 id args
+2:10 :
+2:12 int
+2:15 [
+2:16 ]
+2:17 [
+2:18 ]
+2:19 )
+2:21 {
+3:1 id print
+3:6 (
+3:26 string Hello, World!\n
+3:27 )
+4:1 id c3po
+4:5 :
+4:7 int
+4:11 =
+4:14 character x
+4:17 +
+4:19 integer 47
+4:21 ;
+5:1 id r2d2
+5:5 :
+5:7 int
+5:11 =
+5:13 id c3po
+6:1 }

@@ -88,7 +88,7 @@ SingleCharacter = [^\n\'\\\"]
 <YYINITIAL> {
 
   /* keywords */
-  "bool"                         { return symbol(sym.BOOLEAN); }
+  "bool"                         { return symbol(sym.BOOL); }
   "else"                         { return symbol(sym.ELSE); }
   "if"                           { return symbol(sym.IF); }
   "int"                          { return symbol(sym.INT); }
@@ -98,38 +98,38 @@ SingleCharacter = [^\n\'\\\"]
   "while"                        { return symbol(sym.WHILE); }
   
   /* boolean literals */
-  "true"                         { return symbol(sym.BOOLEAN_LITERAL, true); }
-  "false"                        { return symbol(sym.BOOLEAN_LITERAL, false); }
+  "true"                         { return symbol(sym.TRUE); }
+  "false"                        { return symbol(sym.FALSE); }
   
   
   /* separators */
-  "("                            { return symbol(sym.LPAREN); }
-  ")"                            { return symbol(sym.RPAREN); }
-  "{"                            { return symbol(sym.LBRACE); }
-  "}"                            { return symbol(sym.RBRACE); }
-  "["                            { return symbol(sym.LBRACK); }
-  "]"                            { return symbol(sym.RBRACK); }
+  "("                            { return symbol(sym.OPEN_PAREN); }
+  ")"                            { return symbol(sym.CLOSE_PAREN); }
+  "{"                            { return symbol(sym.OPEN_BRACE); }
+  "}"                            { return symbol(sym.CLOSE_BRACE); }
+  "["                            { return symbol(sym.OPEN_BRACKET); }
+  "]"                            { return symbol(sym.CLOSE_BRACKET); }
   ";"                            { return symbol(sym.SEMICOLON); }
   ","                            { return symbol(sym.COMMA); }
   
   /* operators */
-  "="                            { return symbol(sym.EQ); }
+  "="                            { return symbol(sym.GETS); }
   ">"                            { return symbol(sym.GT); }
   "<"                            { return symbol(sym.LT); }
   "!"                            { return symbol(sym.NOT); }
   ":"                            { return symbol(sym.COLON); }
-  "=="                           { return symbol(sym.EQEQ); }
-  "<="                           { return symbol(sym.LTEQ); }
-  ">="                           { return symbol(sym.GTEQ); }
-  "!="                           { return symbol(sym.NOTEQ); }
+  "=="                           { return symbol(sym.EQUAL); }
+  "<="                           { return symbol(sym.LEQ); }
+  ">="                           { return symbol(sym.GEQ); }
+  "!="                           { return symbol(sym.NOT_EQUAL); }
   "+"                            { return symbol(sym.PLUS); }
   "-"                            { return symbol(sym.MINUS); }
-  "*"                            { return symbol(sym.MULT); }
-  "/"                            { return symbol(sym.DIV); }
+  "*"                            { return symbol(sym.TIMES); }
+  "/"                            { return symbol(sym.DIVIDE); }
   "&"                            { return symbol(sym.AND); }
   "|"                            { return symbol(sym.OR); }
-  "%"                            { return symbol(sym.MOD); }
-  "*>>"                          { return symbol(sym.HIGHMULT); }
+  "%"                            { return symbol(sym.MODULO); }
+  "*>>"                          { return symbol(sym.HIGH_MULT); }
   "_"                            { return symbol(sym.UNDERSCORE); }
   
   /* string literal */

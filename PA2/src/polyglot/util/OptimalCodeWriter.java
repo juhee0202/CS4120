@@ -33,6 +33,7 @@ import java.io.PrintWriter;
 import java.io.Writer;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -311,6 +312,28 @@ class ConsList<T> {
     public String toString() {
         return "[" + toStringAux() + "]";
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o instanceof ConsList<?>) {
+            ConsList<?> l = (ConsList<?>) o;
+            if (length() != l.length()) return false;
+            if (elem == null || l.elem == null) {
+                if (elem != l.elem) return false;
+            }
+            else if (!elem.equals(l.elem)) return false;
+            if (next == null || l.next == null) return next == l.next;
+            return next.equals(l.next);
+        }
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        int hc = 0;
+        if (next == null) hc = next.hashCode() * 31;
+        return hc + elem.hashCode();
+    }
 }
 
 class SearchState implements Cloneable {
@@ -343,7 +366,7 @@ class SearchState implements Cloneable {
         this.maxbi = maxbi;
         forward = true;
         findminovf = false;
-        brkAssignment = new HashMap<>();
+        brkAssignment = new LinkedHashMap<>();
         afterBrkAssignment = ConsList.empty();
 
         blks = ConsList.empty();
@@ -687,7 +710,7 @@ class AllowBreak extends OCItem {
     }
 
     /* maxbr -> pos -> minovf * afterBrkAssignment */
-    Map<Integer, Map<Integer, Pair<Integer, ConsList<Boolean>>>> cache =
+    Map<ConsList<Integer>, Map<Integer, Pair<Integer, ConsList<Boolean>>>> cache =
             new HashMap<>();
 
     int minovf;
@@ -703,9 +726,9 @@ class AllowBreak extends OCItem {
                 // First, check the cache if we have done tried the given
                 // search parameters.  If so, just return the memoized
                 // result and backtrack.
-                if (cache.containsKey(s.maxbr)) {
+                if (cache.containsKey(s.maxbrs)) {
                     Map<Integer, Pair<Integer, ConsList<Boolean>>> brCache =
-                            cache.get(s.maxbr);
+                            cache.get(s.maxbrs);
                     if (brCache.containsKey(s.pos)) {
                         Pair<Integer, ConsList<Boolean>> result =
                                 brCache.get(s.pos);
@@ -814,7 +837,7 @@ class AllowBreak extends OCItem {
                 brCache = cache.get(s.maxbr);
             else {
                 brCache = new HashMap<>();
-                cache.put(s.maxbr, brCache);
+                cache.put(s.maxbrs, brCache);
             }
             Pair<Integer, ConsList<Boolean>> result =
                     new Pair<>(s.minovf, s.afterBrkAssignment);

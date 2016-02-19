@@ -47,9 +47,7 @@ public class CodeWriterSExpPrinter implements SExpPrinter {
 
     @Override
     public void startList() {
-        if (addSpace)
-            writer.allowBreak(0);
-        else addSpace = true;
+        if (addSpace) writer.allowBreak(0);
         addSpace = false;
         writer.begin(1);
         writer.write("(");

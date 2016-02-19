@@ -1,13 +1,13 @@
 // A stub for a Xi CUP specification.
 
-package your.pkg.name.here;
+package jl2755;
 
 // You might want to add types to these declarations.
-terminal IDENTIFIER;
-terminal STRING_LITERAL;
-terminal CHARACTER_LITERAL;
-terminal INTEGER_LITERAL;
-terminal TRUE, FALSE;
+terminal java.lang.String IDENTIFIER;
+terminal java.lang.String STRING_LITERAL;
+terminal java.lang.Character CHARACTER_LITERAL;
+terminal java.lang.Integer INTEGER_LITERAL;
+terminal java.lang.Boolean TRUE, FALSE;
 terminal INT, BOOL;
 
 terminal IF, ELSE, WHILE, BREAK, RETURN, USE, LENGTH, PLUS, MINUS, TIMES,
@@ -18,6 +18,9 @@ terminal IF, ELSE, WHILE, BREAK, RETURN, USE, LENGTH, PLUS, MINUS, TIMES,
 // You might want to add types to these declarations.
 nonterminal program;
 // Add more nonterminals here...
+nonterminal var_decl;
+nonterminal type;
+nonterminal expr;
 
 start with program;
 
@@ -25,3 +28,31 @@ start with program;
 program ::= USE IDENTIFIER IDENTIFIER OPEN_PAREN IDENTIFIER COLON
   INT OPEN_BRACKET CLOSE_BRACKET OPEN_BRACKET CLOSE_BRACKET CLOSE_PAREN
   OPEN_BRACE IDENTIFIER OPEN_PAREN STRING_LITERAL CLOSE_PAREN CLOSE_BRACE;
+
+var_decl ::= IDENTIFIER COLON type SEMICOLON 
+			 | 
+			 IDENTIFIER COLON type EQUAL expr SEMICOLON 
+			 | 
+			 var_decl COMMA var_decl 
+			 ;
+
+type ::= INT array
+		 |
+		 INT array_num
+		 |
+		 BOOL array
+		 |
+		 BOOL array_num
+		 ;
+
+array ::= array_num OPEN_BRACKET CLOSE_BRACKET
+		  |
+		  array OPEN_BRACKET CLOSE_BRACKET
+		  |
+		  
+		  ;
+
+array_num ::= array_num OPEN_BRACKET INTEGER_LITERAL CLOSE_BRACKET
+			  |
+			  
+			  ;

@@ -2,8 +2,6 @@ package jl2755;
 
 
 
-
-
 public class sym {
   /* terminals */
   public static final int EOF = 0;
@@ -22,7 +20,7 @@ public class sym {
   public static final int FALSE = 13;
   public static final int STRING_LITERAL = 14;
   public static final int UNDERSCORE = 15;
-  public static final int LENGTH = ;
+  public static final int LENGTH = 16;
   public static final int OPEN_PAREN = 17;
   public static final int CLOSE_PAREN = 18;
   public static final int OPEN_BRACE = 19;

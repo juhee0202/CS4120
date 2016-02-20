@@ -17,7 +17,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 
-public class PA1 {
+public class Main {
 
 	public static void main(String[] args) {
 		

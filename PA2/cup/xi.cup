@@ -8,13 +8,12 @@ terminal java.lang.String STRING_LITERAL;
 terminal java.lang.Character CHARACTER_LITERAL;
 terminal java.lang.Integer INTEGER_LITERAL;
 terminal java.lang.Boolean TRUE, FALSE;
-terminal INT, BOOL;
-
+terminal java_cup.runtime.Symbol INT, BOOL;
 // keywords
 terminal IF, ELSE, WHILE, RETURN, USE, PLUS, MINUS, TIMES, HIGH_MULT,
   DIVIDE, MODULO, NOT, LT, LEQ, GT, GEQ, AND, OR, EQUAL, NOT_EQUAL, GETS,
   OPEN_BRACKET, CLOSE_BRACKET, OPEN_PAREN, CLOSE_PAREN, OPEN_BRACE, CLOSE_BRACE,
-  COLON, COMMA, SEMICOLON, UNDERSCORE;
+  COLON, COMMA, SEMICOLON, UNDERSCORE, LENGTH;
 
 /* Nonterminals */
 // You might want to add types to these declarations.
@@ -71,7 +70,8 @@ precedence left OPEN_BRACKET, OPEN_PAREN;  // missing function call, []
 start with program;
 
 /* Grammar */
-var_decl ::= IDENTIFIER COLON type ;
+var_decl ::= IDENTIFIER COLON type {: }
+            ;
 
 var_init ::= var_decl GETS expr ;
 
@@ -91,9 +91,14 @@ tuple_decl_list ::= COMMA var_decl
           COMMA UNDERSCORE tuple_decl_list
           ;
 
-type ::= primitive_type | array_type ;
+type ::= primitive_type 
+         | 
+         array_type ;
 
-primitive_type ::= INT | BOOL ;
+primitive_type ::= INT  {: RESULT = new PrimitiveType(INT)}
+                   | 
+                   BOOL {: RESULT = new PrimitiveType(BOOL)}
+                   ;
 
 array_type ::= primitive_type brackets
                |

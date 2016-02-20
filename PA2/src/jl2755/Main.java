@@ -137,12 +137,5 @@ public class Main {
 			e.printStackTrace();
 		}
 	}
-
-	public static void parse() {
-		try {
-			parser parser_obj = new parser(new my_scanner());
-			Object result = p.parse().value;
-		}
-		catch (Exception e) {	
-		}
-	}
+	
+}

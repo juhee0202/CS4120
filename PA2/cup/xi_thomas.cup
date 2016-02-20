@@ -11,7 +11,7 @@ terminal java.lang.Boolean TRUE, FALSE;
 terminal INT, BOOL;
 
 // keywords
-terminal IF, ELSE, WHILE, BREAK, RETURN, USE, LENGTH, PLUS, MINUS, TIMES, HIGH_MULT
+terminal IF, ELSE, WHILE, BREAK, RETURN, USE, LENGTH, PLUS, MINUS, TIMES, HIGH_MULT,
   DIVIDE, MODULO, NOT, LT, LEQ, GT, GEQ, AND, OR, EQUAL, NOT_EQUAL, GETS,
   OPEN_BRACKET, CLOSE_BRACKET, OPEN_PAREN, CLOSE_PAREN, OPEN_BRACE, CLOSE_BRACE,
   COLON, COMMA, SEMICOLON, UNDERSCORE;
@@ -21,9 +21,11 @@ terminal IF, ELSE, WHILE, BREAK, RETURN, USE, LENGTH, PLUS, MINUS, TIMES, HIGH_M
 nonterminal program;
 // Add more nonterminals here...
 nonterminal decl;
+nonterminal var_init;
 nonterminal var_decl;
 nonterminal var_decl_list;
 nonterminal type;
+nonterminal return_type;
 nonterminal primitive_type;
 nonterminal array_type;
 nonterminal brackets;
@@ -33,17 +35,24 @@ nonterminal constant;
 nonterminal unary_expr;
 nonterminal binary_expr;
 nonterminal binary_op;
+nonterminal literal;
+nonterminal use_id;
+nonterminal function_param;
+nonterminal function_decl;
+nonterminal function_decl_list;
 nonterminal function_call;
 nonterminal function_arg;
 nonterminal array_literal;
 nonterminal array_element_list;
 nonterminal array_element;
+nonterminal stmt;
 nonterminal assignment_stmt;
 nonterminal if_stmt;
 nonterminal while_stmt;
 nonterminal return_stmt;
 nonterminal block_stmt;
 nonterminal stmt_list;
+nonterminal return_list;
 
 
 /* Precedences */

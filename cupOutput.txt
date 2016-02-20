@@ -1,0 +1,129 @@
+Warning : Terminal "UNDERSCORE" was declared but never used
+Warning : Terminal "LENGTH" was declared but never used
+Warning : Terminal "BREAK" was declared but never used
+Warning : Terminal "NOT_EQUAL" was declared but never used
+Warning : *** Shift/Reduce conflict found in state #67
+  between reduction on brackets_with_content ::= OPEN_BRACKET expr CLOSE_BRACKET •
+  and shift on         brackets_with_content ::= • OPEN_BRACKET expr CLOSE_BRACKET
+  under symbol OPEN_BRACKET
+  Example using reduction   : IDENTIFIER OPEN_PAREN IDENTIFIER COLON primitive_type OPEN_BRACKET expr CLOSE_BRACKET • OPEN_BRACKET CLOSE_BRACKET COMMA function_param CLOSE_PAREN COLON return_type block_stmt EOF
+  Derivation using reduction: $START ::= [program ::= [function_decl_list ::= [function_decl ::= [IDENTIFIER OPEN_PAREN function_param ::= [var_decl ::= [IDENTIFIER COLON type ::= [array_type ::= [primitive_type brackets_with_content ::= [OPEN_BRACKET expr CLOSE_BRACKET •] brackets ::= [OPEN_BRACKET CLOSE_BRACKET]]]] COMMA function_param] CLOSE_PAREN COLON return_type block_stmt]]] EOF]
+  Example using shift       : IDENTIFIER OPEN_PAREN IDENTIFIER COLON primitive_type OPEN_BRACKET expr CLOSE_BRACKET • OPEN_BRACKET expr CLOSE_BRACKET brackets COMMA function_param CLOSE_PAREN COLON return_type block_stmt EOF
+  Derivation using shift    : $START ::= [program ::= [function_decl_list ::= [function_decl ::= [IDENTIFIER OPEN_PAREN function_param ::= [var_decl ::= [IDENTIFIER COLON type ::= [array_type ::= [primitive_type brackets_with_content ::= [OPEN_BRACKET expr CLOSE_BRACKET brackets_with_content ::= [• OPEN_BRACKET expr CLOSE_BRACKET]] brackets]]] COMMA function_param] CLOSE_PAREN COLON return_type block_stmt]]] EOF]
+
+  between reduction on brackets_with_content ::= OPEN_BRACKET expr CLOSE_BRACKET •
+  and shift on         brackets_with_content ::= • OPEN_BRACKET expr CLOSE_BRACKET brackets_with_content
+  under symbol OPEN_BRACKET
+  Example using reduction   : IDENTIFIER OPEN_PAREN IDENTIFIER COLON primitive_type OPEN_BRACKET expr CLOSE_BRACKET • OPEN_BRACKET CLOSE_BRACKET COMMA function_param CLOSE_PAREN COLON return_type block_stmt EOF
+  Derivation using reduction: $START ::= [program ::= [function_decl_list ::= [function_decl ::= [IDENTIFIER OPEN_PAREN function_param ::= [var_decl ::= [IDENTIFIER COLON type ::= [array_type ::= [primitive_type brackets_with_content ::= [OPEN_BRACKET expr CLOSE_BRACKET •] brackets ::= [OPEN_BRACKET CLOSE_BRACKET]]]] COMMA function_param] CLOSE_PAREN COLON return_type block_stmt]]] EOF]
+  Example using shift       : IDENTIFIER OPEN_PAREN IDENTIFIER COLON primitive_type OPEN_BRACKET expr CLOSE_BRACKET • OPEN_BRACKET expr CLOSE_BRACKET brackets_with_content brackets COMMA function_param CLOSE_PAREN COLON return_type block_stmt EOF
+  Derivation using shift    : $START ::= [program ::= [function_decl_list ::= [function_decl ::= [IDENTIFIER OPEN_PAREN function_param ::= [var_decl ::= [IDENTIFIER COLON type ::= [array_type ::= [primitive_type brackets_with_content ::= [OPEN_BRACKET expr CLOSE_BRACKET brackets_with_content ::= [• OPEN_BRACKET expr CLOSE_BRACKET brackets_with_content]] brackets]]] COMMA function_param] CLOSE_PAREN COLON return_type block_stmt]]] EOF]
+
+  Resolved in favor of shifting.
+
+Warning : *** Reduce/Reduce conflict found in state #1
+  between function_decl_list ::= function_decl •
+  and     function_decl_list ::=  •
+  under symbols: {EOF}
+  Ambiguity detected for nonterminal function_decl_list
+  Example: function_decl •
+  First derivation : function_decl_list ::= [function_decl •]
+  Second derivation: function_decl_list ::= [function_decl function_decl_list ::= [•]]
+  Resolved in favor of the first production.
+
+Warning : *** Reduce/Reduce conflict found in state #0
+  between program ::=  •
+  and     function_decl_list ::=  •
+  under symbols: {EOF}
+  Ambiguity detected for nonterminal program
+  Example: •
+  First derivation : program ::= [•]
+  Second derivation: program ::= [function_decl_list ::= [•]]
+  Resolved in favor of the second production.
+
+Productions leading up to the conflict state found.  Still finding a possible unifying counterexample...
+time limit exceeded: 5000198697
+time limit exceeded: 5154040566
+Warning : *** Shift/Reduce conflict found in state #89
+  between reduction on return_stmt ::= RETURN •
+  and shift on         function_call ::= • IDENTIFIER OPEN_PAREN CLOSE_PAREN
+  under symbol IDENTIFIER
+  Ambiguity detected for nonterminal stmt_list
+  Example: RETURN • IDENTIFIER OPEN_PAREN CLOSE_PAREN
+  Derivation using reduction: stmt_list ::= [stmt ::= [return_stmt ::= [RETURN •]] stmt_list ::= [stmt ::= [function_call ::= [IDENTIFIER OPEN_PAREN CLOSE_PAREN]]]]
+  Derivation using shift    : stmt_list ::= [stmt ::= [return_stmt ::= [RETURN return_list ::= [expr ::= [function_call ::= [• IDENTIFIER OPEN_PAREN CLOSE_PAREN]]]]]]
+
+  between reduction on return_stmt ::= RETURN •
+  and shift on         function_call ::= • IDENTIFIER OPEN_PAREN function_arg CLOSE_PAREN
+  under symbol IDENTIFIER
+  Ambiguity detected for nonterminal stmt_list
+  Example: RETURN • IDENTIFIER OPEN_PAREN function_arg CLOSE_PAREN
+  Derivation using reduction: stmt_list ::= [stmt ::= [return_stmt ::= [RETURN •]] stmt_list ::= [stmt ::= [function_call ::= [IDENTIFIER OPEN_PAREN function_arg CLOSE_PAREN]]]]
+  Derivation using shift    : stmt_list ::= [stmt ::= [return_stmt ::= [RETURN return_list ::= [expr ::= [function_call ::= [• IDENTIFIER OPEN_PAREN function_arg CLOSE_PAREN]]]]]]
+
+  between reduction on return_stmt ::= RETURN •
+  and shift on         array_element ::= • IDENTIFIER brackets_with_content
+  under symbol IDENTIFIER
+  Example using reduction   : RETURN • IDENTIFIER brackets_with_content EQUAL expr SEMICOLON stmt_list
+  Derivation using reduction: stmt_list ::= [stmt ::= [return_stmt ::= [RETURN •]] stmt_list ::= [stmt ::= [assignment_stmt ::= [array_element ::= [IDENTIFIER brackets_with_content] EQUAL expr]] SEMICOLON stmt_list]]
+  Example using shift       : RETURN • IDENTIFIER brackets_with_content SEMICOLON
+  Derivation using shift    : stmt_list ::= [stmt ::= [return_stmt ::= [RETURN return_list ::= [expr ::= [array_element ::= [• IDENTIFIER brackets_with_content]]]]] SEMICOLON]
+
+  between reduction on return_stmt ::= RETURN •
+  and shift on         expr ::= • IDENTIFIER
+  under symbol IDENTIFIER
+  Example using reduction   : IDENTIFIER OPEN_PAREN function_param CLOSE_PAREN COLON return_type OPEN_BRACE RETURN • IDENTIFIER COLON type stmt_list CLOSE_BRACE EOF
+  Derivation using reduction: $START ::= [program ::= [function_decl_list ::= [function_decl ::= [IDENTIFIER OPEN_PAREN function_param CLOSE_PAREN COLON return_type block_stmt ::= [OPEN_BRACE stmt_list ::= [stmt ::= [return_stmt ::= [RETURN •]] stmt_list ::= [stmt ::= [var_decl ::= [IDENTIFIER COLON type]] stmt_list]] CLOSE_BRACE]]]] EOF]
+  Example using shift       : IDENTIFIER OPEN_PAREN function_param CLOSE_PAREN COLON return_type OPEN_BRACE RETURN • IDENTIFIER COMMA return_list stmt_list CLOSE_BRACE EOF
+  Derivation using shift    : $START ::= [program ::= [function_decl_list ::= [function_decl ::= [IDENTIFIER OPEN_PAREN function_param CLOSE_PAREN COLON return_type block_stmt ::= [OPEN_BRACE stmt_list ::= [stmt ::= [return_stmt ::= [RETURN return_list ::= [expr ::= [• IDENTIFIER] COMMA return_list]]] stmt_list] CLOSE_BRACE]]]] EOF]
+
+  Resolved in favor of shifting.
+
+Warning : *** Shift/Reduce conflict found in state #89
+  between reduction on return_stmt ::= RETURN •
+  and shift on         array_literal ::= • OPEN_BRACE CLOSE_BRACE
+  under symbol OPEN_BRACE
+  Ambiguity detected for nonterminal stmt_list
+  Example: RETURN • OPEN_BRACE CLOSE_BRACE
+  Derivation using reduction: stmt_list ::= [stmt ::= [return_stmt ::= [RETURN •]] stmt_list ::= [stmt ::= [block_stmt ::= [OPEN_BRACE CLOSE_BRACE]]]]
+  Derivation using shift    : stmt_list ::= [stmt ::= [return_stmt ::= [RETURN return_list ::= [expr ::= [constant ::= [array_literal ::= [• OPEN_BRACE CLOSE_BRACE]]]]]]]
+
+  between reduction on return_stmt ::= RETURN •
+  and shift on         array_literal ::= • OPEN_BRACE array_element_list CLOSE_BRACE
+  under symbol OPEN_BRACE
+  Ambiguity detected for nonterminal stmt_list
+  Example: RETURN • OPEN_BRACE function_call CLOSE_BRACE
+  Derivation using reduction: stmt_list ::= [stmt ::= [return_stmt ::= [RETURN •]] stmt_list ::= [stmt ::= [block_stmt ::= [OPEN_BRACE stmt_list ::= [stmt ::= [function_call]] CLOSE_BRACE]]]]
+  Derivation using shift    : stmt_list ::= [stmt ::= [return_stmt ::= [RETURN return_list ::= [expr ::= [constant ::= [array_literal ::= [• OPEN_BRACE array_element_list ::= [expr ::= [function_call]] CLOSE_BRACE]]]]]]]
+
+  Resolved in favor of shifting.
+
+Warning : *** Shift/Reduce conflict found in state #123
+  between reduction on use_id ::= USE IDENTIFIER •
+  and shift on         program ::= USE IDENTIFIER • IDENTIFIER OPEN_PAREN IDENTIFIER COLON INT OPEN_BRACKET CLOSE_BRACKET OPEN_BRACKET CLOSE_BRACKET CLOSE_PAREN OPEN_BRACE IDENTIFIER OPEN_PAREN STRING_LITERAL CLOSE_PAREN CLOSE_BRACE
+  under symbol IDENTIFIER
+  Example using reduction   : USE IDENTIFIER • IDENTIFIER OPEN_PAREN function_param CLOSE_PAREN COLON return_type block_stmt EOF
+  Derivation using reduction: $START ::= [program ::= [use_id ::= [USE IDENTIFIER •] function_decl_list ::= [function_decl ::= [IDENTIFIER OPEN_PAREN function_param CLOSE_PAREN COLON return_type block_stmt]]] EOF]
+  Example using shift       : USE IDENTIFIER • IDENTIFIER OPEN_PAREN IDENTIFIER COLON INT OPEN_BRACKET CLOSE_BRACKET OPEN_BRACKET CLOSE_BRACKET CLOSE_PAREN OPEN_BRACE IDENTIFIER OPEN_PAREN STRING_LITERAL CLOSE_PAREN CLOSE_BRACE EOF
+  Derivation using shift    : $START ::= [program ::= [USE IDENTIFIER • IDENTIFIER OPEN_PAREN IDENTIFIER COLON INT OPEN_BRACKET CLOSE_BRACKET OPEN_BRACKET CLOSE_BRACKET CLOSE_PAREN OPEN_BRACE IDENTIFIER OPEN_PAREN STRING_LITERAL CLOSE_PAREN CLOSE_BRACE] EOF]
+
+  Resolved in favor of shifting.
+
+Warning : *** Production "decl ::= var_decl " never reduced
+Warning : *** Production "decl ::= function_decl " never reduced
+Warning : *** Production "var_init ::= var_decl var_decl_list " never reduced
+Warning : *** Production "var_decl_list ::= GETS expr " never reduced
+Warning : *** Production "var_decl_list ::= COMMA var_decl " never reduced
+Warning : *** Production "var_decl_list ::= " never reduced
+Warning : *** Production "program ::= " never reduced
+Error : *** More conflicts encountered than expected -- parser generation aborted
+------- CUP v0.11b 20150326 Parser Generation Summary -------
+  1 error and 17 warnings
+  43 terminals, 34 non-terminals, and 91 productions declared, 
+  producing 144 unique parse states.
+  4 terminals declared but not used.
+  0 non-terminals declared but not used.
+  0 productions never reduced.
+  11 conflicts detected (0 expected).
+  No code produced.
+---------------------------------------------------- (CUP v0.11b 20150326)

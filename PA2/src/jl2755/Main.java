@@ -24,9 +24,11 @@ public class Main {
 		// parse command-line arguments 
 		Options options = new Options();
 		options.addOption("h", "help", false, 
-				"Print a synopsis of options");
+				"Print a synopsis of options.");
 		options.addOption("l", "lex", true, 
-				"Generate output from lexical analysis");
+				"Generate output from lexical analysis.");
+		options.addOption("p", "parse", true,
+				"Generate output from syntactic analysis.");
 		
 		CommandLineParser parser = new GnuParser();
 		CommandLine cmd;
@@ -50,17 +52,24 @@ public class Main {
 				lex(args[1]);
 			} catch (FileNotFoundException e) {
 				System.out.println(args[1] + " is not found.");
-				e.printStackTrace();
+//				e.printStackTrace();
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
 		} else if (cmd.hasOption("-parse")) {
 			System.out.println("PARSING");
-			
+			try {
+				parse(args[1]);
+			} catch (FileNotFoundException e) {
+				System.out.println(args[1] + " is not found.");
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 		
 	}
 	
+	// Lex
 	public static void lex(String filename) throws IOException {
 		Scanner lexer = new Scanner(new FileReader(filename));
 		String content = "";
@@ -117,6 +126,15 @@ public class Main {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-
+	}
+	
+	public static void parse(String filename) throws IOException {
+		try {
+			parser p = new parser(new Scanner(new FileReader(filename)));
+			Object result = p.parse().value;
+			System.out.println(result);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 }

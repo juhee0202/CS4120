@@ -22,8 +22,10 @@ nonterminal program;
 // Add more nonterminals here...
 nonterminal var_init;
 nonterminal var_decl;
-nonterminal var_decl_list;
+nonterminal tuple_init;
+nonterminal tuple_decl_list;
 nonterminal type;
+nonterminal type_list;
 nonterminal return_type;
 nonterminal primitive_type;
 nonterminal array_type;
@@ -61,7 +63,7 @@ precedence left EQUAL, NOT_EQUAL;
 precedence left LT, LEQ, GT, GEQ;
 precedence left PLUS, MINUS; 
 precedence left TIMES, HIGH_MULT, DIVIDE, MODULO;
-precedence left ELSE;     // to avoid "dangling else" problem
+precedence nonassoc ELSE;     // to avoid "dangling else" problem
 // missing integer and logical negation (unary minus vs. binary minus)
 precedence left OPEN_BRACKET, OPEN_PAREN;  // missing function call, []
 
@@ -71,14 +73,23 @@ start with program;
 /* Grammar */
 var_decl ::= IDENTIFIER COLON type ;
 
-var_init ::= var_decl var_decl_list ;
+var_init ::= var_decl GETS expr ;
 
-var_decl_list ::= GETS expr
-                  |
-                  COMMA var_decl
-                  |
+tuple_init ::= UNDERSCORE tuple_decl_list GETS function_call
+           |
+           var_decl tuple_decl_list GETS function_call
+           |
+           UNDERSCORE GETS function_call
+           ;
 
-                  ;
+tuple_decl_list ::= COMMA var_decl
+          |
+          COMMA var_decl tuple_decl_list
+          |
+          COMMA UNDERSCORE
+          |
+          COMMA UNDERSCORE tuple_decl_list
+          ;
 
 type ::= primitive_type | array_type ;
 
@@ -151,14 +162,12 @@ function_arg ::= expr
                  expr COMMA function_arg
                  ;
 
-array_literal ::= OPEN_BRACE array_element_list CLOSE_BRACE
-                  |
-                  OPEN_BRACE CLOSE_BRACE
-                  ;
+array_literal ::= OPEN_BRACE array_element_list CLOSE_BRACE ;
 
 array_element_list ::= expr
                        |
                        expr COMMA array_element_list
+             |
                        ;
 
 array_element ::= IDENTIFIER brackets_with_content ;
@@ -173,7 +182,7 @@ stmt ::= assignment_stmt
          |
          block_stmt
          |
-         var_decl
+         var_decl | var_init | tuple_init
          ;
 
 assignment_stmt ::= IDENTIFIER GETS expr 
@@ -198,12 +207,15 @@ return_list ::= expr
                 expr COMMA return_list
                 ;
 
-function_decl ::= IDENTIFIER OPEN_PAREN function_param CLOSE_PAREN COLON return_type block_stmt;
+function_decl ::= IDENTIFIER OPEN_PAREN function_param CLOSE_PAREN return_type block_stmt;
 
-function_decl_list ::= function_decl 
-                       |
-                       function_decl function_decl_list
-                       ;
+return_type ::= COLON type_list | ;
+
+type_list ::= type | type COMMA type_list ;
+
+function_decl_list ::= function_decl function_decl_list
+|                       
+            ;
 
 function_param ::= var_decl
                    |
@@ -228,13 +240,14 @@ stmt_list ::= stmt
 
 use_id ::= USE IDENTIFIER
            |  
-           USE IDENTIFIER use_id;
+  USE IDENTIFIER SEMICOLON
+  |
+           USE IDENTIFIER use_id
+  |
+  USE IDENTIFIER SEMICOLON use_id
+  ;
 
 program ::= function_decl_list
             |
             use_id function_decl_list
-            |
-            use_id
-            |
-            
             ;

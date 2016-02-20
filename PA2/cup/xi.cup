@@ -2,7 +2,7 @@
 
 package jl2755;
 
-// You might want to add types to these declarations.
+/* Terminals */
 terminal java.lang.String IDENTIFIER;
 terminal java.lang.String STRING_LITERAL;
 terminal java.lang.Character CHARACTER_LITERAL;
@@ -10,85 +10,126 @@ terminal java.lang.Integer INTEGER_LITERAL;
 terminal java.lang.Boolean TRUE, FALSE;
 terminal INT, BOOL;
 
-terminal IF, ELSE, WHILE, BREAK, RETURN, USE, LENGTH, PLUS, MINUS, TIMES, HIGH_MULT
+// keywords
+terminal IF, ELSE, WHILE, RETURN, USE, PLUS, MINUS, TIMES, HIGH_MULT,
   DIVIDE, MODULO, NOT, LT, LEQ, GT, GEQ, AND, OR, EQUAL, NOT_EQUAL, GETS,
   OPEN_BRACKET, CLOSE_BRACKET, OPEN_PAREN, CLOSE_PAREN, OPEN_BRACE, CLOSE_BRACE,
   COLON, COMMA, SEMICOLON, UNDERSCORE;
 
+/* Nonterminals */
 // You might want to add types to these declarations.
 nonterminal program;
 // Add more nonterminals here...
+nonterminal var_init;
 nonterminal var_decl;
+nonterminal var_decl_list;
 nonterminal type;
-nonterminal array_decl;
-nonterminal array_num_decl;
+nonterminal return_type;
+nonterminal primitive_type;
+nonterminal array_type;
+nonterminal brackets;
+nonterminal brackets_with_content;
 nonterminal expr;
-nonterminal unary;
-nonterminal binary;
+nonterminal constant;
+nonterminal unary_expr;
+nonterminal binary_expr;
+nonterminal binary_op;
+nonterminal literal;
+nonterminal use_id;
+nonterminal function_param;
+nonterminal function_decl;
+nonterminal function_decl_list;
+nonterminal function_call;
+nonterminal function_arg;
+nonterminal array_literal;
+nonterminal array_element_list;
+nonterminal array_element;
+nonterminal stmt;
+nonterminal assignment_stmt;
+nonterminal if_stmt;
+nonterminal while_stmt;
+nonterminal return_stmt;
+nonterminal block_stmt;
+nonterminal stmt_list;
+nonterminal return_list;
+
+
+/* Precedences */
+precedence left OR;
+precedence left AND;
+precedence left EQUAL, NOT_EQUAL;
+precedence left LT, LEQ, GT, GEQ;
+precedence left PLUS, MINUS; 
+precedence left TIMES, HIGH_MULT, DIVIDE, MODULO;
+precedence left ELSE;     // to avoid "dangling else" problem
+// missing integer and logical negation (unary minus vs. binary minus)
+precedence left OPEN_BRACKET, OPEN_PAREN;  // missing function call, []
+
 
 start with program;
 
-// Recognizes "Hello World!", but not much else.
-program ::= USE IDENTIFIER IDENTIFIER OPEN_PAREN IDENTIFIER COLON
-  INT OPEN_BRACKET CLOSE_BRACKET OPEN_BRACKET CLOSE_BRACKET CLOSE_PAREN
-  OPEN_BRACE IDENTIFIER OPEN_PAREN STRING_LITERAL CLOSE_PAREN CLOSE_BRACE;
+/* Grammar */
+var_decl ::= IDENTIFIER COLON type ;
 
-var_decl ::= IDENTIFIER COLON type SEMICOLON 
-             | 
-             IDENTIFIER COLON type GETS expr SEMICOLON 
-             | 
-             var_decl COMMA var_decl 
-             ;
+var_init ::= var_decl var_decl_list ;
 
-type ::= INT array_decl
-         |
-         INT array_num_decl
-         |
-         BOOL array_decl
-         |
-         BOOL array_num_decl
-         ;
+var_decl_list ::= GETS expr
+                  |
+                  COMMA var_decl
+                  |
 
-array_decl ::= array_num_decl OPEN_BRACKET CLOSE_BRACKET
+                  ;
+
+type ::= primitive_type | array_type ;
+
+primitive_type ::= INT | BOOL ;
+
+array_type ::= primitive_type brackets
                |
-               array_decl OPEN_BRACKET CLOSE_BRACKET
+               primitive_type brackets_with_content
                |
-          
+               primitive_type brackets_with_content brackets
                ;
 
-array_num_decl ::= array_num_decl OPEN_BRACKET INTEGER_LITERAL CLOSE_BRACKET
-                   |
-              
-                   ;
+brackets ::= OPEN_BRACKET CLOSE_BRACKET 
+             | 
+             OPEN_BRACKET CLOSE_BRACKET brackets 
+             ;
 
-expr ::= unary
+brackets_with_content ::= OPEN_BRACKET expr CLOSE_BRACKET 
+                       |
+                       OPEN_BRACKET expr CLOSE_BRACKET brackets_with_content
+                       ;
+
+expr ::= constant
          |
-         binary
+         unary_expr
          |
-         literal
+         binary_expr
          |
          IDENTIFIER
          |
-         function_call
+         array_element
          |
-         array_literal
+         function_call
          |
          OPEN_PAREN expr CLOSE_PAREN
          ;
 
-unary ::= MINUS expr
-          |
-          NOT expr
-          ;
+constant ::= literal | array_literal ;
 
-binary ::= expr binary_op expr
-           ;
+unary_expr ::= MINUS expr
+               |
+               NOT expr
+               ;
 
-binary_op ::= PLUS | MINUS | TIMES | HIGH_MULT | DIVIDE
+binary_expr ::= expr binary_op expr ;
+
+binary_op ::= PLUS | MINUS | TIMES | HIGH_MULT | DIVIDE | MODULO
               |
-              MODULO | LT | LEQ | GT | GEQ
+              EQUAL | NOT_EQUAL | LT | LEQ | GT | GEQ
               |
-              AND | OR | EQUAL | NOT_EQUAL
+              AND | OR
               ;
 
 literal ::= INTEGER_LITERAL
@@ -100,25 +141,100 @@ literal ::= INTEGER_LITERAL
             TRUE | FALSE
             ;
 
-function_call ::= IDENTIFIER OPEN_PAREN function_param CLOSE_PAREN
+function_call ::= IDENTIFIER OPEN_PAREN function_arg CLOSE_PAREN
                   |
                   IDENTIFIER OPEN_PAREN CLOSE_PAREN
+                  ;
 
-function_param ::= expr
+function_arg ::= expr
+                 |
+                 expr COMMA function_arg
+                 ;
+
+array_literal ::= OPEN_BRACE array_element_list CLOSE_BRACE
+                  |
+                  OPEN_BRACE CLOSE_BRACE
+                  ;
+
+array_element_list ::= expr
+                       |
+                       expr COMMA array_element_list
+                       ;
+
+array_element ::= IDENTIFIER brackets_with_content ;
+
+stmt ::= assignment_stmt
+         |
+         if_stmt
+         |
+         while_stmt
+         |
+         function_call
+         |
+         block_stmt
+         |
+         var_decl
+         ;
+
+assignment_stmt ::= IDENTIFIER GETS expr 
+                    |
+                    array_element GETS expr
+                    ;
+
+if_stmt ::= IF OPEN_PAREN expr CLOSE_PAREN stmt
+            |
+            IF OPEN_PAREN expr CLOSE_PAREN ELSE stmt
+            ;
+
+while_stmt ::= WHILE OPEN_PAREN expr CLOSE_PAREN stmt ;
+
+return_stmt ::= RETURN 
+                |
+                RETURN return_list
+                ;
+
+return_list ::= expr
+                |
+                expr COMMA return_list
+                ;
+
+function_decl ::= IDENTIFIER OPEN_PAREN function_param CLOSE_PAREN COLON return_type block_stmt;
+
+function_decl_list ::= function_decl 
+                       |
+                       function_decl function_decl_list
+                       ;
+
+function_param ::= var_decl
                    |
-                   expr COMMA function_param
+                   var_decl COMMA function_param 
                    ;
 
-array_literal ::= OPEN_BRACE array_base CLOSE_BRACE
-				  |
-				  
+block_stmt ::= OPEN_BRACE CLOSE_BRACE
+               |
+               OPEN_BRACE stmt_list CLOSE_BRACE
+               |
+               OPEN_BRACE stmt_list return_stmt CLOSE_BRACE
+               ;
 
-array_base ::= INTEGER_LITERAL array_recursive
-			   |
-			   INTEGER_LITERAL array_recursive COMMA
-			   |
-			   ;
+stmt_list ::= stmt
+              |
+              stmt SEMICOLON
+              |
+              stmt stmt_list
+              |
+              stmt SEMICOLON stmt_list
+              ;
 
-array_recursive ::= COMMA INTEGER_LITERAL array_recursive
-					|
-					;
+use_id ::= USE IDENTIFIER
+           |  
+           USE IDENTIFIER use_id;
+
+program ::= function_decl_list
+            |
+            use_id function_decl_list
+            |
+            use_id
+            |
+            
+            ;

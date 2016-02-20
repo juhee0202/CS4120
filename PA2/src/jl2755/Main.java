@@ -54,6 +54,9 @@ public class Main {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
+		} else if (cmd.hasOption("-parse")) {
+			System.out.println("PARSING");
+			
 		}
 		
 	}

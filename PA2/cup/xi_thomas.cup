@@ -66,7 +66,9 @@ program ::= USE IDENTIFIER IDENTIFIER OPEN_PAREN IDENTIFIER COLON
 
 decl ::= var_decl | function_decl ;
 
-var_decl ::= IDENTIFIER COLON type var_decl_list ;
+var_decl ::= IDENTIFIER COLON type ;
+
+var_init ::= var_decl var_decl_list ;
 
 var_decl_list ::= GETS expr
                   |
@@ -136,14 +138,15 @@ literal ::= INTEGER_LITERAL
             TRUE | FALSE
             ;
 
-function_call ::= IDENTIFIER OPEN_PAREN function_param CLOSE_PAREN
+function_call ::= IDENTIFIER OPEN_PAREN function_arg CLOSE_PAREN
                   |
                   IDENTIFIER OPEN_PAREN CLOSE_PAREN
+                  ;
 
-function_param ::= expr
-                   |
-                   expr COMMA function_param
-                   ;
+function_arg ::= expr
+                 |
+                 expr COMMA function_arg
+                 ;
 
 array_literal ::= OPEN_BRACE array_element_list CLOSE_BRACE
                   |
@@ -188,11 +191,33 @@ return_stmt ::= RETURN return_expr ;
 
 return_expr ::= expr return_expr
                 |
-                COMMA expr
+                COMMA expr return_expr
                 |
 
                 ;
 
 function_decl ::= IDENTIFIER OPEN_PAREN function_param CLOSE_PAREN COLON return_type block_stmt;
 
-block_stmt ::= 
+function_decl_list ::= function_decl 
+                       |
+                       function_decl function_decl_list
+                       |
+
+                       ;
+
+function_param ::= var_decl
+                   |
+                   var_decl COMMA function_param 
+                   ;
+
+use_id ::= USE IDENTIFIER
+           |  
+           USE IDENTIFIER use_id;
+
+program ::= function_decl_list
+            |
+            use_id function_decl_list
+            |
+
+            ;
+

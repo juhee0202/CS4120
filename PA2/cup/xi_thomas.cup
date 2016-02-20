@@ -38,6 +38,7 @@ nonterminal binary_op;
 nonterminal function_call;
 nonterminal function_param;
 nonterminal array_literal;
+nonterminal array_element_list;
 nonterminal array_element;
 
 
@@ -107,6 +108,8 @@ simple_expr ::= constant
                 |
                 IDENTIFIER
                 |
+                array_element
+                |
                 function_call
                 |
                 OPEN_PAREN simple_expr CLOSE_PAREN
@@ -146,12 +149,14 @@ function_param ::= simple_expr
                    simple_expr COMMA function_param
                    ;
 
-array_literal ::= OPEN_BRACE array_element CLOSE_BRACE
+array_literal ::= OPEN_BRACE array_element_list CLOSE_BRACE
                   |
                   OPEN_BRACE CLOSE_BRACE
                   ;
 
-array_element ::= constant
-                  |
-                  constant COMMA array_element
-                  ;
+array_element_list ::= constant
+                       |
+                       constant COMMA array_element_list
+                       ;
+
+array_element ::= IDENTIFIER OPEN_BRACKET simple_expr CLOSE_BRACKET ;

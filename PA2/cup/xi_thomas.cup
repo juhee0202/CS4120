@@ -184,4 +184,15 @@ if_stmt ::= IF OPEN_PAREN expr CLOSE_PAREN stmt
 
 while_stmt ::= WHILE OPEN_PAREN expr CLOSE_PAREN stmt ;
 
+return_stmt ::= RETURN return_expr ;
 
+return_expr ::= expr return_expr
+                |
+                COMMA expr
+                |
+
+                ;
+
+function_decl ::= IDENTIFIER OPEN_PAREN function_param CLOSE_PAREN COLON return_type block_stmt;
+
+block_stmt ::= 

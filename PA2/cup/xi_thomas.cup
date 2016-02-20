@@ -30,8 +30,6 @@ nonterminal brackets;
 nonterminal brackets_with_size;
 nonterminal expr;
 nonterminal constant;
-nonterminal simple_expr;
-nonterminal assignment_expr;
 nonterminal unary_expr;
 nonterminal binary_expr;
 nonterminal binary_op;
@@ -40,7 +38,11 @@ nonterminal function_param;
 nonterminal array_literal;
 nonterminal array_element_list;
 nonterminal array_element;
-
+nonterminal assignment_stmt;
+nonterminal if_stmt;
+nonterminal while_stmt;
+nonterminal return_stmt;
+nonterminal block_stmt;
 
 
 /* Precedences */
@@ -50,6 +52,7 @@ precedence left EQUAL, NOT_EQUAL;
 precedence left LT, LEQ, GT, GEQ;
 precedence left PLUS, MINUS; 
 precedence left TIMES, HIGH_MULT, DIVIDE, MODULO;
+precedence left ELSE;     // to avoid "dangling else" problem
 // missing integer and logical negation (unary minus vs. binary minus)
 // missing function call, []
 
@@ -61,13 +64,13 @@ program ::= USE IDENTIFIER IDENTIFIER OPEN_PAREN IDENTIFIER COLON
   INT OPEN_BRACKET CLOSE_BRACKET OPEN_BRACKET CLOSE_BRACKET CLOSE_PAREN
   OPEN_BRACE IDENTIFIER OPEN_PAREN STRING_LITERAL CLOSE_PAREN CLOSE_BRACE;
 
-decl ::= var_decl | array_decl | function_decl ;
+decl ::= var_decl | function_decl ;
 
-var_decl ::= IDENTIFIER COLON type var_decl_list SEMICOLON ;
+var_decl ::= IDENTIFIER COLON type var_decl_list ;
 
-var_decl_list ::= GETS simple_expr
+var_decl_list ::= GETS expr
                   |
-                  COMMA IDENTIFIER COLON type var_decl_list
+                  COMMA var_decl
                   |
 
                   ;
@@ -88,41 +91,34 @@ brackets ::= OPEN_BRACKET CLOSE_BRACKET
              OPEN_BRACKET CLOSE_BRACKET brackets 
              ;
 
-brackets_with_size ::= OPEN_BRACKET simple_expr CLOSE_BRACKET 
+brackets_with_size ::= OPEN_BRACKET expr CLOSE_BRACKET 
                        |
-                       OPEN_BRACKET simple_expr CLOSE_BRACKET brackets_with_size
+                       OPEN_BRACKET expr CLOSE_BRACKET brackets_with_size
                        ;
 
-expr ::= simple_expr      // something
+expr ::= constant
          |
-         assignment_expr  // something assigmnet_op something
+         unary_expr
+         |
+         binary_expr
+         |
+         IDENTIFIER
+         |
+         array_element
+         |
+         function_call
+         |
+         OPEN_PAREN expr CLOSE_PAREN
          ;
-
-assignment_expr ::= IDENTIFIER EQUAL simple_expr ;
-
-simple_expr ::= constant
-                |
-                unary_expr
-                |
-                binary_expr
-                |
-                IDENTIFIER
-                |
-                array_element
-                |
-                function_call
-                |
-                OPEN_PAREN simple_expr CLOSE_PAREN
-                ;
 
 constant ::= literal | array_literal ;
 
-unary_expr ::= MINUS simple_expr
+unary_expr ::= MINUS expr
                |
-               NOT simple_expr
+               NOT expr
                ;
 
-binary_expr ::= simple_expr binary_op simple_expr ;
+binary_expr ::= expr binary_op expr ;
 
 binary_op ::= PLUS | MINUS | TIMES | HIGH_MULT | DIVIDE | MODULO
               |
@@ -144,9 +140,9 @@ function_call ::= IDENTIFIER OPEN_PAREN function_param CLOSE_PAREN
                   |
                   IDENTIFIER OPEN_PAREN CLOSE_PAREN
 
-function_param ::= simple_expr
+function_param ::= expr
                    |
-                   simple_expr COMMA function_param
+                   expr COMMA function_param
                    ;
 
 array_literal ::= OPEN_BRACE array_element_list CLOSE_BRACE
@@ -159,4 +155,33 @@ array_element_list ::= constant
                        constant COMMA array_element_list
                        ;
 
-array_element ::= IDENTIFIER OPEN_BRACKET simple_expr CLOSE_BRACKET ;
+array_element ::= IDENTIFIER OPEN_BRACKET expr CLOSE_BRACKET ;
+
+stmt ::= assignment_stmt
+         |
+         if_stmt
+         |
+         while_stmt
+         |
+         return_stmt
+         |
+         function_call
+         |
+         block_stmt
+         |
+         var_decl
+         ;
+
+assignment_stmt ::= IDENTIFIER EQUAL expr 
+                    |
+                    array_element EQUAL expr
+                    ;
+
+if_stmt ::= IF OPEN_PAREN expr CLOSE_PAREN stmt
+            |
+            IF OPEN_PAREN expr CLOSE_PAREN ELSE stmt
+            ;
+
+while_stmt ::= WHILE OPEN_PAREN expr CLOSE_PAREN stmt ;
+
+

@@ -27,14 +27,14 @@ nonterminal type;
 nonterminal primitive_type;
 nonterminal array_type;
 nonterminal brackets;
-nonterminal brackets_with_size;
+nonterminal brackets_with_content;
 nonterminal expr;
 nonterminal constant;
 nonterminal unary_expr;
 nonterminal binary_expr;
 nonterminal binary_op;
 nonterminal function_call;
-nonterminal function_param;
+nonterminal function_arg;
 nonterminal array_literal;
 nonterminal array_element_list;
 nonterminal array_element;
@@ -43,6 +43,7 @@ nonterminal if_stmt;
 nonterminal while_stmt;
 nonterminal return_stmt;
 nonterminal block_stmt;
+nonterminal stmt_list;
 
 
 /* Precedences */
@@ -64,6 +65,8 @@ program ::= USE IDENTIFIER IDENTIFIER OPEN_PAREN IDENTIFIER COLON
   INT OPEN_BRACKET CLOSE_BRACKET OPEN_BRACKET CLOSE_BRACKET CLOSE_PAREN
   OPEN_BRACE IDENTIFIER OPEN_PAREN STRING_LITERAL CLOSE_PAREN CLOSE_BRACE;
 
+  
+
 decl ::= var_decl | function_decl ;
 
 var_decl ::= IDENTIFIER COLON type var_decl_list ;
@@ -81,9 +84,9 @@ primitive_type ::= INT | BOOL ;
 
 array_type ::= primitive_type brackets
                |
-               primitive_type brackets_with_size
+               primitive_type brackets_with_content
                |
-               primitive_type brackets_with_size brackets
+               primitive_type brackets_with_content brackets
                ;
 
 brackets ::= OPEN_BRACKET CLOSE_BRACKET 
@@ -91,9 +94,9 @@ brackets ::= OPEN_BRACKET CLOSE_BRACKET
              OPEN_BRACKET CLOSE_BRACKET brackets 
              ;
 
-brackets_with_size ::= OPEN_BRACKET expr CLOSE_BRACKET 
+brackets_with_content ::= OPEN_BRACKET expr CLOSE_BRACKET 
                        |
-                       OPEN_BRACKET expr CLOSE_BRACKET brackets_with_size
+                       OPEN_BRACKET expr CLOSE_BRACKET brackets_with_content
                        ;
 
 expr ::= constant
@@ -136,26 +139,27 @@ literal ::= INTEGER_LITERAL
             TRUE | FALSE
             ;
 
-function_call ::= IDENTIFIER OPEN_PAREN function_param CLOSE_PAREN
+function_call ::= IDENTIFIER OPEN_PAREN function_arg CLOSE_PAREN
                   |
                   IDENTIFIER OPEN_PAREN CLOSE_PAREN
+                  ;
 
-function_param ::= expr
-                   |
-                   expr COMMA function_param
-                   ;
+function_arg ::= expr
+                 |
+                 expr COMMA function_arg
+                 ;
 
 array_literal ::= OPEN_BRACE array_element_list CLOSE_BRACE
                   |
                   OPEN_BRACE CLOSE_BRACE
                   ;
 
-array_element_list ::= constant
+array_element_list ::= expr
                        |
-                       constant COMMA array_element_list
+                       expr COMMA array_element_list
                        ;
 
-array_element ::= IDENTIFIER OPEN_BRACKET expr CLOSE_BRACKET ;
+array_element ::= IDENTIFIER brackets_with_content ;
 
 stmt ::= assignment_stmt
          |
@@ -184,4 +188,26 @@ if_stmt ::= IF OPEN_PAREN expr CLOSE_PAREN stmt
 
 while_stmt ::= WHILE OPEN_PAREN expr CLOSE_PAREN stmt ;
 
+return_stmt ::= RETURN 
+                |
+                RETURN return_list
+                ;
 
+return_list ::= expr
+                |
+                expr COMMA return_list
+                ;
+
+block_stmt ::= OPEN_BRACE CLOSE_BRACE
+               |
+               OPEN_BRACE stmt_list CLOSE_BRACE
+               ;
+
+stmt_list ::= stmt
+              |
+              stmt SEMICOLON
+              |
+              stmt stmt_list
+              |
+              stmt SEMICOLON stmt_list
+              ;

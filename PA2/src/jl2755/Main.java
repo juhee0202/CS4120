@@ -55,8 +55,14 @@ public class Main {
 				e.printStackTrace();
 			}
 		} else if (cmd.hasOption("-parse")) {
-			System.out.println("PARSING");
-			
+			try {
+				parse(args[1]);
+			} catch (FileNotFoundException e) {
+				System.out.println(args[1] + " is not found.");
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 		
 	}
@@ -119,4 +125,12 @@ public class Main {
 		}
 
 	}
-}
+
+	public static void parse() {
+		try {
+			parser parser_obj = new parser(new my_scanner());
+			Object result = p.parse().value;
+		}
+		catch (Exception e) {	
+		}
+	}

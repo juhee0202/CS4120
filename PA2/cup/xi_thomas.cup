@@ -32,9 +32,14 @@ nonterminal expr;
 nonterminal constant;
 nonterminal simple_expr;
 nonterminal assignment_expr;
+nonterminal unary_expr;
+nonterminal binary_expr;
+nonterminal binary_op;
+nonterminal function_call;
+nonterminal function_param;
+nonterminal array_literal;
+nonterminal array_element;
 
-nonterminal unary;
-nonterminal binary;
 
 
 /* Precedences */
@@ -92,6 +97,8 @@ expr ::= simple_expr      // something
          assignment_expr  // something assigmnet_op something
          ;
 
+assignment_expr ::= IDENTIFIER EQUAL simple_expr ;
+
 simple_expr ::= constant
                 |
                 unary_expr
@@ -139,20 +146,12 @@ function_param ::= simple_expr
                    simple_expr COMMA function_param
                    ;
 
-assignment_expr ::= IDENTIFIER EQUAL simple_expr ;
+array_literal ::= OPEN_BRACE array_element CLOSE_BRACE
+                  |
+                  OPEN_BRACE CLOSE_BRACE
+                  ;
 
-///////////////////////////////////////////////////////////////////////////////////////
-
-array_literal ::= OPEN_BRACE array_base CLOSE_BRACE
-				  |
-				  
-
-array_base ::= INTEGER_LITERAL array_recursive
-			   |
-			   INTEGER_LITERAL array_recursive COMMA
-			   |
-			   ;
-
-array_recursive ::= COMMA INTEGER_LITERAL array_recursive
-					|
-					;
+array_element ::= constant
+                  |
+                  constant COMMA array_element
+                  ;

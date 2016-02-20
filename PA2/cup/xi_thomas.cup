@@ -69,7 +69,9 @@ program ::= USE IDENTIFIER IDENTIFIER OPEN_PAREN IDENTIFIER COLON
 
 decl ::= var_decl | function_decl ;
 
-var_decl ::= IDENTIFIER COLON type var_decl_list ;
+var_decl ::= IDENTIFIER COLON type ;
+
+var_init ::= var_decl var_decl_list ;
 
 var_decl_list ::= GETS expr
                   |
@@ -197,6 +199,31 @@ return_list ::= expr
                 |
                 expr COMMA return_list
                 ;
+
+function_decl ::= IDENTIFIER OPEN_PAREN function_param CLOSE_PAREN COLON return_type block_stmt;
+
+function_decl_list ::= function_decl 
+                       |
+                       function_decl function_decl_list
+                       |
+
+                       ;
+
+function_param ::= var_decl
+                   |
+                   var_decl COMMA function_param 
+                   ;
+
+use_id ::= USE IDENTIFIER
+           |  
+           USE IDENTIFIER use_id;
+
+program ::= function_decl_list
+            |
+            use_id function_decl_list
+            |
+
+            ;
 
 block_stmt ::= OPEN_BRACE CLOSE_BRACE
                |

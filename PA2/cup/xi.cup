@@ -70,17 +70,16 @@ precedence left OPEN_BRACKET, OPEN_PAREN;  // missing function call, []
 start with program;
 
 /* Grammar */
-var_decl ::= IDENTIFIER COLON type {: }
-            ;
+var_decl ::= IDENTIFIER COLON type ;
 
 var_init ::= var_decl GETS expr ;
 
 tuple_init ::= UNDERSCORE tuple_decl_list GETS function_call
-           |
-           var_decl tuple_decl_list GETS function_call
-           |
-           UNDERSCORE GETS function_call
-           ;
+               |
+               var_decl tuple_decl_list GETS function_call
+               |
+               UNDERSCORE GETS function_call
+               ;
 
 tuple_decl_list ::= COMMA var_decl
           |
@@ -99,7 +98,7 @@ primitive_type ::= INT  {: RESULT = new PrimitiveType(INT)}
                    | 
                    BOOL {: RESULT = new PrimitiveType(BOOL)}
                    ;
-
+ 
 array_type ::= primitive_type brackets
                |
                primitive_type brackets_with_content
@@ -113,9 +112,9 @@ brackets ::= OPEN_BRACKET CLOSE_BRACKET
              ;
 
 brackets_with_content ::= OPEN_BRACKET expr CLOSE_BRACKET 
-                       |
-                       OPEN_BRACKET expr CLOSE_BRACKET brackets_with_content
-                       ;
+                          |
+                          OPEN_BRACKET expr CLOSE_BRACKET brackets_with_content
+                          ;
 
 expr ::= constant
          |
@@ -172,23 +171,25 @@ array_literal ::= OPEN_BRACE array_element_list CLOSE_BRACE ;
 array_element_list ::= expr
                        |
                        expr COMMA array_element_list
-             |
+                       |
                        ;
 
 array_element ::= IDENTIFIER brackets_with_content ;
 
-stmt ::= assignment_stmt
-         |
-         if_stmt
-         |
-         while_stmt
-         |
-         function_call
-         |
-         block_stmt
-         |
-         var_decl | var_init | tuple_init
-         ;
+stmt ::= naked_stmt SEMICOLON | naked_stmt ;
+
+naked_stmt ::= assignment_stmt
+               |
+               if_stmt
+               |
+               while_stmt
+               |
+               function_call
+               |
+               block_stmt
+               |
+               var_decl | var_init | tuple_init
+               ;
 
 assignment_stmt ::= IDENTIFIER GETS expr 
                     |
@@ -197,7 +198,7 @@ assignment_stmt ::= IDENTIFIER GETS expr
 
 if_stmt ::= IF OPEN_PAREN expr CLOSE_PAREN stmt
             |
-            IF OPEN_PAREN expr CLOSE_PAREN ELSE stmt
+            IF OPEN_PAREN expr CLOSE_PAREN stmt ELSE stmt
             ;
 
 while_stmt ::= WHILE OPEN_PAREN expr CLOSE_PAREN stmt ;
@@ -214,13 +215,17 @@ return_list ::= expr
 
 function_decl ::= IDENTIFIER OPEN_PAREN function_param CLOSE_PAREN return_type block_stmt;
 
-return_type ::= COLON type_list | ;
+return_type ::= COLON type_list 
+                | 
+
+                ;
 
 type_list ::= type | type COMMA type_list ;
 
-function_decl_list ::= function_decl function_decl_list
-|                       
-            ;
+function_decl_list ::= function_decl function_decl_list 
+                       |                       
+                       
+                       ;
 
 function_param ::= var_decl
                    |
@@ -236,21 +241,17 @@ block_stmt ::= OPEN_BRACE CLOSE_BRACE
 
 stmt_list ::= stmt
               |
-              stmt SEMICOLON
-              |
               stmt stmt_list
-              |
-              stmt SEMICOLON stmt_list
               ;
 
 use_id ::= USE IDENTIFIER
            |  
-  USE IDENTIFIER SEMICOLON
-  |
+           USE IDENTIFIER SEMICOLON
+           |
            USE IDENTIFIER use_id
-  |
-  USE IDENTIFIER SEMICOLON use_id
-  ;
+           |
+           USE IDENTIFIER SEMICOLON use_id
+           ;
 
 program ::= function_decl_list
             |

@@ -1,15 +1,15 @@
 package jl2755.ast;
 
-public class UnaryExpr extends Expr() {
-	Expr expr;
-	UnaryOp op;
+public class UnaryExpr implements Expr {
+	private Expr expr;
+	private UnaryOp op;
 
 	public UnaryExpr(Expr e, UnaryOp o) {
 		expr = e;
 		op = o;
 	}
 
-	public BinaryOp getUnaryOp() {
+	public UnaryOp getUnaryOp() {
 		return op;
 	}
 
@@ -23,9 +23,5 @@ public class UnaryExpr extends Expr() {
 
 	public void setExpr(Expr e) {
 		expr = e;
-	}
-
-	public String toString() {
-		//TODO
 	}
 }

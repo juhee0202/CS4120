@@ -1,21 +1,18 @@
 package jl2755.ast;
 
 public class StmtList {
-	private NakedStmt stmt;
+	private Stmt stmt;
 	private StmtList stmtList;
-	private boolean hasSemicolon;
 	private int index;
 	
-	public StmtList(NakedStmt s, boolean b) {
+	public StmtList(Stmt s) {
 		stmt = s;
-		hasSemicolon = b;
 		index = 0;
 	}
 	
-	public StmtList(NakedStmt s, StmtList sl, boolean b) {
+	public StmtList(Stmt s, StmtList sl) {
 		stmt = s;
 		stmtList = sl;
-		hasSemicolon = b;
 		index = 1;
 	}	
 }

@@ -20,4 +20,15 @@ public class TupleDeclList {
 		hasUnderscore = b;
 		index = 1;
 	}
+
+	public TupleDeclList(boolean b) {
+		hasUnderscore = b;
+		index = 2;
+	}
+
+	public TupleDeclList(TupleDeclList tdl, boolean b) {
+		hasUnderscore = b;
+		tupleDeclList = tdl;
+		index = 3;
+	}
 }

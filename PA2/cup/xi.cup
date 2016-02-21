@@ -3,55 +3,56 @@
 package jl2755;
 
 /* Terminals */
-terminal java.lang.String IDENTIFIER;
-terminal java.lang.String STRING_LITERAL;
-terminal java.lang.Character CHARACTER_LITERAL;
-terminal java.lang.Integer INTEGER_LITERAL;
-terminal java.lang.Boolean TRUE, FALSE;
+terminal String IDENTIFIER;
+terminal String STRING_LITERAL;
+terminal Character CHARACTER_LITERAL;
+terminal Integer INTEGER_LITERAL;
+terminal Boolean TRUE, FALSE;
 // keywords
-terminal IF, ELSE, WHILE, RETURN, USE, PLUS, MINUS, TIMES, HIGH_MULT, INT, BOOL,
+terminal PLUS, MINUS, TIMES, HIGH_MULT, INT, BOOL,
   DIVIDE, MODULO, NOT, LT, LEQ, GT, GEQ, AND, OR, EQUAL, NOT_EQUAL, GETS,
   OPEN_BRACKET, CLOSE_BRACKET, OPEN_PAREN, CLOSE_PAREN, OPEN_BRACE, CLOSE_BRACE,
   COLON, COMMA, SEMICOLON, UNDERSCORE, LENGTH;
 
 /* Nonterminals */
 // You might want to add types to these declarations.
-nonterminal program;
+nonterminal Program program;
 // Add more nonterminals here...
-nonterminal var_init;
-nonterminal var_decl;
-nonterminal tuple_init;
-nonterminal tuple_decl_list;
-nonterminal type;
-nonterminal type_list;
-nonterminal return_type;
-nonterminal primitive_type;
-nonterminal array_type;
-nonterminal brackets;
-nonterminal brackets_with_content;
-nonterminal expr;
-nonterminal constant;
-nonterminal unary_expr;
-nonterminal binary_expr;
-nonterminal binary_op;
-nonterminal literal;
-nonterminal use_id;
-nonterminal function_param;
-nonterminal function_decl;
-nonterminal function_decl_list;
-nonterminal function_call;
-nonterminal function_arg;
-nonterminal array_literal;
-nonterminal array_element_list;
-nonterminal array_element;
-nonterminal stmt;
-nonterminal assignment_stmt;
-nonterminal if_stmt;
-nonterminal while_stmt;
-nonterminal return_stmt;
-nonterminal block_stmt;
-nonterminal stmt_list;
-nonterminal return_list;
+nonterminal VarInit var_init;
+nonterminal VarDecl var_decl;
+nonterminal TupleInit tuple_init;
+nonterminal TupleDeclList tuple_decl_list;
+nonterminal Type type;
+nonterminal TypeList type_list;
+nonterminal ReturnType return_type;
+nonterminal PrimitiveType primitive_type;
+nonterminal ArrayType array_type;
+nonterminal Brackets brackets;
+nonterminal BracketsWithContent brackets_with_content;
+nonterminal Expr expr;
+nonterminal Constant constant;
+nonterminal UnaryExpr unary_expr;
+nonterminal BinaryExpr binary_expr;
+nonterminal BinaryOp binary_op;
+nonterminal Literal literal;
+nonterminal UseId use_id;
+nonterminal FunctionParam function_param;
+nonterminal FunctionDecl function_decl;
+nonterminal FunctionDeclList function_decl_list;
+nonterminal FunctionCall function_call;
+nonterminal FunctionArg function_arg;
+nonterminal ArrayLiteral array_literal;
+nonterminal ArrayElementList array_element_list;
+nonterminal ArrayElement array_element;
+nonterminal NakedStmt naked_stmt;
+nonterminal Stmt stmt;
+nonterminal AssignmentStmt assignment_stmt;
+nonterminal IfStmt if_stmt;
+nonterminal WhileStmt while_stmt;
+nonterminal ReturnStmt return_stmt;
+nonterminal BlockStmt block_stmt;
+nonterminal StmtList stmt_list;
+nonterminal ReturnList return_list;
 
 
 /* Precedences */
@@ -61,206 +62,236 @@ precedence left EQUAL, NOT_EQUAL;
 precedence left LT, LEQ, GT, GEQ;
 precedence left PLUS, MINUS; 
 precedence left TIMES, HIGH_MULT, DIVIDE, MODULO;
+precedence left UMINUS;
 precedence nonassoc ELSE;     // to avoid "dangling else" problem
+precedence nonassoc SEMICOLON;
 // missing integer and logical negation (unary minus vs. binary minus)
+
 precedence left OPEN_BRACKET, OPEN_PAREN;  // missing function call, []
 
 
 start with program;
 
 /* Grammar */
-var_decl ::= IDENTIFIER COLON type {: }
+var_decl ::= IDENTIFIER:id COLON type:t                              {: RESULT = new VarDecl(id, t); :}
             ;
 
-var_init ::= var_decl GETS expr ;
-
-tuple_init ::= UNDERSCORE tuple_decl_list GETS function_call        {: RESULT = new TupleInit(); :}
-           |
-           var_decl tuple_decl_list GETS function_call
-           |
-           UNDERSCORE GETS function_call
-           ;
-
-tuple_decl_list ::= COMMA var_decl                                  {: RESULT = new TupleDeclList(var_decl, false); :}
-          |
-          COMMA var_decl tuple_decl_list                            {: RESULT = new TupleDeclList(); :}
-          |
-          COMMA UNDERSCORE                                          {: RESULT = new TupleDeclList(); :}
-          |
-          COMMA UNDERSCORE tuple_decl_list                          {: RESULT = new TupleDeclList(); :}
-          ;
-
-type ::= primitive_type 
-         | 
-         array_type ;
-
-primitive_type ::= INT                                              {: RESULT = new PrimitiveType(0); :}         
-                   | 
-                   BOOL                                             {: RESULT = new PrimitiveType(1); :}
-                   ;
-
-array_type ::= primitive_type brackets                              {: RETURN = new ArrayType(primitive_type, brackets); :}
-               |
-               primitive_type brackets_with_content                 {: RETURN = new ArrayType(primitive_type, brackets_with_content); :}
-               |
-               primitive_type brackets_with_content brackets        {: RETURN = new ArrayType(primitive_type, brackets_with_content, brackets); :}
-               ;
-
-brackets ::= OPEN_BRACKET CLOSE_BRACKET                             {: RETURN = new Brackets(); :}
-             | 
-             OPEN_BRACKET CLOSE_BRACKET brackets                    {: RETURN = new Brackets(brackets); :}
+var_init ::= var_decl:vd GETS expr:expression                        {: RESULT = new VarInit(vd, expression); :}
              ;
 
-brackets_with_content ::= OPEN_BRACKET expr CLOSE_BRACKET           {: RETURN = new BracketsWithContent(expr); :}
-                       |
-                       OPEN_BRACKET expr CLOSE_BRACKET brackets_with_content  {: RETURN = new BracketsWithContent(expr, brackets_with_content); :}
-                       ;
+tuple_init ::= UNDERSCORE tuple_decl_list:tdl GETS function_call:fc  {: RESULT = new TupleInit(tdl, fc); :}
+           |
+           var_decl:vd tuple_decl_list:tdl GETS function_call:fc     {: RESULT = new TupleInit(vd, tdl, fc); :}
+           |
+           UNDERSCORE GETS function_call:fc                          {: RESULT = new TupleInit(fc); :}
+           ;
 
-expr ::= constant
-         |
-         unary_expr
-         |
-         binary_expr
-         |
-         IDENTIFIER
-         |
-         array_element
-         |
-         function_call
-         |
-         OPEN_PAREN expr CLOSE_PAREN
+tuple_decl_list ::= COMMA var_decl:vd                                {: RESULT = new TupleDeclList(vd, false); :}
+          |
+          COMMA var_decl:vd tuple_decl_list:tdl                      {: RESULT = new TupleDeclList(vd, tdl, false); :}
+          |
+          COMMA UNDERSCORE                                           {: RESULT = new TupleDeclList(true); :}
+          |
+          COMMA UNDERSCORE tuple_decl_list:tdl                       {: RESULT = new TupleDeclList(tdl, true); :}
+          ;
+
+type ::= primitive_type:pt                                           {: RESULT = pt; :}
+         | 
+         array_type:at                                               {: RESULT = at; :}
          ;
 
-constant ::= literal | array_literal ;
+primitive_type ::= INT                                               {: RESULT = new PrimitiveType(INT); :}         
+                   | 
+                   BOOL                                              {: RESULT = new PrimitiveType(BOOL); :}
+                   ;
 
-unary_expr ::= MINUS expr
+array_type ::= primitive_type:pt brackets:b                          {: RETURN = new ArrayType(pt, br); :}
                |
-               NOT expr
+               primitive_type:pt brackets_with_content:bwc           {: RETURN = new ArrayType(pt, bwc); :}
+               |
+               primitive_type:pt brackets_with_content:bwc brackets:b{: RETURN = new ArrayType(pt, bwc, b); :}
                ;
 
-binary_expr ::= expr binary_op expr ;
+brackets ::= OPEN_BRACKET CLOSE_BRACKET                              {: RETURN = new Brackets(); :}
+             | 
+             OPEN_BRACKET CLOSE_BRACKET brackets:b                   {: RETURN = new Brackets(b); :}
+             ;
 
-binary_op ::= PLUS | MINUS | TIMES | HIGH_MULT | DIVIDE | MODULO
-              |
-              EQUAL | NOT_EQUAL | LT | LEQ | GT | GEQ
-              |
-              AND | OR
-              ;
-
-literal ::= INTEGER_LITERAL
-            |
-            CHARACTER_LITERAL
-            |
-            STRING_LITERAL
-            |
-            TRUE | FALSE
-            ;
-
-function_call ::= IDENTIFIER OPEN_PAREN function_arg CLOSE_PAREN
-                  |
-                  IDENTIFIER OPEN_PAREN CLOSE_PAREN
-                  ;
-
-function_arg ::= expr
-                 |
-                 expr COMMA function_arg
-                 ;
-
-array_literal ::= OPEN_BRACE array_element_list CLOSE_BRACE ;
-
-array_element_list ::= expr
+brackets_with_content ::= OPEN_BRACKET expr:e CLOSE_BRACKET          {: RETURN = new BracketsWithContent(e); :}
                        |
-                       expr COMMA array_element_list
-                       |
+                       OPEN_BRACKET expr:e CLOSE_BRACKET brackets_with_content:bwc  {: RETURN = new BracketsWithContent(e, bwc); :}
                        ;
 
-array_element ::= IDENTIFIER brackets_with_content ;
-
-stmt ::= naked_stmt SEMICOLON                                       {: RETURN = new Stmt(naked_stmt, true); :}
+expr ::= constant:c                                                  {: RETURN = c; :}
          |
-         naked_stmt                                                 {: RETURN = new Stmt(naked_stmt, false); :}
+         unary_expr:ue                                               {: RETURN = ue; :}
+         |
+         binary_expr:be                                              {: RETURN = be; :}
+         |
+         IDENTIFIER:id                                               {: RETURN = id; :}
+         |
+         array_element:ae                                            {: RETURN = ae; :}
+         |
+         function_call:fc                                            {: RETURN = fc; :}
+         |
+         OPEN_PAREN expr:expression CLOSE_PAREN                      {: RETURN = expression; :}
          ;
 
-naked_stmt ::= assignment_stmt
-         |
-         if_stmt
-         |
-         while_stmt
-         |
-         function_call
-         |
-         block_stmt
-         |
-         var_decl | var_init | tuple_init
-         ;
+constant ::= literal:l                                               {: RETURN = l; :}
+             | 
+             array_literal:al                                        {: RETURN = al; :}
+             ;
 
-assignment_stmt ::= IDENTIFIER GETS expr 
-                    |
-                    array_element GETS expr
-                    ;
+unary_expr ::= unary_op:uo expr:expression                           {: RETURN = new UnaryExpr(expression, uo); :}
+               ;
 
-if_stmt ::= IF OPEN_PAREN expr CLOSE_PAREN stmt                     {: RETURN = new IfStmt(expr, stmt); :}
+unary_op :: = MINUS %prec UMINUS                                     {: RETURN = UnaryOp.INT_NEG; :}
+              |
+              NOT                                                    {: RETURN = UnaryOp.NOT; :}
+              ;
+
+binary_expr ::= expr:e1 binary_op:op expr:e2                         {: RETURN = new BinaryExpr(e1, e2, op); :}
+                ;
+
+binary_op ::= PLUS                                                   {: RETURN = BinaryOp.PLUS; :}
+              | MINUS                                                {: RETURN = BinaryOp.MINUS; :}
+              | TIMES                                                {: RETURN = BinaryOp.TIMES; :}
+              | HIGH_MULT                                            {: RETURN = BinaryOp.HIGH_MULT; :}
+              | DIVIDE                                               {: RETURN = BinaryOp.DIVIDE; :}
+              | MODULO                                               {: RETURN = BinaryOp.MODULO; :}
+              | EQUAL                                                {: RETURN = BinaryOp.EQUAL; :}
+              | NOT_EQUAL                                            {: RETURN = BinaryOp.NOT_EQUAL; :}
+              | LT                                                   {: RETURN = BinaryOp.LT; :}
+              | LEQ                                                  {: RETURN = BinaryOp.LEQ; :}
+              | GT                                                   {: RETURN = BinaryOp.GT; :}
+              | GEQ                                                  {: RETURN = BinaryOp.GEQ; :}
+              | AND                                                  {: RETURN = BinaryOp.AND; :}
+              | OR                                                   {: RETURN = BinaryOp.OR; :}
+              ;
+
+literal ::= INTEGER_LITERAL:il                                       {: RETURN = new Literal(il); :}
+            |
+            CHARACTER_LITERAL:cl                                     {: RETURN = new Literal(cl); :}
+            |
+            STRING_LITERAL:sl                                        {: RETURN = new Literal(sl); :}
+            |
+            TRUE                                                     {: RETURN = new Literal(true); :}
             | 
-            IF OPEN_PAREN expr CLOSE_PAREN stmt:s1 ELSE stmt:s2     {: RETURN = new IfStmt(expr, s1, s2); :}
+            FALSE                                                    {: RETURN = new Literal(false); :}
             ;
 
-while_stmt ::= WHILE OPEN_PAREN expr CLOSE_PAREN stmt               {: RETURN = new WhileStmt(expr); :}
+function_call ::= IDENTIFIER:id OPEN_PAREN function_arg:fa CLOSE_PAREN    {: RETURN = new FunctionCall(id, fa); :}
+                  |
+                  IDENTIFIER:id OPEN_PAREN CLOSE_PAREN                    {: RETURN = new FunctionCall(id); :}
+                  ;
+
+function_arg ::= expr:expression                                    {: RETURN = new FunctionArg(expression); :}
+                 |
+                 expr:expression COMMA function_arg:fa              { :RETURN = new Function(expression, fa); :}
+                 ;
+
+array_literal ::= OPEN_BRACE array_element_list:ael CLOSE_BRACE     {: RETURN = new ArrayLiteral(ael); :}
+                  ;
+
+array_element_list ::= expr:expression                              {: RETURN = new ArrayElementList(expression); :}
+                       |
+                       expr:expression COMMA array_element_list:ael {: RETURN = new ArrayElementList(expression,ael); :}
+                       |
+                                                                    {: RETURN = null; :}
+                       ;
+
+array_element ::= IDENTIFIER:id brackets_with_content:bwc           {: RETURN = new ArrayElement(id, bwc); :}
+                  ;
+
+stmt ::= naked_stmt:ns SEMICOLON                                    {: RETURN = new Stmt(ns, true); :}
+         |
+         naked_stmt:ns                                              {: RETURN = new Stmt(ns, false); :}
+         ;
+
+naked_stmt ::= assignment_stmt:ass                                  {: RETURN = ass; :}
+         |
+         if_stmt:is                                                 {: RETURN = is; :}
+         |
+         while_stmt:ws                                              {: RETURN = ws; :}
+         |
+         function_call:fc                                           {: RETURN = fc; :}
+         |
+         block_stmt:bs                                              {: RETURN = bs; :}
+         |
+         var_decl:vd                                                {: RETURN = vd; :}
+         | 
+         var_init:vi                                                {: RETURN = vi; :}
+         | 
+         tuple_init:ti                                              {: RETURN = ti; :}
+         ;
+
+assignment_stmt ::= IDENTIFIER:id GETS expr:expression              {: RETURN = new AssignmentStmt(id, expression); :}
+                    |
+                    array_element:ae GETS expr:expression           {: RETURN = new AssignmentStmt(ae, expression); :}
+                    ;
+
+if_stmt ::= IF OPEN_PAREN expr:e CLOSE_PAREN stmt:s                 {: RETURN = new IfStmt(e, s); :}
+            | 
+            IF OPEN_PAREN expr:e CLOSE_PAREN stmt:s1 ELSE stmt:s2   {: RETURN = new IfStmt(e, s1, s2); :}
+            ;
+
+while_stmt ::= WHILE OPEN_PAREN expr:expression CLOSE_PAREN stmt:s  {: RETURN = new WhileStmt(expression, s); :}
 
 return_stmt ::= RETURN                                              {: RETURN = new ReturnStmt(); :}
                 |
-                RETURN return_list                                  {: RETURN = new ReturnStmt(return_list); :}
+                RETURN return_list:rl                               {: RETURN = new ReturnStmt(rl); :}
                 ;
 
-return_list ::= expr                                                {: RETURN = new ReturnList(expr); :}
+return_list ::= expr:e                                              {: RETURN = new ReturnList(e); :}
                 |
-                expr COMMA return_list                              {: RETURN = new ReturnList(expr, return_list); :}
+                expr:e COMMA return_list:rl                         {: RETURN = new ReturnList(e, rl); :}
                 ;
 
-function_decl ::= IDENTIFIER OPEN_PAREN function_param 
-                  CLOSE_PAREN return_type block_stmt                {: RETURN = new FunctionDecl(IDENTIFIER, function_param, return_type, block_stmt); :}
+function_decl ::= IDENTIFIER:id OPEN_PAREN function_param:fp 
+                  CLOSE_PAREN return_type:rt block_stmt:bs          {: RETURN = new FunctionDecl(id, fp, rt, bs); :}
                   ;
 
-return_type ::= COLON type_list                                     {: RETURN = new }
+return_type ::= COLON type_list:tl                                  {: RETURN = new ReturnType(tl); :}
                 |  
                 ;
 
-type_list ::= type | type COMMA type_list ;
-
-function_decl_list ::= function_decl function_decl_list             
-            |                       
-            ;
-
-function_param ::= var_decl                                         {: RETURN = new FunctionParam(var_decl); :}
-                   |
-                   var_decl COMMA function_param                    {: RETURN = new FunctionParam(var_decl, function_param_); :}
-                   ;
-
-block_stmt ::= OPEN_BRACE CLOSE_BRACE
-               |
-               OPEN_BRACE stmt_list CLOSE_BRACE
-               |
-               OPEN_BRACE stmt_list return_stmt CLOSE_BRACE
-               ;
-
-stmt_list ::= stmt
-              |
-              stmt SEMICOLON
-              |
-              stmt stmt_list
-              |
-              stmt SEMICOLON stmt_list
+type_list ::= type:t                                                {: RETURN = new TypeList(t); :}
+              | 
+              type:t COMMA type_list:tl                             {: RETURN = new TypeList(t, tl); :}
               ;
 
-use_id ::= USE IDENTIFIER
+function_decl_list ::= function_decl:fd function_decl_list:fdl      {: RETURN = new FunctionDeclList(fd, fdl); :}
+            |                       
+                                                                    {: RETURN = null; :}
+            ;
+
+function_param ::= var_decl:vd                                      {: RETURN = new FunctionParam(vd); :}
+                   |
+                   var_decl:vd COMMA function_param:fp              {: RETURN = new FunctionParam(vd, fp); :}
+                   ;
+
+block_stmt ::= OPEN_BRACE CLOSE_BRACE                               {: RETURN = new BlockStmt(); :}
+               |
+               OPEN_BRACE stmt_list:sl CLOSE_BRACE                  {: RETURN = new BlockStmt(sl)}
+               |
+               OPEN_BRACE stmt_list:sl return_stmt:rs CLOSE_BRACE   {: RETURN = new BlockStmt(sl, rm); :}
+               ;
+
+stmt_list ::= stmt:s                                                {: RETURN = new StmtList(s); :}
+              |
+              stmt:s stmt_list:sl                                   {: RETURN = new StmtList(s, sl); :}
+              ;
+
+use_id ::= USE IDENTIFIER:id                                        {: RETURN = new UseId(id, false); :}
            |  
-           USE IDENTIFIER SEMICOLON
+           USE IDENTIFIER:id SEMICOLON                              {: RETURN = new UseId{id, true}; :}
            |
-           USE IDENTIFIER use_id
+           USE IDENTIFIER:id use_id:ui                              {: RETURN = new UseId(id, ui, false)}
            |
-           USE IDENTIFIER SEMICOLON use_id
+           USE IDENTIFIER:id SEMICOLON use_id:ui                    {: RETURN = new UseId(id, ui, true); :}
            ;
 
-program ::= function_decl_list
+program ::= function_decl_list:fdl                                  {: RETURN = new Program(fdl)}
             |
-            use_id function_decl_list
+            use_id:useidc function_decl_list:fdl                    {: RETURN = new Program(useidc, fdl); }
             ;

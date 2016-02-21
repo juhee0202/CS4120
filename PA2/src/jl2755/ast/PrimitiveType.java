@@ -1,10 +1,25 @@
 package jl2755.ast;
 
-public class PrimitiveType{
+import edu.cornell.cs.cs4120.util.CodeWriterSExpPrinter;
+import jl2755.GlobalPrettyPrinter;
+
+public class PrimitiveType implements Type{
 	
-	private java_cup.runtime.Symbol theSymbol;
+	/** 0 for INT and 1 for BOOL */
+	private int index;
 	
-	public PrimitiveType(java_cup.runtime.Symbol argSym){
-		theSymbol = argSym;
+	public PrimitiveType(int index){
+		this.index = index;
+	}
+	
+	public void prettyPrintNode() {
+		CodeWriterSExpPrinter tempPrinter = GlobalPrettyPrinter.getInstance();
+		tempPrinter.startList();
+		if (index == 0) {
+			tempPrinter.printAtom("int");
+		} else {
+			tempPrinter.printAtom("bool");
+		}
+		tempPrinter.endList();
 	}
 }

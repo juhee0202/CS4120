@@ -1,9 +1,12 @@
 package jl2755.ast;
 
+import edu.cornell.cs.cs4120.util.CodeWriterSExpPrinter;
+import jl2755.GlobalPrettyPrinter;
+
 public class BinaryExpr implements Expr {
 	private Expr leftExpr;
 	private Expr rightExpr;
-	private int op;
+	private BinaryOp op;
 
 	public BinaryExpr(Expr leftE, Expr rightE, BinaryOp o) {
 		leftExpr = leftE;
@@ -33,5 +36,14 @@ public class BinaryExpr implements Expr {
 	
 	public void setRightExpr(Expr e) {
 		rightExpr = e;
+	}
+
+	public void prettyPrintNode() {
+		CodeWriterSExpPrinter tempPrinter = GlobalPrettyPrinter.getInstance();
+		tempPrinter.startList();
+		tempPrinter.printAtom(op.toString());
+		leftExpr.prettyPrintNode();
+		rightExpr.prettyPrintNode();
+		tempPrinter.endList();
 	}
 }

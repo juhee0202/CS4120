@@ -1,13 +1,13 @@
 package jl2755.ast;
 
 public class Literal implements Constant {
-	private Integer intLit;
+	private Long intLit;
 	private String stringLit;
 	private Character charLit;
 	private Boolean boolLit;
 	private int index;
 	
-	public Literal(int i) {
+	public Literal(long i) {
 		intLit = i;
 		index = 0;
 	}

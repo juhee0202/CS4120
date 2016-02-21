@@ -1,5 +1,8 @@
 package jl2755.ast;
 
+import edu.cornell.cs.cs4120.util.CodeWriterSExpPrinter;
+import jl2755.GlobalPrettyPrinter;
+
 public class FunctionParam {
 	private VarDecl varDecl;
 	private FunctionParam functionParam;
@@ -14,5 +17,13 @@ public class FunctionParam {
 		varDecl = vd;
 		functionParam = fp;
 		index = 1;
+	}
+	
+	public void prettyPrintNode() {
+		CodeWriterSExpPrinter tempPrinter = GlobalPrettyPrinter.getInstance();
+		tempPrinter.startList();
+		varDecl.prettyPrintNode();
+		functionParam.prettyPrintNode();
+		tempPrinter.endList();
 	}
 }

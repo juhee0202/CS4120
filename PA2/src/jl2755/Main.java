@@ -12,6 +12,7 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
 import java_cup.runtime.Symbol;
+import jl2755.ast.Program;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -19,6 +20,7 @@ import java.io.FileWriter;
 
 public class Main {
 
+	
 	public static void main(String[] args) {
 		
 		// parse command-line arguments 
@@ -66,6 +68,8 @@ public class Main {
 				e.printStackTrace();
 			}
 		}
+		
+		
 		
 	}
 	
@@ -130,9 +134,25 @@ public class Main {
 	
 	public static void parse(String filename) throws IOException {
 		try {
-			parser p = new parser(new Scanner(new FileReader(filename)));
-			Object result = p.parse().value;
-			System.out.println(result);
+			parser p = new parser();
+			p.setScanner(new Scanner(new FileReader(filename)));
+			
+//			Program result = (Program) p.parse().value;
+			
+			Symbol s = p.parse();
+			Program result = (Program) s.value;
+			
+			
+			int index = filename.lastIndexOf('.');
+			if (index == -1) {
+				index = filename.length();
+			}
+			
+			String rmExtension = filename.substring(0,index);
+			
+			new GlobalPrettyPrinter(rmExtension + ".parsed");
+			result.prettyPrintNode();
+			GlobalPrettyPrinter.getInstance().flush();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

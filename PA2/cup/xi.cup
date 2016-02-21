@@ -32,6 +32,7 @@ nonterminal BracketsWithContent brackets_with_content;
 nonterminal Expr expr;
 nonterminal Constant constant;
 nonterminal UnaryExpr unary_expr;
+nonterminal UnaryOp unary_op;
 nonterminal BinaryExpr binary_expr;
 nonterminal BinaryOp binary_op;
 nonterminal Literal literal;

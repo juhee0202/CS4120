@@ -1907,7 +1907,7 @@ class CUP$parser$actions {
                 int idleft = CUP$parser$stack.peek().left;
                 int idright = CUP$parser$stack.peek().right;
                 Identifier id = CUP$parser$stack.peek().<Identifier> value();
-                 RESULT = new UseId(id, false); System.out.println("1"); 
+                 RESULT = new UseId(id, false); 
                 CUP$parser$result = parser.getSymbolFactory().newSymbol("use_id",17, CUP$parser$stack.elementAt(CUP$parser$top-1), CUP$parser$stack.peek(), RESULT);
             }
             return CUP$parser$result;
@@ -1919,7 +1919,7 @@ class CUP$parser$actions {
                 int idleft = CUP$parser$stack.elementAt(CUP$parser$top-1).left;
                 int idright = CUP$parser$stack.elementAt(CUP$parser$top-1).right;
                 Identifier id = CUP$parser$stack.elementAt(CUP$parser$top-1).<Identifier> value();
-                 RESULT = new UseId(id, true); System.out.println("2"); 
+                 RESULT = new UseId(id, true); 
                 CUP$parser$result = parser.getSymbolFactory().newSymbol("use_id",17, CUP$parser$stack.elementAt(CUP$parser$top-2), CUP$parser$stack.peek(), RESULT);
             }
             return CUP$parser$result;
@@ -1934,7 +1934,7 @@ class CUP$parser$actions {
                 int uileft = CUP$parser$stack.peek().left;
                 int uiright = CUP$parser$stack.peek().right;
                 UseId ui = CUP$parser$stack.peek().<UseId> value();
-                 RESULT = new UseId(id, ui, false); System.out.println("3"); 
+                 RESULT = new UseId(id, ui, false); 
                 CUP$parser$result = parser.getSymbolFactory().newSymbol("use_id",17, CUP$parser$stack.elementAt(CUP$parser$top-2), CUP$parser$stack.peek(), RESULT);
             }
             return CUP$parser$result;
@@ -1949,7 +1949,7 @@ class CUP$parser$actions {
                 int uileft = CUP$parser$stack.peek().left;
                 int uiright = CUP$parser$stack.peek().right;
                 UseId ui = CUP$parser$stack.peek().<UseId> value();
-                 RESULT = new UseId(id, ui, true); System.out.println("4"); 
+                 RESULT = new UseId(id, ui, true); 
                 CUP$parser$result = parser.getSymbolFactory().newSymbol("use_id",17, CUP$parser$stack.elementAt(CUP$parser$top-3), CUP$parser$stack.peek(), RESULT);
             }
             return CUP$parser$result;

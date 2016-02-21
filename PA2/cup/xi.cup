@@ -303,13 +303,13 @@ stmt_list ::= stmt:s                                                {: RESULT = 
               stmt:s stmt_list:sl                                   {: RESULT = new StmtList(s, sl); :}
               ;
 
-use_id ::= USE identifier:id                                        {: RESULT = new UseId(id, false); System.out.println("1"); :}
+use_id ::= USE identifier:id                                        {: RESULT = new UseId(id, false); :}
            |  
-           USE identifier:id SEMICOLON                              {: RESULT = new UseId(id, true); System.out.println("2"); :}
+           USE identifier:id SEMICOLON                              {: RESULT = new UseId(id, true); :}
            |
-           USE identifier:id use_id:ui                              {: RESULT = new UseId(id, ui, false); System.out.println("3"); :}
+           USE identifier:id use_id:ui                              {: RESULT = new UseId(id, ui, false); :}
            |
-           USE identifier:id SEMICOLON use_id:ui                    {: RESULT = new UseId(id, ui, true); System.out.println("4"); :}
+           USE identifier:id SEMICOLON use_id:ui                    {: RESULT = new UseId(id, ui, true); :}
            ;
 
 program ::= function_decl_list:fdl                                  {: RESULT = new Program(fdl); :}

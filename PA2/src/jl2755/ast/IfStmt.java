@@ -25,11 +25,13 @@ public class IfStmt implements NakedStmt {
 
 	public void prettyPrintNode() {
 		CodeWriterSExpPrinter tempPrinter = GlobalPrettyPrinter.getInstance();
+		tempPrinter.startList();
 		tempPrinter.printAtom("if");
 		expr.prettyPrintNode();
 		stmt1.prettyPrintNode();
 		if (index == 1) {
 			stmt2.prettyPrintNode();
 		}
+		tempPrinter.endList();
 	}
 }

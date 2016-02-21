@@ -20,6 +20,8 @@ import java.io.FileWriter;
 
 public class Main {
 
+	public static String destPath;
+	public static String srcPath;
 	
 	public static void main(String[] args) {
 		
@@ -31,17 +33,32 @@ public class Main {
 				"Generate output from lexical analysis.");
 		options.addOption("p", "parse", true,
 				"Generate output from syntactic analysis.");
+		options.addOption("sourcepath", true, 
+				"Specify where to find input source files. ");
+		options.addOption("D", true, " Specify where to place generated diagnostic files.");
 		
 		CommandLineParser parser = new GnuParser();
 		CommandLine cmd;
+		String[] fileArgs;
+		srcPath = "";
+		destPath = "";
 		
 		try {
 			cmd = parser.parse(options, args);
+			fileArgs = cmd.getArgs();
 		} catch (ParseException exp) {
 			System.err.println(exp.getMessage());
 			return;
 		}
 				
+		if (cmd.hasOption("sourcepath")) {
+			srcPath = cmd.getOptionValue("sourcepath")+"/";
+		}
+
+		if (cmd.hasOption("D")) {
+			destPath = cmd.getOptionValue("D")+"/";
+		}
+
 		if (cmd.hasOption("-help")) {			
 			System.out.println("Usage: xic [options] <source files>\n" +
 					"where possible options include");
@@ -50,26 +67,27 @@ public class Main {
 			System.out.println("  --lex: Generate output from lexical analysis.");
 			
 		} else if (cmd.hasOption("-lex")) {
-			try {
-				lex(args[1]);
-			} catch (FileNotFoundException e) {
-				System.out.println(args[1] + " is not found.");
-//				e.printStackTrace();
-			} catch (IOException e) {
-				e.printStackTrace();
+			for (int i = 0; i < fileArgs.length; i++) {
+				try { 
+					lex(srcPath + fileArgs[i]);
+				} catch (FileNotFoundException e) {
+					System.out.println(srcPath + fileArgs[1] + " is not found.");
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
 			}
 		} else if (cmd.hasOption("-parse")) {
 			System.out.println("PARSING");
-			try {
-				parse(args[1]);
-			} catch (FileNotFoundException e) {
-				System.out.println(args[1] + " is not found.");
-			} catch (IOException e) {
-				e.printStackTrace();
+			for (int i = 0; i < fileArgs.length; i++) {
+				try { 
+					parse(srcPath + fileArgs[i]);
+				} catch (FileNotFoundException e) {
+					System.out.println(srcPath + fileArgs[1] + " is not found.");
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
 			}
 		}
-		
-		
 		
 	}
 	
@@ -115,7 +133,7 @@ public class Main {
 			}
 			
 			String rmExtension = filename.substring(0,index);
-			File file = new File(rmExtension + ".lexed");
+			File file = new File(destPath + rmExtension + ".lexed");
 
 			if (!file.exists()) {
 				file.createNewFile();
@@ -136,9 +154,7 @@ public class Main {
 		try {
 			parser p = new parser();
 			p.setScanner(new Scanner(new FileReader(filename)));
-			
-//			Program result = (Program) p.parse().value;
-			
+						
 			Symbol s = p.parse();
 			Program result = (Program) s.value;
 			
@@ -148,7 +164,7 @@ public class Main {
 				index = filename.length();
 			}
 			
-			String rmExtension = filename.substring(0,index);
+			String rmExtension = destPath + filename.substring(0,index);
 			
 			new GlobalPrettyPrinter(rmExtension + ".parsed");
 			result.prettyPrintNode();

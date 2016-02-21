@@ -27,26 +27,6 @@ public class ArrayType implements Type{
 		this.bracketsWithContent = bracketsWithContent;
 		index = 1;
 	}
-	
-	public ArrayType(PrimitiveType p_type, 
-					 BracketsWithContent bracketsWithContent,
-					 Brackets brackets) {
-		this.p_type = p_type;
-		this.bracketsWithContent = bracketsWithContent;
-		this.brackets = brackets;
-		index = 2;
-	}
-	
-	public ArrayType(PureContentArrayType argPure){
-		pureArray = argPure;
-		index = 3;
-	}
-	
-	public ArrayType(PureContentArrayType argPure, Brackets argBra){
-		pureArray = argPure;
-		brackets = argBra;
-		index = 4;
-	}
 
 	
 	public void prettyPrintNode() {
@@ -60,6 +40,7 @@ public class ArrayType implements Type{
 				tempPrinter.startList();
 				tempPrinter.printAtom("[]");
 			}
+			p_type.prettyPrintNode();
 		} else if (index == 1) {
 			list = bracketsWithContent.getContent();
 			for (int i = 0; i < list.size(); i++) {
@@ -72,37 +53,14 @@ public class ArrayType implements Type{
 			}
 			p_type.prettyPrintNode();
 			for (int i = 0; i < list.size(); i++){
-				list.get(i).prettyPrintNode();
 				tempPrinter.endList();
+				list.get(i).prettyPrintNode();
+				
 			}
 			for (int i = 0; i < bracketsWithContent.getNumBrackets(); i++){
 				tempPrinter.endList();
 			}
-		} else if (index == 4) {
-			n = brackets.getNumBrackets();
-			for (int i = 0; i < n; i++) {
-				tempPrinter.startList();
-				tempPrinter.printAtom("[]");
-			}
-			list = pureArray.getBracketsWithContent();
-			for (int i = 0; i < list.size(); i++) {
-				tempPrinter.startList();
-				tempPrinter.printAtom("[]");
-			}
-			pureArray.getPrimitiveType().prettyPrintNode();
-			for (int i = 0; i < n; i++) {
-				tempPrinter.endList();
-			}
-			for (int i = list.size()-1; i >= 0; i--) {
-				list.get(i).prettyPrintNode();
-				tempPrinter.endList();
-			}
-			return;
-		} else if (index == 3) {
-			pureArray.prettyPrintToNode();
-			return;
 		}
-		p_type.prettyPrintNode();
 		if (index == 0) {
 			for (int i = 0; i < n; i++) {
 				tempPrinter.endList();

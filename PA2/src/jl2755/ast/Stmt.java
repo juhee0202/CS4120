@@ -13,9 +13,6 @@ public class Stmt {
 	}
 	
 	public void prettyPrintNode() {
-		CodeWriterSExpPrinter tempPrinter = GlobalPrettyPrinter.getInstance();
-		tempPrinter.startList();
 		nakedStmt.prettyPrintNode();
-		tempPrinter.endList();
 	}
 }

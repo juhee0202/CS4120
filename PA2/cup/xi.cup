@@ -33,10 +33,7 @@ non terminal Brackets brackets;
 non terminal BracketsWithContent brackets_with_content;
 non terminal Expr expr;
 non terminal Constant constant;
-non terminal UnaryExpr unary_expr;
-non terminal UnaryOp unary_op;
-non terminal BinaryExpr binary_expr;
-non terminal BinaryOp binary_op;
+non terminal Expr op_expr;
 non terminal Literal literal;
 non terminal UseId use_id;
 non terminal FunctionParam function_param;
@@ -78,26 +75,27 @@ identifier ::= IDENTIFIER:id                                        {: RESULT = 
                ;
 
 var_decl ::= identifier:id COLON type:t                             {: RESULT = new VarDecl(id, t); :}
-            ;
+             ;
 
 var_init ::= var_decl:vd GETS expr:expression                       {: RESULT = new VarInit(vd, expression); :}
              ;
 
 tuple_init ::= UNDERSCORE tuple_decl_list:tdl GETS function_call:fc {: RESULT = new TupleInit(tdl, fc); :}
-           |
-           var_decl:vd tuple_decl_list:tdl GETS function_call:fc    {: RESULT = new TupleInit(vd, tdl, fc); :}
-           |
-           UNDERSCORE GETS function_call:fc                         {: RESULT = new TupleInit(fc); :}
-           ;
+               |
+               var_decl:vd tuple_decl_list:tdl 
+               GETS function_call:fc                                {: RESULT = new TupleInit(vd, tdl, fc); :}
+               |
+               UNDERSCORE GETS function_call:fc                     {: RESULT = new TupleInit(fc); :}
+               ;
 
 tuple_decl_list ::= COMMA var_decl:vd                               {: RESULT = new TupleDeclList(vd, false); :}
-          |
-          COMMA var_decl:vd tuple_decl_list:tdl                     {: RESULT = new TupleDeclList(vd, tdl, false); :}
-          |
-          COMMA UNDERSCORE                                          {: RESULT = new TupleDeclList(true); :}
-          |
-          COMMA UNDERSCORE tuple_decl_list:tdl                      {: RESULT = new TupleDeclList(tdl, true); :}
-          ;
+                    |
+                    COMMA var_decl:vd tuple_decl_list:tdl           {: RESULT = new TupleDeclList(vd, tdl, false); :}
+                    |
+                    COMMA UNDERSCORE                                {: RESULT = new TupleDeclList(true); :}
+                    |
+                    COMMA UNDERSCORE tuple_decl_list:tdl            {: RESULT = new TupleDeclList(tdl, true); :}
+                    ;
 
 type ::= primitive_type:pt                                          {: RESULT = pt; :}
          | 
@@ -120,17 +118,17 @@ brackets ::= OPEN_BRACKET CLOSE_BRACKET                             {: RESULT = 
              ;
 
 brackets_with_content ::= OPEN_BRACKET expr:e CLOSE_BRACKET         {: RESULT = new BracketsWithContent(e); :}
-                       |
-                       OPEN_BRACKET expr:e CLOSE_BRACKET brackets_with_content:bwc  {: RESULT = new BracketsWithContent(e, bwc); :}
-                       |
-                       OPEN_BRACKET expr:e CLOSE_BRACKET brackets:b {: RESULT = new BracketsWithContent(e, b); :}
-                       ;
+                          |
+                          OPEN_BRACKET expr:e CLOSE_BRACKET 
+                          brackets_with_content:bwc                 {: RESULT = new BracketsWithContent(e, bwc); :}
+                          |
+                          OPEN_BRACKET expr:e 
+                          CLOSE_BRACKET brackets:b                  {: RESULT = new BracketsWithContent(e, b); :}
+                          ;
 
 expr ::= constant:c                                                 {: RESULT = c; :}
          |
-         unary_expr:ue                                              {: RESULT = ue; :}
-         |
-         binary_expr:be                                             {: RESULT = be; :}
+         op_expr:oe                                                 {: RESULT = oe; :}
          |
          identifier:id                                              {: RESULT = id; :}
          |
@@ -146,32 +144,38 @@ constant ::= literal:l                                              {: RESULT = 
              array_literal:al                                       {: RESULT = al; :}
              ;
 
-unary_expr ::= unary_op:uo expr:expression                          {: RESULT = new UnaryExpr(expression, uo); :}
-               ;
-
-unary_op ::=  MINUS                                                 {: RESULT = UnaryOp.INT_NEG; :} %prec UMINUS  
-              |
-              NOT                                                   {: RESULT = UnaryOp.LOG_NEG; :}
-              ;
-
-binary_expr ::= expr:e1 binary_op:op expr:e2                        {: RESULT = new BinaryExpr(e1, e2, op); :}
-                ;
-
-binary_op ::= PLUS                                                  {: RESULT = BinaryOp.PLUS; :}
-              | MINUS                                               {: RESULT = BinaryOp.MINUS; :}
-              | TIMES                                               {: RESULT = BinaryOp.TIMES; :}
-              | HIGH_MULT                                           {: RESULT = BinaryOp.HIGH_MULT; :}
-              | DIVIDE                                              {: RESULT = BinaryOp.DIVIDE; :}
-              | MODULO                                              {: RESULT = BinaryOp.MODULO; :}
-              | EQUAL                                               {: RESULT = BinaryOp.EQUAL; :}
-              | NOT_EQUAL                                           {: RESULT = BinaryOp.NOT_EQUAL; :}
-              | LT                                                  {: RESULT = BinaryOp.LT; :}
-              | LEQ                                                 {: RESULT = BinaryOp.LEQ; :}
-              | GT                                                  {: RESULT = BinaryOp.GT; :}
-              | GEQ                                                 {: RESULT = BinaryOp.GEQ; :}
-              | AND                                                 {: RESULT = BinaryOp.AND; :}
-              | OR                                                  {: RESULT = BinaryOp.OR; :}
-              ;
+op_expr ::= MINUS expr:e                                            {: RESULT = new UnaryExpr(e, UnaryOp.INT_NEG); :} %prec UMINUS
+            |
+            NOT expr:e                                              {: RESULT = new UnaryExpr(e, UnaryOp.LOG_NEG); :}
+            |
+            expr:e1 PLUS expr:e2                                    {: RESULT = new BinaryExpr(e1, e2, BinaryOp.PLUS); :}
+            |
+            expr:e1 MINUS expr:e2                                   {: RESULT = new BinaryExpr(e1, e2, BinaryOp.MINUS); :}
+            |
+            expr:e1 TIMES expr:e2                                   {: RESULT = new BinaryExpr(e1, e2, BinaryOp.TIMES); :}
+            |
+            expr:e1 HIGH_MULT expr:e2                               {: RESULT = new BinaryExpr(e1, e2, BinaryOp.HIGH_MULT); :}
+            |
+            expr:e1 DIVIDE expr:e2                                  {: RESULT = new BinaryExpr(e1, e2, BinaryOp.DIVIDE); :}
+            |
+            expr:e1 MODULO expr:e2                                  {: RESULT = new BinaryExpr(e1, e2, BinaryOp.MODULO); :}
+            |
+            expr:e1 NOT_EQUAL expr:e2                               {: RESULT = new BinaryExpr(e1, e2, BinaryOp.NOT_EQUAL); :}
+            |
+            expr:e1 EQUAL expr:e2                                   {: RESULT = new BinaryExpr(e1, e2, BinaryOp.EQUAL); :}
+            |
+            expr:e1 LT expr:e2                                      {: RESULT = new BinaryExpr(e1, e2, BinaryOp.LT); :}
+            |
+            expr:e1 LEQ expr:e2                                     {: RESULT = new BinaryExpr(e1, e2, BinaryOp.LEQ); :}
+            |
+            expr:e1 GT expr:e2                                      {: RESULT = new BinaryExpr(e1, e2, BinaryOp.GT); :}
+            |
+            expr:e1 GEQ expr:e2                                     {: RESULT = new BinaryExpr(e1, e2, BinaryOp.GEQ); :}
+            |
+            expr:e1 AND expr:e2                                     {: RESULT = new BinaryExpr(e1, e2, BinaryOp.AND); :}
+            |
+            expr:e1 OR expr:e2                                      {: RESULT = new BinaryExpr(e1, e2, BinaryOp.OR); :}
+            ;
 
 literal ::= INTEGER_LITERAL:il                                      {: RESULT = new Literal(il); :}
             |
@@ -184,7 +188,8 @@ literal ::= INTEGER_LITERAL:il                                      {: RESULT = 
             FALSE                                                   {: RESULT = new Literal(false); :}
             ;
 
-function_call ::= identifier:id OPEN_PAREN function_arg:fa CLOSE_PAREN    {: RESULT = new FunctionCall(id, fa); :}
+function_call ::= identifier:id OPEN_PAREN 
+                  function_arg:fa CLOSE_PAREN                       {: RESULT = new FunctionCall(id, fa); :}
                   |
                   identifier:id OPEN_PAREN CLOSE_PAREN              {: RESULT = new FunctionCall(id, false); :}
                   |
@@ -217,21 +222,21 @@ stmt ::= naked_stmt:ns SEMICOLON                                    {: RESULT = 
          ;
 
 naked_stmt ::= assignment_stmt:ass                                  {: RESULT = ass; :}
-         |
-         if_stmt:is                                                 {: RESULT = is; :}
-         |
-         while_stmt:ws                                              {: RESULT = ws; :}
-         |
-         function_call:fc                                           {: RESULT = fc; :}
-         |
-         block_stmt:bs                                              {: RESULT = bs; :}
-         |
-         var_decl:vd                                                {: RESULT = vd; :}
-         | 
-         var_init:vi                                                {: RESULT = vi; :}
-         | 
-         tuple_init:ti                                              {: RESULT = ti; :}
-         ;
+               |
+               if_stmt:is                                           {: RESULT = is; :}
+               |
+               while_stmt:ws                                        {: RESULT = ws; :}
+               |
+               function_call:fc                                     {: RESULT = fc; :}
+               |
+               block_stmt:bs                                        {: RESULT = bs; :}
+               |
+               var_decl:vd                                          {: RESULT = vd; :}
+               | 
+               var_init:vi                                          {: RESULT = vi; :}
+               | 
+               tuple_init:ti                                        {: RESULT = ti; :}
+               ;
 
 assignment_stmt ::= identifier:id GETS expr:expression              {: RESULT = new AssignmentStmt(id, expression); :}
                     |

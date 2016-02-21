@@ -30,9 +30,9 @@
     </target>
     <target name="jar" depends="build">
       <mkdir dir="bin/jar"/>
-	  <jar destfile="bin/jar/PA1.jar" filesetmanifest="mergewithoutmain">
+	  <jar destfile="bin/jar/Main.jar" filesetmanifest="mergewithoutmain">
 	  	<manifest>
-	  		<attribute name="Main-Class" value="jl2755.PA1"/>
+	  		<attribute name="Main-Class" value="jl2755.Main"/>
 	  		<attribute name="Class-Path" value="."/>
 	  	</manifest>
 	  	<fileset dir="bin"/>

@@ -3,7 +3,7 @@ package jl2755.ast;
 import edu.cornell.cs.cs4120.util.CodeWriterSExpPrinter;
 import jl2755.GlobalPrettyPrinter;
 
-public class UnaryExpr implements Expr {
+public class UnaryExpr implements OpExpr {
 	private Expr expr;
 	private UnaryOp op;
 

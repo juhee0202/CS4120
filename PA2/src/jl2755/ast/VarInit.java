@@ -14,8 +14,10 @@ public class VarInit implements NakedStmt {
 	
 	public void prettyPrintNode(){
 		CodeWriterSExpPrinter tempPrinter = GlobalPrettyPrinter.getInstance();
+		tempPrinter.startList();
 		tempPrinter.printAtom("=");
 		varDecl.prettyPrintNode();
 		expr.prettyPrintNode();
+		tempPrinter.endList();
 	}
 }

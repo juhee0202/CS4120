@@ -3,7 +3,7 @@ package jl2755.ast;
 import edu.cornell.cs.cs4120.util.CodeWriterSExpPrinter;
 import jl2755.GlobalPrettyPrinter;
 
-public class BinaryExpr implements Expr {
+public class BinaryExpr implements OpExpr {
 	private Expr leftExpr;
 	private Expr rightExpr;
 	private BinaryOp op;

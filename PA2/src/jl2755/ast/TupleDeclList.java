@@ -35,7 +35,6 @@ public class TupleDeclList {
 	
 	public void prettyPrintNode() {
 		CodeWriterSExpPrinter tempPrinter = GlobalPrettyPrinter.getInstance();
-		tempPrinter.startList();
 		if (index == 0) {
 			varDecl.prettyPrintNode();
 		} else if (index == 1) {
@@ -47,6 +46,5 @@ public class TupleDeclList {
 			tempPrinter.printAtom("_");
 			tupleDeclList.prettyPrintNode();
 		}
-		tempPrinter.endList();
 	}
 }

@@ -25,6 +25,7 @@ public class AssignmentStmt implements NakedStmt {
 	
 	public void prettyPrintNode() {
 		CodeWriterSExpPrinter tempPrinter = GlobalPrettyPrinter.getInstance();
+		tempPrinter.startList();
 		tempPrinter.printAtom("=");
 		if (index == 0) {
 			identifier.prettyPrintNode();
@@ -32,5 +33,6 @@ public class AssignmentStmt implements NakedStmt {
 			arrElem.prettyPrintNode();
 		}
 		expr.prettyPrintNode();
+		tempPrinter.endList();
 	}
 }

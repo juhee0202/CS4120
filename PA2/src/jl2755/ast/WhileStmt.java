@@ -14,8 +14,10 @@ public class WhileStmt implements NakedStmt {
 	
 	public void prettyPrintNode() {
 		CodeWriterSExpPrinter tempPrinter = GlobalPrettyPrinter.getInstance();
+		tempPrinter.startList();
 		tempPrinter.printAtom("while");
 		expr.prettyPrintNode();
 		stmt.prettyPrintNode();
+		tempPrinter.endList();
 	}
 }

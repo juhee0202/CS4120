@@ -31,17 +31,23 @@ public class TupleInit implements NakedStmt {
 	
 	public void prettyPrintNode() {
 		CodeWriterSExpPrinter tempPrinter = GlobalPrettyPrinter.getInstance();
+		tempPrinter.startList();
 		tempPrinter.printAtom("=");
 		tempPrinter.startList();
 		if (index == 0) {
 			tempPrinter.printAtom("_");
+			tempPrinter.endList();
 			functionCall.prettyPrintNode();
 		} else if (index == 1) {
 			tempPrinter.printAtom("_");
 			tupleDeclList.prettyPrintNode();
+			tempPrinter.endList();
+			functionCall.prettyPrintNode();
 		} else {
 			varDecl.prettyPrintNode();
 			tupleDeclList.prettyPrintNode();
+			tempPrinter.endList();
+			functionCall.prettyPrintNode();
 		}
 		tempPrinter.endList();
 	}	

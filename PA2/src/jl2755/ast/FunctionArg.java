@@ -19,4 +19,11 @@ public class FunctionArg {
         index = 1;
 	}
 
+	public void prettyPrintNode() {
+		CodeWriterSExpPrinter tempPrinter = GlobalPrettyPrinter.getInstance();
+		expr.prettyPrintNode();
+		if (index == 1) {
+			functionArg.prettyPrintNode();
+		}
+	}
 }

@@ -14,12 +14,10 @@ public class PrimitiveType implements Type{
 	
 	public void prettyPrintNode() {
 		CodeWriterSExpPrinter tempPrinter = GlobalPrettyPrinter.getInstance();
-		tempPrinter.startList();
 		if (index == 0) {
 			tempPrinter.printAtom("int");
 		} else {
 			tempPrinter.printAtom("bool");
 		}
-		tempPrinter.endList();
 	}
 }

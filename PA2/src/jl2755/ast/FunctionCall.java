@@ -33,10 +33,8 @@ public class FunctionCall implements Expr,NakedStmt {
     
 	public void prettyPrintNode() {
 		CodeWriterSExpPrinter tempPrinter = GlobalPrettyPrinter.getInstance();
-		tempPrinter.startList();
 		if (index == 0) {
 			tempPrinter.printAtom(identifier.toString());
-			tempPrinter.printAtom("()");
 		} else if (index == 1) {
 			tempPrinter.printAtom(identifier.toString());
 			functionArg.prettyPrintNode();
@@ -47,6 +45,5 @@ public class FunctionCall implements Expr,NakedStmt {
 			tempPrinter.printAtom("length");
 			arrayElement.prettyPrintNode();
 		}
-		tempPrinter.endList();
 	}
 }

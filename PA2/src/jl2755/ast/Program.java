@@ -23,10 +23,18 @@ public class Program{
 		CodeWriterSExpPrinter tempPrinter = GlobalPrettyPrinter.getInstance();
 		tempPrinter.startList();
 		if (index == 0) {
+			tempPrinter.startList();
+			tempPrinter.endList();
+			tempPrinter.startList();
 			functionDeclList.prettyPrintNode();
+			tempPrinter.endList();
 		} else {
+			tempPrinter.startList();
 			useId.prettyPrintNode();
+			tempPrinter.endList();
+			tempPrinter.startList();
 			functionDeclList.prettyPrintNode();
+			tempPrinter.endList();
 		}
 		tempPrinter.endList();
 	}

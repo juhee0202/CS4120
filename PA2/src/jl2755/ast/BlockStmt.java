@@ -1,5 +1,8 @@
 package jl2755.ast;
 
+import edu.cornell.cs.cs4120.util.CodeWriterSExpPrinter;
+import jl2755.GlobalPrettyPrinter;
+
 public class BlockStmt implements NakedStmt {
 	private StmtList stmtList;
 	private ReturnStmt returnStmt;
@@ -21,5 +24,17 @@ public class BlockStmt implements NakedStmt {
 		stmtList = sl;
 		returnStmt = rs;
 		index = 2;
+	}
+	
+	public void prettyPrintNode() {
+		CodeWriterSExpPrinter tempPrinter = GlobalPrettyPrinter.getInstance();
+		tempPrinter.startList();
+		if (index > 0) {
+			stmtList.prettyPrintNode();
+		}
+		if (index == 2) {
+			returnStmt.prettyPrintNode();
+		}
+		tempPrinter.endList();
 	}
 }

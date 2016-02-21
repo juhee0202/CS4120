@@ -21,8 +21,11 @@ public class FunctionDecl {
 	
 	public void prettyPrintNode() {
 		CodeWriterSExpPrinter tempPrinter = GlobalPrettyPrinter.getInstance();
-		tempPrinter.startList();
 		tempPrinter.printAtom(identifier.toString());
-		tempPrinter.endList();
+		functionParam.prettyPrintNode();
+		if (returnType != null){
+			returnType.prettyPrintNode();
+		}
+		blockStmt.prettyPrintNode();
 	}
 }

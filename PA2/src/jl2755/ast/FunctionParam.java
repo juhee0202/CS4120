@@ -8,6 +8,10 @@ public class FunctionParam {
 	private FunctionParam functionParam;
 	private int index;
 	
+	public FunctionParam(){
+		index = 2755;
+	}
+	
 	public FunctionParam(VarDecl vd) {
 		varDecl = vd;
 		index = 0;
@@ -22,8 +26,14 @@ public class FunctionParam {
 	public void prettyPrintNode() {
 		CodeWriterSExpPrinter tempPrinter = GlobalPrettyPrinter.getInstance();
 		tempPrinter.startList();
+		if (index == 2755){
+			tempPrinter.endList();
+			return;
+		}
 		varDecl.prettyPrintNode();
-		functionParam.prettyPrintNode();
+		if (index == 1) {
+			functionParam.prettyPrintNode();
+		}
 		tempPrinter.endList();
 	}
 }

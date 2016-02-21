@@ -65,12 +65,10 @@ precedence left EQUAL, NOT_EQUAL;
 precedence left LT, LEQ, GT, GEQ;
 precedence left PLUS, MINUS; 
 precedence left TIMES, HIGH_MULT, DIVIDE, MODULO;
-precedence left UMINUS;
+precedence left UMINUS; // missing integer and logical negation (unary minus vs. binary minus)
+precedence left OPEN_BRACKET, OPEN_PAREN;  // missing function call, []
 precedence nonassoc ELSE;     // to avoid "dangling else" problem
 precedence nonassoc SEMICOLON;
-// missing integer and logical negation (unary minus vs. binary minus)
-
-precedence left OPEN_BRACKET, OPEN_PAREN;  // missing function call, []
 
 
 start with program;
@@ -113,9 +111,7 @@ primitive_type ::= INT:i                                            {: RESULT = 
 
 array_type ::= primitive_type:pt brackets:b                         {: RESULT = new ArrayType(pt, b); :}
                |
-               primitive_type:pt brackets_with_content:bwc          {: RESULT = new ArrayType(pt, bwc); :}
-               |
-               primitive_type:pt brackets_with_content:bwc brackets:b  {: RESULT = new ArrayType(pt, bwc, b); :}
+               primitive_type:pt brackets_with_content:bwt          {: RESULT = new ArrayType(pt, bwt); :}
                ;
 
 brackets ::= OPEN_BRACKET CLOSE_BRACKET                             {: RESULT = new Brackets(); :}
@@ -126,6 +122,8 @@ brackets ::= OPEN_BRACKET CLOSE_BRACKET                             {: RESULT = 
 brackets_with_content ::= OPEN_BRACKET expr:e CLOSE_BRACKET         {: RESULT = new BracketsWithContent(e); :}
                        |
                        OPEN_BRACKET expr:e CLOSE_BRACKET brackets_with_content:bwc  {: RESULT = new BracketsWithContent(e, bwc); :}
+                       |
+                       OPEN_BRACKET expr:e CLOSE_BRACKET brackets:b {: RESULT = new BracketsWithContent(e, b); :}
                        ;
 
 expr ::= constant:c                                                 {: RESULT = c; :}
@@ -207,7 +205,7 @@ array_element_list ::= expr:expression                              {: RESULT = 
                        |
                        expr:expression COMMA array_element_list:ael {: RESULT = new ArrayElementList(expression,ael); :}
                        |
-                                                                    {: RESULT = null; :}
+                                                                    {: RESULT = new ArrayElementList(); :}
                        ;
 
 array_element ::= identifier:id brackets_with_content:bwc           {: RESULT = new ArrayElement(id, bwc); :}
@@ -251,6 +249,10 @@ while_stmt ::= WHILE OPEN_PAREN expr:expression CLOSE_PAREN stmt:s  {: RESULT = 
 return_stmt ::= RETURN                                              {: RESULT = new ReturnStmt(); :}
                 |
                 RETURN return_list:rl                               {: RESULT = new ReturnStmt(rl); :}
+                |
+                RETURN SEMICOLON                                    {: RESULT = new ReturnStmt(); :}
+                |
+                RETURN return_list:rl SEMICOLON                     {: RESULT = new ReturnStmt(rl); :}
                 ;
 
 return_list ::= expr:e                                              {: RESULT = new ReturnList(e); :}
@@ -263,7 +265,8 @@ function_decl ::= identifier:id OPEN_PAREN function_param:fp
                   ;
 
 return_type ::= COLON type_list:tl                                  {: RESULT = new ReturnType(tl); :}
-                |  
+                |                       
+                                                                    {: RESULT = new ReturnType(); :}
                 ;
 
 type_list ::= type:t                                                {: RESULT = new TypeList(t); :}
@@ -272,13 +275,15 @@ type_list ::= type:t                                                {: RESULT = 
               ;
 
 function_decl_list ::= function_decl:fd function_decl_list:fdl      {: RESULT = new FunctionDeclList(fd, fdl); :}
-            |                       
-                                                                    {: RESULT = null; :}
-            ;
+                       |                       
+                                                                    {: RESULT = new FunctionDeclList(); :}
+                       ;
 
 function_param ::= var_decl:vd                                      {: RESULT = new FunctionParam(vd); :}
                    |
                    var_decl:vd COMMA function_param:fp              {: RESULT = new FunctionParam(vd, fp); :}
+                   |
+                                                                    {: RESULT = new FunctionParam(); :}
                    ;
 
 block_stmt ::= OPEN_BRACE CLOSE_BRACE                               {: RESULT = new BlockStmt(); :}
@@ -302,7 +307,7 @@ use_id ::= USE identifier:id                                        {: RESULT = 
            USE identifier:id SEMICOLON use_id:ui                    {: RESULT = new UseId(id, ui, true); System.out.println("4"); :}
            ;
 
-program ::= function_decl_list:fdl                                  {: RESULT = new Program(fdl); System.out.println("p1"); :}
+program ::= function_decl_list:fdl                                  {: RESULT = new Program(fdl); :}
             |
-            use_id:useidc function_decl_list:fdl                    {: RESULT = new Program(useidc, fdl); System.out.println("p2");:}
+            use_id:useidc function_decl_list:fdl                    {: RESULT = new Program(useidc, fdl); :}
             ;

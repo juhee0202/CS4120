@@ -1,5 +1,6 @@
 package jl2755.ast;
 
+
 public class ReturnList {
 	private Expr expr;
 	private ReturnList returnList;
@@ -15,5 +16,12 @@ public class ReturnList {
 		expr = e;
 		returnList = rl;
 		index = 1;
+	}
+	
+	public void prettyPrintNode() {
+		expr.prettyPrintNode();
+		if (index == 1) {
+			returnList.prettyPrintNode();
+		}
 	}
 }

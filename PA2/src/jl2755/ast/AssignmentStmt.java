@@ -1,5 +1,10 @@
 package jl2755.ast;
 
+import java.util.List;
+
+import edu.cornell.cs.cs4120.util.CodeWriterSExpPrinter;
+import jl2755.GlobalPrettyPrinter;
+
 public class AssignmentStmt implements NakedStmt {
 	private Identifier identifier;
 	private ArrayElement arrElem;
@@ -16,5 +21,16 @@ public class AssignmentStmt implements NakedStmt {
 		arrElem = ae;
 		expr = e;
 		index = 1;
+	}
+	
+	public void prettyPrintNode() {
+		CodeWriterSExpPrinter tempPrinter = GlobalPrettyPrinter.getInstance();
+		tempPrinter.printAtom("=");
+		if (index == 0) {
+			identifier.prettyPrintNode();
+		} else {
+			arrElem.prettyPrintNode();
+		}
+		expr.prettyPrintNode();
 	}
 }

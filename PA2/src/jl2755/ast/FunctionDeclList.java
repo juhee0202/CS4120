@@ -6,18 +6,35 @@ import jl2755.GlobalPrettyPrinter;
 public class FunctionDeclList {
 	private FunctionDecl functionDecl;
 	private FunctionDeclList functionDeclList;
+	private int index;
+	
+	public FunctionDeclList() {
+		index = 0;
+	}	
 	
 	public FunctionDeclList(FunctionDecl fd, 
 							FunctionDeclList fdl) {
 		functionDecl = fd;
 		functionDeclList = fdl;
+		if (fdl == null) {
+			index = 2;
+		} else {
+			index = 1;
+		}
 	}
 	
 	public void prettyPrintNode() {
 		CodeWriterSExpPrinter tempPrinter = GlobalPrettyPrinter.getInstance();
+		
+		if (index == 0) {
+			return;
+		}
+		
 		tempPrinter.startList();
 		functionDecl.prettyPrintNode();
-		functionDeclList.prettyPrintNode();
 		tempPrinter.endList();
+		if (index == 1) {
+			functionDeclList.prettyPrintNode();
+		}
 	}
 }

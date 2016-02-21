@@ -3,7 +3,7 @@ package jl2755.ast;
 public class BinaryExpr implements Expr {
 	private Expr leftExpr;
 	private Expr rightExpr;
-	private int op;
+	private BinaryOp op;
 
 	public BinaryExpr(Expr leftE, Expr rightE, BinaryOp o) {
 		leftExpr = leftE;

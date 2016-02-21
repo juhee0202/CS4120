@@ -1,10 +1,11 @@
 package jl2755.ast;
 
-public class PrimitiveType{
+public class PrimitiveType implements Type{
 	
-	private java_cup.runtime.Symbol theSymbol;
+	/** 0 for INT and 1 for BOOL */
+	private int index;
 	
-	public PrimitiveType(java_cup.runtime.Symbol argSym){
-		theSymbol = argSym;
+	public PrimitiveType(int index){
+		this.index = index;
 	}
 }

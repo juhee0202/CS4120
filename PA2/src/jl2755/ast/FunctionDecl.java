@@ -1,12 +1,12 @@
 package jl2755.ast;
 
 public class FunctionDecl {
-	private String identifier;
+	private Identifier identifier;
 	private FunctionParam functionParam;
 	private ReturnType returnType;
 	private BlockStmt blockStmt;
 	
-	public FunctionDecl(String s, 
+	public FunctionDecl(Identifier s, 
 						FunctionParam fp,
 						ReturnType rt,
 						BlockStmt bs) {

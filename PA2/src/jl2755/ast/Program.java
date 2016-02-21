@@ -1,6 +1,9 @@
 package jl2755.ast;
 
-public class Program {
+import edu.cornell.cs.cs4120.util.CodeWriterSExpPrinter;
+import jl2755.GlobalPrettyPrinter;
+
+public class Program{
 	private UseId useId;
 	private FunctionDeclList functionDeclList;
 	private int index;
@@ -14,5 +17,17 @@ public class Program {
 		useId = ui;
 		functionDeclList = fdl;
 		index = 1;
+	}
+	
+	public void prettyPrintNode(){
+		CodeWriterSExpPrinter tempPrinter = GlobalPrettyPrinter.getInstance();
+		tempPrinter.startList();
+		tempPrinter.printAtom("askdj");
+		tempPrinter.endList();
+	}
+	
+	@Override
+	public String toString(){
+		return "";
 	}
 }

@@ -1,6 +1,6 @@
 package jl2755.ast;
 
-public class ArrayType {
+public class ArrayType implements Type{
 	
 	private PrimitiveType p_type;
 	private BracketsWithContent bracketsWithContent;

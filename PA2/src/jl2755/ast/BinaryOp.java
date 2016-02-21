@@ -3,7 +3,7 @@ package jl2755.ast;
 public enum BinaryOp {
 	PLUS,
 	MINUS,
-	MULT,
+	TIMES,
 	HIGH_MULT,
 	DIVIDE,
 	MODULO,

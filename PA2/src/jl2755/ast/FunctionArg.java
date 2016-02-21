@@ -5,7 +5,7 @@ public class FunctionArg {
 	private FunctionArg functionArg;
     private int index;
 
-    public FunctionArg(Expression e) {
+    public FunctionArg(Expr e) {
         expr = e;
         index = 0;
     }

@@ -8,6 +8,7 @@ import java.nio.file.Paths;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.GnuParser;
+import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
@@ -29,23 +30,27 @@ public class Main {
 		Options options = new Options();
 		options.addOption("h", "help", false, 
 				"Print a synopsis of options.");
-		options.addOption("l", "lex", true, 
+		Option lexOpt = new Option("l", "lex", false, 
 				"Generate output from lexical analysis.");
-		options.addOption("p", "parse", true,
+		lexOpt.setArgs(Option.UNLIMITED_VALUES);
+		lexOpt.	setOptionalArg(true);
+		options.addOption(lexOpt);
+		Option parseOpt = new Option("p", "parse", false, 
 				"Generate output from syntactic analysis.");
+		parseOpt.setArgs(Option.UNLIMITED_VALUES);
+		parseOpt.setOptionalArg(true);
+		options.addOption(parseOpt);
 		options.addOption("sourcepath", true, 
 				"Specify where to find input source files. ");
 		options.addOption("D", true, " Specify where to place generated diagnostic files.");
 		
 		CommandLineParser parser = new GnuParser();
 		CommandLine cmd;
-		String[] fileArgs;
 		srcPath = "";
 		destPath = "";
 		
 		try {
 			cmd = parser.parse(options, args);
-			fileArgs = cmd.getArgs();
 		} catch (ParseException exp) {
 			System.err.println(exp.getMessage());
 			return;
@@ -66,23 +71,36 @@ public class Main {
 			System.out.println("  --help: Print a synopsis of options.");
 			System.out.println("  --lex: Generate output from lexical analysis.");
 			
-		} else if (cmd.hasOption("-lex")) {
-			for (int i = 0; i < fileArgs.length; i++) {
+		} 
+		
+		if (cmd.hasOption("-lex")) {
+			String[] files = cmd.getOptionValues("l");
+			if (files == null && cmd.hasOption("-parse")) {
+				files = cmd.getOptionValues("p");
+			}
+			
+			for (int i = 0; i < files.length; i++) {
 				try { 
-					lex(srcPath + fileArgs[i]);
+					lex(srcPath + files[i]);
 				} catch (FileNotFoundException e) {
-					System.out.println(srcPath + fileArgs[1] + " is not found.");
+					System.out.println(srcPath + files[1] + " is not found.");
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
 			}
-		} else if (cmd.hasOption("-parse")) {
-			System.out.println("PARSING");
-			for (int i = 0; i < fileArgs.length; i++) {
+		}
+		
+		if (cmd.hasOption("-parse")) {
+			String[] files = cmd.getOptionValues("p");
+			if (files == null && cmd.hasOption("-parse")) {
+				files = cmd.getOptionValues("l");
+			}
+			
+			for (int i = 0; i < files.length; i++) {
 				try { 
-					parse(srcPath + fileArgs[i]);
+					parse(srcPath + files[i]);
 				} catch (FileNotFoundException e) {
-					System.out.println(srcPath + fileArgs[1] + " is not found.");
+					System.out.println(srcPath + files[1] + " is not found.");
 				} catch (IOException e) {
 					e.printStackTrace();
 				}

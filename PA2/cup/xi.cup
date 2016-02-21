@@ -146,7 +146,7 @@ constant ::= literal:l                                               {: RETURN =
 unary_expr ::= unary_op:uo expr:expression                           {: RETURN = new UnaryExpr(expression, uo); :}
                ;
 
-unary_op :: = MINUS %prec UMINUS                                     {: RETURN = UnaryOp.INT_NEG; :}
+unary_op :: = MINUS                                                  {: RETURN = UnaryOp.INT_NEG; :} %prec UMINUS  
               |
               NOT                                                    {: RETURN = UnaryOp.NOT; :}
               ;

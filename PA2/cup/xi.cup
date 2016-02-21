@@ -8,9 +8,8 @@ terminal java.lang.String STRING_LITERAL;
 terminal java.lang.Character CHARACTER_LITERAL;
 terminal java.lang.Integer INTEGER_LITERAL;
 terminal java.lang.Boolean TRUE, FALSE;
-terminal java_cup.runtime.Symbol INT, BOOL;
 // keywords
-terminal IF, ELSE, WHILE, RETURN, USE, PLUS, MINUS, TIMES, HIGH_MULT,
+terminal IF, ELSE, WHILE, RETURN, USE, PLUS, MINUS, TIMES, HIGH_MULT, INT, BOOL,
   DIVIDE, MODULO, NOT, LT, LEQ, GT, GEQ, AND, OR, EQUAL, NOT_EQUAL, GETS,
   OPEN_BRACKET, CLOSE_BRACKET, OPEN_PAREN, CLOSE_PAREN, OPEN_BRACE, CLOSE_BRACE,
   COLON, COMMA, SEMICOLON, UNDERSCORE, LENGTH;
@@ -70,51 +69,52 @@ precedence left OPEN_BRACKET, OPEN_PAREN;  // missing function call, []
 start with program;
 
 /* Grammar */
-var_decl ::= IDENTIFIER COLON type ;
+var_decl ::= IDENTIFIER COLON type {: }
+            ;
 
 var_init ::= var_decl GETS expr ;
 
-tuple_init ::= UNDERSCORE tuple_decl_list GETS function_call
-               |
-               var_decl tuple_decl_list GETS function_call
-               |
-               UNDERSCORE GETS function_call
-               ;
+tuple_init ::= UNDERSCORE tuple_decl_list GETS function_call        {: RESULT = new TupleInit(); :}
+           |
+           var_decl tuple_decl_list GETS function_call
+           |
+           UNDERSCORE GETS function_call
+           ;
 
-tuple_decl_list ::= COMMA var_decl
+tuple_decl_list ::= COMMA var_decl                                  {: RESULT = new TupleDeclList(var_decl, false); :}
           |
-          COMMA var_decl tuple_decl_list
+          COMMA var_decl tuple_decl_list                            {: RESULT = new TupleDeclList(); :}
           |
-          COMMA UNDERSCORE
+          COMMA UNDERSCORE                                          {: RESULT = new TupleDeclList(); :}
           |
-          COMMA UNDERSCORE tuple_decl_list
+          COMMA UNDERSCORE tuple_decl_list                          {: RESULT = new TupleDeclList(); :}
           ;
 
 type ::= primitive_type 
          | 
          array_type ;
 
-primitive_type ::= INT  {: RESULT = new PrimitiveType(INT)}
+primitive_type ::= INT                                              {: RESULT = new PrimitiveType(0); :}         
                    | 
-                   BOOL {: RESULT = new PrimitiveType(BOOL)}
+                   BOOL                                             {: RESULT = new PrimitiveType(1); :}
                    ;
- 
-array_type ::= primitive_type brackets
+
+array_type ::= primitive_type brackets                              {: RETURN = new ArrayType(primitive_type, brackets); :}
                |
-               primitive_type brackets_with_content
+               primitive_type brackets_with_content                 {: RETURN = new ArrayType(primitive_type, brackets_with_content); :}
                |
-               primitive_type brackets_with_content brackets
+               primitive_type brackets_with_content brackets        {: RETURN = new ArrayType(primitive_type, brackets_with_content, brackets); :}
                ;
 
-brackets ::= OPEN_BRACKET CLOSE_BRACKET 
+brackets ::= OPEN_BRACKET CLOSE_BRACKET                             {: RETURN = new Brackets(); :}
              | 
-             OPEN_BRACKET CLOSE_BRACKET brackets 
+             OPEN_BRACKET CLOSE_BRACKET brackets                    {: RETURN = new Brackets(brackets); :}
              ;
 
-brackets_with_content ::= OPEN_BRACKET expr CLOSE_BRACKET 
-                          |
-                          OPEN_BRACKET expr CLOSE_BRACKET brackets_with_content
-                          ;
+brackets_with_content ::= OPEN_BRACKET expr CLOSE_BRACKET           {: RETURN = new BracketsWithContent(expr); :}
+                       |
+                       OPEN_BRACKET expr CLOSE_BRACKET brackets_with_content  {: RETURN = new BracketsWithContent(expr, brackets_with_content); :}
+                       ;
 
 expr ::= constant
          |
@@ -176,60 +176,63 @@ array_element_list ::= expr
 
 array_element ::= IDENTIFIER brackets_with_content ;
 
-stmt ::= naked_stmt SEMICOLON | naked_stmt ;
+stmt ::= naked_stmt SEMICOLON                                       {: RETURN = new Stmt(naked_stmt, true); :}
+         |
+         naked_stmt                                                 {: RETURN = new Stmt(naked_stmt, false); :}
+         ;
 
 naked_stmt ::= assignment_stmt
-               |
-               if_stmt
-               |
-               while_stmt
-               |
-               function_call
-               |
-               block_stmt
-               |
-               var_decl | var_init | tuple_init
-               ;
+         |
+         if_stmt
+         |
+         while_stmt
+         |
+         function_call
+         |
+         block_stmt
+         |
+         var_decl | var_init | tuple_init
+         ;
 
 assignment_stmt ::= IDENTIFIER GETS expr 
                     |
                     array_element GETS expr
                     ;
 
-if_stmt ::= IF OPEN_PAREN expr CLOSE_PAREN stmt
-            |
-            IF OPEN_PAREN expr CLOSE_PAREN stmt ELSE stmt
+if_stmt ::= IF OPEN_PAREN expr CLOSE_PAREN stmt                     {: RETURN = new IfStmt(expr, stmt); :}
+            | 
+            IF OPEN_PAREN expr CLOSE_PAREN stmt:s1 ELSE stmt:s2     {: RETURN = new IfStmt(expr, s1, s2); :}
             ;
 
-while_stmt ::= WHILE OPEN_PAREN expr CLOSE_PAREN stmt ;
+while_stmt ::= WHILE OPEN_PAREN expr CLOSE_PAREN stmt               {: RETURN = new WhileStmt(expr); :}
 
-return_stmt ::= RETURN 
+return_stmt ::= RETURN                                              {: RETURN = new ReturnStmt(); :}
                 |
-                RETURN return_list
+                RETURN return_list                                  {: RETURN = new ReturnStmt(return_list); :}
                 ;
 
-return_list ::= expr
+return_list ::= expr                                                {: RETURN = new ReturnList(expr); :}
                 |
-                expr COMMA return_list
+                expr COMMA return_list                              {: RETURN = new ReturnList(expr, return_list); :}
                 ;
 
-function_decl ::= IDENTIFIER OPEN_PAREN function_param CLOSE_PAREN return_type block_stmt;
+function_decl ::= IDENTIFIER OPEN_PAREN function_param 
+                  CLOSE_PAREN return_type block_stmt                {: RETURN = new FunctionDecl(IDENTIFIER, function_param, return_type, block_stmt); :}
+                  ;
 
-return_type ::= COLON type_list 
-                | 
-
+return_type ::= COLON type_list                                     {: RETURN = new }
+                |  
                 ;
 
 type_list ::= type | type COMMA type_list ;
 
-function_decl_list ::= function_decl function_decl_list 
-                       |                       
-                       
-                       ;
+function_decl_list ::= function_decl function_decl_list             
+            |                       
+            ;
 
-function_param ::= var_decl
+function_param ::= var_decl                                         {: RETURN = new FunctionParam(var_decl); :}
                    |
-                   var_decl COMMA function_param 
+                   var_decl COMMA function_param                    {: RETURN = new FunctionParam(var_decl, function_param_); :}
                    ;
 
 block_stmt ::= OPEN_BRACE CLOSE_BRACE
@@ -241,7 +244,11 @@ block_stmt ::= OPEN_BRACE CLOSE_BRACE
 
 stmt_list ::= stmt
               |
+              stmt SEMICOLON
+              |
               stmt stmt_list
+              |
+              stmt SEMICOLON stmt_list
               ;
 
 use_id ::= USE IDENTIFIER

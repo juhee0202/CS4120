@@ -88,49 +88,49 @@ SingleCharacter = [^\n\'\\\"]
 <YYINITIAL> {
 
   /* keywords */
-  "bool"                         { return symbol(sym.BOOL); }
-  "else"                         { return symbol(sym.ELSE); }
-  "if"                           { return symbol(sym.IF); }
-  "int"                          { return symbol(sym.INT); }
-  "length"                       { return symbol(sym.LENGTH); }
-  "return"                       { return symbol(sym.RETURN); }
-  "use"                          { return symbol(sym.USE); }
-  "while"                        { return symbol(sym.WHILE); }
+  "bool"                         { return symbol(sym.BOOL,"bool"); }
+  "else"                         { return symbol(sym.ELSE,"else"); }
+  "if"                           { return symbol(sym.IF,"if"); }
+  "int"                          { return symbol(sym.INT,"int"); }
+  "length"                       { return symbol(sym.LENGTH,"length"); }
+  "return"                       { return symbol(sym.RETURN,"return"); }
+  "use"                          { return symbol(sym.USE,"use"); }
+  "while"                        { return symbol(sym.WHILE,"while"); }
   
   /* boolean literals */
-  "true"                         { return symbol(sym.TRUE); }
-  "false"                        { return symbol(sym.FALSE); }
+  "true"                         { return symbol(sym.TRUE,"true"); }
+  "false"                        { return symbol(sym.FALSE,"false"); }
   
   
   /* separators */
-  "("                            { return symbol(sym.OPEN_PAREN); }
-  ")"                            { return symbol(sym.CLOSE_PAREN); }
-  "{"                            { return symbol(sym.OPEN_BRACE); }
-  "}"                            { return symbol(sym.CLOSE_BRACE); }
-  "["                            { return symbol(sym.OPEN_BRACKET); }
-  "]"                            { return symbol(sym.CLOSE_BRACKET); }
-  ";"                            { return symbol(sym.SEMICOLON); }
-  ","                            { return symbol(sym.COMMA); }
+  "("                            { return symbol(sym.OPEN_PAREN,"("); }
+  ")"                            { return symbol(sym.CLOSE_PAREN,")"); }
+  "{"                            { return symbol(sym.OPEN_BRACE,"{"); }
+  "}"                            { return symbol(sym.CLOSE_BRACE,"}"); }
+  "["                            { return symbol(sym.OPEN_BRACKET,"["); }
+  "]"                            { return symbol(sym.CLOSE_BRACKET,"]"); }
+  ";"                            { return symbol(sym.SEMICOLON,";"); }
+  ","                            { return symbol(sym.COMMA,","); }
   
   /* operators */
-  "="                            { return symbol(sym.GETS); }
-  ">"                            { return symbol(sym.GT); }
-  "<"                            { return symbol(sym.LT); }
-  "!"                            { return symbol(sym.NOT); }
-  ":"                            { return symbol(sym.COLON); }
-  "=="                           { return symbol(sym.EQUAL); }
-  "<="                           { return symbol(sym.LEQ); }
-  ">="                           { return symbol(sym.GEQ); }
-  "!="                           { return symbol(sym.NOT_EQUAL); }
-  "+"                            { return symbol(sym.PLUS); }
-  "-"                            { return symbol(sym.MINUS); }
-  "*"                            { return symbol(sym.TIMES); }
-  "/"                            { return symbol(sym.DIVIDE); }
-  "&"                            { return symbol(sym.AND); }
-  "|"                            { return symbol(sym.OR); }
-  "%"                            { return symbol(sym.MODULO); }
-  "*>>"                          { return symbol(sym.HIGH_MULT); }
-  "_"                            { return symbol(sym.UNDERSCORE); }
+  "="                            { return symbol(sym.GETS,"="); }
+  ">"                            { return symbol(sym.GT,">"); }
+  "<"                            { return symbol(sym.LT,"<"); }
+  "!"                            { return symbol(sym.NOT,"!"); }
+  ":"                            { return symbol(sym.COLON,":"); }
+  "=="                           { return symbol(sym.EQUAL,"=="); }
+  "<="                           { return symbol(sym.LEQ,"<="); }
+  ">="                           { return symbol(sym.GEQ,">="); }
+  "!="                           { return symbol(sym.NOT_EQUAL,"!="); }
+  "+"                            { return symbol(sym.PLUS,"+"); }
+  "-"                            { return symbol(sym.MINUS,"-"); }
+  "*"                            { return symbol(sym.TIMES,"*"); }
+  "/"                            { return symbol(sym.DIVIDE,"/"); }
+  "&"                            { return symbol(sym.AND,"&"); }
+  "|"                            { return symbol(sym.OR,"|"); }
+  "%"                            { return symbol(sym.MODULO,"%"); }
+  "*>>"                          { return symbol(sym.HIGH_MULT,"*>>"); }
+  "_"                            { return symbol(sym.UNDERSCORE,"_"); }
   
   /* string literal */
   \"                             { yybegin(STRING); string.setLength(0); origLine = yyline+1; origCol = yycolumn+1; }

@@ -24,6 +24,7 @@ public class Main {
 	public static String destPath;
 	public static String srcPath;
 	public static BufferedWriter bw;
+	public static java_cup.runtime.Symbol error;
 	
 	public static void main(String[] args) {
 		
@@ -207,12 +208,16 @@ public class Main {
 		}
 	}
 	
-	public static void handleError(String msg, int line, int col) 
+	public static void setToken(java_cup.runtime.Symbol info) {
+		error = info;
+	}
+	
+	public static void handleError(String msg) 
 			throws RuntimeException, IOException {
-		String errorMessage = line + ":" + col + " error:" + msg;
+		String errorMessage = error.left + ":" + error.right + " error:" + msg;
 //		System.out.println(errorMessage);
 		bw.write(errorMessage);
 		bw.close();
-		throw new RuntimeException("Parsing Failed.");
+		throw new RuntimeException("[xic] Parsing Failed.");
 	}
 }

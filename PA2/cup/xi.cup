@@ -6,10 +6,12 @@ import java.io.IOException;
 
 
 parser code  {: 
-  public void report_fatal_error(Object info, int line, int col) throws IOException {
-    // System.out.println(error);
-    String msg = (String)info;
-    Main.handleError(msg, line, col);
+  public void report_fatal_error(String msg, Object info) {
+    report_error(msg, info);
+  }
+
+  public void report_error(String msg, Object info) {
+    Main.setToken((java_cup.runtime.Symbol)info);
   }
 :}
 
@@ -89,7 +91,7 @@ var_decl ::= identifier:id COLON type:t                             {: RESULT = 
 
 var_init ::= var_decl:vd GETS expr:expression                       {: RESULT = new VarInit(vd, expression); :}
              |
-             error:e                                                {: parser.report_fatal_error("Invalid assignment operator.",eleft,eright); :}  
+             error:e                                                {: Main.handleError("Invalid assignment operator."); :}  
              ;
 
 tuple_init ::= UNDERSCORE tuple_decl_list:tdl GETS function_call:fc {: RESULT = new TupleInit(tdl, fc); :}
@@ -150,7 +152,7 @@ expr ::= constant:c                                                 {: RESULT = 
          |
          OPEN_PAREN expr:expression CLOSE_PAREN                     {: RESULT = expression; :}
          |
-         error:e                                                    {: parser.report_fatal_error("Invalid expression.",eleft,eright); :}
+         error:e                                                    {: Main.handleError("Invalid expression."); :}
          ;
 
 constant ::= literal:l                                              {: RESULT = l; :}
@@ -332,5 +334,5 @@ program ::= function_decl_list:fdl                                  {: RESULT = 
             |
             use_id:useidc function_decl_list:fdl                    {: RESULT = new Program(useidc, fdl); :}
             |
-            error:e                                                 {: parser.report_fatal_error("Invalid start of a program.",eleft,eright); :}  
+            error:e                                                 {: Main.handleError("Invalid start of a program."); :}  
             ;

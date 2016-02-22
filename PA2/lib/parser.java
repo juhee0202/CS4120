@@ -639,10 +639,12 @@ public class parser
 
 
  
-  public void report_fatal_error(Object info, int line, int col) throws IOException {
-    // System.out.println(error);
-    String msg = (String)info;
-    Main.handleError(msg, line, col);
+  public void report_fatal_error(String msg, Object info) {
+    report_error(msg, info);
+  }
+
+  public void report_error(String msg, Object info) {
+    Main.setToken((java_cup.runtime.Symbol)info);
   }
 
 
@@ -730,7 +732,7 @@ class CUP$parser$actions {
                 int eleft = CUP$parser$stack.peek().left;
                 int eright = CUP$parser$stack.peek().right;
                 Object e = CUP$parser$stack.peek().<Object> value();
-                 parser.report_fatal_error("Invalid assignment operator.",eleft,eright); 
+                 Main.handleError("Invalid assignment operator."); 
                 CUP$parser$result = parser.getSymbolFactory().newSymbol("var_init",2, CUP$parser$stack.peek(), CUP$parser$stack.peek(), RESULT);
             }
             return CUP$parser$result;
@@ -1048,7 +1050,7 @@ class CUP$parser$actions {
                 int eleft = CUP$parser$stack.peek().left;
                 int eright = CUP$parser$stack.peek().right;
                 Object e = CUP$parser$stack.peek().<Object> value();
-                 parser.report_fatal_error("Invalid expression.",eleft,eright); 
+                 Main.handleError("Invalid expression."); 
                 CUP$parser$result = parser.getSymbolFactory().newSymbol("expr",13, CUP$parser$stack.peek(), CUP$parser$stack.peek(), RESULT);
             }
             return CUP$parser$result;
@@ -2068,7 +2070,7 @@ class CUP$parser$actions {
                 int eleft = CUP$parser$stack.peek().left;
                 int eright = CUP$parser$stack.peek().right;
                 Object e = CUP$parser$stack.peek().<Object> value();
-                 parser.report_fatal_error("Invalid start of a program.",eleft,eright); 
+                 Main.handleError("Invalid start of a program."); 
                 CUP$parser$result = parser.getSymbolFactory().newSymbol("program",0, CUP$parser$stack.peek(), CUP$parser$stack.peek(), RESULT);
             }
             return CUP$parser$result;

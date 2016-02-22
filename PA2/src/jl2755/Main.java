@@ -70,6 +70,9 @@ public class Main {
 			
 			System.out.println("  --help: Print a synopsis of options.");
 			System.out.println("  --lex: Generate output from lexical analysis.");
+			System.out.println("  --parse: Generate output from syntactic analysis.");
+			System.out.println("  -sourcepath: Specify where to find input source files.");
+			System.out.println("  -D: Specify where to place generated diagnostic files.");
 			
 		} 
 		
@@ -114,27 +117,29 @@ public class Main {
 		Scanner lexer = new Scanner(new FileReader(filename));
 		String content = "";
 		
-		Symbol sym = lexer.next_token();
-		while (sym.sym != 0) {
+		System.out.println("[xic] Lexing");
+		
+		Symbol symbol = lexer.next_token();
+		while (symbol.sym != 0) {
 			String tokentype;
-			switch (sym.sym) {
-				case 8:		tokentype = "id ";
-							break;
-				case 10: 	tokentype = "integer ";
-							break;
-				case 11: 	tokentype = "character ";
-							break;
-				case 14: 	tokentype = "string ";
-							break;
-				default: 	tokentype = "";
-							break;
+			switch (symbol.sym) {
+					case sym.IDENTIFIER:		tokentype = "id ";
+											break;
+				case sym.INTEGER_LITERAL: 	tokentype = "integer ";
+											break;
+				case sym.CHARACTER_LITERAL: 	tokentype = "character ";
+											break;
+				case sym.STRING_LITERAL: 	tokentype = "string ";
+											break;
+				default: 					tokentype = "";
+											break;
 			}
 				
-			String val = sym.value == null ? lexer.yytext() : sym.value.toString();
-			content += sym.left + ":" + sym.right + " "+ tokentype + val + "\n";
+			String val = symbol.value == null ? lexer.yytext() : symbol.value.toString();
+			content += symbol.left + ":" + symbol.right + " "+ tokentype + val + "\n";
 			
 			try {
-				sym = lexer.next_token();
+				symbol = lexer.next_token();
 			}
 			catch (RuntimeException ex) {
 				content += lexer.origLine + ":" + lexer.origCol + 
@@ -172,10 +177,10 @@ public class Main {
 		try {
 			parser p = new parser();
 			p.setScanner(new Scanner(new FileReader(filename)));
-						
+			
+			System.out.println("[xic] Parsing");
 			Symbol s = p.parse();
 			Program result = (Program) s.value;
-			
 			
 			int index = filename.lastIndexOf('.');
 			if (index == -1) {
@@ -187,6 +192,8 @@ public class Main {
 			new GlobalPrettyPrinter(rmExtension + ".parsed");
 			result.prettyPrintNode();
 			GlobalPrettyPrinter.getInstance().flush();
+			
+			System.out.println("[xic] Parsed file saved in " + rmExtension);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

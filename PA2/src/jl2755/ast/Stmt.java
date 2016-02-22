@@ -1,8 +1,5 @@
 package jl2755.ast;
 
-import edu.cornell.cs.cs4120.util.CodeWriterSExpPrinter;
-import jl2755.GlobalPrettyPrinter;
-
 public class Stmt {
 	private NakedStmt nakedStmt;
 	private boolean hasSemicolon;

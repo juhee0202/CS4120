@@ -1,2 +1,2 @@
 #!/bin/bash
-java -jar /home/vagrant/shared/pa1/bin/jar/PA1.jar "$@"
+java -jar /home/vagrant/shared/pa2/bin/jar/Main.jar "$@"

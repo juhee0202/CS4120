@@ -52,12 +52,11 @@ public class ArrayType implements Type{
 				tempPrinter.printAtom("[]");
 			}
 			p_type.prettyPrintNode();
-			for (int i = 0; i < list.size(); i++){
-				tempPrinter.endList();
-				list.get(i).prettyPrintNode();
-				
-			}
 			for (int i = 0; i < bracketsWithContent.getNumBrackets(); i++){
+				tempPrinter.endList();
+			}
+			for (int i = list.size()-1; i >= 0; i--){
+				list.get(i).prettyPrintNode();
 				tempPrinter.endList();
 			}
 		}

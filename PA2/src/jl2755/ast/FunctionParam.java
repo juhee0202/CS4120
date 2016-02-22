@@ -25,15 +25,12 @@ public class FunctionParam {
 	
 	public void prettyPrintNode() {
 		CodeWriterSExpPrinter tempPrinter = GlobalPrettyPrinter.getInstance();
-		tempPrinter.startList();
 		if (index == 2755){
-			tempPrinter.endList();
 			return;
 		}
 		varDecl.prettyPrintNode();
 		if (index == 1) {
 			functionParam.prettyPrintNode();
-		}
-		tempPrinter.endList();
+		}	
 	}
 }

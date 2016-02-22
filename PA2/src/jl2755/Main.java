@@ -23,10 +23,11 @@ public class Main {
 
 	public static String destPath;
 	public static String srcPath;
+	public static BufferedWriter bw;
 	
 	public static void main(String[] args) {
 		
-		// parse command-line arguments 
+		// add command-line arguments 
 		Options options = new Options();
 		options.addOption("h", "help", false, 
 				"Print a synopsis of options.");
@@ -163,7 +164,7 @@ public class Main {
 			}
 
 			FileWriter fw = new FileWriter(file.getAbsoluteFile());
-			BufferedWriter bw = new BufferedWriter(fw);
+			bw = new BufferedWriter(fw);
 			bw.write(content);
 			bw.close();
 
@@ -175,19 +176,26 @@ public class Main {
 	
 	public static void parse(String filename) throws IOException {
 		try {
-			parser p = new parser();
-			p.setScanner(new Scanner(new FileReader(filename)));
-			
-			System.out.println("[xic] Parsing");
-			Symbol s = p.parse();
-			Program result = (Program) s.value;
-			
+			parser p = new parser(new Scanner(new FileReader(filename)));
+//			p.setScanner(new Scanner(new FileReader(filename)));
+		
 			int index = filename.lastIndexOf('.');
 			if (index == -1) {
 				index = filename.length();
 			}
 			
 			String rmExtension = destPath + filename.substring(0,index);
+			File file = new File(destPath + rmExtension + ".parsed");
+			if (!file.exists()) {
+				file.createNewFile();
+			}
+			FileWriter fw = new FileWriter(file.getAbsoluteFile());
+			bw = new BufferedWriter(fw);
+			
+			System.out.println("[xic] Parsing");
+			Symbol s = p.parse();
+			Program result = (Program) s.value;
+		
 			
 			new GlobalPrettyPrinter(rmExtension + ".parsed");
 			result.prettyPrintNode();
@@ -195,8 +203,16 @@ public class Main {
 			
 			System.out.println("[xic] Parsed file saved in " + rmExtension);
 		} catch (Exception e) {
-			e.printStackTrace();
+			return;
 		}
 	}
 	
+	public static void handleError(String msg, int line, int col) 
+			throws RuntimeException, IOException {
+		String errorMessage = line + ":" + col + " error:" + msg;
+//		System.out.println(errorMessage);
+		bw.write(errorMessage);
+		bw.close();
+		throw new RuntimeException("Parsing Failed.");
+	}
 }

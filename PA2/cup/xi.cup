@@ -2,6 +2,16 @@
 
 package jl2755;
 import jl2755.ast.*;
+import java.io.IOException;
+
+
+parser code  {: 
+  public void report_fatal_error(Object info, int line, int col) throws IOException {
+    // System.out.println(error);
+    String msg = (String)info;
+    Main.handleError(msg, line, col);
+  }
+:}
 
 /* Terminals */
 terminal String IDENTIFIER;
@@ -62,7 +72,7 @@ precedence left EQUAL, NOT_EQUAL;
 precedence left LT, LEQ, GT, GEQ;
 precedence left PLUS, MINUS; 
 precedence left TIMES, HIGH_MULT, DIVIDE, MODULO;
-precedence left UMINUS; // missing integer and logical negation (unary minus vs. binary minus)
+precedence left UMINUS, NOT; // missing integer and logical negation (unary minus vs. binary minus)
 precedence left OPEN_BRACKET, OPEN_PAREN;  // missing function call, []
 precedence nonassoc ELSE;     // to avoid "dangling else" problem
 precedence nonassoc SEMICOLON;
@@ -78,6 +88,8 @@ var_decl ::= identifier:id COLON type:t                             {: RESULT = 
              ;
 
 var_init ::= var_decl:vd GETS expr:expression                       {: RESULT = new VarInit(vd, expression); :}
+             |
+             error:e                                                {: parser.report_fatal_error("Invalid assignment operator.",eleft,eright); :}  
              ;
 
 tuple_init ::= UNDERSCORE tuple_decl_list:tdl GETS function_call:fc {: RESULT = new TupleInit(tdl, fc); :}
@@ -137,6 +149,8 @@ expr ::= constant:c                                                 {: RESULT = 
          function_call:fc                                           {: RESULT = fc; :}
          |
          OPEN_PAREN expr:expression CLOSE_PAREN                     {: RESULT = expression; :}
+         |
+         error:e                                                    {: parser.report_fatal_error("Invalid expression.",eleft,eright); :}
          ;
 
 constant ::= literal:l                                              {: RESULT = l; :}
@@ -214,6 +228,8 @@ array_element_list ::= expr:expression                              {: RESULT = 
                        ;
 
 array_element ::= identifier:id brackets_with_content:bwc           {: RESULT = new ArrayElement(id, bwc); :}
+                  |
+                  function_call:fc brackets_with_content:bwc        {: RESULT = new ArrayElement(fc, bwc); :}
                   ;
 
 stmt ::= naked_stmt:ns SEMICOLON                                    {: RESULT = new Stmt(ns, true); :}
@@ -315,4 +331,6 @@ use_id ::= USE identifier:id                                        {: RESULT = 
 program ::= function_decl_list:fdl                                  {: RESULT = new Program(fdl); :}
             |
             use_id:useidc function_decl_list:fdl                    {: RESULT = new Program(useidc, fdl); :}
+            |
+            error:e                                                 {: parser.report_fatal_error("Invalid start of a program.",eleft,eright); :}  
             ;

@@ -334,5 +334,5 @@ program ::= function_decl_list:fdl                                  {: RESULT = 
             |
             use_id:useidc function_decl_list:fdl                    {: RESULT = new Program(useidc, fdl); :}
             |
-            error:e                                                 {: Main.handleError("Invalid start of a program."); :}  
+            error:e                                                 {: Main.handleError("Unexpected token "); :}  
             ;

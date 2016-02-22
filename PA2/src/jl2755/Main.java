@@ -200,9 +200,7 @@ public class Main {
 			
 			new GlobalPrettyPrinter(rmExtension + ".parsed");
 			result.prettyPrintNode();
-			GlobalPrettyPrinter.getInstance().flush();
-			
-			System.out.println("[xic] Parsed file saved in " + rmExtension);
+			GlobalPrettyPrinter.getInstance().flush();			
 		} catch (Exception e) {
 			return;
 		}
@@ -214,7 +212,8 @@ public class Main {
 	
 	public static void handleError(String msg) 
 			throws RuntimeException, IOException {
-		String errorMessage = error.left + ":" + error.right + " error:" + msg;
+		String errorMessage = error.left + ":" + error.right + 
+				" error:" + msg + error.value;
 //		System.out.println(errorMessage);
 		bw.write(errorMessage);
 		bw.close();

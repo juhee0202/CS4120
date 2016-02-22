@@ -2070,7 +2070,7 @@ class CUP$parser$actions {
                 int eleft = CUP$parser$stack.peek().left;
                 int eright = CUP$parser$stack.peek().right;
                 Object e = CUP$parser$stack.peek().<Object> value();
-                 Main.handleError("Invalid start of a program."); 
+                 Main.handleError("Unexpected token "); 
                 CUP$parser$result = parser.getSymbolFactory().newSymbol("program",0, CUP$parser$stack.peek(), CUP$parser$stack.peek(), RESULT);
             }
             return CUP$parser$result;

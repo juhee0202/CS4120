@@ -1,2 +1,19 @@
 #!/bin/bash
-java -jar /home/vagrant/shared/pa1/bin/jar/PA1.jar "$@"
+# this is the xic script
+
+# absolute path to this file
+this=`readlink -e "$0"`
+
+# absolute path of this dir (http://stackoverflow.com/questions/4774054/reliable-way-for-a-bash-script-to-get-the-full-path-to-itself)
+pushd `dirname "$this"` > /dev/null
+dir=`pwd -P`
+popd > /dev/null
+
+# absolute path to jar
+compiler="$dir/bin/jar/Main.jar"
+
+java -jar "$compiler" "$@"
+
+# What we had before
+# #!/bin/bash
+# java -jar /home/vagrant/shared/pa1/bin/jar/PA1.jar "$@"

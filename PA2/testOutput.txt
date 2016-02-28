@@ -1,0 +1,108 @@
+Testpath "/home/vagrant/xth/tests/pa2/" specified.
+Test script: xthScript
+  xic-build: Cannot run program "/home/vagrant/shared/cs4120/pa2/xic-build" (in directory "/home/vagrant/shared/cs4120/pa2"): error=2, No such file or directory
+  Test collection: xic (Test --help)
+    []: Usage: xic [options] <source files>
+where possible options include
+  --help: Print a synopsis of options.
+  --lex: Generate output from lexical analysis.
+  --parse: Generate output from syntactic analysis.
+  -sourcepath: Specify where to find input source files.
+  -D: Specify where to place generated diagnostic files.
+OK
+  xic (Test --help): 1 out of 1 tests succeeded.
+  Test collection: xic (Test --lex)
+    ex1.xi: [xic] Lexing
+[xic] Lexing completed
+OK
+    ex2.xi: [xic] Lexing
+[xic] Lexing completed
+OK
+    spec1.xi: [xic] Lexing
+[xic] Lexing completed
+OK
+    spec2.xi: [xic] Lexing
+[xic] Lexing completed
+OK
+    spec3.xi: [xic] Lexing
+[xic] Lexing completed
+OK
+    gcd.xi: [xic] Lexing
+[xic] Lexing completed
+OK
+    ratadd.xi: [xic] Lexing
+[xic] Lexing completed
+OK
+    ratadduse.xi: [xic] Lexing
+[xic] Lexing completed
+OK
+    insertionsort.xi: [xic] Lexing
+[xic] Lexing completed
+OK
+    arrayinit.xi: [xic] Lexing
+[xic] Lexing completed
+OK
+    arrayinit2.xi: [xic] Lexing
+[xic] Lexing completed
+OK
+    mdarrays.xi: [xic] Lexing
+[xic] Lexing completed
+OK
+    add.xi: [xic] Lexing
+[xic] Lexing completed
+OK
+    beauty.xi: [xic] Lexing
+[xic] Lexing completed
+OK
+  xic (Test --lex): 14 out of 14 tests succeeded.
+  Test collection: xic (Test --parse)
+    ex1.xi: [xic] Parsing
+[xic] Parsing completed
+OK
+    ex2.xi: [xic] Parsing
+[xic] Parsing completed
+OK
+    ex3.xi: [xic] Parsing
+instead expected token classes are [EOF, IDENTIFIER, USE]
+ex3.xi
+OK
+    spec1.xi: [xic] Parsing
+[xic] Parsing completed
+OK
+    spec2.xi: [xic] Parsing
+[xic] Parsing completed
+OK
+    spec3.xi: [xic] Parsing
+[xic] Parsing completed
+OK
+    gcd.xi: [xic] Parsing
+[xic] Parsing completed
+OK
+    ratadd.xi: [xic] Parsing
+[xic] Parsing completed
+OK
+    ratadduse.xi: [xic] Parsing
+[xic] Parsing completed
+OK
+    insertionsort.xi: [xic] Parsing
+[xic] Parsing completed
+OK
+    arrayinit.xi: [xic] Parsing
+[xic] Parsing completed
+OK
+    arrayinit2.xi: [xic] Parsing
+[xic] Parsing completed
+OK
+    mdarrays.xi: [xic] Parsing
+[xic] Parsing completed
+OK
+    add.xi: [xic] Parsing
+instead expected token classes are [EOF, IDENTIFIER, USE]
+add.xi
+OK
+    beauty.xi: [xic] Parsing
+instead expected token classes are [EOF, IDENTIFIER, USE]
+beauty.xi
+OK
+  xic (Test --parse): 15 out of 15 tests succeeded.
+xthScript: 30 out of 31 tests succeeded.

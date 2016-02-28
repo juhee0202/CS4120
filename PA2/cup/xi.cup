@@ -40,9 +40,11 @@ non terminal Type type;
 non terminal TypeList type_list;
 non terminal ReturnType return_type;
 non terminal PrimitiveType primitive_type;
-non terminal ArrayType array_type;
+non terminal MixedArrayType mixed_array_type;
+non terminal EmptyArrayType empty_array_type;
 non terminal Brackets brackets;
-non terminal BracketsWithContent brackets_with_content;
+non terminal MixedBrackets mixed_brackets;
+non terminal IndexedBrackets indexed_brackets;
 non terminal Expr expr;
 non terminal Constant constant;
 non terminal Expr op_expr;
@@ -86,7 +88,9 @@ start with program;
 identifier ::= IDENTIFIER:id                                        {: RESULT = new Identifier(id); :}
                ;
 
-var_decl ::= identifier:id COLON type:t                             {: RESULT = new VarDecl(id, t); :}
+var_decl ::= identifier:id COLON mixed_array_type:mat               {: RESULT = new VarDecl(id, mat); :}
+             |
+             identifier:id COLON primitive_type:pt                  {: RESULT = new VarDecl(id, pt); :}
              ;
 
 var_init ::= var_decl:vd GETS expr:expression                       {: RESULT = new VarInit(vd, expression); :}
@@ -113,7 +117,7 @@ tuple_decl_list ::= COMMA var_decl:vd                               {: RESULT = 
 
 type ::= primitive_type:pt                                          {: RESULT = pt; :}
          | 
-         array_type:at                                              {: RESULT = at; :}
+         empty_array_type:at                                        {: RESULT = at; :}
          ;
 
 primitive_type ::= INT:i                                            {: RESULT = new PrimitiveType(0); :}         
@@ -121,24 +125,33 @@ primitive_type ::= INT:i                                            {: RESULT = 
                    BOOL:b                                           {: RESULT = new PrimitiveType(1); :}
                    ;
 
-array_type ::= primitive_type:pt brackets:b                         {: RESULT = new ArrayType(pt, b); :}
-               |
-               primitive_type:pt brackets_with_content:bwt          {: RESULT = new ArrayType(pt, bwt); :}
-               ;
+mixed_array_type ::= primitive_type:pt brackets:b                   {: RESULT = new MixedArrayType(pt, b); :}
+                     |
+                     primitive_type:pt mixed_brackets:mb            {: RESULT = new MixedArrayType(pt, mb); :}
+                     ;
+
+empty_array_type ::= primitive_type:pt brackets:b                   {: RESULT = new EmptyArrayType(pt, b); :}
+                     ;
 
 brackets ::= OPEN_BRACKET CLOSE_BRACKET                             {: RESULT = new Brackets(); :}
              | 
              OPEN_BRACKET CLOSE_BRACKET brackets:b                  {: RESULT = new Brackets(b); :}
              ;
 
-brackets_with_content ::= OPEN_BRACKET expr:e CLOSE_BRACKET         {: RESULT = new BracketsWithContent(e); :}
+mixed_brackets ::=        OPEN_BRACKET expr:e CLOSE_BRACKET         {: RESULT = new MixedBrackets(e); :}
                           |
                           OPEN_BRACKET expr:e CLOSE_BRACKET 
-                          brackets_with_content:bwc                 {: RESULT = new BracketsWithContent(e, bwc); :}
+                          mixed_brackets:mb                         {: RESULT = new MixedBrackets(e, mb); :}
                           |
                           OPEN_BRACKET expr:e 
-                          CLOSE_BRACKET brackets:b                  {: RESULT = new BracketsWithContent(e, b); :}
+                          CLOSE_BRACKET brackets:b                  {: RESULT = new MixedBrackets(e, b); :}
                           ;
+
+indexed_brackets ::= OPEN_BRACKET expr:e CLOSE_BRACKET              {: RESULT = new IndexedBrackets(e); :}
+                     |
+                     OPEN_BRACKET expr:e CLOSE_BRACKET
+                     indexed_brackets:ib                            {: RESULT = new IndexedBrackets(e, ib); :}
+                     ;
 
 expr ::= constant:c                                                 {: RESULT = c; :}
          |
@@ -229,9 +242,11 @@ array_element_list ::= expr:expression                              {: RESULT = 
                                                                     {: RESULT = new ArrayElementList(); :}
                        ;
 
-array_element ::= identifier:id brackets_with_content:bwc           {: RESULT = new ArrayElement(id, bwc); :}
+array_element ::= identifier:id indexed_brackets:ib                 {: RESULT = new ArrayElement(id, ib); :}
                   |
-                  function_call:fc brackets_with_content:bwc        {: RESULT = new ArrayElement(fc, bwc); :}
+                  function_call:fc indexed_brackets:ib              {: RESULT = new ArrayElement(fc, ib); :}
+                  |
+                  array_literal:al indexed_brackets:ib              {: RESULT = new ArrayElement(al, ib); :}
                   ;
 
 stmt ::= naked_stmt:ns SEMICOLON                                    {: RESULT = new Stmt(ns, true); :}
@@ -258,7 +273,11 @@ naked_stmt ::= assignment_stmt:ass                                  {: RESULT = 
 
 assignment_stmt ::= identifier:id GETS expr:expression              {: RESULT = new AssignmentStmt(id, expression); :}
                     |
-                    array_element:ae GETS expr:expression           {: RESULT = new AssignmentStmt(ae, expression); :}
+                    identifier:id indexed_brackets:ib GETS 
+                    expr:expression                                 {: RESULT = new AssignmentStmt(id, ib, expression); :}
+                    |
+                    function_call:fc indexed_brackets:ib GETS 
+                    expr:expression                                 {: RESULT = new AssignmentStmt(fc, ib, expression); :}
                     ;
 
 if_stmt ::= IF OPEN_PAREN expr:e CLOSE_PAREN stmt:s                 {: RESULT = new IfStmt(e, s); :}
@@ -302,9 +321,10 @@ function_decl_list ::= function_decl:fd function_decl_list:fdl      {: RESULT = 
                                                                     {: RESULT = new FunctionDeclList(); :}
                        ;
 
-function_param ::= var_decl:vd                                      {: RESULT = new FunctionParam(vd); :}
+function_param ::= identifier:id COLON type:t                       {: RESULT = new FunctionParam(id, t); :}
                    |
-                   var_decl:vd COMMA function_param:fp              {: RESULT = new FunctionParam(vd, fp); :}
+                   identifier:id COLON type:t COMMA 
+                   function_param:fp                                {: RESULT = new FunctionParam(id, t, fp); :}
                    |
                                                                     {: RESULT = new FunctionParam(); :}
                    ;

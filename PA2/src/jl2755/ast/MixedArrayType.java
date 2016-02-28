@@ -6,28 +6,26 @@ import java.util.List;
 import edu.cornell.cs.cs4120.util.CodeWriterSExpPrinter;
 import jl2755.GlobalPrettyPrinter;
 
-public class ArrayType implements Type{
+public class MixedArrayType {
 	
 	private PrimitiveType p_type;
-	private BracketsWithContent bracketsWithContent;
+	private MixedBrackets mixedBrackets;
 	private Brackets brackets;
-	private ArrayType arrayType;
+	private MixedArrayType arrayType;
 	private PureContentArrayType pureArray;
 	private int index;
 	
-	public ArrayType(PrimitiveType p_type, Brackets brackets) {
+	public MixedArrayType(PrimitiveType p_type, Brackets brackets) {
 		this.p_type = p_type;
 		this.brackets = brackets;
 		index = 0;
 	}
 	
-	public ArrayType(PrimitiveType p_type, 
-					 BracketsWithContent bracketsWithContent) {
+	public MixedArrayType(PrimitiveType p_type, MixedBrackets mb) {
 		this.p_type = p_type;
-		this.bracketsWithContent = bracketsWithContent;
+		this.mixedBrackets = mb;
 		index = 1;
 	}
-
 	
 	public void prettyPrintNode() {
 		int n = 0;
@@ -41,18 +39,21 @@ public class ArrayType implements Type{
 				tempPrinter.printAtom("[]");
 			}
 			p_type.prettyPrintNode();
+			for (int i = 0; i < n; i++) {
+				tempPrinter.endList();
+			}
 		} else if (index == 1) {
-			list = bracketsWithContent.getContent();
+			list = mixedBrackets.getContent();
 			for (int i = 0; i < list.size(); i++) {
 				tempPrinter.startList();
 				tempPrinter.printAtom("[]");
 			}
-			for (int i = 0; i < bracketsWithContent.getNumBrackets(); i++){
+			for (int i = 0; i < mixedBrackets.getNumBrackets(); i++){
 				tempPrinter.startList();
 				tempPrinter.printAtom("[]");
 			}
 			p_type.prettyPrintNode();
-			for (int i = 0; i < bracketsWithContent.getNumBrackets(); i++){
+			for (int i = 0; i < mixedBrackets.getNumBrackets(); i++){
 				tempPrinter.endList();
 			}
 			for (int i = list.size()-1; i >= 0; i--){
@@ -60,10 +61,5 @@ public class ArrayType implements Type{
 				tempPrinter.endList();
 			}
 		}
-		if (index == 0) {
-			for (int i = 0; i < n; i++) {
-				tempPrinter.endList();
-			}
-		} 
 	}
 }

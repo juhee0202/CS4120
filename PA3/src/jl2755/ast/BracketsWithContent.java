@@ -38,11 +38,15 @@ public class BracketsWithContent {
 		return list;
 	}
 	
-	public int getNumBrackets(){
+	public int getNumBrackets() {
 		if (brackets == null){
 			return 0;
 		}
 		return brackets.getNumBrackets();
+	}
+	
+	public int getTotalNumBrackets() {
+		return this.getContent().size() + this.getNumBrackets();
 	}
 	
 	public void prettyPrintNode() {

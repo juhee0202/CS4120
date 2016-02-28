@@ -1,5 +1,7 @@
 package jl2755.ast;
 
+import java.util.List;
+
 import edu.cornell.cs.cs4120.util.CodeWriterSExpPrinter;
 import jl2755.GlobalPrettyPrinter;
 
@@ -9,14 +11,20 @@ public class FunctionDecl {
 	private ReturnType returnType;
 	private BlockStmt blockStmt;
 	
-	public FunctionDecl(Identifier s, 
-						FunctionParam fp,
-						ReturnType rt,
-						BlockStmt bs) {
+	public FunctionDecl(Identifier s, FunctionParam fp,ReturnType rt, 
+					    BlockStmt bs) {
 		identifier = s;
 		functionParam = fp;
 		returnType = rt;
 		blockStmt = bs;
+	}
+	
+	public List<VarDecl> getParams() {
+		return functionParam.getParams();
+	}
+	
+	public List<Type> getReturnTypes() {
+		return returnType.getReturnTypes();
 	}
 	
 	public void prettyPrintNode() {

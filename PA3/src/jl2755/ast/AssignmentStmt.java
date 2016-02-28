@@ -4,7 +4,11 @@ import java.util.List;
 
 import edu.cornell.cs.cs4120.util.CodeWriterSExpPrinter;
 import jl2755.GlobalPrettyPrinter;
+import jl2755.visitor.Visitor;
 
+/**
+ * Class that represents the assignment of pre-declared variables.
+ */
 public class AssignmentStmt implements NakedStmt {
 	private Identifier identifier;
 	private ArrayElement arrElem;
@@ -34,5 +38,42 @@ public class AssignmentStmt implements NakedStmt {
 		}
 		expr.prettyPrintNode();
 		tempPrinter.endList();
+	}
+	
+	@Override
+	public void accept(Visitor v) {
+		v.visit(this);
+	}
+
+	public Identifier getIdentifier() {
+		return identifier;
+	}
+
+	public void setIdentifier(Identifier identifier) {
+		this.identifier = identifier;
+	}
+
+	public ArrayElement getArrElem() {
+		return arrElem;
+	}
+
+	public void setArrElem(ArrayElement arrElem) {
+		this.arrElem = arrElem;
+	}
+
+	public Expr getExpr() {
+		return expr;
+	}
+
+	public void setExpr(Expr expr) {
+		this.expr = expr;
+	}
+
+	public int getIndex() {
+		return index;
+	}
+
+	public void setIndex(int index) {
+		this.index = index;
 	}
 }

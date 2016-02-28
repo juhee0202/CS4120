@@ -1,7 +1,7 @@
 ------- CUP v0.11b 20150326 Parser Generation Summary -------
   0 errors and 0 warnings
-  43 terminals, 35 non-terminals, and 108 productions declared, 
-  producing 178 unique parse states.
+  43 terminals, 37 non-terminals, and 114 productions declared, 
+  producing 190 unique parse states.
   0 terminals declared but not used.
   0 non-terminals declared but not used.
   0 productions never reduced.

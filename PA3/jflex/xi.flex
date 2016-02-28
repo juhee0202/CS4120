@@ -1,5 +1,7 @@
 /* Xi language lexer specification */
 
+package jl2755;
+
 import java_cup.runtime.*;
 
 %%
@@ -132,6 +134,9 @@ SingleCharacter = [^\n\'\\\"]
   "*>>"                          { return symbol(sym.HIGH_MULT,"*>>"); }
   "_"                            { return symbol(sym.UNDERSCORE,"_"); }
   
+  /* comments */
+  {Comment}                      { /* ignore */ }
+
   /* string literal */
   \"                             { yybegin(STRING); string.setLength(0); origLine = yyline+1; origCol = yycolumn+1; }
 
@@ -141,9 +146,6 @@ SingleCharacter = [^\n\'\\\"]
   /* numeric literals */
   "-9223372036854775808"         { return symbol(sym.INTEGER_LITERAL, new Long(Long.MIN_VALUE)); }
   {IntegerLiteral}               { return symbol(sym.INTEGER_LITERAL, new Long(yytext())); }
-  
-  /* comments */
-  {Comment}                      { /* ignore */ }
 
   /* whitespace */
   {WhiteSpace}                   { /* ignore */ }
@@ -160,7 +162,8 @@ SingleCharacter = [^\n\'\\\"]
   /* escape sequences */
   "\\n"                          { string.append( "\\n" ); }
   "\\'"                          { string.append( "\\'" ); }
-  "\\\\"                         { string.append( "\\" ); }
+  "\\\\"                         { string.append( "\\\\" ); }
+  "\\\""                         { string.append( "\\\"" ); }
   \\[x]{PrintableHexLiteral}     { string.append( parseHex(yytext()) ); }
   \\[x]{HexLiteral}              { string.append( yytext() ); }
   
@@ -175,7 +178,8 @@ SingleCharacter = [^\n\'\\\"]
   /* escape sequences */
   "\\n"\'                        { yybegin(YYINITIAL); return symbol(sym.CHARACTER_LITERAL, origLine, origCol, "\\n"); }
   "\\'"\'                        { yybegin(YYINITIAL); return symbol(sym.CHARACTER_LITERAL, origLine, origCol, "\\'"); }
-  "\\\\"\'                       { yybegin(YYINITIAL); return symbol(sym.CHARACTER_LITERAL, origLine, origCol, "\\"); }
+  "\\\\"\'                       { yybegin(YYINITIAL); return symbol(sym.CHARACTER_LITERAL, origLine, origCol, "\\\\"); }
+  "\\\""\'                       { yybegin(YYINITIAL); return symbol(sym.CHARACTER_LITERAL, origLine, origCol, "\\\""); }
   \\[x]{PrintableHexLiteral}\'   { yybegin(YYINITIAL); return symbol(sym.CHARACTER_LITERAL, origLine, origCol, parseHex(yytext().substring(0, yylength()-1))); }  
   \\[x]{HexLiteral}\'            { yybegin(YYINITIAL); return symbol(sym.CHARACTER_LITERAL, origLine, origCol, yytext().substring(0, yylength()-1)); }
   

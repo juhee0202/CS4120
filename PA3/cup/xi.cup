@@ -1,0 +1,338 @@
+// A stub for a Xi CUP specification.
+
+package jl2755;
+import jl2755.ast.*;
+import java.io.IOException;
+
+
+parser code  {: 
+  public void report_fatal_error(String msg, Object info) {
+    report_error(msg, info);
+  }
+
+  public void report_error(String msg, Object info) {
+    Main.setToken((java_cup.runtime.Symbol)info);
+  }
+:}
+
+/* Terminals */
+terminal String IDENTIFIER;
+terminal String STRING_LITERAL;
+terminal Character CHARACTER_LITERAL;
+terminal Long INTEGER_LITERAL;
+terminal Boolean TRUE, FALSE;
+// keywords
+terminal IF, ELSE, WHILE, RETURN, USE, PLUS, MINUS, UMINUS, TIMES, HIGH_MULT, INT, BOOL,
+  DIVIDE, MODULO, NOT, LT, LEQ, GT, GEQ, AND, OR, EQUAL, NOT_EQUAL, GETS,
+  OPEN_BRACKET, CLOSE_BRACKET, OPEN_PAREN, CLOSE_PAREN, OPEN_BRACE, CLOSE_BRACE,
+  COLON, COMMA, SEMICOLON, UNDERSCORE, LENGTH;
+
+/* Nonterminals */
+// You might want to add types to these declarations.
+non terminal Program program;
+// Add more nonterminals here...
+non terminal Identifier identifier;
+non terminal VarInit var_init;
+non terminal VarDecl var_decl;
+non terminal TupleInit tuple_init;
+non terminal TupleDeclList tuple_decl_list;
+non terminal Type type;
+non terminal TypeList type_list;
+non terminal ReturnType return_type;
+non terminal PrimitiveType primitive_type;
+non terminal ArrayType array_type;
+non terminal Brackets brackets;
+non terminal BracketsWithContent brackets_with_content;
+non terminal Expr expr;
+non terminal Constant constant;
+non terminal Expr op_expr;
+non terminal Literal literal;
+non terminal UseId use_id;
+non terminal FunctionParam function_param;
+non terminal FunctionDecl function_decl;
+non terminal FunctionDeclList function_decl_list;
+non terminal FunctionCall function_call;
+non terminal FunctionArg function_arg;
+non terminal ArrayLiteral array_literal;
+non terminal ArrayElementList array_element_list;
+non terminal ArrayElement array_element;
+non terminal NakedStmt naked_stmt;
+non terminal Stmt stmt;
+non terminal AssignmentStmt assignment_stmt;
+non terminal IfStmt if_stmt;
+non terminal WhileStmt while_stmt;
+non terminal ReturnStmt return_stmt;
+non terminal BlockStmt block_stmt;
+non terminal StmtList stmt_list;
+non terminal ReturnList return_list;
+
+
+/* Precedences */
+precedence left OR;
+precedence left AND;
+precedence left EQUAL, NOT_EQUAL;
+precedence left LT, LEQ, GT, GEQ;
+precedence left PLUS, MINUS; 
+precedence left TIMES, HIGH_MULT, DIVIDE, MODULO;
+precedence left UMINUS, NOT; // missing integer and logical negation (unary minus vs. binary minus)
+precedence left OPEN_BRACKET, OPEN_PAREN;  // missing function call, []
+precedence nonassoc ELSE;     // to avoid "dangling else" problem
+precedence nonassoc SEMICOLON;
+
+
+start with program;
+
+/* Grammar */
+identifier ::= IDENTIFIER:id                                        {: RESULT = new Identifier(id); :}
+               ;
+
+var_decl ::= identifier:id COLON type:t                             {: RESULT = new VarDecl(id, t); :}
+             ;
+
+var_init ::= var_decl:vd GETS expr:expression                       {: RESULT = new VarInit(vd, expression); :}
+             |
+             error:e                                                {: Main.handleError("Invalid assignment operator."); :}  
+             ;
+
+tuple_init ::= UNDERSCORE tuple_decl_list:tdl GETS function_call:fc {: RESULT = new TupleInit(tdl, fc); :}
+               |
+               var_decl:vd tuple_decl_list:tdl 
+               GETS function_call:fc                                {: RESULT = new TupleInit(vd, tdl, fc); :}
+               |
+               UNDERSCORE GETS function_call:fc                     {: RESULT = new TupleInit(fc); :}
+               ;
+
+tuple_decl_list ::= COMMA var_decl:vd                               {: RESULT = new TupleDeclList(vd, false); :}
+                    |
+                    COMMA var_decl:vd tuple_decl_list:tdl           {: RESULT = new TupleDeclList(vd, tdl, false); :}
+                    |
+                    COMMA UNDERSCORE                                {: RESULT = new TupleDeclList(true); :}
+                    |
+                    COMMA UNDERSCORE tuple_decl_list:tdl            {: RESULT = new TupleDeclList(tdl, true); :}
+                    ;
+
+type ::= primitive_type:pt                                          {: RESULT = pt; :}
+         | 
+         array_type:at                                              {: RESULT = at; :}
+         ;
+
+primitive_type ::= INT:i                                            {: RESULT = new PrimitiveType(0); :}         
+                   | 
+                   BOOL:b                                           {: RESULT = new PrimitiveType(1); :}
+                   ;
+
+array_type ::= primitive_type:pt brackets:b                         {: RESULT = new ArrayType(pt, b); :}
+               |
+               primitive_type:pt brackets_with_content:bwt          {: RESULT = new ArrayType(pt, bwt); :}
+               ;
+
+brackets ::= OPEN_BRACKET CLOSE_BRACKET                             {: RESULT = new Brackets(); :}
+             | 
+             OPEN_BRACKET CLOSE_BRACKET brackets:b                  {: RESULT = new Brackets(b); :}
+             ;
+
+brackets_with_content ::= OPEN_BRACKET expr:e CLOSE_BRACKET         {: RESULT = new BracketsWithContent(e); :}
+                          |
+                          OPEN_BRACKET expr:e CLOSE_BRACKET 
+                          brackets_with_content:bwc                 {: RESULT = new BracketsWithContent(e, bwc); :}
+                          |
+                          OPEN_BRACKET expr:e 
+                          CLOSE_BRACKET brackets:b                  {: RESULT = new BracketsWithContent(e, b); :}
+                          ;
+
+expr ::= constant:c                                                 {: RESULT = c; :}
+         |
+         op_expr:oe                                                 {: RESULT = oe; :}
+         |
+         identifier:id                                              {: RESULT = id; :}
+         |
+         array_element:ae                                           {: RESULT = ae; :}
+         |
+         function_call:fc                                           {: RESULT = fc; :}
+         |
+         OPEN_PAREN expr:expression CLOSE_PAREN                     {: RESULT = expression; :}
+         |
+         error:e                                                    {: Main.handleError("Invalid expression."); :}
+         ;
+
+constant ::= literal:l                                              {: RESULT = l; :}
+             | 
+             array_literal:al                                       {: RESULT = al; :}
+             ;
+
+op_expr ::= MINUS expr:e                                            {: RESULT = new UnaryExpr(e, UnaryOp.INT_NEG); :} %prec UMINUS
+            |
+            NOT expr:e                                              {: RESULT = new UnaryExpr(e, UnaryOp.LOG_NEG); :}
+            |
+            expr:e1 PLUS expr:e2                                    {: RESULT = new BinaryExpr(e1, e2, BinaryOp.PLUS); :}
+            |
+            expr:e1 MINUS expr:e2                                   {: RESULT = new BinaryExpr(e1, e2, BinaryOp.MINUS); :}
+            |
+            expr:e1 TIMES expr:e2                                   {: RESULT = new BinaryExpr(e1, e2, BinaryOp.TIMES); :}
+            |
+            expr:e1 HIGH_MULT expr:e2                               {: RESULT = new BinaryExpr(e1, e2, BinaryOp.HIGH_MULT); :}
+            |
+            expr:e1 DIVIDE expr:e2                                  {: RESULT = new BinaryExpr(e1, e2, BinaryOp.DIVIDE); :}
+            |
+            expr:e1 MODULO expr:e2                                  {: RESULT = new BinaryExpr(e1, e2, BinaryOp.MODULO); :}
+            |
+            expr:e1 NOT_EQUAL expr:e2                               {: RESULT = new BinaryExpr(e1, e2, BinaryOp.NOT_EQUAL); :}
+            |
+            expr:e1 EQUAL expr:e2                                   {: RESULT = new BinaryExpr(e1, e2, BinaryOp.EQUAL); :}
+            |
+            expr:e1 LT expr:e2                                      {: RESULT = new BinaryExpr(e1, e2, BinaryOp.LT); :}
+            |
+            expr:e1 LEQ expr:e2                                     {: RESULT = new BinaryExpr(e1, e2, BinaryOp.LEQ); :}
+            |
+            expr:e1 GT expr:e2                                      {: RESULT = new BinaryExpr(e1, e2, BinaryOp.GT); :}
+            |
+            expr:e1 GEQ expr:e2                                     {: RESULT = new BinaryExpr(e1, e2, BinaryOp.GEQ); :}
+            |
+            expr:e1 AND expr:e2                                     {: RESULT = new BinaryExpr(e1, e2, BinaryOp.AND); :}
+            |
+            expr:e1 OR expr:e2                                      {: RESULT = new BinaryExpr(e1, e2, BinaryOp.OR); :}
+            ;
+
+literal ::= INTEGER_LITERAL:il                                      {: RESULT = new Literal(il); :}
+            |
+            CHARACTER_LITERAL:cl                                    {: RESULT = new Literal(cl); :}
+            |
+            STRING_LITERAL:sl                                       {: RESULT = new Literal(sl); :}
+            |
+            TRUE                                                    {: RESULT = new Literal(true); :}
+            | 
+            FALSE                                                   {: RESULT = new Literal(false); :}
+            ;
+
+function_call ::= identifier:id OPEN_PAREN 
+                  function_arg:fa CLOSE_PAREN                       {: RESULT = new FunctionCall(id, fa); :}
+                  |
+                  identifier:id OPEN_PAREN CLOSE_PAREN              {: RESULT = new FunctionCall(id, false); :}
+                  |
+                  LENGTH OPEN_PAREN identifier:id CLOSE_PAREN       {: RESULT = new FunctionCall(id, true); :}
+                  |
+                  LENGTH OPEN_PAREN array_element:ae CLOSE_PAREN    {: RESULT = new FunctionCall(ae); :}
+                  ;
+
+function_arg ::= expr:expression                                    {: RESULT = new FunctionArg(expression); :}
+                 |
+                 expr:expression COMMA function_arg:fa              {: RESULT = new FunctionArg(expression, fa); :}
+                 ;
+
+array_literal ::= OPEN_BRACE array_element_list:ael CLOSE_BRACE     {: RESULT = new ArrayLiteral(ael); :}
+                  ;
+
+array_element_list ::= expr:expression                              {: RESULT = new ArrayElementList(expression); :}
+                       |
+                       expr:expression COMMA array_element_list:ael {: RESULT = new ArrayElementList(expression,ael); :}
+                       |
+                                                                    {: RESULT = new ArrayElementList(); :}
+                       ;
+
+array_element ::= identifier:id brackets_with_content:bwc           {: RESULT = new ArrayElement(id, bwc); :}
+                  |
+                  function_call:fc brackets_with_content:bwc        {: RESULT = new ArrayElement(fc, bwc); :}
+                  ;
+
+stmt ::= naked_stmt:ns SEMICOLON                                    {: RESULT = new Stmt(ns, true); :}
+         |
+         naked_stmt:ns                                              {: RESULT = new Stmt(ns, false); :}
+         ;
+
+naked_stmt ::= assignment_stmt:ass                                  {: RESULT = ass; :}
+               |
+               if_stmt:is                                           {: RESULT = is; :}
+               |
+               while_stmt:ws                                        {: RESULT = ws; :}
+               |
+               function_call:fc                                     {: RESULT = fc; :}
+               |
+               block_stmt:bs                                        {: RESULT = bs; :}
+               |
+               var_decl:vd                                          {: RESULT = vd; :}
+               | 
+               var_init:vi                                          {: RESULT = vi; :}
+               | 
+               tuple_init:ti                                        {: RESULT = ti; :}
+               ;
+
+assignment_stmt ::= identifier:id GETS expr:expression              {: RESULT = new AssignmentStmt(id, expression); :}
+                    |
+                    array_element:ae GETS expr:expression           {: RESULT = new AssignmentStmt(ae, expression); :}
+                    ;
+
+if_stmt ::= IF OPEN_PAREN expr:e CLOSE_PAREN stmt:s                 {: RESULT = new IfStmt(e, s); :}
+            | 
+            IF OPEN_PAREN expr:e CLOSE_PAREN stmt:s1 ELSE stmt:s2   {: RESULT = new IfStmt(e, s1, s2); :}
+            ;
+
+while_stmt ::= WHILE OPEN_PAREN expr:expression CLOSE_PAREN stmt:s  {: RESULT = new WhileStmt(expression, s); :}
+               ;
+
+return_stmt ::= RETURN                                              {: RESULT = new ReturnStmt(); :}
+                |
+                RETURN return_list:rl                               {: RESULT = new ReturnStmt(rl); :}
+                |
+                RETURN SEMICOLON                                    {: RESULT = new ReturnStmt(); :}
+                |
+                RETURN return_list:rl SEMICOLON                     {: RESULT = new ReturnStmt(rl); :}
+                ;
+
+return_list ::= expr:e                                              {: RESULT = new ReturnList(e); :}
+                |
+                expr:e COMMA return_list:rl                         {: RESULT = new ReturnList(e, rl); :}
+                ;
+
+function_decl ::= identifier:id OPEN_PAREN function_param:fp 
+                  CLOSE_PAREN return_type:rt block_stmt:bs          {: RESULT = new FunctionDecl(id, fp, rt, bs); :}
+                  ;
+
+return_type ::= COLON type_list:tl                                  {: RESULT = new ReturnType(tl); :}
+                |                       
+                                                                    {: RESULT = new ReturnType(); :}
+                ;
+
+type_list ::= type:t                                                {: RESULT = new TypeList(t); :}
+              | 
+              type:t COMMA type_list:tl                             {: RESULT = new TypeList(t, tl); :}
+              ;
+
+function_decl_list ::= function_decl:fd function_decl_list:fdl      {: RESULT = new FunctionDeclList(fd, fdl); :}
+                       |                       
+                                                                    {: RESULT = new FunctionDeclList(); :}
+                       ;
+
+function_param ::= var_decl:vd                                      {: RESULT = new FunctionParam(vd); :}
+                   |
+                   var_decl:vd COMMA function_param:fp              {: RESULT = new FunctionParam(vd, fp); :}
+                   |
+                                                                    {: RESULT = new FunctionParam(); :}
+                   ;
+
+block_stmt ::= OPEN_BRACE CLOSE_BRACE                               {: RESULT = new BlockStmt(); :}
+               |
+               OPEN_BRACE stmt_list:sl CLOSE_BRACE                  {: RESULT = new BlockStmt(sl); :}
+               |
+               OPEN_BRACE stmt_list:sl return_stmt:rs CLOSE_BRACE   {: RESULT = new BlockStmt(sl, rs); :}
+               ;
+
+stmt_list ::= stmt:s                                                {: RESULT = new StmtList(s); :}
+              |
+              stmt:s stmt_list:sl                                   {: RESULT = new StmtList(s, sl); :}
+              ;
+
+use_id ::= USE identifier:id                                        {: RESULT = new UseId(id, false); :}
+           |  
+           USE identifier:id SEMICOLON                              {: RESULT = new UseId(id, true); :}
+           |
+           USE identifier:id use_id:ui                              {: RESULT = new UseId(id, ui, false); :}
+           |
+           USE identifier:id SEMICOLON use_id:ui                    {: RESULT = new UseId(id, ui, true); :}
+           ;
+
+program ::= function_decl_list:fdl                                  {: RESULT = new Program(fdl); :}
+            |
+            use_id:useidc function_decl_list:fdl                    {: RESULT = new Program(useidc, fdl); :}
+            |
+            error:e                                                 {: Main.handleError("Unexpected token "); :}  
+            ;

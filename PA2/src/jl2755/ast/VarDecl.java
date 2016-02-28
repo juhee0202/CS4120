@@ -5,18 +5,32 @@ import jl2755.GlobalPrettyPrinter;
 
 public class VarDecl implements NakedStmt {
 	private Identifier identifier;
-	private Type type;
+	private MixedArrayType mixedArrayType;
+	private PrimitiveType primitiveType;
+	private int index;
 	
-	public VarDecl(Identifier id, Type t) {
+	public VarDecl(Identifier id, MixedArrayType mat) {
 		identifier = id;
-		type = t;
+		mixedArrayType = mat;
+		index = 0;
 	}
 	
+	public VarDecl(Identifier id, PrimitiveType pt) {
+		identifier = id;
+		primitiveType = pt;
+		index = 1;
+	}
+
 	public void prettyPrintNode() {
 		CodeWriterSExpPrinter tempPrinter = GlobalPrettyPrinter.getInstance();
 		tempPrinter.startList();
 		tempPrinter.printAtom(identifier.toString());
-		type.prettyPrintNode();
+		if (index == 0){
+			mixedArrayType.prettyPrintNode();
+		}
+		else{
+			primitiveType.prettyPrintNode();
+		}
 		tempPrinter.endList();
 	}
 }

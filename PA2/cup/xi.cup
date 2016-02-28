@@ -141,7 +141,7 @@ brackets ::= OPEN_BRACKET CLOSE_BRACKET                             {: RESULT = 
 mixed_brackets ::=        OPEN_BRACKET expr:e CLOSE_BRACKET         {: RESULT = new MixedBrackets(e); :}
                           |
                           OPEN_BRACKET expr:e CLOSE_BRACKET 
-                          mixed_brackets:mb                         {: RESULT = new MixedBrackets(e, bwc); :}
+                          mixed_brackets:mb                         {: RESULT = new MixedBrackets(e, mb); :}
                           |
                           OPEN_BRACKET expr:e 
                           CLOSE_BRACKET brackets:b                  {: RESULT = new MixedBrackets(e, b); :}
@@ -274,7 +274,7 @@ naked_stmt ::= assignment_stmt:ass                                  {: RESULT = 
 assignment_stmt ::= identifier:id GETS expr:expression              {: RESULT = new AssignmentStmt(id, expression); :}
                     |
                     identifier:id indexed_brackets:ib GETS 
-                    expr:expression                                 {: RESULT = new AssignmentStmt(ae, expression); :}
+                    expr:expression                                 {: RESULT = new AssignmentStmt(id, ib, expression); :}
                     |
                     function_call:fc indexed_brackets:ib GETS 
                     expr:expression                                 {: RESULT = new AssignmentStmt(fc, ib, expression); :}

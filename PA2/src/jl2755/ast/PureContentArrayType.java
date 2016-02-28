@@ -8,12 +8,12 @@ import jl2755.GlobalPrettyPrinter;
 
 public class PureContentArrayType {
 	private PrimitiveType primitiveType;
-	private BracketsWithContent bracketsWithContent;
+	private MixedBrackets mixedBrackets;
 	
 	public PureContentArrayType(PrimitiveType argPrim,
-								BracketsWithContent argBra){
+								MixedBrackets argBra){
 		primitiveType = argPrim;
-		bracketsWithContent = argBra;
+		mixedBrackets = argBra;
 	}
 	
 	public PrimitiveType getPrimitiveType(){
@@ -21,13 +21,13 @@ public class PureContentArrayType {
 	}
 	
 	public List<Expr> getBracketsWithContent(){
-		return bracketsWithContent.getContent();
+		return mixedBrackets.getContent();
 	}
 	
 	public void prettyPrintToNode(){
 		List<Expr> list = new ArrayList<Expr>();
 		CodeWriterSExpPrinter tempPrinter = GlobalPrettyPrinter.getInstance();
-		list = bracketsWithContent.getContent();
+		list = mixedBrackets.getContent();
 		for (int i = 0; i < list.size(); i++) {
 			tempPrinter.startList();
 			tempPrinter.printAtom("[]");

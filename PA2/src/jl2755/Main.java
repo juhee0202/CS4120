@@ -202,6 +202,8 @@ public class Main {
 			GlobalPrettyPrinter.getInstance().flush();		
 			System.out.println("[xic] Parsing completed");
 		} catch (Exception e) {
+//			e.printStackTrace();
+//			System.out.println(filename);
 			return;
 		}
 	}

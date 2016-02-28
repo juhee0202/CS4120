@@ -8,31 +8,33 @@ import jl2755.GlobalPrettyPrinter;
 public class ArrayElement implements Expr {
 	private Identifier identifier;
 	private FunctionCall functionCall;
-	private BracketsWithContent bracketsWithContent;
-	private Brackets brackets;
+	private IndexedBrackets indexedBrackets;
+	private ArrayLiteral arrayLiteral;
 	private int index;
 	
-	public ArrayElement(Identifier id, BracketsWithContent bwc) {
+	public ArrayElement(Identifier id, IndexedBrackets ib) {
 		identifier = id;
-		bracketsWithContent = bwc;
+		indexedBrackets = ib;
 		index = 0;
 	}
 	
-	public ArrayElement(FunctionCall fc, BracketsWithContent bwc) {
+	public ArrayElement(FunctionCall fc, IndexedBrackets ib) {
 		functionCall = fc;
-		bracketsWithContent = bwc;
+		indexedBrackets = ib;
 		index = 1;
 	}		
+	
+	public ArrayElement(ArrayLiteral al, IndexedBrackets ib) {
+		arrayLiteral = al;
+		indexedBrackets = ib;
+		index = 2;
+	}
 	
 	public void prettyPrintNode() {
 		CodeWriterSExpPrinter tempPrinter = GlobalPrettyPrinter.getInstance();
 		if (index == 0){
-			List<Expr> list = bracketsWithContent.getContent();
-			for (int i = 0; i < list.size(); i++) {
-				tempPrinter.startList();
-				tempPrinter.printAtom("[]");
-			}
-			for (int i = 0; i < bracketsWithContent.getNumBrackets(); i++){
+			List<Expr> list = indexedBrackets.getContent();
+			for (int i = 0; i < indexedBrackets.getNumBrackets(); i++){
 				tempPrinter.startList();
 				tempPrinter.printAtom("[]");
 			}
@@ -41,17 +43,10 @@ public class ArrayElement implements Expr {
 				list.get(i).prettyPrintNode();
 				tempPrinter.endList();
 			}
-			for (int i = 0; i < bracketsWithContent.getNumBrackets(); i++){
-				tempPrinter.endList();
-			}
 		}
 		if (index == 1){
-			List<Expr> list = bracketsWithContent.getContent();
-			for (int i = 0; i < list.size(); i++) {
-				tempPrinter.startList();
-				tempPrinter.printAtom("[]");
-			}
-			for (int i = 0; i < bracketsWithContent.getNumBrackets(); i++){
+			List<Expr> list = indexedBrackets.getContent();
+			for (int i = 0; i < indexedBrackets.getNumBrackets(); i++){
 				tempPrinter.startList();
 				tempPrinter.printAtom("[]");
 			}
@@ -60,7 +55,16 @@ public class ArrayElement implements Expr {
 				list.get(i).prettyPrintNode();
 				tempPrinter.endList();
 			}
-			for (int i = 0; i < bracketsWithContent.getNumBrackets(); i++){
+		}
+		if (index == 2){
+			List<Expr> list = indexedBrackets.getContent();
+			for (int i = 0; i < indexedBrackets.getNumBrackets(); i++){
+				tempPrinter.startList();
+				tempPrinter.printAtom("[]");
+			}
+			arrayLiteral.prettyPrintNode();
+			for (int i = 0; i < list.size(); i++){
+				list.get(i).prettyPrintNode();
 				tempPrinter.endList();
 			}
 		}

@@ -6,25 +6,25 @@ import java.util.List;
 import edu.cornell.cs.cs4120.util.CodeWriterSExpPrinter;
 import jl2755.GlobalPrettyPrinter;
 
-public class BracketsWithContent {
+public class MixedBrackets {
 	private Expr e;
-	private BracketsWithContent bracketsWithContent;
+	private MixedBrackets mixedBrackets;
 	private Brackets brackets;
 	private int index;
 	
-	public BracketsWithContent(Expr e, 
-							   BracketsWithContent bracketsWithContent) {
+	public MixedBrackets(Expr e, 
+							   MixedBrackets mb) {
 		this.e = e;
-		this.bracketsWithContent = bracketsWithContent;
+		this.mixedBrackets = mb;
 		index = 0;
 	}
 	
-	public BracketsWithContent(Expr e) {
+	public MixedBrackets(Expr e) {
 		this.e = e;
 		index = 1;
 	}
 	
-	public BracketsWithContent(Expr e, Brackets b) {
+	public MixedBrackets(Expr e, Brackets b) {
 		this.e = e;
 		brackets = b;
 	}
@@ -32,8 +32,8 @@ public class BracketsWithContent {
 	public List<Expr> getContent() {
 		List<Expr> list = new ArrayList<Expr>();
 		list.add(e);
-		if (bracketsWithContent != null) {
-			list.addAll(bracketsWithContent.getContent());
+		if (mixedBrackets != null) {
+			list.addAll(mixedBrackets.getContent());
 		}
 		return list;
 	}

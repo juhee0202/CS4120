@@ -6,6 +6,7 @@ import java.util.Stack;
 
 import jl2755.ast.*;
 import jl2755.type.VType;
+import jl2755.type.VarType;
 
 public class TypeCheckVisitor implements Visitor {
 
@@ -13,6 +14,12 @@ public class TypeCheckVisitor implements Visitor {
 	private Stack<String> stack;
 	private List<VType> tempTypeList;	// cleared at the beginning of each
 										// visit methods that uses it
+	
+	public TypeCheckVisitor(Program p){
+		env = new HashMap<String, VType>();
+		stack = new Stack<String>();
+		
+	}
 	
 	@Override
 	public void visit(ArrayElement ae) {
@@ -49,8 +56,7 @@ public class TypeCheckVisitor implements Visitor {
 			}
 		} else if (index == 1) {
 			// a[0] = 3;
-			as.getArrElem().accept(this);
-			VType arrElemType = tempTypeList.get(0);
+			String identifierName = as.getIdentifier().toString();
 			as.getExpr().accept(this);
 			List<VType> exprTypeList = tempTypeList;
 			if (tempTypeList.size() > 1) {
@@ -116,7 +122,6 @@ public class TypeCheckVisitor implements Visitor {
 		
 	}
 
-	
 	@Override
 	public void visit(Identifier i) {
 		if (!env.containsKey(i.getTheValue())) {
@@ -204,12 +209,6 @@ public class TypeCheckVisitor implements Visitor {
 
 	@Override
 	public void visit(TupleInit ti) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void visit(Type t) {
 		// TODO Auto-generated method stub
 		
 	}

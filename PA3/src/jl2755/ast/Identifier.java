@@ -19,4 +19,8 @@ public class Identifier implements Expr{
 	public String toString(){
 		return theValue;
 	}
+
+	public String getTheValue() {
+		return theValue;
+	}
 }

@@ -68,4 +68,44 @@ public class AssignmentStmt implements NakedStmt {
 		}
 		tempPrinter.endList();
 	}
+
+	public Identifier getIdentifier() {
+		return identifier;
+	}
+
+	public void setIdentifier(Identifier identifier) {
+		this.identifier = identifier;
+	}
+
+	public IndexedBrackets getIndexedBrackets() {
+		return indexedBrackets;
+	}
+
+	public void setIndexedBrackets(IndexedBrackets indexedBrackets) {
+		this.indexedBrackets = indexedBrackets;
+	}
+
+	public FunctionCall getFunctionCall() {
+		return functionCall;
+	}
+
+	public void setFunctionCall(FunctionCall functionCall) {
+		this.functionCall = functionCall;
+	}
+
+	public Expr getExpr() {
+		return expr;
+	}
+
+	public void setExpr(Expr expr) {
+		this.expr = expr;
+	}
+
+	public int getIndex() {
+		return index;
+	}
+
+	public void setIndex(int index) {
+		this.index = index;
+	}
 }

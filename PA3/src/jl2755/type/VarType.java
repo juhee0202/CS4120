@@ -1,23 +1,29 @@
 package jl2755.type;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import jl2755.ast.EmptyArrayType;
 import jl2755.ast.PrimitiveType;
 
 public class VarType implements VType {
 	private boolean isBool;		// true: boolean, false: int
-	private int numBrackets;    // if an array type, numBrackets refer to the dimension
-						        // if a primitive type, numBrackets = 0
+	private List<Integer> dimensionSizes;
 	
 	public VarType(jl2755.ast.Type t) {
 		if (t instanceof PrimitiveType) {
 			PrimitiveType temp = (PrimitiveType)t;
 			setBool(temp.getIndex() == 1);
-			setNumBrackets(0);
+			dimensionSizes = new ArrayList<Integer>();
 		} else {
 			EmptyArrayType temp = (EmptyArrayType)t;
 			setBool(temp.getPrimitiveType().getIndex() == 1);
 			setNumBrackets(temp.getBrackets().getNumBrackets());
 		}
+	}
+	
+	public VarType(MixedArrayType mat){
+		
 	}
 
 	public boolean isBool() {
@@ -28,12 +34,8 @@ public class VarType implements VType {
 		this.isBool = isBool;
 	}
 
-	public int getNumBrackets() {
-		return numBrackets;
-	}
-
-	public void setNumBrackets(int numBrackets) {
-		this.numBrackets = numBrackets;
+	public int getDimensionSizes() {
+		return dimensionSizes.size();
 	}
 	
 	@Override
@@ -43,6 +45,6 @@ public class VarType implements VType {
 		}
 		VarType vt = (VarType)o;
 		return this.isBool == vt.isBool 
-				&& this.getNumBrackets() == vt.getNumBrackets(); 
+				&& this.getDimensionSizes() == vt.getDimensionSizes(); 
 	}
 }

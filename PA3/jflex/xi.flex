@@ -21,6 +21,7 @@ import java_cup.runtime.*;
   StringBuilder string = new StringBuilder();
   public int origLine;
   public int origCol;
+  public int currCol;
 
   private Symbol symbol(int type) {
     return new Symbol(type, yyline+1, yycolumn+1);
@@ -68,7 +69,7 @@ InputCharacter = [^\r\n]
 WhiteSpace = {LineTerminator} | [ \t\f]
 
 /* comments */
-Comment = "//" {InputCharacter}* {LineTerminator}
+Comment = "//" {InputCharacter}* {LineTerminator}?
 
 /* identifiers */
 Identifier = [:letter:] ([:letter:]|[:digit:]|"_"|"'")*
@@ -133,12 +134,9 @@ SingleCharacter = [^\n\'\\\"]
   "%"                            { return symbol(sym.MODULO,"%"); }
   "*>>"                          { return symbol(sym.HIGH_MULT,"*>>"); }
   "_"                            { return symbol(sym.UNDERSCORE,"_"); }
-  
-  /* comments */
-  {Comment}                      { /* ignore */ }
 
   /* string literal */
-  \"                             { yybegin(STRING); string.setLength(0); origLine = yyline+1; origCol = yycolumn+1; }
+  \"                             { yybegin(STRING); string.setLength(0); origLine = yyline+1; origCol = yycolumn+1; currCol = yycolumn+1; }
 
   /* character literal */
   \'                             { yybegin(CHARLITERAL); origLine = yyline+1; origCol = yycolumn+1; }
@@ -146,6 +144,9 @@ SingleCharacter = [^\n\'\\\"]
   /* numeric literals */
   "-9223372036854775808"         { return symbol(sym.INTEGER_LITERAL, new Long(Long.MIN_VALUE)); }
   {IntegerLiteral}               { return symbol(sym.INTEGER_LITERAL, new Long(yytext())); }
+
+  /* comments */
+  {Comment}                      { /* ignore */ }
 
   /* whitespace */
   {WhiteSpace}                   { /* ignore */ }
@@ -157,19 +158,19 @@ SingleCharacter = [^\n\'\\\"]
 <STRING> {
   \"                             { yybegin(YYINITIAL); return symbol(sym.STRING_LITERAL, origLine, origCol, string.toString()); } // empty string
   
-  {SingleCharacter}+             { string.append( yytext() ); }
+  {SingleCharacter}              { string.append( yytext() ); currCol++; }
   
   /* escape sequences */
-  "\\n"                          { string.append( "\\n" ); }
-  "\\'"                          { string.append( "\\'" ); }
-  "\\\\"                         { string.append( "\\\\" ); }
-  "\\\""                         { string.append( "\\\"" ); }
-  \\[x]{PrintableHexLiteral}     { string.append( parseHex(yytext()) ); }
-  \\[x]{HexLiteral}              { string.append( yytext() ); }
+  "\\n"                          { string.append( "\\n" ); currCol++; }
+  "\\'"                          { string.append( "\\'" ); currCol++; }
+  "\\\\"                         { string.append( "\\\\" ); currCol++; }
+  "\\\""                         { string.append( "\\\"" ); currCol++; }
+  \\[x]{PrintableHexLiteral}     { string.append( parseHex(yytext()) ); currCol++; }
+  \\[x]{HexLiteral}              { string.append( yytext() ); currCol = currCol+4; }
   
   /* error cases */
-  \\.                            { throw new RuntimeException("Illegal escape sequence \""+yytext()+"\""); }
-  {LineTerminator}               { throw new RuntimeException("Unterminated string at end of line"); }
+  {LineTerminator}               { throw new RuntimeException(yyline() + ":" + ++currCol + " error: Illegal input \"\\n\""); }
+  [^]                            { throw new RuntimeException(yyline() + ":" + ++currCol + " error: Illegal input \"" + yytext() + "\""); }
 }
 
 <CHARLITERAL> {
@@ -184,11 +185,9 @@ SingleCharacter = [^\n\'\\\"]
   \\[x]{HexLiteral}\'            { yybegin(YYINITIAL); return symbol(sym.CHARACTER_LITERAL, origLine, origCol, yytext().substring(0, yylength()-1)); }
   
   /* error cases */
-  \\.                            { throw new RuntimeException("Illegal escape sequence \""+yytext()+"\""); }
-  {LineTerminator}               { throw new RuntimeException("Unterminated character literal at end of line"); }
+  {LineTerminator}               { throw new RuntimeException(yyline() + ":" + yycolumn() + " error: Illegal input \"\\n\""); }
 }
 
 /* error fallback */
-[^]                              { throw new RuntimeException("Illegal character \""+yytext()+
-                                                              "\" at line "+yyline+", column "+yycolumn); }
+[^]                              { throw new RuntimeException(yyline() + ":" + yycolumn() + " error: Illegal input \"" + yytext() + "\""); }
 <<EOF>>                          { return symbol(sym.EOF); }

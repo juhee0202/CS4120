@@ -2,7 +2,6 @@ package jl2755.ast;
 
 import edu.cornell.cs.cs4120.util.CodeWriterSExpPrinter;
 import jl2755.GlobalPrettyPrinter;
-import jl2755.visitor.Visitor;
 
 public class FunctionCall implements Expr,NakedStmt {
 	private Identifier identifier;
@@ -22,14 +21,14 @@ public class FunctionCall implements Expr,NakedStmt {
         index = 0;
         if (argLength){
             index = 2;
-            isLength = true;
+            setLength(true);
         }
     }
 
     public FunctionCall(ArrayElement ae){
         arrayElement = ae;
         index = 3;
-        isLength = true;
+        setLength(true);
     }
     
 	public void prettyPrintNode() {
@@ -50,8 +49,17 @@ public class FunctionCall implements Expr,NakedStmt {
 		tempPrinter.endList();
 	}
 
-	@Override
-	public void accept(Visitor v) {
-		v.visit(this);
+	/**
+	 * @return the isLength
+	 */
+	public boolean isLength() {
+		return isLength;
+	}
+
+	/**
+	 * @param isLength the isLength to set
+	 */
+	public void setLength(boolean isLength) {
+		this.isLength = isLength;
 	}
 }

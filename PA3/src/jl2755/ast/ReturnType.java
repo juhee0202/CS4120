@@ -20,10 +20,9 @@ public class ReturnType {
 	}
 	
 	public List<Type> getReturnTypes() {
-		if (index == 1) {
+		if (index == 1){
 			return typeList.getReturnTypes();
 		}
-		
 		return new ArrayList<Type>();
 	}
 	

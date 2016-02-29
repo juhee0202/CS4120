@@ -7,7 +7,8 @@ import edu.cornell.cs.cs4120.util.CodeWriterSExpPrinter;
 import jl2755.GlobalPrettyPrinter;
 
 public class FunctionParam {
-	private VarDecl varDecl;
+	private Identifier identifier;
+	private Type type;
 	private FunctionParam functionParam;
 	private int index;
 	
@@ -15,23 +16,26 @@ public class FunctionParam {
 		index = 2755;
 	}
 	
-	public FunctionParam(VarDecl vd) {
-		varDecl = vd;
+	public FunctionParam(Identifier id, Type t) {
+		identifier = id;
+		type = t;
 		index = 0;
 	}
 	
-	public FunctionParam(VarDecl vd, FunctionParam fp) {
-		varDecl = vd;
+	public FunctionParam(Identifier id, Type t, FunctionParam fp) {
+		identifier = id;
+		type = t;
 		functionParam = fp;
 		index = 1;
 	}
 	
-	public List<VarDecl> getParams() {
-		List<VarDecl> l = new ArrayList<VarDecl>();
-		if (index == 0) {
-			l.add(varDecl);
-		} else if (index == 1) {
-			l.add(varDecl);
+	public List<Type> getParams() {
+		List<Type> l = new ArrayList<Type>();
+		if (index == 0){
+			l.add(type);
+		}
+		if (index == 1){
+			l.add(type);
 			l.addAll(functionParam.getParams());
 		}
 		return l;
@@ -42,7 +46,10 @@ public class FunctionParam {
 		if (index == 2755){
 			return;
 		}
-		varDecl.prettyPrintNode();
+		tempPrinter.startList();
+		identifier.prettyPrintNode();
+		type.prettyPrintNode();
+		tempPrinter.endList();
 		if (index == 1) {
 			functionParam.prettyPrintNode();
 		}	

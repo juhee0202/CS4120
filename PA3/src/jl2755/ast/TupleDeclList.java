@@ -11,24 +11,24 @@ public class TupleDeclList {
 	
 	public TupleDeclList(VarDecl vd, boolean b) {
 		varDecl = vd;
-		hasUnderscore = b;
+		setHasUnderscore(b);
 		index = 0;
 	}
 	
 	public TupleDeclList(VarDecl vd, TupleDeclList tdl, boolean b) {
 		varDecl = vd;
 		tupleDeclList = tdl;
-		hasUnderscore = b;
+		setHasUnderscore(b);
 		index = 1;
 	}
 
 	public TupleDeclList(boolean b) {
-		hasUnderscore = b;
+		setHasUnderscore(b);
 		index = 2;
 	}
 
 	public TupleDeclList(TupleDeclList tdl, boolean b) {
-		hasUnderscore = b;
+		setHasUnderscore(b);
 		tupleDeclList = tdl;
 		index = 3;
 	}
@@ -46,5 +46,19 @@ public class TupleDeclList {
 			tempPrinter.printAtom("_");
 			tupleDeclList.prettyPrintNode();
 		}
+	}
+
+	/**
+	 * @return the hasUnderscore
+	 */
+	public boolean isHasUnderscore() {
+		return hasUnderscore;
+	}
+
+	/**
+	 * @param hasUnderscore the hasUnderscore to set
+	 */
+	public void setHasUnderscore(boolean hasUnderscore) {
+		this.hasUnderscore = hasUnderscore;
 	}
 }

@@ -1,8 +1,5 @@
 package jl2755.ast;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import edu.cornell.cs.cs4120.util.CodeWriterSExpPrinter;
 import jl2755.GlobalPrettyPrinter;
 

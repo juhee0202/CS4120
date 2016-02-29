@@ -33,12 +33,6 @@ public class TypeCheckVisitor implements Visitor {
 	}
 
 	@Override
-	public void visit(ArrayType at) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
 	public void visit(AssignmentStmt as) {
 		tempTypeList.clear();
 		int index = as.getIndex();
@@ -82,6 +76,12 @@ public class TypeCheckVisitor implements Visitor {
 
 	@Override
 	public void visit(Constant c) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void visit(EmptyArrayType et) {
 		// TODO Auto-generated method stub
 		
 	}
@@ -132,6 +132,12 @@ public class TypeCheckVisitor implements Visitor {
 
 	@Override
 	public void visit(Literal l) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void visit(MixedArrayType mat) {
 		// TODO Auto-generated method stub
 		
 	}

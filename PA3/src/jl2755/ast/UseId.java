@@ -11,14 +11,14 @@ public class UseId {
 	
 	public UseId(Identifier s, boolean b) {
 		identifier = s;
-		hasSemicolon = b;
+		setHasSemicolon(b);
 		index = 0;
 	}
 	
 	public UseId(Identifier s, UseId ui, boolean b) {
 		identifier = s;
 		useId = ui;
-		hasSemicolon = b;
+		setHasSemicolon(b);
 		index = 1;
 	}
 	
@@ -31,5 +31,19 @@ public class UseId {
 		if (index == 1) {
 			useId.prettyPrintNode();
 		}
+	}
+
+	/**
+	 * @return the hasSemicolon
+	 */
+	public boolean isHasSemicolon() {
+		return hasSemicolon;
+	}
+
+	/**
+	 * @param hasSemicolon the hasSemicolon to set
+	 */
+	public void setHasSemicolon(boolean hasSemicolon) {
+		this.hasSemicolon = hasSemicolon;
 	}	
 }

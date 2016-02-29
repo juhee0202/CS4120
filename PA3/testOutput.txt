@@ -1,6 +1,6 @@
 Testpath "/home/vagrant/xth/tests/pa2/" specified.
 Test script: xthScript
-  xic-build: Cannot run program "/home/vagrant/shared/cs4120/pa2/xic-build" (in directory "/home/vagrant/shared/cs4120/pa2"): error=2, No such file or directory
+  xic-build: Cannot run program "/home/vagrant/shared/cs4120/pa3/xic-build" (in directory "/home/vagrant/shared/cs4120/pa3"): error=2, No such file or directory
   Test collection: xic (Test --help)
     []: Usage: xic [options] <source files>
 where possible options include

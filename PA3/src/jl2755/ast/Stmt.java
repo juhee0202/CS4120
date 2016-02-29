@@ -6,10 +6,24 @@ public class Stmt {
 	
 	public Stmt(NakedStmt ns, boolean b) {
 		nakedStmt = ns;
-		hasSemicolon = b;
+		setHasSemicolon(b);
 	}
 	
 	public void prettyPrintNode() {
 		nakedStmt.prettyPrintNode();
+	}
+
+	/**
+	 * @return the hasSemicolon
+	 */
+	public boolean isHasSemicolon() {
+		return hasSemicolon;
+	}
+
+	/**
+	 * @param hasSemicolon the hasSemicolon to set
+	 */
+	public void setHasSemicolon(boolean hasSemicolon) {
+		this.hasSemicolon = hasSemicolon;
 	}
 }

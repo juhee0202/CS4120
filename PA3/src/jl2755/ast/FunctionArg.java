@@ -1,8 +1,5 @@
 package jl2755.ast;
 
-import edu.cornell.cs.cs4120.util.CodeWriterSExpPrinter;
-import jl2755.GlobalPrettyPrinter;
-
 public class FunctionArg {
 	private Expr expr;
 	private FunctionArg functionArg;
@@ -20,7 +17,6 @@ public class FunctionArg {
 	}
 
 	public void prettyPrintNode() {
-		CodeWriterSExpPrinter tempPrinter = GlobalPrettyPrinter.getInstance();
 		expr.prettyPrintNode();
 		if (index == 1) {
 			functionArg.prettyPrintNode();

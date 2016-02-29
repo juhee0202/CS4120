@@ -1,9 +1,8 @@
 package jl2755.type;
 
 import java.util.List;
-
+import jl2755.ast.Type;
 import jl2755.ast.FunctionDecl;
-import jl2755.ast.VarDecl;
 
 public class FunType implements VType {
 	// TODO: revisit
@@ -11,10 +10,9 @@ public class FunType implements VType {
 	private List<VarType> returns;
 	
 	public FunType(FunctionDecl fd) {
-		List<VarDecl> l = fd.getParams();
+		List<Type> l = fd.getParams();
 		for (int i = 0; i < l.size(); i++) {
-			VarDecl vd = l.get(i);
-			VarType vt = new VarType(vd.getType());
+			VarType vt = new VarType(l.get(i));
 			params.add(vt);
 		}
 		

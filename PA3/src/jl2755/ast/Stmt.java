@@ -26,4 +26,12 @@ public class Stmt {
 	public void setHasSemicolon(boolean hasSemicolon) {
 		this.hasSemicolon = hasSemicolon;
 	}
+
+	public NakedStmt getNakedStmt() {
+		return nakedStmt;
+	}
+
+	public void setNakedStmt(NakedStmt nakedStmt) {
+		this.nakedStmt = nakedStmt;
+	}
 }

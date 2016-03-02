@@ -4,6 +4,7 @@ import java.util.List;
 
 import edu.cornell.cs.cs4120.util.CodeWriterSExpPrinter;
 import jl2755.GlobalPrettyPrinter;
+import jl2755.visitor.Visitor;
 
 public class AssignmentStmt implements NakedStmt {
 	private Identifier identifier;
@@ -107,5 +108,10 @@ public class AssignmentStmt implements NakedStmt {
 
 	public void setIndex(int index) {
 		this.index = index;
+	}
+
+	@Override
+	public void accept(Visitor v) {
+		v.visit(this);
 	}
 }

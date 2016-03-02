@@ -191,8 +191,7 @@ public class TypeCheckVisitor implements Visitor {
 
 	@Override
 	public void visit(Stmt s) {
-		// TODO Auto-generated method stub
-		
+		(s.getNakedStmt()).accept(this);
 	}
 
 	@Override

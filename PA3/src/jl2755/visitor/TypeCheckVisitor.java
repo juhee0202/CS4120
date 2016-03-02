@@ -101,18 +101,7 @@ public class TypeCheckVisitor implements Visitor {
 		// TODO Auto-generated method stub
 		
 	}
-
-	@Override
-	public void visit(Constant c) {
-		// TODO Auto-generated method stub
-		if (env.containsKey(c)) {
-			//TODO error handling
-		} else {
-			if ()
-		}
-		
-	}
-
+	
 	@Override
 	public void visit(EmptyArrayType et) {
 		// TODO Auto-generated method stub
@@ -202,18 +191,6 @@ public class TypeCheckVisitor implements Visitor {
 
 	@Override
 	public void visit(MixedArrayType mat) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override	
-	public void visit(NakedStmt ns) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void visit(OpExpr oe) {
 		// TODO Auto-generated method stub
 		
 	}

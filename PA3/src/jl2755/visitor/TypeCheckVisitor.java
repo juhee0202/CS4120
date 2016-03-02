@@ -12,7 +12,7 @@ public class TypeCheckVisitor implements Visitor {
 
 	private HashMap<String, VType> env;
 	private Stack<String> stack;
-	private List<VType> tempTypeList;	// cleared at the beginning of each
+	private VType tempType;	        // cleared at the beginning of each
 										// visit methods that uses it
 	
 	public TypeCheckVisitor(Program p){
@@ -39,17 +39,21 @@ public class TypeCheckVisitor implements Visitor {
 		
 	}
 
+	/**
+	 * Dirties tempType
+	 */
 	@Override
 	public void visit(AssignmentStmt as) {
-		tempTypeList.clear();
+		tempType;
 		int index = as.getIndex();
 		if (index == 0) {
 			as.getIdentifier().accept(this);
-			VType identifierType = tempTypeList.get(0);
+			VType identifierType = tempType;
 			as.getExpr().accept(this);
-			List<VType> exprTypeList = tempTypeList;
-			if (tempTypeList.size() > 1) {
+			List<VType> exprTypeList = tempType;
+			if (tempType.size() > 1) {
 				// TODO: error handling
+				// tempType may be a TupleType which is a list of Types
 			}
 			if (!identifierType.equals(exprTypeList.get(0))) {
 				// TODO: error handling
@@ -58,12 +62,14 @@ public class TypeCheckVisitor implements Visitor {
 			// a[0] = 3;
 			String identifierName = as.getIdentifier().toString();
 			as.getExpr().accept(this);
-			List<VType> exprTypeList = tempTypeList;
-			if (tempTypeList.size() > 1) {
+			List<VType> exprTypeList = tempType;
+			if (tempType.size() > 1) {
 				// TODO: error handling
 			}
 			if (!arrElemType.equals(exprTypeList.get(0))) {
 				// TODO: error handling
+				// Unpackaged ArrayType into AssignmentStmt. That's
+				// there's an error.
 			}
 		}
 	}
@@ -231,15 +237,32 @@ public class TypeCheckVisitor implements Visitor {
 		
 	}
 
+	/**
+	 * Dirties tempType
+	 */
 	@Override
 	public void visit(VarDecl vd) {
-		// TODO Auto-generated method stub
-		
+		// Check if predeclared
+		if (env.containsKey(vd.getIdentifier())){
+			// TODO: ERROR HaNdLiNG
+		}
+		else{
+			env.put(vd.getIdentifier().toString(), new VarType(vd));
+			tempType = env.get(vd.getIdentifier().toString());
+		}
 	}
 
 	@Override
 	public void visit(VarInit vi) {
-		// TODO Auto-generated method stub
+		// Check if predeclared
+		vi.getVarDecl().accept(this);
+		VType tempLeftType = tempType;
+		vi.getExpr().accept(this);
+		VType tempRightType = tempType;
+		if (!(tempLeftType.equals(tempRightType))){
+			// TODO: ERROR HANDLING
+		}
+		
 		
 	}
 

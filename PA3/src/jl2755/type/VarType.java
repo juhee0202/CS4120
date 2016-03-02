@@ -5,6 +5,10 @@ import jl2755.ast.MixedArrayType;
 import jl2755.ast.PrimitiveType;
 import jl2755.ast.VarDecl;
 
+/**
+ *	Ordinary types t expressible in the language
+ *	int, bool, or t[]
+ */
 public class VarType implements VType {
 	/** true: boolean, false: int*/
 	private boolean isBool;

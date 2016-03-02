@@ -1,6 +1,7 @@
 .metadata
 PA1/bin/
 PA2/bin/
+PA3/bin/
 tmp/
 *.tmp
 *.bak
@@ -13,6 +14,7 @@ local.properties
 # Eclipse Core
 PA1/.project
 PA2/.project
+PA3/.project
 
 # External tool builders
 .externalToolBuilders/
@@ -23,6 +25,7 @@ PA2/.project
 # JDT-specific (Eclipse Java Development Tools)
 PA1/.classpath
 PA2/.classpath
+PA3/.classpath
 
 # Java annotation processor (APT)
 .factorypath

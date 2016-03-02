@@ -4,6 +4,10 @@ import java.util.List;
 import jl2755.ast.Type;
 import jl2755.ast.FunctionDecl;
 
+/**
+ *	Represents the function type
+ *	fn params -> returns
+ */
 public class FunType implements VType {
 	// TODO: revisit
 	private TupleType params;

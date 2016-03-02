@@ -11,14 +11,14 @@ import jl2755.ast.VarDecl;
  * statement.
  *
  */
-public class TupleType {
+public class TupleType implements VType {
 	
 	/**
 	 * List of the VarTypes that represent
 	 * the VarDecls on the left side.
 	 * Null entries represent underscores.
 	 */
-	private List<VarType> varTypes = new ArrayList<VarType>();
+	private List<VType> types = new ArrayList<VType>();
 	
 	/** 
 	 * @param argTupleInit and makes a List of
@@ -26,34 +26,34 @@ public class TupleType {
 	 */
 	public TupleType(TupleInit argTupleInit) {
 		if (argTupleInit.getIndex() == 0){
-			varTypes.add(null);
+			types.add(null);
 		}
 		if (argTupleInit.getIndex() == 1){
-			varTypes.add(null);
+			types.add(null);
 			List<VarDecl> tempDecls = argTupleInit.getTupleDeclList().getVarDecls();
 			for (int i = 0; i < tempDecls.size(); i++){
-				varTypes.add(new VarType(tempDecls.get(i)));
+				types.add(new VarType(tempDecls.get(i)));
 			}
 		}
 		if (argTupleInit.getIndex() == 2){
-			varTypes.add(new VarType(argTupleInit.getVarDecl()));
+			types.add(new VarType(argTupleInit.getVarDecl()));
 			List<VarDecl> tempDecls = argTupleInit.getTupleDeclList().getVarDecls();
 			for (int i = 0; i < tempDecls.size(); i++){
-				varTypes.add(new VarType(tempDecls.get(i)));
+				types.add(new VarType(tempDecls.get(i)));
 			}
 		}
 	}
 	
-	public List<VarType> getVarTypes() {
-		return varTypes;
+	public List<VType> getTypes() {
+		return types;
 	}
 
-	public void setVarTypes(List<VarType> varTypes) {
-		this.varTypes = varTypes;
+	public void setTypes(List<VType> types) {
+		this.types = types;
 	}
 	
 	public void addToVarTypes(VarType argVarType) {
-		varTypes.add(argVarType);
+		types.add(argVarType);
 	}
 
 	@Override
@@ -62,12 +62,12 @@ public class TupleType {
 			return false;
 		}
 		TupleType tempTupleType = (TupleType) o;
-		List<VarType> otherVarTypes = tempTupleType.getVarTypes();
-		if (varTypes.size() != otherVarTypes.size()){
+		List<VType> otherVarTypes = tempTupleType.getTypes();
+		if (types.size() != otherVarTypes.size()){
 			return false;
 		}
-		for (int i = 0; i < varTypes.size(); i++){
-			if (!(varTypes.get(i).equals(otherVarTypes.get(i)))){
+		for (int i = 0; i < types.size(); i++){
+			if (!(types.get(i).equals(otherVarTypes.get(i)))){
 				return false;
 			}
 		}

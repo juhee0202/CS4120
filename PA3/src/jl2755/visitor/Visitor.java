@@ -9,7 +9,6 @@ public interface Visitor {
 	public void visit(AssignmentStmt as);
 	public void visit(BinaryExpr be);
 	public void visit(BlockStmt bs);
-	public void visit(Constant c);
 	public void visit(EmptyArrayType et);
 	public void visit(FunctionArg fa);
 	public void visit(FunctionCall fc);
@@ -20,8 +19,6 @@ public interface Visitor {
 	public void visit(IfStmt is);
 	public void visit(Literal l);
 	public void visit(MixedArrayType mat);
-	public void visit(NakedStmt ns);
-	public void visit(OpExpr oe);
 	public void visit(PrimitiveType pt);
 	public void visit(Program p);
 	public void visit(PureContentArrayType pca);

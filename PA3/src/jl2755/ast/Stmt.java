@@ -1,5 +1,7 @@
 package jl2755.ast;
 
+import jl2755.visitor.Visitor;
+
 public class Stmt {
 	private NakedStmt nakedStmt;
 	private boolean hasSemicolon;
@@ -33,5 +35,9 @@ public class Stmt {
 
 	public void setNakedStmt(NakedStmt nakedStmt) {
 		this.nakedStmt = nakedStmt;
+	}
+	
+	public void accept(Visitor v){
+		v.visit(this);
 	}
 }

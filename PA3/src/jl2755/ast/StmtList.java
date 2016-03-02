@@ -1,5 +1,6 @@
 package jl2755.ast;
 
+import jl2755.visitor.Visitor;
 
 public class StmtList {
 	private Stmt stmt;
@@ -46,5 +47,9 @@ public class StmtList {
 
 	public void setIndex(int index) {
 		this.index = index;
+	}
+	
+	public void accept(Visitor v){
+		v.visit(this);
 	}
 }

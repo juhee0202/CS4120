@@ -41,8 +41,7 @@ public class BlockStmt implements NakedStmt {
 
 	@Override
 	public void accept(Visitor v) {
-		// TODO Auto-generated method stub
-		
+		v.visit(this);
 	}
 
 	public StmtList getStmtList() {

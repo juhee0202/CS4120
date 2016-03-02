@@ -7,6 +7,9 @@ public class VarDecl implements NakedStmt {
 	private Identifier identifier;
 	private MixedArrayType mixedArrayType;
 	private PrimitiveType primitiveType;
+	/**
+	 * 0 for mixedArrayType, and 1 for PrimitiveType
+	 */
 	private int index;
 	
 	public VarDecl(Identifier id, MixedArrayType mat) {
@@ -32,5 +35,37 @@ public class VarDecl implements NakedStmt {
 			primitiveType.prettyPrintNode();
 		}
 		tempPrinter.endList();
+	}
+
+	public Identifier getIdentifier() {
+		return identifier;
+	}
+
+	public void setIdentifier(Identifier identifier) {
+		this.identifier = identifier;
+	}
+
+	public MixedArrayType getMixedArrayType() {
+		return mixedArrayType;
+	}
+
+	public void setMixedArrayType(MixedArrayType mixedArrayType) {
+		this.mixedArrayType = mixedArrayType;
+	}
+
+	public PrimitiveType getPrimitiveType() {
+		return primitiveType;
+	}
+
+	public void setPrimitiveType(PrimitiveType primitiveType) {
+		this.primitiveType = primitiveType;
+	}
+
+	public int getIndex() {
+		return index;
+	}
+
+	public void setIndex(int index) {
+		this.index = index;
 	}
 }

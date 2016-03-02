@@ -4,35 +4,39 @@ import java.util.List;
 import jl2755.ast.Type;
 import jl2755.ast.FunctionDecl;
 
+/**
+ *	Represents the function type
+ *	fn params -> returns
+ */
 public class FunType implements VType {
 	// TODO: revisit
-	private List<VarType> params;
-	private List<VarType> returns;
+	private TupleType params;
+	private TupleType returns;
 	
 	public FunType(FunctionDecl fd) {
 		List<Type> l = fd.getParams();
 		for (int i = 0; i < l.size(); i++) {
 			VarType vt = new VarType(l.get(i));
-			params.add(vt);
+			params.addToVarTypes(vt);
 		}
 		
 		List<jl2755.ast.Type> ll = fd.getReturnTypes();
 		for (int i = 0; i < ll.size(); i++) {
 			VarType vt = new VarType(ll.get(i));
-			returns.add(vt);
+			returns.addToVarTypes(vt);
 		}
 	}
 	
-	public List<VarType> getParams() {
+	public TupleType getParams() {
 		return params;
 	}
-	public void setParams(List<VarType> params) {
+	public void setParams(TupleType params) {
 		this.params = params;
 	}
-	public List<VarType> getReturns() {
+	public TupleType getReturns() {
 		return returns;
 	}
-	public void setReturns(List<VarType> returns) {
+	public void setReturns(TupleType returns) {
 		this.returns = returns;
 	}
 	

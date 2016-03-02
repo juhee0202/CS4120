@@ -12,6 +12,7 @@ public class MixedArrayType {
 	private MixedBrackets mixedBrackets;
 	private Brackets brackets;
 	private MixedArrayType arrayType;
+	/** 0 is just empty brackets, 1 is at least 1 brackets with numbers */
 	private int index;
 	
 	public MixedArrayType(PrimitiveType p_type, Brackets brackets) {
@@ -100,5 +101,14 @@ public class MixedArrayType {
 
 	public void setIndex(int index) {
 		this.index = index;
+	}
+	
+	public int getTotalNumBrackets() {
+		if (index == 0){
+			return brackets.getNumBrackets();
+		}
+		else{
+			return mixedBrackets.getNumBrackets();
+		}
 	}
 }

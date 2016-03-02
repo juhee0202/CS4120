@@ -8,6 +8,10 @@ public class TupleInit implements NakedStmt {
 	private TupleDeclList tupleDeclList;
 	private FunctionCall functionCall;
 	private VarDecl varDecl;
+	/** 0 is only one underscore on left side, 1 is underscore
+	 * followed by a tupleDeclList, 2 is a var_decl followed by
+	 * a tupleDeclList.
+	 */
 	private int index;
 	
 	public TupleInit(FunctionCall fc) {
@@ -57,5 +61,37 @@ public class TupleInit implements NakedStmt {
 	public void accept(Visitor v) {
 		// TODO Auto-generated method stub
 		
+	}
+
+	public TupleDeclList getTupleDeclList() {
+		return tupleDeclList;
+	}
+
+	public void setTupleDeclList(TupleDeclList tupleDeclList) {
+		this.tupleDeclList = tupleDeclList;
+	}
+
+	public FunctionCall getFunctionCall() {
+		return functionCall;
+	}
+
+	public void setFunctionCall(FunctionCall functionCall) {
+		this.functionCall = functionCall;
+	}
+
+	public VarDecl getVarDecl() {
+		return varDecl;
+	}
+
+	public void setVarDecl(VarDecl varDecl) {
+		this.varDecl = varDecl;
+	}
+
+	public int getIndex() {
+		return index;
+	}
+
+	public void setIndex(int index) {
+		this.index = index;
 	}	
 }

@@ -27,4 +27,20 @@ public class WhileStmt implements NakedStmt {
 		// TODO Auto-generated method stub
 		
 	}
+
+	public Expr getExpr() {
+		return expr;
+	}
+
+	public void setExpr(Expr expr) {
+		this.expr = expr;
+	}
+
+	public Stmt getStmt() {
+		return stmt;
+	}
+
+	public void setStmt(Stmt stmt) {
+		this.stmt = stmt;
+	}
 }

@@ -10,6 +10,10 @@ public class MixedBrackets {
 	private Expr e;
 	private MixedBrackets mixedBrackets;
 	private Brackets brackets;
+	/** 0 in recursive case of MixedBrackets, 1 in base
+	 * case of MixedBrackets without Brackets, and 2 in base case of MixedBrackets
+	 * with Brackets.
+	 */
 	private int index;
 	
 	public MixedBrackets(Expr e, 
@@ -27,6 +31,7 @@ public class MixedBrackets {
 	public MixedBrackets(Expr e, Brackets b) {
 		this.e = e;
 		brackets = b;
+		index = 2;
 	}
 	
 	public List<Expr> getContent() {
@@ -43,6 +48,18 @@ public class MixedBrackets {
 			return 0;
 		}
 		return brackets.getNumBrackets();
+	}
+	
+	public int getTotalNumBrackets(){
+		if (index == 0){
+			return 1 + mixedBrackets.getTotalNumBrackets();
+		}
+		else if (index == 1){
+			return 1;
+		}
+		else{
+			return 1 + getNumBrackets();
+		}
 	}
 	
 	public void prettyPrintNode() {

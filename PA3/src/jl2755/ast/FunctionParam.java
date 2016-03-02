@@ -6,6 +6,13 @@ import java.util.List;
 import edu.cornell.cs.cs4120.util.CodeWriterSExpPrinter;
 import jl2755.GlobalPrettyPrinter;
 
+/**
+ *	Represents the function parameters
+ *	index
+ *	- 0: one parameter 
+ *	- 1: more than one parameter
+ *	- 2755: no parameter
+ */
 public class FunctionParam {
 	private Identifier identifier;
 	private Type type;
@@ -29,6 +36,9 @@ public class FunctionParam {
 		index = 1;
 	}
 	
+	/**
+	 * @return a List containing parameter types
+	 */
 	public List<Type> getParams() {
 		List<Type> l = new ArrayList<Type>();
 		if (index == 0){

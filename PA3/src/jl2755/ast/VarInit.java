@@ -20,4 +20,20 @@ public class VarInit implements NakedStmt {
 		expr.prettyPrintNode();
 		tempPrinter.endList();
 	}
+
+	public VarDecl getVarDecl() {
+		return varDecl;
+	}
+
+	public void setVarDecl(VarDecl varDecl) {
+		this.varDecl = varDecl;
+	}
+
+	public Expr getExpr() {
+		return expr;
+	}
+
+	public void setExpr(Expr expr) {
+		this.expr = expr;
+	}
 }

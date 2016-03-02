@@ -10,9 +10,10 @@ import jl2755.type.VarType;
 
 public class TypeCheckVisitor implements Visitor {
 
+	/** HashMap of all declared variables */
 	private HashMap<String, VType> env;
 	private Stack<String> stack;
-	private List<VType> tempTypeList;	// cleared at the beginning of each
+	private VType tempType;	        // cleared at the beginning of each
 										// visit methods that uses it
 	
 	public TypeCheckVisitor(Program p){
@@ -39,32 +40,44 @@ public class TypeCheckVisitor implements Visitor {
 		
 	}
 
+	/**
+	 * Dirties tempType
+	 */
 	@Override
 	public void visit(AssignmentStmt as) {
-		tempTypeList.clear();
 		int index = as.getIndex();
 		if (index == 0) {
+
+			// Identifier visit checks if its in env
+			
 			as.getIdentifier().accept(this);
-			VType identifierType = tempTypeList.get(0);
+			VType idType = tempType;	// can also do env.get(id);
 			as.getExpr().accept(this);
-			List<VType> exprTypeList = tempTypeList;
-			if (tempTypeList.size() > 1) {
+			VType exprType = tempType;
+			
+			// Check types
+			if (!idType.equals(exprType)) {
 				// TODO: error handling
 			}
-			if (!identifierType.equals(exprTypeList.get(0))) {
-				// TODO: error handling
-			}
+			
 		} else if (index == 1) {
 			// a[0] = 3;
-			String identifierName = as.getIdentifier().toString();
+			
+			as.getIdentifier().accept(this);
+			VType idType = tempType;
 			as.getExpr().accept(this);
-			List<VType> exprTypeList = tempTypeList;
-			if (tempTypeList.size() > 1) {
+			VType exprType = tempType;
+			
+			// Check types (HOW TO DO THIS: ARRAY VS. ARRAY ELEMENT)
+			if (!idType.equals(exprType)) {
 				// TODO: error handling
+				// Unpackaged ArrayType into AssignmentStmt. That's
+				// there's an error.
 			}
-			if (!arrElemType.equals(exprTypeList.get(0))) {
-				// TODO: error handling
-			}
+			
+		} else {
+			// function call
+			// DOESN'T THIS KIND OF ASSIGNMENT STMT HAVE NO EFFECT?? ALLOWED??
 		}
 	}
 
@@ -136,17 +149,39 @@ public class TypeCheckVisitor implements Visitor {
 		
 	}
 
+	/**
+	 * Dirties tempType
+	 */
 	@Override
 	public void visit(Identifier i) {
 		if (!env.containsKey(i.getTheValue())) {
 			// TODO: error handling
 		}
+		tempType = env.get(i.getTheValue());
 	}
 
+	/**
+	 * Dirties tempType
+	 */
 	@Override
 	public void visit(IfStmt is) {
-		// TODO Auto-generated method stub
 		
+		is.getExpr().accept(this);
+		VType exprType = tempType;
+		Type b = new PrimitiveType(1);
+		VType bType = new VarType(b);
+		
+		// Check type of conditional
+		if (!exprType.equals(bType)) {
+			// TODO: error handling
+		}
+		// Check if-then stmt
+		(is.getStmt1()).accept(this);
+		
+		// Check else stmt
+		if (is.getIndex() == 1) {
+			(is.getStmt2()).accept(this);
+		}
 	}
 
 	@Override
@@ -215,8 +250,7 @@ public class TypeCheckVisitor implements Visitor {
 
 	@Override
 	public void visit(Stmt s) {
-		// TODO Auto-generated method stub
-		
+		(s.getNakedStmt()).accept(this);
 	}
 
 	@Override
@@ -255,21 +289,49 @@ public class TypeCheckVisitor implements Visitor {
 		
 	}
 
+	/**
+	 * Dirties tempType
+	 */
 	@Override
 	public void visit(VarDecl vd) {
-		// TODO Auto-generated method stub
-		
+		// Check if predeclared
+		if (env.containsKey(vd.getIdentifier())){
+			// TODO: ERROR HaNdLiNG
+		}
+		else{
+			env.put(vd.getIdentifier().toString(), new VarType(vd));
+			tempType = env.get(vd.getIdentifier().toString());
+		}
 	}
 
 	@Override
 	public void visit(VarInit vi) {
-		// TODO Auto-generated method stub
+		// Check if predeclared
+		vi.getVarDecl().accept(this);
+		VType tempLeftType = tempType;
+		vi.getExpr().accept(this);
+		VType tempRightType = tempType;
+		if (!(tempLeftType.equals(tempRightType))){
+			// TODO: ERROR HANDLING
+		}
+		
 		
 	}
 
 	@Override
 	public void visit(WhileStmt ws) {
-		// TODO Auto-generated method stub
+		
+		ws.getExpr().accept(this);
+		VType exprType = tempType;
+		Type b = new PrimitiveType(1);
+		VType bType = new VarType(b);
+		
+		// Check type of conditional
+		if (!exprType.equals(bType)) {
+			// TODO: error handling
+		}
+		// Check stmt
+		(ws.getStmt()).accept(this);
 		
 	}
 	

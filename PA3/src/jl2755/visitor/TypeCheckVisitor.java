@@ -71,7 +71,16 @@ public class TypeCheckVisitor implements Visitor {
 	@Override
 	public void visit(BinaryExpr be) {
 		// TODO Auto-generated method stub
-		
+		Expr left = be.getLeftExpr();
+		Expr right = be.getRightExpr();
+		left.accept(this);
+		VType leftType = tempType;
+		right.accept(this);
+		VType rightType = tempType;
+
+		if (!leftType.equals(rightType)) {
+			//TODO error handling
+		}		
 	}
 
 	@Override
@@ -83,6 +92,11 @@ public class TypeCheckVisitor implements Visitor {
 	@Override
 	public void visit(Constant c) {
 		// TODO Auto-generated method stub
+		if (env.containsKey(c)) {
+			//TODO error handling
+		} else {
+			if ()
+		}
 		
 	}
 
@@ -138,7 +152,17 @@ public class TypeCheckVisitor implements Visitor {
 	@Override
 	public void visit(Literal l) {
 		// TODO Auto-generated method stub
-		
+		int index = l.index;
+		switch (index) {
+			//int
+			case 0: tempType = new VarType(new PrimitiveType(0));
+			//string
+			case 1: tempType = new VarType();
+			//char
+			case 2: tempType = new VarType(new PrimitiveType(0));
+			//boolean
+			case 3: tempType = new VarType(new PrimitiveType(1));
+		}
 	}
 
 	@Override
@@ -147,7 +171,7 @@ public class TypeCheckVisitor implements Visitor {
 		
 	}
 
-	@Override
+	@Override	
 	public void visit(NakedStmt ns) {
 		// TODO Auto-generated method stub
 		

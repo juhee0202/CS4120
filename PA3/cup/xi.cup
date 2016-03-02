@@ -15,6 +15,7 @@ parser code  {:
   }
 :}
 
+
 /* Terminals */
 terminal String IDENTIFIER;
 terminal String STRING_LITERAL;
@@ -27,46 +28,45 @@ terminal IF, ELSE, WHILE, RETURN, USE, PLUS, MINUS, UMINUS, TIMES, HIGH_MULT, IN
   OPEN_BRACKET, CLOSE_BRACKET, OPEN_PAREN, CLOSE_PAREN, OPEN_BRACE, CLOSE_BRACE,
   COLON, COMMA, SEMICOLON, UNDERSCORE, LENGTH;
 
+
 /* Nonterminals */
-// You might want to add types to these declarations.
-non terminal Program program;
-// Add more nonterminals here...
-non terminal Identifier identifier;
-non terminal VarInit var_init;
-non terminal VarDecl var_decl;
-non terminal TupleInit tuple_init;
-non terminal TupleDeclList tuple_decl_list;
-non terminal Type type;
-non terminal TypeList type_list;
-non terminal ReturnType return_type;
-non terminal PrimitiveType primitive_type;
-non terminal MixedArrayType mixed_array_type;
-non terminal EmptyArrayType empty_array_type;
+non terminal ArrayElement array_element;
+non terminal ArrayElementList array_element_list;
+non terminal ArrayLiteral array_literal;
+non terminal AssignmentStmt assignment_stmt;
+non terminal BlockStmt block_stmt;
 non terminal Brackets brackets;
-non terminal MixedBrackets mixed_brackets;
-non terminal IndexedBrackets indexed_brackets;
-non terminal Expr expr;
 non terminal Constant constant;
+non terminal EmptyArrayType empty_array_type;
+non terminal Expr expr;
 non terminal Expr op_expr;
-non terminal Literal literal;
-non terminal UseId use_id;
-non terminal FunctionParam function_param;
+non terminal FunctionArg function_arg;
+non terminal FunctionCall function_call;
 non terminal FunctionDecl function_decl;
 non terminal FunctionDeclList function_decl_list;
-non terminal FunctionCall function_call;
-non terminal FunctionArg function_arg;
-non terminal ArrayLiteral array_literal;
-non terminal ArrayElementList array_element_list;
-non terminal ArrayElement array_element;
-non terminal NakedStmt naked_stmt;
-non terminal Stmt stmt;
-non terminal AssignmentStmt assignment_stmt;
+non terminal FunctionParam function_param;
+non terminal Identifier identifier;
 non terminal IfStmt if_stmt;
-non terminal WhileStmt while_stmt;
-non terminal ReturnStmt return_stmt;
-non terminal BlockStmt block_stmt;
-non terminal StmtList stmt_list;
+non terminal IndexedBrackets indexed_brackets;
+non terminal Literal literal;
+non terminal MixedArrayType mixed_array_type;
+non terminal MixedBrackets mixed_brackets;
+non terminal NakedStmt naked_stmt;
+non terminal PrimitiveType primitive_type;
+non terminal Program program;
 non terminal ReturnList return_list;
+non terminal ReturnStmt return_stmt;
+non terminal ReturnType return_type;
+non terminal Stmt stmt;
+non terminal StmtList stmt_list;
+non terminal TupleDeclList tuple_decl_list;
+non terminal TupleInit tuple_init;
+non terminal Type type;
+non terminal TypeList type_list;
+non terminal UseId use_id;
+non terminal VarDecl var_decl;
+non terminal VarInit var_init;
+non terminal WhileStmt while_stmt;
 
 
 /* Precedences */

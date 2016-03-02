@@ -24,6 +24,7 @@ public interface Visitor {
 	public void visit(OpExpr oe);
 	public void visit(PrimitiveType pt);
 	public void visit(Program p);
+	public void visit(PureContentArrayType pca);
 	public void visit(ReturnList rl);
 	public void visit(ReturnStmt rs);
 	public void visit(ReturnType rt);

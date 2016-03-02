@@ -1,5 +1,6 @@
 package jl2755.ast;
 
+import jl2755.visitor.Visitor;
 
 public class ReturnList {
 	private Expr expr;
@@ -23,5 +24,9 @@ public class ReturnList {
 		if (index == 1) {
 			returnList.prettyPrintNode();
 		}
+	}
+	
+	public void accept(Visitor v){
+		v.visit(this);
 	}
 }

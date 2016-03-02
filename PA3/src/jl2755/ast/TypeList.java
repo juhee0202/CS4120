@@ -3,6 +3,8 @@ package jl2755.ast;
 import java.util.ArrayList;
 import java.util.List;
 
+import jl2755.visitor.Visitor;
+
 /**
  * Represents the return type list in a recursive manner.
  * index
@@ -43,4 +45,8 @@ public class TypeList {
 		}
 		return l;
 	}	
+	
+	public void accept(Visitor v){
+		v.visit(this);
+	}
 }

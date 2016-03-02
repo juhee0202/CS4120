@@ -5,6 +5,7 @@ import java.util.List;
 
 import edu.cornell.cs.cs4120.util.CodeWriterSExpPrinter;
 import jl2755.GlobalPrettyPrinter;
+import jl2755.visitor.Visitor;
 
 /**
  * Represents the return types of a function
@@ -45,5 +46,9 @@ public class ReturnType {
 		}
 		typeList.prettyPrintNode();
 		tempPrinter.endList();
+	}
+	
+	public void accept(Visitor v){
+		v.visit(this);
 	}
 }

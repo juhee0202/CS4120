@@ -205,6 +205,11 @@ public class TypeCheckVisitor implements Visitor {
 		// TODO Auto-generated method stub
 		
 	}
+	
+	@Override
+	public void visit(PureContentArrayType pca) {
+		// TODO Auto-generated method stub
+	}
 
 	@Override
 	public void visit(ReturnList rl) {

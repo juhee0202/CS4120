@@ -1,5 +1,7 @@
 package jl2755.ast;
 
+import jl2755.visitor.Visitor;
+
 public class ArrayElementList {
 	private Expr expr;
 	private ArrayElementList arrElemList;
@@ -28,5 +30,9 @@ public class ArrayElementList {
 		if (index == 1) {
 			arrElemList.prettyPrintNode();
 		}
+	}
+	
+	public void accept(Visitor v){
+		v.visit(this);
 	}
 }

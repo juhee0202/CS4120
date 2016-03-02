@@ -5,15 +5,17 @@ import java.util.List;
 import edu.cornell.cs.cs4120.util.CodeWriterSExpPrinter;
 import jl2755.GlobalPrettyPrinter;
 
+/**
+ *	Represents function declaration which has the following grammar:
+ *	identifier(functionParam)returnType blockStmt
+ */
 public class FunctionDecl {
 	private Identifier identifier;
 	private FunctionParam functionParam;
 	private ReturnType returnType;
 	private BlockStmt blockStmt;
 	
-	public FunctionDecl(Identifier s, 
-						FunctionParam fp,
-						ReturnType rt,
+	public FunctionDecl(Identifier s, FunctionParam fp, ReturnType rt,
 						BlockStmt bs) {
 		identifier = s;
 		functionParam = fp;

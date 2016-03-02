@@ -18,13 +18,18 @@ public class TupleType implements VType {
 	 * the VarDecls on the left side.
 	 * Null entries represent underscores.
 	 */
-	private List<VType> types = new ArrayList<VType>();
+	private List<VType> types;
+	
+	public TupleType() {
+		types = new ArrayList<VType>();
+	}
 	
 	/** 
 	 * @param argTupleInit and makes a List of
 	 * VarTypes for the elements in the Tuple
 	 */
 	public TupleType(TupleInit argTupleInit) {
+		types = new ArrayList<VType>();
 		if (argTupleInit.getIndex() == 0){
 			types.add(null);
 		}
@@ -52,8 +57,8 @@ public class TupleType implements VType {
 		this.types = types;
 	}
 	
-	public void addToVarTypes(VarType argVarType) {
-		types.add(argVarType);
+	public void addToTypes(VarType argType) {
+		types.add(argType);
 	}
 
 	@Override

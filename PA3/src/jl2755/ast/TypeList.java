@@ -3,6 +3,12 @@ package jl2755.ast;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Represents the return type list in a recursive manner.
+ * index
+ * 	- 0: 1 return type
+ * 	- 1: 1< return types  
+ */
 public class TypeList {
 	private Type type;
 	private TypeList typeList;
@@ -26,6 +32,9 @@ public class TypeList {
 		}
 	}
 
+	/**
+	 * @return a List containing the return types
+	 */
 	public List<Type> getReturnTypes() {
 		List<Type> l = new ArrayList<Type>();
 		l.add(type);

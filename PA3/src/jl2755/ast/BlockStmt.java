@@ -44,4 +44,28 @@ public class BlockStmt implements NakedStmt {
 		// TODO Auto-generated method stub
 		
 	}
+
+	public StmtList getStmtList() {
+		return stmtList;
+	}
+
+	public void setStmtList(StmtList stmtList) {
+		this.stmtList = stmtList;
+	}
+
+	public ReturnStmt getReturnStmt() {
+		return returnStmt;
+	}
+
+	public void setReturnStmt(ReturnStmt returnStmt) {
+		this.returnStmt = returnStmt;
+	}
+
+	public int getIndex() {
+		return index;
+	}
+
+	public void setIndex(int index) {
+		this.index = index;
+	}
 }

@@ -43,4 +43,28 @@ public class Program{
 	public String toString(){
 		return "";
 	}
+
+	public UseId getUseId() {
+		return useId;
+	}
+
+	public void setUseId(UseId useId) {
+		this.useId = useId;
+	}
+
+	public FunctionDeclList getFunctionDeclList() {
+		return functionDeclList;
+	}
+
+	public void setFunctionDeclList(FunctionDeclList functionDeclList) {
+		this.functionDeclList = functionDeclList;
+	}
+
+	public int getIndex() {
+		return index;
+	}
+
+	public void setIndex(int index) {
+		this.index = index;
+	}
 }

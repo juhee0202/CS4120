@@ -26,4 +26,20 @@ public class ReturnStmt {
 		}
 		tempPrinter.endList();
 	}
+
+	public ReturnList getReturnList() {
+		return returnList;
+	}
+
+	public void setReturnList(ReturnList returnList) {
+		this.returnList = returnList;
+	}
+
+	public int getIndex() {
+		return index;
+	}
+
+	public void setIndex(int index) {
+		this.index = index;
+	}
 }

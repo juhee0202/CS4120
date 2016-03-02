@@ -89,7 +89,13 @@ public class TypeCheckVisitor implements Visitor {
 
 	@Override
 	public void visit(BlockStmt bs) {
-		// TODO Auto-generated method stub
+		// Check stmt list
+		(bs.getStmtList()).accept(this);
+		
+		// Check return stmt
+		if (bs.getIndex() == 2) {
+			(bs.getReturnStmt()).accept(this);
+		}
 		
 	}
 
@@ -202,20 +208,30 @@ public class TypeCheckVisitor implements Visitor {
 
 	@Override
 	public void visit(Program p) {
-		// TODO Auto-generated method stub
+		// Check use
+		if (p.getIndex() == 1) {
+			// something
+		}
+		
+		// Check functions
+		(p.getFunctionDeclList()).accept(this);
 		
 	}
 
 	@Override
 	public void visit(ReturnList rl) {
-		// TODO Auto-generated method stub
+		(rl.getExpr()).accept(this);
+		if (rl.getIndex() == 1) {
+			(rl.getReturnList()).accept(this);
+		}
 		
 	}
 
 	@Override
 	public void visit(ReturnStmt rs) {
-		// TODO Auto-generated method stub
-		
+		if (rs.getIndex() == 1) {
+			(rs.getReturnList()).accept(this);
+		}
 	}
 
 	@Override
@@ -231,7 +247,13 @@ public class TypeCheckVisitor implements Visitor {
 
 	@Override
 	public void visit(StmtList sl) {
-		// TODO Auto-generated method stub
+		// Check stmt
+		(sl.getStmt()).accept(this);
+		
+		// Check stmt list
+		if (sl.getIndex() == 1) {
+			(sl.getStmtList()).accept(this);
+		}
 		
 	}
 

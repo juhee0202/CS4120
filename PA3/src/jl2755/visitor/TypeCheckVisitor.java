@@ -46,7 +46,7 @@ public class TypeCheckVisitor implements Visitor {
 			if (numberOfBrackets > varTypeView.getNumBrackets()){
 				// TODO: ERROR HANDLING
 			}
-			tempType = new VarType(varTypeView.isBool(), varTypeView.getNumBrackets() - numberOfBrackets);
+			tempType = new VarType(varTypeView.getIsBool(), varTypeView.getNumBrackets() - numberOfBrackets);
 		}
 		else if (index == 1){
 			ae.getFunctionCall().accept(this);
@@ -58,7 +58,7 @@ public class TypeCheckVisitor implements Visitor {
 			if (numberOfBrackets > arrayTypeAfterVisit.getNumBrackets()){
 				// TODO: ERROR HANDLING
 			}
-			boolean oldIsBool = arrayTypeAfterVisit.isBool();
+			boolean oldIsBool = arrayTypeAfterVisit.getIsBool();
 			int oldNumBrackets = arrayTypeAfterVisit.getNumBrackets();
 			tempType = new VarType(oldIsBool, oldNumBrackets - numberOfBrackets);
 		}
@@ -72,7 +72,7 @@ public class TypeCheckVisitor implements Visitor {
 			if (numberOfBrackets > arrayTypeAfterVisit.getNumBrackets()){
 				// TODO: ERROR HANDLING
 			}
-			boolean oldIsBool = arrayTypeAfterVisit.isBool();
+			boolean oldIsBool = arrayTypeAfterVisit.getIsBool();
 			int oldNumBrackets = arrayTypeAfterVisit.getNumBrackets();
 			tempType = new VarType(oldIsBool, oldNumBrackets - numberOfBrackets);
 		}
@@ -97,7 +97,7 @@ public class TypeCheckVisitor implements Visitor {
 				// TODO: ERROR HANDLING on i+1
 			}
 		}
-		tempType = new VarType(tempTypesOfExprs.get(0).isBool(), tempTypesOfExprs.get(0).getNumBrackets());
+		tempType = new VarType(tempTypesOfExprs.get(0).getIsBool(), tempTypesOfExprs.get(0).getNumBrackets());
 	}
 
 	/**
@@ -110,7 +110,7 @@ public class TypeCheckVisitor implements Visitor {
 			// TODO: ERROR HANDLING
 		}
 		VarType tempVarView = (VarType) tempType;
-		boolean oldIsBool = tempVarView.isBool();
+		boolean oldIsBool = tempVarView.getIsBool();
 		int oldNumBrackets = tempVarView.getNumBrackets();
 		tempType = new VarType(oldIsBool, oldNumBrackets + 1);
 	}
@@ -197,7 +197,7 @@ public class TypeCheckVisitor implements Visitor {
 		// if PLUS, (i) both are int (ii) both are arrays with same element type
 		if (be.getBinaryOp().toString().equals("+")) {
 			if ( !(leftType.isInt() && rightType.isInt()) && 
-					!(leftType.isArray() && !leftType.equals(rightType) ) {
+					!(leftType.isArray() && !leftType.equals(rightType) )) {
 				//TODO error handling JONA DO THIS
 			}
 		}

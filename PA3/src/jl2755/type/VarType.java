@@ -22,11 +22,11 @@ public class VarType implements VType {
 	public VarType(jl2755.ast.Type t) {
 		if (t instanceof PrimitiveType) {
 			PrimitiveType temp = (PrimitiveType)t;
-			setBool(temp.getIndex() == 1);
+			setIsBool(temp.getIndex() == 1);
 			numBrackets = 0;
 		} else {
 			EmptyArrayType temp = (EmptyArrayType)t;
-			setBool(temp.getPrimitiveType().getIndex() == 1);
+			setIsBool(temp.getPrimitiveType().getIndex() == 1);
 			numBrackets = temp.getBrackets().getNumBrackets();
 		}
 	}
@@ -44,7 +44,7 @@ public class VarType implements VType {
 		}
 		if (vd.getIndex() == 1){
 			PrimitiveType pt = vd.getPrimitiveType();
-			setBool(pt.getIndex() == 1);
+			setIsBool(pt.getIndex() == 1);
 			numBrackets = 0;
 		}
 	}
@@ -58,7 +58,7 @@ public class VarType implements VType {
 		if (idType.getNumBrackets() < indexedBrackets.getNumBrackets()){
 			// TODO: ERROR HANDLING
 		}
-		isBool = idType.isBool();
+		isBool = idType.getIsBool();
 		numBrackets = idType.getNumBrackets() - indexedBrackets.getNumBrackets();
 	}
 
@@ -74,12 +74,16 @@ public class VarType implements VType {
 		return !isBool && (numBrackets == 0);
 	}
 	
-	public boolean isBool() {
+	public boolean getIsBool() {
 		return isBool;
 	}
 
-	public void setBool(boolean isBool) {
+	public void setIsBool(boolean isBool) {
 		this.isBool = isBool;
+	}
+	
+	public boolean isBool() {
+		return isBool && (numBrackets == 0);
 	}
 
 	public int getNumBrackets() {

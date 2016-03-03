@@ -91,9 +91,21 @@ public class TypeCheckVisitor implements Visitor {
 		right.accept(this);
 		VType rightType = tempType;
 
-		if (!leftType.equals(rightType)) {
-			//TODO error handling
-		}		
+		// if PLUS, type can be either int or int[]
+		if (be.getBinaryOp().toString().equals("+")) {
+			if ( !(leftType.equals(new VarType(PrimitiveType(0))) || 
+						leftType.equals(new VarType())) || 
+				 !(rightType.equals(new VarType(PrimitiveTYpe(0))) || 
+				 		rightType.equals()) ) {
+				//TODO error handling JONA DO THIS
+			}
+		}
+		else {
+			if (!leftType.equals(new VarType(PrimitiveType(0))) ||
+				!rightType.equals(new VarType(PrimitiveType(0))) {
+					//TODO error handling
+				}
+		}	
 	}
 
 	@Override

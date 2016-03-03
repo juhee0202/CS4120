@@ -164,7 +164,7 @@ public class TypeCheckVisitor implements Visitor {
 		// if PLUS, (i) both are int (ii) both are arrays with same element type
 		if (be.getBinaryOp().toString().equals("+")) {
 			if ( !(leftType.isInt() && rightType.isInt()) && 
-					!(leftType.isArray() && !leftType.equals(rightType) ) {
+					!(leftType.isArray() && !leftType.equals(rightType)) ) {
 				//TODO error handling JONA DO THIS
 			}
 		}

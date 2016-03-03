@@ -48,6 +48,8 @@ non terminal FunctionParam function_param;
 non terminal Identifier identifier;
 non terminal IfStmt if_stmt;
 non terminal IndexedBrackets indexed_brackets;
+non terminal InterfaceFunc interface_func;
+non terminal InterfaceList interface_list;
 non terminal Literal literal;
 non terminal MixedArrayType mixed_array_type;
 non terminal MixedBrackets mixed_brackets;
@@ -180,7 +182,7 @@ function_param ::= identifier:id COLON type:t                       {: RESULT = 
                    ;
 
 identifier ::= IDENTIFIER:id                                        {: RESULT = new Identifier(id); :}
-               ;
+               ; 
 
 if_stmt ::= IF OPEN_PAREN expr:e CLOSE_PAREN stmt:s                 {: RESULT = new IfStmt(e, s); :}
             | 
@@ -192,6 +194,15 @@ indexed_brackets ::= OPEN_BRACKET expr:e CLOSE_BRACKET              {: RESULT = 
                      OPEN_BRACKET expr:e CLOSE_BRACKET
                      indexed_brackets:ib                            {: RESULT = new IndexedBrackets(e, ib); :}
                      ;
+
+interface_func ::= identifier:id OPEN_PAREN function_param:fp 
+                   CLOSE_PAREN return_type:rt                       {: RESULT = new InterfaceFunc(id, fp, rt); :}
+                   ;
+
+interface_list ::= interface_func:ifd interface_list:il             {: RESULT = new InterfaceList(ifd, il); :}
+                   |                       
+                   interface_func:ifd                               {: RESULT = new InterfaceList(ifd); :}
+                   ;
 
 literal ::= INTEGER_LITERAL:il                                      {: RESULT = new Literal(il); :}
             |
@@ -279,6 +290,8 @@ primitive_type ::= INT:i                                            {: RESULT = 
 program ::= function_decl_list:fdl                                  {: RESULT = new Program(fdl); :}
             |
             use_id:useidc function_decl_list:fdl                    {: RESULT = new Program(useidc, fdl); :}
+            |
+            interface_list:il                                       {: RESULT = new Interface(il); :}
             |
             error:e                                                 {: Main.handleError("Unexpected token "); :}  
             ;

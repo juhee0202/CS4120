@@ -1059,7 +1059,7 @@ class CUP$parser$actions {
                 int faleft = CUP$parser$stack.elementAt(CUP$parser$top-1).left;
                 int faright = CUP$parser$stack.elementAt(CUP$parser$top-1).right;
                 FunctionArg fa = CUP$parser$stack.elementAt(CUP$parser$top-1).<FunctionArg> value();
-                 RESULT = new FunctionCall(id, fa); 
+                 RESULT = new FunctionCall(id, fa, idleft, idright, faleft, faright); 
                 CUP$parser$result = parser.getSymbolFactory().newSymbol("function_call",11, CUP$parser$stack.elementAt(CUP$parser$top-3), CUP$parser$stack.peek(), RESULT);
             }
             return CUP$parser$result;
@@ -1071,7 +1071,7 @@ class CUP$parser$actions {
                 int idleft = CUP$parser$stack.elementAt(CUP$parser$top-2).left;
                 int idright = CUP$parser$stack.elementAt(CUP$parser$top-2).right;
                 Identifier id = CUP$parser$stack.elementAt(CUP$parser$top-2).<Identifier> value();
-                 RESULT = new FunctionCall(id); 
+                 RESULT = new FunctionCall(id, idleft, idright); 
                 CUP$parser$result = parser.getSymbolFactory().newSymbol("function_call",11, CUP$parser$stack.elementAt(CUP$parser$top-2), CUP$parser$stack.peek(), RESULT);
             }
             return CUP$parser$result;
@@ -1083,7 +1083,7 @@ class CUP$parser$actions {
                 int eleft = CUP$parser$stack.elementAt(CUP$parser$top-1).left;
                 int eright = CUP$parser$stack.elementAt(CUP$parser$top-1).right;
                 Expr e = CUP$parser$stack.elementAt(CUP$parser$top-1).<Expr> value();
-                 RESULT = new FunctionCall(e) 
+                 RESULT = new FunctionCall(e, eleft, eright); 
                 CUP$parser$result = parser.getSymbolFactory().newSymbol("function_call",11, CUP$parser$stack.elementAt(CUP$parser$top-3), CUP$parser$stack.peek(), RESULT);
             }
             return CUP$parser$result;
@@ -1104,7 +1104,7 @@ class CUP$parser$actions {
                 int bsleft = CUP$parser$stack.peek().left;
                 int bsright = CUP$parser$stack.peek().right;
                 BlockStmt bs = CUP$parser$stack.peek().<BlockStmt> value();
-                 RESULT = new FunctionDecl(id, fp, rt, bs); 
+                 RESULT = new FunctionDecl(id, fp, rt, bs, idleft, idright, fpleft, fpright, rtleft, rtright, bsleft, bsright); 
                 CUP$parser$result = parser.getSymbolFactory().newSymbol("function_decl",12, CUP$parser$stack.elementAt(CUP$parser$top-5), CUP$parser$stack.peek(), RESULT);
             }
             return CUP$parser$result;
@@ -1965,7 +1965,7 @@ class CUP$parser$actions {
                 int fcleft = CUP$parser$stack.peek().left;
                 int fcright = CUP$parser$stack.peek().right;
                 FunctionCall fc = CUP$parser$stack.peek().<FunctionCall> value();
-                 RESULT = new TupleInit(tdl, fc); 
+                 RESULT = new TupleInit(tdl, fc, tdlleft, tdlright, fcleft, fcright); 
                 CUP$parser$result = parser.getSymbolFactory().newSymbol("tuple_init",30, CUP$parser$stack.elementAt(CUP$parser$top-3), CUP$parser$stack.peek(), RESULT);
             }
             return CUP$parser$result;
@@ -1983,7 +1983,7 @@ class CUP$parser$actions {
                 int fcleft = CUP$parser$stack.peek().left;
                 int fcright = CUP$parser$stack.peek().right;
                 FunctionCall fc = CUP$parser$stack.peek().<FunctionCall> value();
-                 RESULT = new TupleInit(vd, tdl, fc); 
+                 RESULT = new TupleInit(vd, tdl, fc, vdleft, vdright, tdlleft, tdlright, fcleft, fcright); 
                 CUP$parser$result = parser.getSymbolFactory().newSymbol("tuple_init",30, CUP$parser$stack.elementAt(CUP$parser$top-3), CUP$parser$stack.peek(), RESULT);
             }
             return CUP$parser$result;
@@ -1995,7 +1995,7 @@ class CUP$parser$actions {
                 int fcleft = CUP$parser$stack.peek().left;
                 int fcright = CUP$parser$stack.peek().right;
                 FunctionCall fc = CUP$parser$stack.peek().<FunctionCall> value();
-                 RESULT = new TupleInit(fc); 
+                 RESULT = new TupleInit(fc, fcleft, fcright); 
                 CUP$parser$result = parser.getSymbolFactory().newSymbol("tuple_init",30, CUP$parser$stack.elementAt(CUP$parser$top-2), CUP$parser$stack.peek(), RESULT);
             }
             return CUP$parser$result;

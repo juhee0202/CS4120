@@ -153,15 +153,15 @@ function_arg ::= expr:expression                                    {: RESULT = 
                  ;
 
 function_call ::= identifier:id OPEN_PAREN 
-                  function_arg:fa CLOSE_PAREN                       {: RESULT = new FunctionCall(id, fa); :}
+                  function_arg:fa CLOSE_PAREN                       {: RESULT = new FunctionCall(id, fa, idleft, idright, faleft, faright); :}
                   |
-                  identifier:id OPEN_PAREN CLOSE_PAREN              {: RESULT = new FunctionCall(id); :}
+                  identifier:id OPEN_PAREN CLOSE_PAREN              {: RESULT = new FunctionCall(id, idleft, idright); :}
                   |
-                  LENGTH OPEN_PAREN expr:e CLOSE_PAREN              {: RESULT = new FunctionCall(e); :}
+                  LENGTH OPEN_PAREN expr:e CLOSE_PAREN              {: RESULT = new FunctionCall(e, eleft, eright); :}
                   ;
 
 function_decl ::= identifier:id OPEN_PAREN function_param:fp 
-                  CLOSE_PAREN return_type:rt block_stmt:bs          {: RESULT = new FunctionDecl(id, fp, rt, bs); :}
+                  CLOSE_PAREN return_type:rt block_stmt:bs          {: RESULT = new FunctionDecl(id, fp, rt, bs, idleft, idright, fpleft, fpright, rtleft, rtright, bsleft, bsright); :}
                   ;
 
 function_decl_list ::= function_decl:fd function_decl_list:fdl      {: RESULT = new FunctionDeclList(fd, fdl); :}
@@ -318,12 +318,12 @@ tuple_decl_list ::= COMMA var_decl:vd                               {: RESULT = 
                     COMMA UNDERSCORE tuple_decl_list:tdl            {: RESULT = new TupleDeclList(tdl, true); :}
                     ;
 
-tuple_init ::= UNDERSCORE tuple_decl_list:tdl GETS function_call:fc {: RESULT = new TupleInit(tdl, fc); :}
+tuple_init ::= UNDERSCORE tuple_decl_list:tdl GETS function_call:fc {: RESULT = new TupleInit(tdl, fc, tdlleft, tdlright, fcleft, fcright); :}
                |
                var_decl:vd tuple_decl_list:tdl 
-               GETS function_call:fc                                {: RESULT = new TupleInit(vd, tdl, fc); :}
+               GETS function_call:fc                                {: RESULT = new TupleInit(vd, tdl, fc, vdleft, vdright, tdlleft, tdlright, fcleft, fcright); :}
                |
-               UNDERSCORE GETS function_call:fc                     {: RESULT = new TupleInit(fc); :}
+               UNDERSCORE GETS function_call:fc                     {: RESULT = new TupleInit(fc, fcleft, fcright); :}
                ;
 
 type ::= primitive_type:pt                                          {: RESULT = pt; :}

@@ -461,10 +461,6 @@ public class TypeCheckVisitor implements Visitor {
 		// Check functions
 		(p.getFunctionDeclList()).accept(this);
 	}
-		
-	public void visit(PureContentArrayType pca) {
-		// TODO Auto-generated method stub
-	}
 
 	@Override
 	public void visit(ReturnList rl) {
@@ -512,12 +508,6 @@ public class TypeCheckVisitor implements Visitor {
 		if (sl.getIndex() == 1) {
 			(sl.getStmtList()).accept(this);
 		}
-		
-	}
-
-	@Override
-	public void visit(TupleDeclList tdl) {
-		// TODO Auto-generated method stub
 		
 	}
 

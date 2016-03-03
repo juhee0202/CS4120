@@ -14,7 +14,6 @@ public interface Visitor {
 	public void visit(FunctionCall fc);
 	public void visit(FunctionDecl fd);
 	public void visit(FunctionDeclList fdl);
-	public void visit(FunctionParam fp);
 	public void visit(Identifier i);
 	public void visit(IfStmt is);
 	public void visit(Literal l);

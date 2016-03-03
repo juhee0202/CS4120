@@ -159,11 +159,9 @@ function_arg ::= expr:expression                                    {: RESULT = 
 function_call ::= identifier:id OPEN_PAREN 
                   function_arg:fa CLOSE_PAREN                       {: RESULT = new FunctionCall(id, fa); :}
                   |
-                  identifier:id OPEN_PAREN CLOSE_PAREN              {: RESULT = new FunctionCall(id, false); :}
+                  identifier:id OPEN_PAREN CLOSE_PAREN              {: RESULT = new FunctionCall(id); :}
                   |
-                  LENGTH OPEN_PAREN identifier:id CLOSE_PAREN       {: RESULT = new FunctionCall(id, true); :}
-                  |
-                  LENGTH OPEN_PAREN array_element:ae CLOSE_PAREN    {: RESULT = new FunctionCall(ae); :}
+                  LENGTH OPEN_PAREN expr:e CLOSE_PAREN              {: RESULT = new FunctionCall(e); :}
                   ;
 
 function_decl ::= identifier:id OPEN_PAREN function_param:fp 
@@ -225,14 +223,13 @@ mixed_array_type ::= primitive_type:pt brackets:b                   {: RESULT = 
                      primitive_type:pt mixed_brackets:mb            {: RESULT = new MixedArrayType(pt, mb); :}
                      ;
 
-mixed_brackets ::=        OPEN_BRACKET expr:e CLOSE_BRACKET         {: RESULT = new MixedBrackets(e); :}
-                          |
-                          OPEN_BRACKET expr:e CLOSE_BRACKET 
-                          mixed_brackets:mb                         {: RESULT = new MixedBrackets(e, mb); :}
-                          |
-                          OPEN_BRACKET expr:e 
-                          CLOSE_BRACKET brackets:b                  {: RESULT = new MixedBrackets(e, b); :}
-                          ;
+mixed_brackets ::= OPEN_BRACKET expr:e CLOSE_BRACKET                {: RESULT = new MixedBrackets(e); :}
+                   |
+                   OPEN_BRACKET expr:e CLOSE_BRACKET 
+                   mixed_brackets:mb                                {: RESULT = new MixedBrackets(e, mb); :}
+                   |
+                   OPEN_BRACKET expr:e CLOSE_BRACKET brackets:b     {: RESULT = new MixedBrackets(e, b); :}
+                   ;
 
 naked_stmt ::= assignment_stmt:ass                                  {: RESULT = ass; :}
                |

@@ -2,6 +2,7 @@ package jl2755.ast;
 
 import edu.cornell.cs.cs4120.util.CodeWriterSExpPrinter;
 import jl2755.GlobalPrettyPrinter;
+import jl2755.visitor.Visitor;
 
 public class TupleInit implements NakedStmt {
 	private TupleDeclList tupleDeclList;
@@ -54,6 +55,11 @@ public class TupleInit implements NakedStmt {
 			functionCall.prettyPrintNode();
 		}
 		tempPrinter.endList();
+	}
+
+	@Override
+	public void accept(Visitor v) {
+		v.visit(this);
 	}
 
 	public TupleDeclList getTupleDeclList() {

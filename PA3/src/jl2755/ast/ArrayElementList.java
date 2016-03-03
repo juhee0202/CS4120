@@ -1,5 +1,13 @@
 package jl2755.ast;
 
+import jl2755.visitor.Visitor;
+
+
+/**
+ * Class that embodies the sequence of expressions
+ * inside curly braces, i.e. the content of an
+ * ArrayLiteral.
+ */
 public class ArrayElementList {
 	private Expr expr;
 	private ArrayElementList arrElemList;
@@ -28,5 +36,9 @@ public class ArrayElementList {
 		if (index == 1) {
 			arrElemList.prettyPrintNode();
 		}
+	}
+	
+	public void accept(Visitor v){
+		v.visit(this);
 	}
 }

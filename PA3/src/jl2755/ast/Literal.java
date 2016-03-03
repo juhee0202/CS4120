@@ -2,6 +2,7 @@ package jl2755.ast;
 
 import edu.cornell.cs.cs4120.util.CodeWriterSExpPrinter;
 import jl2755.GlobalPrettyPrinter;
+import jl2755.visitor.Visitor;
 
 public class Literal implements Constant {
 	private Long intLit;
@@ -35,6 +36,46 @@ public class Literal implements Constant {
 		tempPrinter.printAtom(this.toString());
 	}
 	
+	public Long getIntLit() {
+		return intLit;
+	}
+
+	public void setIntLit(Long intLit) {
+		this.intLit = intLit;
+	}
+
+	public String getStringLit() {
+		return stringLit;
+	}
+
+	public void setStringLit(String stringLit) {
+		this.stringLit = stringLit;
+	}
+
+	public Character getCharLit() {
+		return charLit;
+	}
+
+	public void setCharLit(Character charLit) {
+		this.charLit = charLit;
+	}
+
+	public Boolean getBoolLit() {
+		return boolLit;
+	}
+
+	public void setBoolLit(Boolean boolLit) {
+		this.boolLit = boolLit;
+	}
+
+	public int getIndex() {
+		return index;
+	}
+
+	public void setIndex(int index) {
+		this.index = index;
+	}
+
 	@Override
 	public String toString(){
 		String ret = "";
@@ -47,5 +88,9 @@ public class Literal implements Constant {
 		}
 		
 		return ret;
+	}
+	
+	public void accept(Visitor v){
+		v.visit(this);
 	}
 }

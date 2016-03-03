@@ -1,9 +1,11 @@
 package jl2755.ast;
 
 import java.util.List;
+import java.util.Map;
 
 import edu.cornell.cs.cs4120.util.CodeWriterSExpPrinter;
 import jl2755.GlobalPrettyPrinter;
+import jl2755.visitor.Visitor;
 
 /**
  *	Represents function declaration which has the following grammar:
@@ -21,6 +23,14 @@ public class FunctionDecl {
 		functionParam = fp;
 		returnType = rt;
 		blockStmt = bs;
+	}
+	
+	public Map<String, Type> getParamsWithTypes() {
+		return functionParam.getParamsWithTypes();
+	}
+	
+	public List<String> getParams() {
+		return functionParam.getParams();
 	}
 	
 	public List<Type> getParamTypes(){
@@ -58,19 +68,15 @@ public class FunctionDecl {
 		this.functionParam = functionParam;
 	}
 
-	public ReturnType getReturnType() {
-		return returnType;
-	}
-
-	public void setReturnType(ReturnType returnType) {
-		this.returnType = returnType;
-	}
-
 	public BlockStmt getBlockStmt() {
 		return blockStmt;
 	}
 
 	public void setBlockStmt(BlockStmt blockStmt) {
 		this.blockStmt = blockStmt;
+	}
+	
+	public void accept(Visitor v){
+		v.visit(this);
 	}
 }

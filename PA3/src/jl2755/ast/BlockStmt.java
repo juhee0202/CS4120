@@ -2,6 +2,7 @@ package jl2755.ast;
 
 import edu.cornell.cs.cs4120.util.CodeWriterSExpPrinter;
 import jl2755.GlobalPrettyPrinter;
+import jl2755.visitor.Visitor;
 
 public class BlockStmt implements NakedStmt {
 	private StmtList stmtList;
@@ -36,5 +37,34 @@ public class BlockStmt implements NakedStmt {
 			returnStmt.prettyPrintNode();
 		}
 		tempPrinter.endList();
+	}
+
+	@Override
+	public void accept(Visitor v) {
+		v.visit(this);
+	}
+
+	public StmtList getStmtList() {
+		return stmtList;
+	}
+
+	public void setStmtList(StmtList stmtList) {
+		this.stmtList = stmtList;
+	}
+
+	public ReturnStmt getReturnStmt() {
+		return returnStmt;
+	}
+
+	public void setReturnStmt(ReturnStmt returnStmt) {
+		this.returnStmt = returnStmt;
+	}
+
+	public int getIndex() {
+		return index;
+	}
+
+	public void setIndex(int index) {
+		this.index = index;
 	}
 }

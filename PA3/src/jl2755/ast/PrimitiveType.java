@@ -2,6 +2,7 @@ package jl2755.ast;
 
 import edu.cornell.cs.cs4120.util.CodeWriterSExpPrinter;
 import jl2755.GlobalPrettyPrinter;
+import jl2755.visitor.Visitor;
 
 public class PrimitiveType implements Type{
 	
@@ -27,5 +28,10 @@ public class PrimitiveType implements Type{
 		} else {
 			tempPrinter.printAtom("bool");
 		}
+	}
+	
+	@Override
+	public void accept(Visitor v){
+		v.visit(this);
 	}
 }

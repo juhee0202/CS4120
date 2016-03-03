@@ -155,11 +155,9 @@ function_arg ::= expr:expression                                    {: RESULT = 
 function_call ::= identifier:id OPEN_PAREN 
                   function_arg:fa CLOSE_PAREN                       {: RESULT = new FunctionCall(id, fa); :}
                   |
-                  identifier:id OPEN_PAREN CLOSE_PAREN              {: RESULT = new FunctionCall(id, false); :}
+                  identifier:id OPEN_PAREN CLOSE_PAREN              {: RESULT = new FunctionCall(id); :}
                   |
-                  LENGTH OPEN_PAREN identifier:id CLOSE_PAREN       {: RESULT = new FunctionCall(id, true); :}
-                  |
-                  LENGTH OPEN_PAREN array_element:ae CLOSE_PAREN    {: RESULT = new FunctionCall(ae); :}
+                  LENGTH OPEN_PAREN expr:e CLOSE_PAREN              {: RESULT = new FunctionCall(e); :}
                   ;
 
 function_decl ::= identifier:id OPEN_PAREN function_param:fp 

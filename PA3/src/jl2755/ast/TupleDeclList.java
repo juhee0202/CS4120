@@ -5,6 +5,7 @@ import java.util.List;
 
 import edu.cornell.cs.cs4120.util.CodeWriterSExpPrinter;
 import jl2755.GlobalPrettyPrinter;
+import jl2755.visitor.Visitor;
 
 public class TupleDeclList {
 	private VarDecl varDecl;
@@ -92,5 +93,9 @@ public class TupleDeclList {
 			temp.addAll(tupleDeclList.getVarDecls());
 		}
 		return temp;
+	}
+	
+	public void accept(Visitor v){
+		v.visit(this);
 	}
 }

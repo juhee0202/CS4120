@@ -2,6 +2,7 @@ package jl2755.ast;
 
 import edu.cornell.cs.cs4120.util.CodeWriterSExpPrinter;
 import jl2755.GlobalPrettyPrinter;
+import jl2755.visitor.Visitor;
 
 public class IfStmt implements NakedStmt {
 	private Expr expr;
@@ -33,5 +34,42 @@ public class IfStmt implements NakedStmt {
 			stmt2.prettyPrintNode();
 		}
 		tempPrinter.endList();
+	}
+
+	@Override
+	public void accept(Visitor v) {
+		v.visit(this);
+	}
+
+	public Expr getExpr() {
+		return expr;
+	}
+
+	public void setExpr(Expr expr) {
+		this.expr = expr;
+	}
+
+	public Stmt getStmt1() {
+		return stmt1;
+	}
+
+	public void setStmt1(Stmt stmt1) {
+		this.stmt1 = stmt1;
+	}
+
+	public Stmt getStmt2() {
+		return stmt2;
+	}
+
+	public void setStmt2(Stmt stmt2) {
+		this.stmt2 = stmt2;
+	}
+
+	public int getIndex() {
+		return index;
+	}
+
+	public void setIndex(int index) {
+		this.index = index;
 	}
 }

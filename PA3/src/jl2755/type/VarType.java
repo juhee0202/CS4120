@@ -1,6 +1,7 @@
 package jl2755.type;
 
 import jl2755.ast.EmptyArrayType;
+import jl2755.ast.IndexedBrackets;
 import jl2755.ast.MixedArrayType;
 import jl2755.ast.PrimitiveType;
 import jl2755.ast.VarDecl;
@@ -48,10 +49,27 @@ public class VarType implements VType {
 		}
 	}
 	
+	public VarType(boolean argIsBool, int argNumBrackets){
+		isBool = argIsBool;
+		numBrackets = argNumBrackets;
+	}
+
+	public VarType(VarType idType, IndexedBrackets indexedBrackets) {
+		// TODO Auto-generated constructor stub JONA
+	}
+
 	public boolean isPrimitive() {
 		return numBrackets == 0;
 	}
-
+	
+	public boolean isArray() {
+		return numBrackets > 0;
+	}
+	
+	public boolean isInt() {
+		return !isBool && (numBrackets == 0);
+	}
+	
 	public boolean isBool() {
 		return isBool;
 	}

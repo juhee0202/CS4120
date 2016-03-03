@@ -16,6 +16,7 @@ public enum BinaryOp {
 	EQUAL,
 	NOT_EQUAL;
 	
+
 	public String toString() {
 		String ret = "";
 		

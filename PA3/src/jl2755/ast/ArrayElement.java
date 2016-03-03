@@ -4,7 +4,13 @@ import java.util.List;
 
 import edu.cornell.cs.cs4120.util.CodeWriterSExpPrinter;
 import jl2755.GlobalPrettyPrinter;
+import jl2755.visitor.Visitor;
 
+/**
+ * Class that represents a reference to an already declared Variable,
+ * functionCall, or an ArrayLiteral that is an array. Must have
+ * brackets that all have indices in them.
+ */
 public class ArrayElement implements Expr {
 	private Identifier identifier;
 	private FunctionCall functionCall;
@@ -68,5 +74,49 @@ public class ArrayElement implements Expr {
 				tempPrinter.endList();
 			}
 		}
+	}
+	
+	public void accept(Visitor v){
+		v.visit(this);
+	}
+
+	public Identifier getIdentifier() {
+		return identifier;
+	}
+
+	public void setIdentifier(Identifier identifier) {
+		this.identifier = identifier;
+	}
+
+	public FunctionCall getFunctionCall() {
+		return functionCall;
+	}
+
+	public void setFunctionCall(FunctionCall functionCall) {
+		this.functionCall = functionCall;
+	}
+
+	public IndexedBrackets getIndexedBrackets() {
+		return indexedBrackets;
+	}
+
+	public void setIndexedBrackets(IndexedBrackets indexedBrackets) {
+		this.indexedBrackets = indexedBrackets;
+	}
+
+	public ArrayLiteral getArrayLiteral() {
+		return arrayLiteral;
+	}
+
+	public void setArrayLiteral(ArrayLiteral arrayLiteral) {
+		this.arrayLiteral = arrayLiteral;
+	}
+
+	public int getIndex() {
+		return index;
+	}
+
+	public void setIndex(int index) {
+		this.index = index;
 	}
 }

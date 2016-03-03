@@ -36,6 +36,46 @@ public class Literal implements Constant {
 		tempPrinter.printAtom(this.toString());
 	}
 	
+	public Long getIntLit() {
+		return intLit;
+	}
+
+	public void setIntLit(Long intLit) {
+		this.intLit = intLit;
+	}
+
+	public String getStringLit() {
+		return stringLit;
+	}
+
+	public void setStringLit(String stringLit) {
+		this.stringLit = stringLit;
+	}
+
+	public Character getCharLit() {
+		return charLit;
+	}
+
+	public void setCharLit(Character charLit) {
+		this.charLit = charLit;
+	}
+
+	public Boolean getBoolLit() {
+		return boolLit;
+	}
+
+	public void setBoolLit(Boolean boolLit) {
+		this.boolLit = boolLit;
+	}
+
+	public int getIndex() {
+		return index;
+	}
+
+	public void setIndex(int index) {
+		this.index = index;
+	}
+
 	@Override
 	public String toString(){
 		String ret = "";

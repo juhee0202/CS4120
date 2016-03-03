@@ -88,12 +88,22 @@ public class TypeCheckVisitor implements Visitor {
 	@Override
 	public void visit(AssignmentStmt as) {
 		int index = as.getIndex();
+		
+		// ex: a = 3
 		if (index == 0) {
-
 			// Identifier visit checks if its in env
+			String id = as.getIdentifier().toString();
+			if (!env.containsKey(id)) {
+				// TODO error handling
+			}
 			
-			as.getIdentifier().accept(this);
-			VType idType = tempType;	// can also do env.get(id);
+			VType idType = env.get(id);
+			
+			//check that identifier is a var type
+			if (!(idType instanceof VarType)) {
+				// TODO error handling
+			}
+			
 			as.getExpr().accept(this);
 			VType exprType = tempType;
 			
@@ -101,25 +111,43 @@ public class TypeCheckVisitor implements Visitor {
 			if (!idType.equals(exprType)) {
 				// TODO: error handling
 			}
-			
+		
+		//ex: arr[2] = 3;
 		} else if (index == 1) {
-			// a[0] = 3;
 			
-			as.getIdentifier().accept(this);
-			VType idType = tempType;
+			// check if identifier is in env
+			String id = as.getIdentifier().toString();
+			if (!env.containsKey(id)) {
+				// TODO error handling
+			}
+			
+			VarType idType = (VarType)env.get(id);
+			VType elementType = new VarType(idType,as.getIndexedBrackets());
+			
 			as.getExpr().accept(this);
 			VType exprType = tempType;
 			
-			// Check types (HOW TO DO THIS: ARRAY VS. ARRAY ELEMENT)
-			if (!idType.equals(exprType)) {
+			if (!elementType.equals(exprType)) {
 				// TODO: error handling
-				// Unpackaged ArrayType into AssignmentStmt. That's
-				// there's an error.
+			}
+		
+		//ex: f(3)[0] = "herro"
+		} else {
+			as.getFunctionCall().accept(this);
+			VType functionCallType = tempType;
+			if (!(functionCallType instanceof VarType)) {
+				//TODO error handling
 			}
 			
-		} else {
-			// function call
-			// DOESN'T THIS KIND OF ASSIGNMENT STMT HAVE NO EFFECT?? ALLOWED??
+			VarType funcCallType = (VarType) functionCallType;
+			VType elementType = new VarType (funcCallType, as.getIndexedBrackets());
+			
+			as.getExpr().accept(this);
+			VType exprType = tempType;
+			
+			if (!elementType.equals(exprType)) {
+				// TODO error handling
+			}
 		}
 	}
 
@@ -151,7 +179,7 @@ public class TypeCheckVisitor implements Visitor {
 	public void visit(BlockStmt bs) {
 		// Start of scope
 		stack.add("_");
-		
+
 		// Check stmt list
 		(bs.getStmtList()).accept(this);
 		
@@ -162,7 +190,7 @@ public class TypeCheckVisitor implements Visitor {
 		
 		// Pop out of scope
 		String id = stack.pop();
-		while (id != "_") {
+		while (!id.equals("_")) {
 			env.remove(id);
 			id = stack.pop();
 		}
@@ -229,48 +257,60 @@ public class TypeCheckVisitor implements Visitor {
 		if (!exprType.equals(bType)) {
 			// TODO: error handling
 		}
+		
 		// Start new scope
-		stack.push("_");
+		if (!(is.getStmt1().getNakedStmt() instanceof BlockStmt)) {
+			stack.push("_");
+		}
 		
 		// Check if-then stmt
 		(is.getStmt1()).accept(this);
 		
 		// Pop out of scope
-		String id = stack.pop();
-		while (id != "_") {
-			env.remove(id);
-			id = stack.pop();
+		if (!(is.getStmt1().getNakedStmt() instanceof BlockStmt)) {
+			String id = stack.pop();
+			while (!id.equals("_")) {
+				env.remove(id);
+				id = stack.pop();
+			}
 		}
 		
-		// Start new scope
-		stack.push("_");
+
 		
 		// Check else stmt
 		if (is.getIndex() == 1) {
+			// Start new scope
+			if (!(is.getStmt2().getNakedStmt() instanceof BlockStmt)) {
+				stack.push("_");
+			}
+			
 			(is.getStmt2()).accept(this);
+			
+			if (!(is.getStmt2().getNakedStmt() instanceof BlockStmt)) {
+				// Pop out of scope
+				String id = stack.pop();
+				while (!id.equals("_")) {
+					env.remove(id);
+					id = stack.pop();
+				}
+			}
+
 		}
 		
-		// Pop out of scope
-		id = stack.pop();
-		while (id != "_") {
-			env.remove(id);
-			id = stack.pop();
-		}
 	}
 
+	/** 
+	 * Dirties tempType
+	 */
 	@Override
 	public void visit(Literal l) {
-		// TODO Auto-generated method stub
-		int index = l.index;
+		int index = l.getIndex();
 		switch (index) {
-			//int
-			case 0: tempType = new VarType(new PrimitiveType(0));
-			//string
-			case 1: tempType = new VarType();
-			//char
-			case 2: tempType = new VarType(new PrimitiveType(0));
-			//boolean
-			case 3: tempType = new VarType(new PrimitiveType(1));
+			case 0: tempType = new VarType(false, 0); break;		// int
+			case 1: tempType = new VarType(false, 1); break;		// string
+			case 2: tempType = new VarType(false, 0); break;		// char
+			case 3: tempType = new VarType(true, 0);	 break;		// boolean
+			default: // TODO error handling
 		}
 	}
 
@@ -390,8 +430,9 @@ public class TypeCheckVisitor implements Visitor {
 			// TODO: ERROR HaNdLiNG
 		}
 		else{
-			env.put(vd.getIdentifier().toString(), new VarType(vd));
-			tempType = env.get(vd.getIdentifier().toString());
+			String id = vd.getIdentifier().toString();
+			env.put(id, new VarType(vd));
+			tempType = env.get(id);
 		}
 	}
 
@@ -425,17 +466,22 @@ public class TypeCheckVisitor implements Visitor {
 		}
 		
 		// Start new scope
-		stack.push("_");
-		
+		if (!(ws.getStmt().getNakedStmt() instanceof BlockStmt)) {
+			stack.push("_");
+		}
+
 		// Check stmt
 		(ws.getStmt()).accept(this);
 		
 		// Pop out of scope
-		String id = stack.pop();
-		while (id != "_") {
-			env.remove(id);
-			id = stack.pop();
+		if (!(ws.getStmt().getNakedStmt() instanceof BlockStmt)) {
+			String id = stack.pop();
+			while (!id.equals("_")) {
+				env.remove(id);
+				id = stack.pop();
+			}
 		}
+
 	}
 	
 

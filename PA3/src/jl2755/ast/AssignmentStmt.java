@@ -19,6 +19,7 @@ public class AssignmentStmt implements NakedStmt {
 		index = 0;
 	}
 
+	// not using ArrayElement class
 	public AssignmentStmt(Identifier id, IndexedBrackets ib, Expr e) {
 		identifier = id;
 		indexedBrackets = ib;

@@ -140,12 +140,22 @@ public class TypeCheckVisitor implements Visitor {
 		
 	@Override
 	public void visit(BlockStmt bs) {
+		// Start of scope
+		stack.add("_");
+		
 		// Check stmt list
 		(bs.getStmtList()).accept(this);
 		
 		// Check return stmt
 		if (bs.getIndex() == 2) {
 			(bs.getReturnStmt()).accept(this);
+		}
+		
+		// Pop out of scope
+		String id = stack.pop();
+		while (id != "_") {
+			env.remove(id);
+			id = stack.pop();
 		}
 	}
 	
@@ -201,7 +211,6 @@ public class TypeCheckVisitor implements Visitor {
 	 */
 	@Override
 	public void visit(IfStmt is) {
-		
 		is.getExpr().accept(this);
 		VType exprType = tempType;
 		Type b = new PrimitiveType(1);
@@ -211,12 +220,32 @@ public class TypeCheckVisitor implements Visitor {
 		if (!exprType.equals(bType)) {
 			// TODO: error handling
 		}
+		// Start new scope
+		stack.push("_");
+		
 		// Check if-then stmt
 		(is.getStmt1()).accept(this);
+		
+		// Pop out of scope
+		String id = stack.pop();
+		while (id != "_") {
+			env.remove(id);
+			id = stack.pop();
+		}
+		
+		// Start new scope
+		stack.push("_");
 		
 		// Check else stmt
 		if (is.getIndex() == 1) {
 			(is.getStmt2()).accept(this);
+		}
+		
+		// Pop out of scope
+		id = stack.pop();
+		while (id != "_") {
+			env.remove(id);
+			id = stack.pop();
 		}
 	}
 
@@ -292,8 +321,18 @@ public class TypeCheckVisitor implements Visitor {
 
 	@Override
 	public void visit(StmtList sl) {
+		// Start new scope
+		stack.push("_");
+		
 		// Check stmt
 		(sl.getStmt()).accept(this);
+		
+		// Pop out of scope
+		String id = stack.pop();
+		while (id != "_") {
+			env.remove(id);
+			id = stack.pop();
+		}
 		
 		// Check stmt list
 		if (sl.getIndex() == 1) {
@@ -361,9 +400,11 @@ public class TypeCheckVisitor implements Visitor {
 		
 	}
 
+	/**
+	 * Dirties tempType
+	 */
 	@Override
 	public void visit(WhileStmt ws) {
-		
 		ws.getExpr().accept(this);
 		VType exprType = tempType;
 		Type b = new PrimitiveType(1);
@@ -373,9 +414,19 @@ public class TypeCheckVisitor implements Visitor {
 		if (!exprType.equals(bType)) {
 			// TODO: error handling
 		}
+		
+		// Start new scope
+		stack.push("_");
+		
 		// Check stmt
 		(ws.getStmt()).accept(this);
 		
+		// Pop out of scope
+		String id = stack.pop();
+		while (id != "_") {
+			env.remove(id);
+			id = stack.pop();
+		}
 	}
 	
 

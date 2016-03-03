@@ -1,5 +1,7 @@
 package jl2755.ast;
 
+import jl2755.visitor.Visitor;
+
 public class FunctionArg {
 	private Expr expr;
 	private FunctionArg functionArg;
@@ -21,5 +23,9 @@ public class FunctionArg {
 		if (index == 1) {
 			functionArg.prettyPrintNode();
 		}
+	}
+	
+	public void accept(Visitor v){
+		v.visit(this);
 	}
 }

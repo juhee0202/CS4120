@@ -1,7 +1,9 @@
 package jl2755.ast;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import edu.cornell.cs.cs4120.util.CodeWriterSExpPrinter;
 import jl2755.GlobalPrettyPrinter;
@@ -38,18 +40,48 @@ public class FunctionParam {
 	}
 	
 	/**
+	 * @return a Map containing each parameter's (id, type)
+	 */
+	public Map<String, Type> getParamsWithTypes() {
+		Map<String, Type> map = new HashMap<String, Type>();
+		if (index == 0) {
+			map.put(identifier.toString(), type);
+		}
+		else if (index == 1) {
+			map.put(identifier.toString(), type);
+			map.putAll(functionParam.getParamsWithTypes());
+		}
+		return map;
+	}	
+	
+	/**
 	 * @return a List containing parameter types
 	 */
-	public List<Type> getParams() {
+	public List<Type> getParamTypes() {
 		List<Type> l = new ArrayList<Type>();
-		if (index == 0){
+		if (index == 0) {
 			l.add(type);
 		}
-		if (index == 1){
+		else if (index == 1) {
 			l.add(type);
-			l.addAll(functionParam.getParams());
+			l.addAll(functionParam.getParamTypes());
 		}
 		return l;
+	}
+	
+	/**
+	 * @return a List containing parameter identifier's string values
+	 */
+	public List<String> getParams() {
+		List<String> list = new ArrayList<String>();
+		if (index == 0) {
+			list.add(identifier.toString());
+		}
+		else if (index == 1) {
+			list.add(identifier.toString());
+			list.addAll(functionParam.getParams());
+		}
+		return list;
 	}
 	
 	public void prettyPrintNode() {
@@ -64,9 +96,5 @@ public class FunctionParam {
 		if (index == 1) {
 			functionParam.prettyPrintNode();
 		}	
-	}
-	
-	public void accept(Visitor v){
-		v.visit(this);
 	}
 }

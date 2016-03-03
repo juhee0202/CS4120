@@ -2,6 +2,7 @@ package jl2755.type;
 
 import java.util.List;
 import jl2755.ast.Type;
+import jl2755.ast.FunctionCall;
 import jl2755.ast.FunctionDecl;
 
 /**
@@ -17,54 +18,62 @@ import jl2755.ast.FunctionDecl;
  *	1< return types: returns is a TupleType 
  */
 public class FunType implements VType {
-	private VType params;
-	private VType returns;
+	private VType paramTypes;
+	private VType returnTypes;
 	
+	public FunType() {
+		paramTypes = null;
+		returnTypes = null;
+	}
+	
+	/**
+	 *	Creates a FunType instance from a function declaration
+	 */
 	public FunType(FunctionDecl fd) {
 		/* Set Params */
-		List<Type> l = fd.getParams();
+		List<Type> l = fd.getParamTypes();
 		if (l.size() == 0) {
-			params = new UnitType();
+			paramTypes = new UnitType();
 		}
 		else if (l.size() == 1) {
-			params = new VarType(l.get(0));
+			paramTypes = new VarType(l.get(0));
 		}
 		else {
-			params = new TupleType();
+			paramTypes = new TupleType();
 			for (int i = 0; i < l.size(); i++) {
 				VarType vt = new VarType(l.get(i));
-				((TupleType) params).addToTypes(vt);
+				((TupleType) paramTypes).addToTypes(vt);
 			}
 		}
 		
 		/* Set Returns */
 		List<Type> ll = fd.getReturnTypes();
 		if (ll.size() == 0) {
-			returns = new UnitType();
+			returnTypes = new UnitType();
 		}
 		else if (ll.size() == 1) {
-			returns = new VarType(l.get(0));
+			returnTypes = new VarType(l.get(0));
 		}
 		else {
-			returns = new TupleType();
+			returnTypes = new TupleType();
 			for (int i = 0; i < ll.size(); i++) {
 				VarType vt = new VarType(ll.get(i));
-				((TupleType) returns).addToTypes(vt);
+				((TupleType) returnTypes).addToTypes(vt);
 			}
 		}
 	}
 	
-	public VType getParams() {
-		return params;
+	public VType getParamTypes() {
+		return paramTypes;
 	}
-	public void setParams(VType params) {
-		this.params = params;
+	public void setParamTypes(VType paramTypes) {
+		this.paramTypes = paramTypes;
 	}
-	public VType getReturns() {
-		return returns;
+	public VType getReturnTypes() {
+		return returnTypes;
 	}
-	public void setReturns(VType returns) {
-		this.returns = returns;
+	public void setReturnTypes(VType returnTypes) {
+		this.returnTypes = returnTypes;
 	}
 	
 	@Override
@@ -73,7 +82,7 @@ public class FunType implements VType {
 			return false;
 		}
 		FunType vt = (FunType)o;
-		return (this.getParams()).equals(vt.getParams()) 
-				&& (this.getReturns()).equals(vt.getReturns());
+		return (this.getParamTypes()).equals(vt.getParamTypes()) 
+				&& (this.getReturnTypes()).equals(vt.getReturnTypes());
 	}
 }

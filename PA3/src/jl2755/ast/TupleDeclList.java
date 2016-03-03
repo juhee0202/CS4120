@@ -1,12 +1,23 @@
 package jl2755.ast;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import edu.cornell.cs.cs4120.util.CodeWriterSExpPrinter;
 import jl2755.GlobalPrettyPrinter;
 import jl2755.visitor.Visitor;
 
+/**
+ * Represents a list of variable declaration including UNDERSCORE in a 
+ * recursive manner.
+ *
+ * index 
+ * 	- 0: , varDecl
+ * 	- 1: , varDecl, tdl
+ * 	- 2: , _
+ * 	- 3: , _, tdl
+ */
 public class TupleDeclList {
 	private VarDecl varDecl;
 	private TupleDeclList tupleDeclList;

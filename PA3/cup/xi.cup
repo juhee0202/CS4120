@@ -48,6 +48,7 @@ non terminal FunctionParam function_param;
 non terminal Identifier identifier;
 non terminal IfStmt if_stmt;
 non terminal IndexedBrackets indexed_brackets;
+non terminal Interface interface;
 non terminal InterfaceFunc interface_func;
 non terminal InterfaceList interface_list;
 non terminal Literal literal;
@@ -69,6 +70,7 @@ non terminal UseId use_id;
 non terminal VarDecl var_decl;
 non terminal VarInit var_init;
 non terminal WhileStmt while_stmt;
+non terminal XiFile xi_file;
 
 
 /* Precedences */
@@ -84,7 +86,7 @@ precedence nonassoc ELSE;     // to avoid "dangling else" problem
 precedence nonassoc SEMICOLON;
 
 
-start with program;
+start with xi_file;
 
 /* Grammar */
 
@@ -195,6 +197,9 @@ indexed_brackets ::= OPEN_BRACKET expr:e CLOSE_BRACKET              {: RESULT = 
                      indexed_brackets:ib                            {: RESULT = new IndexedBrackets(e, ib); :}
                      ;
 
+interface ::= interface_list:il                                     {: RESULT = new Interface(il); :}
+              ;
+
 interface_func ::= identifier:id OPEN_PAREN function_param:fp 
                    CLOSE_PAREN return_type:rt                       {: RESULT = new InterfaceFunc(id, fp, rt); :}
                    ;
@@ -219,9 +224,6 @@ mixed_array_type ::= primitive_type:pt brackets:b                   {: RESULT = 
                      |
                      primitive_type:pt mixed_brackets:mb            {: RESULT = new MixedArrayType(pt, mb); :}
                      ;
-
-
-
 
 mixed_brackets ::=        OPEN_BRACKET expr:e CLOSE_BRACKET         {: RESULT = new MixedBrackets(e); :}
                           |
@@ -290,10 +292,6 @@ primitive_type ::= INT:i                                            {: RESULT = 
 program ::= function_decl_list:fdl                                  {: RESULT = new Program(fdl); :}
             |
             use_id:useidc function_decl_list:fdl                    {: RESULT = new Program(useidc, fdl); :}
-            |
-            interface_list:il                                       {: RESULT = new Interface(il); :}
-            |
-            error:e                                                 {: Main.handleError("Unexpected token "); :}  
             ;
 
 return_list ::= expr:e                                              {: RESULT = new ReturnList(e); :}
@@ -373,3 +371,10 @@ var_init ::= var_decl:vd GETS expr:expression                       {: RESULT = 
 
 while_stmt ::= WHILE OPEN_PAREN expr:expression CLOSE_PAREN stmt:s  {: RESULT = new WhileStmt(expression, s); :}
                ;
+
+xi_file ::= program:p                                               {: RESULT = p; :}
+            |
+            interface:i                                             {: RESULT = i; :}
+            |
+            error:e                                                 {: Main.handleError("Unexpected token "); :}  
+            ;

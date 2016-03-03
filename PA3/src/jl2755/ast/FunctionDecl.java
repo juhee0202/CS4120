@@ -1,6 +1,7 @@
 package jl2755.ast;
 
 import java.util.List;
+import java.util.Map;
 
 import edu.cornell.cs.cs4120.util.CodeWriterSExpPrinter;
 import jl2755.GlobalPrettyPrinter;
@@ -24,8 +25,16 @@ public class FunctionDecl {
 		blockStmt = bs;
 	}
 	
-	public List<Type> getParams(){
+	public Map<String, Type> getParamsWithTypes() {
+		return functionParam.getParamsWithTypes();
+	}
+	
+	public List<String> getParams() {
 		return functionParam.getParams();
+	}
+	
+	public List<Type> getParamTypes(){
+		return functionParam.getParamTypes();
 	}
 	public List<Type> getReturnTypes() {
 		return returnType.getReturnTypes();
@@ -41,6 +50,30 @@ public class FunctionDecl {
 			returnType.prettyPrintNode();
 		}
 		blockStmt.prettyPrintNode();
+	}
+
+	public Identifier getIdentifier() {
+		return identifier;
+	}
+
+	public void setIdentifier(Identifier identifier) {
+		this.identifier = identifier;
+	}
+
+	public FunctionParam getFunctionParam() {
+		return functionParam;
+	}
+
+	public void setFunctionParam(FunctionParam functionParam) {
+		this.functionParam = functionParam;
+	}
+
+	public BlockStmt getBlockStmt() {
+		return blockStmt;
+	}
+
+	public void setBlockStmt(BlockStmt blockStmt) {
+		this.blockStmt = blockStmt;
 	}
 	
 	public void accept(Visitor v){

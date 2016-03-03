@@ -4,13 +4,18 @@ import edu.cornell.cs.cs4120.util.CodeWriterSExpPrinter;
 import jl2755.GlobalPrettyPrinter;
 import jl2755.visitor.Visitor;
 
+/**
+ * Represents a variable declaration in which the type of the variable can be
+ * int, bool, or t[ ] 
+ * 
+ * index 
+ * 	- 0: MixedArrayType
+ * 	- 1: PrimitiveType
+ */
 public class VarDecl implements NakedStmt {
 	private Identifier identifier;
 	private MixedArrayType mixedArrayType;
 	private PrimitiveType primitiveType;
-	/**
-	 * 0 for mixedArrayType, and 1 for PrimitiveType
-	 */
 	private int index;
 	
 	public VarDecl(Identifier id, MixedArrayType mat) {
@@ -24,7 +29,7 @@ public class VarDecl implements NakedStmt {
 		primitiveType = pt;
 		index = 1;
 	}
-
+	
 	public void prettyPrintNode() {
 		CodeWriterSExpPrinter tempPrinter = GlobalPrettyPrinter.getInstance();
 		tempPrinter.startList();

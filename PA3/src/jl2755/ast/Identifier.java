@@ -24,8 +24,9 @@ public class Identifier implements Expr{
 	public String getTheValue() {
 		return theValue;
 	}
-	
-	public void accept(Visitor v){
-		v.visit(this);
+
+	@Override
+	public void accept(Visitor v) {
+		return;
 	}
 }

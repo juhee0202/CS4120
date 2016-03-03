@@ -23,8 +23,8 @@ public class FunctionDecl {
 		blockStmt = bs;
 	}
 	
-	public List<Type> getParams(){
-		return functionParam.getParams();
+	public List<Type> getParamTypes(){
+		return functionParam.getParamTypes();
 	}
 	public List<Type> getReturnTypes() {
 		return returnType.getReturnTypes();
@@ -40,5 +40,37 @@ public class FunctionDecl {
 			returnType.prettyPrintNode();
 		}
 		blockStmt.prettyPrintNode();
+	}
+
+	public Identifier getIdentifier() {
+		return identifier;
+	}
+
+	public void setIdentifier(Identifier identifier) {
+		this.identifier = identifier;
+	}
+
+	public FunctionParam getFunctionParam() {
+		return functionParam;
+	}
+
+	public void setFunctionParam(FunctionParam functionParam) {
+		this.functionParam = functionParam;
+	}
+
+	public ReturnType getReturnType() {
+		return returnType;
+	}
+
+	public void setReturnType(ReturnType returnType) {
+		this.returnType = returnType;
+	}
+
+	public BlockStmt getBlockStmt() {
+		return blockStmt;
+	}
+
+	public void setBlockStmt(BlockStmt blockStmt) {
+		this.blockStmt = blockStmt;
 	}
 }

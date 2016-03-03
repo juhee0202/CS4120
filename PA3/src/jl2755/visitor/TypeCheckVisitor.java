@@ -5,15 +5,16 @@ import java.util.List;
 import java.util.Stack;
 
 import jl2755.ast.*;
+import jl2755.type.FunType;
+import jl2755.type.UnitType;
 import jl2755.type.VType;
 import jl2755.type.VarType;
 
 public class TypeCheckVisitor implements Visitor {
 
 	private HashMap<String, VType> env;
-	private Stack<String> stack;
-	private VType tempType;	        // cleared at the beginning of each
-										// visit methods that uses it
+	private Stack<String> stack;	// "_": special marker
+	private VType tempType;
 	
 	public TypeCheckVisitor(Program p){
 		env = new HashMap<String, VType>();
@@ -101,19 +102,72 @@ public class TypeCheckVisitor implements Visitor {
 	@Override
 	public void visit(FunctionArg fa) {
 		// TODO Auto-generated method stub
-		
 	}
 
+	/**
+	 * DIRTIES tempType
+	 * 
+	 * Sets tempType to the return type of fc
+	 * @param FunctionCall fc
+	 */
 	@Override
 	public void visit(FunctionCall fc) {
-		// TODO Auto-generated method stub
+		int index = fc.getIndex();
+		VType args;
+		// id()
+		if (index == 0) {
+			args = new UnitType();
+		}
+		// id(funtionArg)
+		else if (index == 1) {
+			if (!env.containsKey(fc.getIdentifier().toString())) {
+				// TODO error handling
+			}
+			fc.getFunctionArg().accept(this);	// TODO implement visit(FunctionArg)
+			args = tempType;
+		}
+		// length(id)
+		else if (index == 2) {
+			if (!env.containsKey(fc.getIdentifier().toString())) {
+				// TODO error handling
+			}
+			VarType idType = (VarType)env.get(fc.getIdentifier().toString());
+			if (idType.isPrimitive()) {	// id has to be of array type
+				// TODO error handling
+			}
+		}
+		// length(arrayElem)
+		// Q. Do we allow length(arrayLiteral)?
+		else {
+			if (!env.containsKey(fc.getIdentifier().toString())) {
+				// TODO error handling
+			}
+			// TODO implement
+		}
+		
+		FunType funType = (FunType) env.get(fc.getIdentifier().toString());
+		if (!args.equals(funType.getParams())) {
+			// TODO error handling
+		}
 		
 	}
 
+	/**
+	 * 1) check if the function identifier is in env
+	 * 2) if not, add the function decl to the env.
+	 * 3) typecheck the statement
+	 * @param FunctionDecl fd
+	 */
 	@Override
 	public void visit(FunctionDecl fd) {
-		// TODO Auto-generated method stub
+		if (env.containsKey(fd.getIdentifier().toString())) {
+			// TODO error handling
+		}
 		
+		FunType funType = new FunType(fd);
+		env.put(fd.getIdentifier().toString(), funType);
+		
+		VType params = funType.getParams();
 	}
 
 	@Override

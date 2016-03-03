@@ -7,17 +7,9 @@ import jl2755.ast.TupleInit;
 import jl2755.ast.VarDecl;
 
 /**
- * Represents the left side of a TupleInit
- * statement.
- *
+ * Represents a Tuple type
  */
 public class TupleType implements VType {
-	
-	/**
-	 * List of the VarTypes that represent
-	 * the VarDecls on the left side.
-	 * Null entries represent underscores.
-	 */
 	private List<VType> types;
 	
 	public TupleType() {
@@ -25,8 +17,11 @@ public class TupleType implements VType {
 	}
 	
 	/** 
+	 * Creates a TupleType object from the left side of a TupleInit stmt.
 	 * @param argTupleInit and makes a List of
 	 * VarTypes for the elements in the Tuple
+	 * 
+	 * underscores are represented by UnitType
 	 */
 	public TupleType(TupleInit argTupleInit) {
 		types = new ArrayList<VType>();

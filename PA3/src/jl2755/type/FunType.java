@@ -2,6 +2,7 @@ package jl2755.type;
 
 import java.util.List;
 import jl2755.ast.Type;
+import jl2755.ast.FunctionCall;
 import jl2755.ast.FunctionDecl;
 
 /**
@@ -22,7 +23,7 @@ public class FunType implements VType {
 	
 	public FunType(FunctionDecl fd) {
 		/* Set Params */
-		List<Type> l = fd.getParams();
+		List<Type> l = fd.getParamTypes();
 		if (l.size() == 0) {
 			params = new UnitType();
 		}

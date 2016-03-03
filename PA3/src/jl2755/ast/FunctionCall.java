@@ -3,6 +3,14 @@ package jl2755.ast;
 import edu.cornell.cs.cs4120.util.CodeWriterSExpPrinter;
 import jl2755.GlobalPrettyPrinter;
 
+/**
+ *	Represents the function call
+ *	index
+ *	- 0: identifier()
+ *	- 1: identifier(functionArg)
+ *	- 2: length(identifier)
+ *	- 3: length(arrayElement)
+ */
 public class FunctionCall implements Expr,NakedStmt {
 	private Identifier identifier;
 	private FunctionArg functionArg;
@@ -61,5 +69,37 @@ public class FunctionCall implements Expr,NakedStmt {
 	 */
 	public void setLength(boolean isLength) {
 		this.isLength = isLength;
+	}
+
+	public Identifier getIdentifier() {
+		return identifier;
+	}
+
+	public void setIdentifier(Identifier identifier) {
+		this.identifier = identifier;
+	}
+
+	public FunctionArg getFunctionArg() {
+		return functionArg;
+	}
+
+	public void setFunctionArg(FunctionArg functionArg) {
+		this.functionArg = functionArg;
+	}
+
+	public int getIndex() {
+		return index;
+	}
+
+	public void setIndex(int index) {
+		this.index = index;
+	}
+
+	public ArrayElement getArrayElement() {
+		return arrayElement;
+	}
+
+	public void setArrayElement(ArrayElement arrayElement) {
+		this.arrayElement = arrayElement;
 	}
 }

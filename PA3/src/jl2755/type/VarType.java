@@ -7,13 +7,15 @@ import jl2755.ast.VarDecl;
 
 /**
  *	Ordinary types t expressible in the language
- *	int, bool, or t[]
+ *	int, bool, or t[ ]
  */
 public class VarType implements VType {
 	/** true: boolean, false: int*/
 	private boolean isBool;
 	/** The number of brackets used in the declaration
-	 * of this array, if it is one */
+	 * of this array, if it is one 
+	 * 0 if it is a primitive type
+	 * */
 	private Integer numBrackets;
 	
 	public VarType(jl2755.ast.Type t) {
@@ -44,6 +46,10 @@ public class VarType implements VType {
 			setBool(pt.getIndex() == 1);
 			numBrackets = 0;
 		}
+	}
+	
+	public boolean isPrimitive() {
+		return numBrackets == 0;
 	}
 
 	public boolean isBool() {

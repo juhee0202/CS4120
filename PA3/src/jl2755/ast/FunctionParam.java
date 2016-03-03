@@ -39,14 +39,14 @@ public class FunctionParam {
 	/**
 	 * @return a List containing parameter types
 	 */
-	public List<Type> getParams() {
+	public List<Type> getParamTypes() {
 		List<Type> l = new ArrayList<Type>();
 		if (index == 0){
 			l.add(type);
 		}
 		if (index == 1){
 			l.add(type);
-			l.addAll(functionParam.getParams());
+			l.addAll(functionParam.getParamTypes());
 		}
 		return l;
 	}

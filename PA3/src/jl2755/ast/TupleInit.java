@@ -4,14 +4,19 @@ import edu.cornell.cs.cs4120.util.CodeWriterSExpPrinter;
 import jl2755.GlobalPrettyPrinter;
 import jl2755.visitor.Visitor;
 
+/**
+ * Represents multiple assignment statement in a recursive manner.
+ * (Note that left side of the statement has to be variable declarations)
+ * 
+ * index 
+ * 	- 0: _ = f()
+ *  - 1: _, tupleDeclList = f()
+ *  - 2: id:type, tupleDeclList = f()
+ */
 public class TupleInit implements NakedStmt {
 	private TupleDeclList tupleDeclList;
 	private FunctionCall functionCall;
 	private VarDecl varDecl;
-	/** 0 is only one underscore on left side, 1 is underscore
-	 * followed by a tupleDeclList, 2 is a var_decl followed by
-	 * a tupleDeclList.
-	 */
 	private int index;
 	
 	public TupleInit(FunctionCall fc) {
@@ -92,5 +97,5 @@ public class TupleInit implements NakedStmt {
 
 	public void setIndex(int index) {
 		this.index = index;
-	}	
+	}
 }

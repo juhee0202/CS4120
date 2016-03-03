@@ -236,7 +236,19 @@ public class TypeCheckVisitor implements Visitor {
 	@Override
 	public void visit(FunctionCall fc) {
 		int index = fc.getIndex();
-		String id = index == 2 ? "length" : fc.getIdentifier().toString();
+		
+		/* Special Case: length(expr) */
+		if (index == 2) {
+			fc.getExpr().accept(this);
+			VarType arrayType = (VarType)tempType;
+			if (!arrayType.isArray()) {
+				// TODO error handling
+			}
+			tempType = arrayType.getPrimitiveType();
+			return;
+		}
+		
+		String id = fc.getIdentifier().toString();
 		
 		/* Check if the function is declared */
 		if (!env.containsKey(id)) {
@@ -261,15 +273,6 @@ public class TypeCheckVisitor implements Visitor {
 			if (!args.equals(paramType)) {
 				// TODO error handling
 			}
-		}
-		/* Case: length(expr) */
-		else if (index == 2) {
-			fc.getExpr().accept(this);
-			args = tempType;
-			if (!((VarType)args).isArray()) {
-				// TODO error handling
-			}
-			id = "length";
 		}
 		
 		tempType = funType.getReturnTypes();
@@ -334,17 +337,6 @@ public class TypeCheckVisitor implements Visitor {
 		for (FunctionDecl fd : functionDecls) {
 			fd.accept(this);
 		}
-	}
-
-	/**
-	 * Dirties tempType
-	 */
-	@Override
-	public void visit(Identifier i) {
-		if (!env.containsKey(i.getTheValue())) {
-			// TODO: error handling
-		}
-		tempType = env.get(i.getTheValue());
 	}
 
 	/**
@@ -500,10 +492,44 @@ public class TypeCheckVisitor implements Visitor {
 		
 	}
 
+	/**
+	 * Similar to typechecking VarInit 
+	 * @param TupleInit ti
+	 */
 	@Override
 	public void visit(TupleInit ti) {
-		// TODO Auto-generated method stub
-		
+		int index = ti.getIndex();
+		ti.getFunctionCall().accept(this);
+		VType returnType = tempType;
+		/* Case: _ = f() */
+		if (index == 0) {
+			if (!(returnType instanceof VarType)) {
+				// TODO error handling
+			}
+		}
+		/* Case: _, tdl = f() */
+		else if (index == 1) {
+			if (!(returnType instanceof TupleType)) {
+				// TODO error handling
+			}
+			returnType = (TupleType)returnType;
+			TupleType tupleType = new TupleType(ti);
+			if (!returnType.equals(tupleType)) {
+				// TODO error handling
+			}
+		}
+		/* Case: vd, tdl = f() */
+		else {
+			if (!(returnType instanceof TupleType)) {
+				// TODO error handling
+			}
+			returnType = (TupleType)returnType;
+			TupleType tupleType = new TupleType(ti);
+			tupleType.prependToTypes(new VarType(ti.getVarDecl()));
+			if (!returnType.equals(tupleType)) {
+				// TODO error handling
+			}
+		}
 	}
 
 	@Override

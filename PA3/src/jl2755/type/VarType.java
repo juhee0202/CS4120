@@ -57,6 +57,16 @@ public class VarType implements VType {
 	public VarType(VarType idType, IndexedBrackets indexedBrackets) {
 		// TODO Auto-generated constructor stub JONA
 	}
+	
+	/**
+	 * @return primitive type of this type
+	 * ex) int[] -> int
+	 * ex) bool[][] -> bool
+	 * ex) int -> int
+	 */
+	public VarType getPrimitiveType() {
+		return isBool ? new VarType(true, 0) : new VarType(false, 0);
+	}
 
 	public boolean isPrimitive() {
 		return numBrackets == 0;

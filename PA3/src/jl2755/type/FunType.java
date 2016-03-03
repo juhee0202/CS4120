@@ -21,6 +21,11 @@ public class FunType implements VType {
 	private VType paramTypes;
 	private VType returnTypes;
 	
+	public FunType() {
+		paramTypes = null;
+		returnTypes = null;
+	}
+	
 	/**
 	 *	Creates a FunType instance from a function declaration
 	 */

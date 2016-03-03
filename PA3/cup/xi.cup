@@ -210,14 +210,13 @@ mixed_array_type ::= primitive_type:pt brackets:b                   {: RESULT = 
 
 
 
-mixed_brackets ::=        OPEN_BRACKET expr:e CLOSE_BRACKET         {: RESULT = new MixedBrackets(e); :}
-                          |
-                          OPEN_BRACKET expr:e CLOSE_BRACKET 
-                          mixed_brackets:mb                         {: RESULT = new MixedBrackets(e, mb); :}
-                          |
-                          OPEN_BRACKET expr:e 
-                          CLOSE_BRACKET brackets:b                  {: RESULT = new MixedBrackets(e, b); :}
-                          ;
+mixed_brackets ::= OPEN_BRACKET expr:e CLOSE_BRACKET                {: RESULT = new MixedBrackets(e); :}
+                   |
+                   OPEN_BRACKET expr:e CLOSE_BRACKET 
+                   mixed_brackets:mb                                {: RESULT = new MixedBrackets(e, mb); :}
+                   |
+                   OPEN_BRACKET expr:e CLOSE_BRACKET brackets:b     {: RESULT = new MixedBrackets(e, b); :}
+                   ;
 
 naked_stmt ::= assignment_stmt:ass                                  {: RESULT = ass; :}
                |

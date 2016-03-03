@@ -45,6 +45,11 @@ public class VarType implements VType {
 			numBrackets = 0;
 		}
 	}
+	
+	public VarType(boolean argIsBool, int argNumBrackets){
+		isBool = argIsBool;
+		numBrackets = argNumBrackets;
+	}
 
 	public boolean isBool() {
 		return isBool;

@@ -24,8 +24,50 @@ public class TypeCheckVisitor implements Visitor {
 	
 	@Override
 	public void visit(ArrayElement ae) {
-		// TODO Auto-generated method stub
-		
+		int index = ae.getIndex();
+		if (index == 0){
+			if (!(env.containsKey(ae.getIdentifier().toString()))){
+				// TODO: ERROR HANDLING
+			}
+			VType tempScopeType = env.get(ae.getIdentifier().toString());
+			if (!(tempScopeType instanceof VarType)){
+				// TODO: ERROR HANDLING
+			}
+			VarType varTypeView = (VarType) tempScopeType;
+			int numberOfBrackets = ae.getIndexedBrackets().getNumBrackets();
+			if (numberOfBrackets > varTypeView.getNumBrackets()){
+				// TODO: ERROR HANDLING
+			}
+			tempType = new VarType(varTypeView.isBool(), varTypeView.getNumBrackets() - numberOfBrackets);
+		}
+		else if (index == 1){
+			ae.getFunctionCall().accept(this);
+			int numberOfBrackets = ae.getIndexedBrackets().getNumBrackets();
+			if (!(tempType instanceof VarType)){
+				// TODO: ERROR HANDLING
+			}
+			VarType arrayTypeAfterVisit = (VarType) tempType;
+			if (numberOfBrackets > arrayTypeAfterVisit.getNumBrackets()){
+				// TODO: ERROR HANDLING
+			}
+			boolean oldIsBool = arrayTypeAfterVisit.isBool();
+			int oldNumBrackets = arrayTypeAfterVisit.getNumBrackets();
+			tempType = new VarType(oldIsBool, oldNumBrackets - numberOfBrackets);
+		}
+		else if (index == 2){
+			ae.getArrayLiteral().accept(this);
+			if (!(tempType instanceof VarType)){
+				// TODO: ERROR HANDLING
+			}
+			VarType arrayTypeAfterVisit = (VarType) tempType;
+			int numberOfBrackets = ae.getIndexedBrackets().getNumBrackets();
+			if (numberOfBrackets > arrayTypeAfterVisit.getNumBrackets()){
+				// TODO: ERROR HANDLING
+			}
+			boolean oldIsBool = arrayTypeAfterVisit.isBool();
+			int oldNumBrackets = arrayTypeAfterVisit.getNumBrackets();
+			tempType = new VarType(oldIsBool, oldNumBrackets - numberOfBrackets);
+		}
 	}
 
 	@Override

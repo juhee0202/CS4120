@@ -1,5 +1,6 @@
 package jl2755.visitor;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -26,6 +27,9 @@ public class TypeCheckVisitor implements Visitor {
 		// TODO add length function to the env
 	}
 	
+	/**
+	 * Dirties tempType
+	 */
 	@Override
 	public void visit(ArrayElement ae) {
 		int index = ae.getIndex();
@@ -74,16 +78,41 @@ public class TypeCheckVisitor implements Visitor {
 		}
 	}
 
+	/**
+	 * Dirties tempType
+	 */
 	@Override
 	public void visit(ArrayElementList ael) {
-		// TODO Auto-generated method stub
-		
+		List<Expr> tempExprs = ael.getAllExprInArray();
+		List<VarType> tempTypesOfExprs = new ArrayList<VarType>();
+		for (int i = 0; i < tempExprs.size(); i++){
+			tempExprs.get(i).accept(this);
+			if (!(tempType instanceof VarType)){
+				// TODO: ERROR HANDLING
+			}
+			tempTypesOfExprs.add((VarType)tempType);
+		}
+		for (int i = 0; i < tempTypesOfExprs.size() - 1; i++){
+			if (!(tempTypesOfExprs.get(i).equals(tempTypesOfExprs.get(i+1)))){
+				// TODO: ERROR HANDLING on i+1
+			}
+		}
+		tempType = new VarType(tempTypesOfExprs.get(0).isBool(), tempTypesOfExprs.get(0).getNumBrackets());
 	}
 
+	/**
+	 * Dirties tempType
+	 */
 	@Override
 	public void visit(ArrayLiteral al) {
-		// TODO Auto-generated method stub
-		
+		al.getArrElemList().accept(this);
+		if (!(tempType instanceof VarType)){
+			// TODO: ERROR HANDLING
+		}
+		VarType tempVarView = (VarType) tempType;
+		boolean oldIsBool = tempVarView.isBool();
+		int oldNumBrackets = tempVarView.getNumBrackets();
+		tempType = new VarType(oldIsBool, oldNumBrackets + 1);
 	}
 
 	/**

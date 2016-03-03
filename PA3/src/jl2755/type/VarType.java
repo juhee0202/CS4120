@@ -55,7 +55,11 @@ public class VarType implements VType {
 	}
 
 	public VarType(VarType idType, IndexedBrackets indexedBrackets) {
-		// TODO Auto-generated constructor stub JONA
+		if (idType.getNumBrackets() < indexedBrackets.getNumBrackets()){
+			// TODO: ERROR HANDLING
+		}
+		isBool = idType.isBool();
+		numBrackets = idType.getNumBrackets() - indexedBrackets.getNumBrackets();
 	}
 
 	public boolean isPrimitive() {

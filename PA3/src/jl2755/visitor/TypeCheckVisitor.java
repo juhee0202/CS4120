@@ -138,17 +138,27 @@ public class TypeCheckVisitor implements Visitor {
 		for (int i = 0; i < tempExprs.size(); i++){
 			tempExprs.get(i).accept(this);
 			if (!(tempType instanceof VarType)){
-				// TODO: ERROR HANDLING
 				String errorDesc = "Name " + tempExprs.get(i).toString() +
 						" is not of VarType";
+				SemanticErrorObject seo = new SemanticErrorObject(
+						tempExprs.get(i).getColumnNumber(), 
+						tempExprs.get(i).getLineNumber(),
+						errorDesc
+						);
+				Main.handleSemanticError(seo);
 			}
 			tempTypesOfExprs.add((VarType)tempType);
 		}
 		for (int i = 0; i < tempTypesOfExprs.size() - 1; i++){
 			if (!(tempTypesOfExprs.get(i).equals(tempTypesOfExprs.get(i+1)))){
-				// TODO: ERROR HANDLING on i+1
 				String errorDesc = "Expected " + tempTypesOfExprs.get(i).toString() + ", but found "
-						+ tempTypesOfExprs.get(i).toString();
+						+ tempTypesOfExprs.get(i+1).toString();
+				SemanticErrorObject seo = new SemanticErrorObject(
+						tempExprs.get(i+1).getColumnNumber(), 
+						tempExprs.get(i+1).getLineNumber(),
+						errorDesc
+						);
+				Main.handleSemanticError(seo);
 			}
 		}
 		tempType = new VarType(tempTypesOfExprs.get(0).getIsBool(), tempTypesOfExprs.get(0).getNumBrackets());
@@ -161,9 +171,14 @@ public class TypeCheckVisitor implements Visitor {
 	public void visit(ArrayLiteral al) {
 		al.getArrElemList().accept(this);
 		if (!(tempType instanceof VarType)){
-			// TODO: ERROR HANDLING
 			String errorDesc = "Name " + tempType.toString() +
 					" is not of VarType";
+			SemanticErrorObject seo = new SemanticErrorObject(
+					al.getColumnNumber(), 
+					al.getLineNumber(),
+					errorDesc
+					);
+			Main.handleSemanticError(seo);
 		}
 		VarType tempVarView = (VarType) tempType;
 		boolean oldIsBool = tempVarView.getIsBool();

@@ -165,15 +165,23 @@ public class TypeCheckVisitor implements Visitor {
 		right.accept(this);
 		VarType rightType = (VarType) tempType;
 
-		// if PLUS, (i) both are int (ii) both are arrays with same element type
-		if (be.getBinaryOp().toString().equals("+")) {
-			if ( !(leftType.isInt() && rightType.isInt()) && 
-					!(leftType.isArray() && !leftType.equals(rightType) ) {
-				//TODO error handling JONA DO THIS
+		// if +, !=, == (i) both are int (ii) both are arrays with same element type
+		BinaryOp op = be.getBinaryOp();
+		if (op.toString().equals("+") ||
+			op.toString().equals("!=") ||
+			op.toString().equals("==")) {
+			
+			if (leftType.isInt()) {
+				if (!rightType.isInt()) {
+					//TODO error handling
+				}
 			}
-		}
-		else {
-			if (!leftType.isInt() || !rightType.isInt()) {
+			else if (leftType.isArray()) {
+				if (!rightType.isArray()) {
+					//TODO error handling
+				}
+			}
+			else {
 				//TODO error handling
 			}
 		}
@@ -413,7 +421,7 @@ public class TypeCheckVisitor implements Visitor {
 			case 0: tempType = new VarType(false, 0); break;		// int
 			case 1: tempType = new VarType(false, 1); break;		// string
 			case 2: tempType = new VarType(false, 0); break;		// char
-			case 3: tempType = new VarType(true, 0);	 break;		// boolean
+			case 3: tempType = new VarType(true, 0);  break;		// boolean
 			default: // TODO error handling
 		}
 	}
@@ -515,7 +523,25 @@ public class TypeCheckVisitor implements Visitor {
 	@Override
 	public void visit(UnaryExpr ue) {
 		// TODO Auto-generated method stub
+		ue.getExpr().accept(this);
 		
+		if (!(tempType instanceof VarType)) {
+			//TODO error handling
+		}
+		
+		VarType exprType = (VarType) tempType;
+		
+		UnaryOp op = ue.getUnaryOp();
+		if (op.toString().equals("!")) {
+			if (!exprType.isBool()) {
+				//TODO error handling
+			}
+		}
+		else if (op.toString().equals("-")) {
+			if (!exprType.isInt()) {
+				//TODO error handling
+			}
+		}
 	}
 
 	@Override
@@ -587,6 +613,4 @@ public class TypeCheckVisitor implements Visitor {
 		}
 
 	}
-	
-
 }

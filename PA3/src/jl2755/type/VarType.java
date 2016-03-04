@@ -1,6 +1,10 @@
 package jl2755.type;
 
+import jl2755.Main;
+import jl2755.SemanticErrorObject;
 import jl2755.ast.EmptyArrayType;
+import jl2755.ast.FunctionCall;
+import jl2755.ast.Identifier;
 import jl2755.ast.IndexedBrackets;
 import jl2755.ast.MixedArrayType;
 import jl2755.ast.PrimitiveType;
@@ -54,9 +58,29 @@ public class VarType implements VType {
 		numBrackets = argNumBrackets;
 	}
 
-	public VarType(VarType idType, IndexedBrackets indexedBrackets) {
+	public VarType(VarType idType, IndexedBrackets indexedBrackets, Identifier id) {
 		if (idType.getNumBrackets() < indexedBrackets.getNumBrackets()){
-			// TODO: ERROR HANDLING
+			String s = "Array " + id.toString() + " does not have that many dimensions.";
+			SemanticErrorObject seo = new SemanticErrorObject(
+					id.getLineNumber(), 
+					id.getColumnNumber(),
+					s
+					);
+			Main.handleSemanticError(seo);
+		}
+		isBool = idType.getIsBool();
+		numBrackets = idType.getNumBrackets() - indexedBrackets.getNumBrackets();
+	}
+	
+	public VarType(VarType idType, IndexedBrackets indexedBrackets, FunctionCall fc) {
+		if (idType.getNumBrackets() < indexedBrackets.getNumBrackets()){
+			String s = "Array " + fc.toString() + " does not have that many dimensions.";
+			SemanticErrorObject seo = new SemanticErrorObject(
+					fc.getLineNumber(), 
+					fc.getColumnNumber(),
+					s
+					);
+			Main.handleSemanticError(seo);
 		}
 		isBool = idType.getIsBool();
 		numBrackets = idType.getNumBrackets() - indexedBrackets.getNumBrackets();

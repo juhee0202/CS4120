@@ -4,6 +4,12 @@ import edu.cornell.cs.cs4120.util.CodeWriterSExpPrinter;
 import jl2755.GlobalPrettyPrinter;
 import jl2755.visitor.Visitor;
 
+/**
+ * Represents brackets ([ ]) in a recursive manner
+ * index 
+ * 	- 0: [ ]
+ * 	- 1: [ ] brackets
+ */
 public class Brackets {
 
 	private Brackets brackets;
@@ -18,6 +24,9 @@ public class Brackets {
 		index = 1;
 	}
 	
+	/**
+	 * @return total number of brackets
+	 */
 	public int getNumBrackets() {
 		if (brackets == null) {
 			return 1;

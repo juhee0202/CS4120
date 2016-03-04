@@ -166,7 +166,12 @@ public class TypeCheckVisitor implements Visitor {
 				Main.handleSemanticError(seo);
 			}
 		}
-		tempType = new VarType(tempTypesOfExprs.get(0).getIsBool(), tempTypesOfExprs.get(0).getNumBrackets());
+		if (tempTypesOfExprs.size() == 0) {
+			tempType = new VarType(false,0);
+		}
+		else {
+			tempType = new VarType(tempTypesOfExprs.get(0).getIsBool(), tempTypesOfExprs.get(0).getNumBrackets());
+		}
 	}
 
 	/**
@@ -262,7 +267,7 @@ public class TypeCheckVisitor implements Visitor {
 			
 			VarType idType = (VarType)env.get(id);
 			
-			VType elementType = new VarType(idType,as.getIndexedBrackets());
+			VType elementType = new VarType(idType,as.getIndexedBrackets(),as.getIdentifier());
 
 			
 			as.getExpr().accept(this);
@@ -270,6 +275,7 @@ public class TypeCheckVisitor implements Visitor {
 			
 			if (!elementType.equals(exprType)) {
 				// TODO: error handling
+				
 				String s = "Expected " + elementType.toString() 
 				+ ", but found " + exprType.toString();
 				SemanticErrorObject seo = new SemanticErrorObject(
@@ -303,7 +309,7 @@ public class TypeCheckVisitor implements Visitor {
 			}
 			
 			VarType funcCallType = (VarType) functionCallType;
-			VType elementType = new VarType (funcCallType, as.getIndexedBrackets());
+			VType elementType = new VarType (funcCallType, as.getIndexedBrackets(), as.getFunctionCall());
 			
 			as.getExpr().accept(this);
 			VType exprType = tempType;

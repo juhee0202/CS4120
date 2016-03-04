@@ -365,7 +365,7 @@ public class Main {
 			System.out.println("[xic] Typechecking completed");
 			
 		} catch (Exception e) {
-//			e.printStackTrace();
+			e.printStackTrace();
 		}
 	}
 

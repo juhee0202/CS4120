@@ -142,8 +142,7 @@ SingleCharacter = [^\n\'\\\"]
   \'                             { yybegin(CHARLITERAL); origLine = yyline+1; origCol = yycolumn+1; }
 
   /* numeric literals */
-  "-9223372036854775808"         { return symbol(sym.INTEGER_LITERAL, new Long(Long.MIN_VALUE)); }
-  {IntegerLiteral}               { return symbol(sym.INTEGER_LITERAL, new Long(yytext())); }
+  {IntegerLiteral}               { return symbol(sym.INTEGER_LITERAL, yytext()); }
 
   /* comments */
   {Comment}                      { /* ignore */ }
@@ -161,6 +160,7 @@ SingleCharacter = [^\n\'\\\"]
   {SingleCharacter}              { string.append( yytext() ); currCol++; }
   
   /* escape sequences */
+  "'"                            { string.append( "'" ); currCol++; }
   "\\n"                          { string.append( "\\n" ); currCol++; }
   "\\'"                          { string.append( "\\'" ); currCol++; }
   "\\\\"                         { string.append( "\\\\" ); currCol++; }
@@ -174,15 +174,16 @@ SingleCharacter = [^\n\'\\\"]
 }
 
 <CHARLITERAL> {
-  {SingleCharacter}\'            { yybegin(YYINITIAL); return symbol(sym.CHARACTER_LITERAL, origLine, origCol, yytext().charAt(0)); }
+  {SingleCharacter}\'            { yybegin(YYINITIAL); return symbol(sym.CHARACTER_LITERAL, origLine, origCol, yytext().substring(0,1)); }
   
   /* escape sequences */
+  "\""\'                         { yybegin(YYINITIAL); return symbol(sym.CHARACTER_LITERAL, origLine, origCol, "\""); }
   "\\n"\'                        { yybegin(YYINITIAL); return symbol(sym.CHARACTER_LITERAL, origLine, origCol, "\\n"); }
   "\\'"\'                        { yybegin(YYINITIAL); return symbol(sym.CHARACTER_LITERAL, origLine, origCol, "\\'"); }
   "\\\\"\'                       { yybegin(YYINITIAL); return symbol(sym.CHARACTER_LITERAL, origLine, origCol, "\\\\"); }
   "\\\""\'                       { yybegin(YYINITIAL); return symbol(sym.CHARACTER_LITERAL, origLine, origCol, "\\\""); }
-  \\[x]{PrintableHexLiteral}\'   { yybegin(YYINITIAL); return symbol(sym.CHARACTER_LITERAL, origLine, origCol, parseHex(yytext().substring(0, yylength()-1))); }  
-  \\[x]{HexLiteral}\'            { yybegin(YYINITIAL); return symbol(sym.CHARACTER_LITERAL, origLine, origCol, yytext().substring(0, yylength()-1)); }
+  \\[x]{PrintableHexLiteral}\'   { yybegin(YYINITIAL); return symbol(sym.CHARACTER_LITERAL, origLine, origCol, parseHex(yytext().substring(0, yylength()))); }  
+  \\[x]{HexLiteral}\'            { yybegin(YYINITIAL); return symbol(sym.CHARACTER_LITERAL, origLine, origCol, yytext().substring(0, yylength())); }
   
   /* error cases */
   \'                             { throw new RuntimeException(origLine + ":" + origCol + " error: Illegal input \"\'\""); }

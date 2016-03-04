@@ -73,4 +73,12 @@ public class UseId {
 		}
 		return tempList;
 	}
+
+	public Identifier getIdentifier() {
+		return identifier;
+	}
+
+	public void setIdentifier(Identifier identifier) {
+		this.identifier = identifier;
+	}
 }

@@ -57,7 +57,7 @@ public class PA1 {
 			return;
 		}
 		
-		if (cmd.getOptions().length == 0 && cmd.getArgs().length ==0) {
+		if (cmd.getOptions().length == 0 && cmd.getArgs().length == 0) {
 			System.out.println("Usage: xic [options] <source files>\n" +
 					"where possible options include");
 			

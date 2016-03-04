@@ -184,7 +184,13 @@ public class TypeCheckVisitor implements Visitor {
 			String id = as.getIdentifier().toString();
 			if (!env.containsKey(id)) {
 				// TODO error handling
-				String s = "Name " + id + " cannot be resolved.";
+				String s = "Name " + id + " cannot be resolved";
+				SemanticErrorObject seo = new SemanticErrorObject(
+											as.getIdentifier().getLineNumber(), 
+											as.getIdentifier().getColumnNumber(),
+											s
+											);
+				Main.handleSemanticError(seo);
 			}
 			
 			VType idType = env.get(id);
@@ -193,6 +199,12 @@ public class TypeCheckVisitor implements Visitor {
 			if (!(idType instanceof VarType)) {
 				// TODO error handling
 				String s = "Expected variable type, but found function type.";
+				SemanticErrorObject seo = new SemanticErrorObject(
+											as.getIdentifier().getLineNumber(), 
+											as.getIdentifier().getColumnNumber(),
+											s
+											);
+				Main.handleSemanticError(seo);
 			}
 			
 			as.getExpr().accept(this);
@@ -203,6 +215,12 @@ public class TypeCheckVisitor implements Visitor {
 				// TODO: error handling
 				String s = "Expected " + idType.toString() 
 							+ ", but found " + exprType.toString();
+				SemanticErrorObject seo = new SemanticErrorObject(
+											as.getExpr().getLineNumber(), 
+											as.getExpr().getColumnNumber(),
+											s
+											);
+				Main.handleSemanticError(seo);
 			}
 		
 		//ex: arr[2] = 3;
@@ -212,7 +230,13 @@ public class TypeCheckVisitor implements Visitor {
 			String id = as.getIdentifier().toString();
 			if (!env.containsKey(id)) {
 				// TODO error handling
-				String s = "Name " + id + " cannot be resolved.";
+				String s = "Name " + id + " cannot be resolved";
+				SemanticErrorObject seo = new SemanticErrorObject(
+											as.getIdentifier().getLineNumber(), 
+											as.getIdentifier().getColumnNumber(),
+											s
+											);
+				Main.handleSemanticError(seo);
 			}
 			
 			VarType idType = (VarType)env.get(id);
@@ -225,6 +249,12 @@ public class TypeCheckVisitor implements Visitor {
 				// TODO: error handling
 				String s = "Expected " + elementType.toString() 
 				+ ", but found " + exprType.toString();
+				SemanticErrorObject seo = new SemanticErrorObject(
+											as.getExpr().getLineNumber(), 
+											as.getExpr().getColumnNumber(),
+											s
+											);
+				Main.handleSemanticError(seo);
 			}
 		
 		//ex: f(3)[0] = "herro"
@@ -235,12 +265,18 @@ public class TypeCheckVisitor implements Visitor {
 				//TODO error handling
 				String s;
 				if (functionCallType instanceof TupleType) {
-					s = "Expected variable type, but found tuple type.";
+					s = "Expected variable type, but found tuple type";
 				} else if (functionCallType instanceof UnitType) {
-					 s = "Expected variable type, but found unit type.";
+					 s = "Expected variable type, but found unit type";
 				} else {
-					 s = "Expected variable type, but found incompatible type.";
+					 s = "Expected variable type, but found incompatible type";
 				}
+				SemanticErrorObject seo = new SemanticErrorObject(
+											as.getFunctionCall().getLineNumber(), 
+											as.getFunctionCall().getColumnNumber(),
+											s
+											);
+				Main.handleSemanticError(seo);
 			}
 			
 			VarType funcCallType = (VarType) functionCallType;
@@ -253,6 +289,12 @@ public class TypeCheckVisitor implements Visitor {
 				// TODO error handling
 				String s = "Expected " + elementType.toString() 
 				+ ", but found " + exprType.toString();
+				SemanticErrorObject seo = new SemanticErrorObject(
+											as.getExpr().getLineNumber(), 
+											as.getExpr().getColumnNumber(),
+											s
+											);
+				Main.handleSemanticError(seo);
 			}
 		}
 	}
@@ -537,12 +579,18 @@ public class TypeCheckVisitor implements Visitor {
 	public void visit(IfStmt is) {
 		is.getExpr().accept(this);
 		VType exprType = tempType;
-		Type b = new PrimitiveType(1);
-		VType bType = new VarType(b);
+		VType bType = new VarType(true,0);
 		
 		// Check type of conditional
 		if (!exprType.equals(bType)) {
 			// TODO: error handling
+			String s = "Expected bool, but found " + exprType.toString();
+			SemanticErrorObject seo = new SemanticErrorObject(
+										is.getExpr().getLineNumber(), 
+										is.getExpr().getColumnNumber(),
+										s
+										);
+			Main.handleSemanticError(seo);
 		}
 		
 		// Start new scope
@@ -845,6 +893,13 @@ public class TypeCheckVisitor implements Visitor {
 					VType existingType = if_env.get(tempFuncNames);
 					if (!(existingType.equals(tempMap.get(tempFuncNames)))){
 						// TODO: ERROR HANDLINGGDIGNDIGNDINGDNIGDIGNDIGN
+						String s = tempFuncNames + "is already declared";
+						SemanticErrorObject seo = new SemanticErrorObject(
+													ui.getIdentifier().getLineNumber(), 
+													ui.getIdentifier().getColumnNumber(),
+													s
+													);
+						Main.handleSemanticError(seo);
 					}
 				}
 				else{
@@ -862,6 +917,13 @@ public class TypeCheckVisitor implements Visitor {
 		// Check if predeclared
 		if (env.containsKey(vd.getIdentifier())){
 			// TODO: ERROR HaNdLiNG
+			String s = vd.getIdentifier().toString() + "is already declared";
+			SemanticErrorObject seo = new SemanticErrorObject(
+										vd.getIdentifier().getLineNumber(), 
+										vd.getIdentifier().getColumnNumber(),
+										s
+										);
+			Main.handleSemanticError(seo);
 		}
 		else{
 			String id = vd.getIdentifier().toString();
@@ -879,6 +941,14 @@ public class TypeCheckVisitor implements Visitor {
 		VType tempRightType = tempType;
 		if (!(tempLeftType.equals(tempRightType))){
 			// TODO: ERROR HANDLING
+			String s = "Expected " + tempLeftType.toString() 
+						+ ", but found " + tempRightType.toString();
+			SemanticErrorObject seo = new SemanticErrorObject(
+										vi.getExpr().getLineNumber(), 
+										vi.getExpr().getColumnNumber(),
+										s
+										);
+			Main.handleSemanticError(seo);
 		}
 		
 		
@@ -897,6 +967,13 @@ public class TypeCheckVisitor implements Visitor {
 		// Check type of conditional
 		if (!exprType.equals(bType)) {
 			// TODO: error handling
+			String s = "Expected bool, but found " + exprType.toString();
+			SemanticErrorObject seo = new SemanticErrorObject(
+										ws.getExpr().getLineNumber(), 
+										ws.getExpr().getColumnNumber(),
+										s
+										);
+			Main.handleSemanticError(seo);
 		}
 		
 		// Start new scope

@@ -16,36 +16,34 @@ public class FunctionCall implements Expr,NakedStmt {
 	private int identifier_col;
 	private int identifier_line;
 	private FunctionArg functionArg;
-	private int functionArg_col;
-	private int functionArg_line;
 	private Expr expr;
 	private int expr_col;
 	private int expr_line;
+	private int length_col;
+	private int length_line;
     private int index;
 
-    public FunctionCall(Identifier id, int idleft, int idright){
+    public FunctionCall(Identifier id){
         identifier = id;
-        identifier_col = idleft;
-        identifier_line = idright;
+        identifier_col = id.getColumnNumber();
+        identifier_line = id.getLineNumber();
         index = 0;
     }
     
-	public FunctionCall(Identifier id, FunctionArg fArg, 
-						int idleft, int idright,
-						int faleft, int faright) {
+	public FunctionCall(Identifier id, FunctionArg fArg) {
 		identifier = id;
-        identifier_col = idleft;
-        identifier_line = idright;
+        identifier_col = id.getColumnNumber();
+        identifier_line = id.getLineNumber();
 		functionArg = fArg; 
-		functionArg_col = faleft;
-		functionArg_line = faright;
         index = 1;
 	}
 	
-	public FunctionCall(Expr e, int eleft, int eright) {
+	public FunctionCall(Expr e, int lleft, int lright) {
 		expr = e;
-		expr_col = eleft;
-		expr_line = eright;
+		expr_col = e.getColumnNumber();
+		expr_line = e.getLineNumber();
+		length_col = lleft;
+		length_line = lright;
 		index = 2;
 	}
 	
@@ -59,8 +57,9 @@ public class FunctionCall implements Expr,NakedStmt {
 			functionArg.prettyPrintNode();
 		} else if (index == 2) {
 			tempPrinter.printAtom("length");
-//			identifier.prettyPrintNode();
+			tempPrinter.startList();
 			expr.prettyPrintNode();		// TODO revisit. NOT TOO SURE
+			tempPrinter.endList();
 		}
 		tempPrinter.endList();
 	}
@@ -113,22 +112,6 @@ public class FunctionCall implements Expr,NakedStmt {
 		this.identifier_line = identifier_line;
 	}
 
-	public int getFunctionArg_col() {
-		return functionArg_col;
-	}
-
-	public void setFunctionArg_col(int functionArg_col) {
-		this.functionArg_col = functionArg_col;
-	}
-
-	public int getFunctionArg_line() {
-		return functionArg_line;
-	}
-
-	public void setFunctionArg_line(int functionArg_line) {
-		this.functionArg_line = functionArg_line;
-	}
-
 	public int getExpr_col() {
 		return expr_col;
 	}
@@ -145,8 +128,40 @@ public class FunctionCall implements Expr,NakedStmt {
 		this.expr_line = expr_line;
 	}
 
+	public int getLength_col() {
+		return length_col;
+	}
+
+	public void setLength_col(int length_col) {
+		this.length_col = length_col;
+	}
+
+	public int getLength_line() {
+		return length_line;
+	}
+
+	public void setLength_line(int length_line) {
+		this.length_line = length_line;
+	}
+
 	@Override
 	public void accept(Visitor v){
 		v.visit(this);
+	}
+
+	@Override
+	public int getColumnNumber() {
+		if (index < 2) {
+			return identifier_col;
+		}
+		return length_col;
+	}
+
+	@Override
+	public int getLineNumber() {
+		if (index < 2) {
+			return identifier_line;
+		}
+		return length_line;
 	}
 }

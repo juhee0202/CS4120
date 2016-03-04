@@ -6,6 +6,9 @@ import jl2755.visitor.Visitor;
 
 public class ReturnStmt {
 	private ReturnList returnList;
+	/**
+	 * 0 if it's a procedural return, 1 if it returns something
+	 */
 	private int index;
 	
 	public ReturnStmt() {

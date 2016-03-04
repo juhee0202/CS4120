@@ -15,4 +15,28 @@ public class InterfaceFunc {
 		functionParam = fp;
 		returnType = rt;
 	}
+
+	public Identifier getIdentifier() {
+		return identifier;
+	}
+
+	public void setIdentifier(Identifier identifier) {
+		this.identifier = identifier;
+	}
+
+	public FunctionParam getFunctionParam() {
+		return functionParam;
+	}
+
+	public void setFunctionParam(FunctionParam functionParam) {
+		this.functionParam = functionParam;
+	}
+
+	public ReturnType getReturnType() {
+		return returnType;
+	}
+
+	public void setReturnType(ReturnType returnType) {
+		this.returnType = returnType;
+	}
 }

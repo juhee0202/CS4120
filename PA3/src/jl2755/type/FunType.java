@@ -4,6 +4,7 @@ import java.util.List;
 import jl2755.ast.Type;
 import jl2755.ast.FunctionCall;
 import jl2755.ast.FunctionDecl;
+import jl2755.ast.InterfaceFunc;
 
 /**
  *	Represents the function type
@@ -48,6 +49,40 @@ public class FunType implements VType {
 		
 		/* Set Returns */
 		List<Type> ll = fd.getReturnTypes();
+		if (ll.size() == 0) {
+			returnTypes = new UnitType();
+		}
+		else if (ll.size() == 1) {
+			returnTypes = new VarType(l.get(0));
+		}
+		else {
+			returnTypes = new TupleType();
+			for (int i = 0; i < ll.size(); i++) {
+				VarType vt = new VarType(ll.get(i));
+				((TupleType) returnTypes).addToTypes(vt);
+			}
+		}
+	}
+	
+	public FunType(InterfaceFunc argIntFunc) {
+		/* Set Params */
+		List<Type> l = argIntFunc.getFunctionParam().getParamTypes();
+		if (l.size() == 0) {
+			paramTypes = new UnitType();
+		}
+		else if (l.size() == 1) {
+			paramTypes = new VarType(l.get(0));
+		}
+		else {
+			paramTypes = new TupleType();
+			for (int i = 0; i < l.size(); i++) {
+				VarType vt = new VarType(l.get(i));
+				((TupleType) paramTypes).addToTypes(vt);
+			}
+		}
+		
+		/* Set Returns */
+		List<Type> ll = argIntFunc.getReturnType().getReturnTypes();
 		if (ll.size() == 0) {
 			returnTypes = new UnitType();
 		}

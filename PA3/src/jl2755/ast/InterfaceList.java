@@ -1,5 +1,8 @@
 package jl2755.ast;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Class for the list of function declarations in an interface file.
  *
@@ -34,5 +37,17 @@ public class InterfaceList {
 		intFunc = intf;
 		intList = il;
 		index = 1;
+	}
+	
+	public List<InterfaceFunc> getInterfaceFunctions() {
+		List<InterfaceFunc> tempList = new ArrayList<InterfaceFunc>();
+		if (index == 0){
+			tempList.add(intFunc);
+		}
+		if (index == 1){
+			tempList.add(intFunc);
+			tempList.addAll(intList.getInterfaceFunctions());
+		}
+		return tempList;
 	}
 }

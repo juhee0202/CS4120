@@ -4,6 +4,9 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.Paths;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -13,7 +16,12 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
 import java_cup.runtime.Symbol;
+import jl2755.ast.Interface;
+import jl2755.ast.InterfaceFunc;
 import jl2755.ast.Program;
+import jl2755.ast.XiFile;
+import jl2755.type.FunType;
+import jl2755.type.VType;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -60,6 +68,7 @@ public class Main {
 				
 		if (cmd.hasOption("sourcepath")) {
 			srcPath = cmd.getOptionValue("sourcepath")+"/";
+			// TODO: Make this more robust with adding /'s if necessary
 		}
 
 		if (cmd.hasOption("D")) {
@@ -221,6 +230,30 @@ public class Main {
 	}
 	
 	public static void handleSemanticError(SemanticErrorObject seo) {
-		// TODO impelment
+		// TODO: implement
+	}
+	
+	public static Map<String, VType> checkInterface(String interfaceName){
+		String absPath = srcPath + interfaceName + ".ixi";
+		Map<String, VType> tempMap = new HashMap<String, VType>();
+		try {
+			parser p = new parser(new Scanner(new FileReader(absPath)));
+//			p.setScanner(new Scanner(new FileReader(filename)));
+			Symbol s = p.parse();
+			Interface result = (Interface) s.value;
+			List<InterfaceFunc> tempFuncs = result.getInterfaceFuncs();
+			for (int i = 0; i < tempFuncs.size(); i++){
+				// TODO: CHECK IF INTERFACE CAN HAVE 2 METHODS WITH SAME SIGNATURE
+				if (tempMap.containsKey(tempFuncs.get(i).getIdentifier().toString())){
+					// TODO: ERROR AHNDLING ASSUMING METHOD WAS ALREADY DECLARED
+				}
+				tempMap.put(tempFuncs.get(i).getIdentifier().toString(),
+						new FunType(tempFuncs.get(i)));
+			}
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return tempMap;
 	}
 }

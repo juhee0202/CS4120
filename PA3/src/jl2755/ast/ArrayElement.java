@@ -16,6 +16,11 @@ public class ArrayElement implements Expr {
 	private FunctionCall functionCall;
 	private IndexedBrackets indexedBrackets;
 	private ArrayLiteral arrayLiteral;
+	/**
+	 * 0 if identifier with indexedBrackets,
+	 * 1 if functionCall with indexedBrackets,
+	 * 2 if arrayLiteral with indexedBrackets
+	 */
 	private int index;
 	
 	public ArrayElement(Identifier id, IndexedBrackets ib) {

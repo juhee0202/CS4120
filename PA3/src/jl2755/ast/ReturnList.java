@@ -1,10 +1,14 @@
 package jl2755.ast;
 
-import jl2755.visitor.Visitor;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ReturnList {
 	private Expr expr;
 	private ReturnList returnList;
+	/**
+	 * 0 is the base case, 1 is the recursive case
+	 */
 	private int index;
 	
 	public ReturnList(Expr e) {
@@ -49,8 +53,17 @@ public class ReturnList {
 	public void setIndex(int index) {
 		this.index = index;
 	}
+
 	
-	public void accept(Visitor v){
-		v.visit(this);
+	public List<Expr> getListOfExpr() {
+		List<Expr> tempList = new ArrayList<Expr>();
+		if (index == 0) {
+			tempList.add(expr);
+		}
+		if (index == 1) {
+			tempList.add(expr);
+			tempList.addAll(returnList.getListOfExpr());
+		}
+		return tempList;
 	}
 }

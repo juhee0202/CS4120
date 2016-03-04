@@ -53,9 +53,9 @@ public class EmptyArrayType implements Type{
 	public void setIndex(int index) {
 		this.index = index;
 	}
-	
+
 	@Override
-	public void accept(Visitor v){
-		v.visit(this);
+	public void accept(Visitor v) {
+		return;
 	}
 }

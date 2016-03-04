@@ -90,11 +90,11 @@ start with xi_file;
 
 /* Grammar */
 
-array_element ::= identifier:id indexed_brackets:ib                 {: RESULT = new ArrayElement(id, ib, idleft, idright); :}
+array_element ::= identifier:id indexed_brackets:ib                 {: RESULT = new ArrayElement(id, ib); :}
                   |
-                  function_call:fc indexed_brackets:ib              {: RESULT = new ArrayElement(fc, ib, fcleft, fcright); :}
+                  function_call:fc indexed_brackets:ib              {: RESULT = new ArrayElement(fc, ib); :}
                   |
-                  array_literal:al indexed_brackets:ib              {: RESULT = new ArrayElement(al, ib, alleft, alright); :}
+                  array_literal:al indexed_brackets:ib              {: RESULT = new ArrayElement(al, ib); :}
                   ;
 
 array_element_list ::= expr:e                                       {: RESULT = new ArrayElementList(e); :}

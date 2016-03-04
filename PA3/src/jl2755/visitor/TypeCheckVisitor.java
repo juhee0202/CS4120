@@ -267,6 +267,12 @@ public class TypeCheckVisitor implements Visitor {
 			// TODO: error
 			String s = "Expected a variable type, but found " + 
 					tempType.toString();
+			SemanticErrorObject seo = new SemanticErrorObject(
+					be.getColumnNumber(), 
+					be.getLineNumber(),
+					s
+					);
+			Main.handleSemanticError(seo);
 		}
 		
 		VarType leftType = (VarType) tempType;
@@ -276,6 +282,12 @@ public class TypeCheckVisitor implements Visitor {
 			// TODO: error
 			String s = "Expected a variable type, but found " + 
 					tempType.toString();
+			SemanticErrorObject seo = new SemanticErrorObject(
+					be.getColumnNumber(), 
+					be.getLineNumber(),
+					s
+					);
+			Main.handleSemanticError(seo);
 		}
 		
 		VarType rightType = (VarType) tempType;
@@ -287,17 +299,35 @@ public class TypeCheckVisitor implements Visitor {
 				if (!rightType.isInt()) {
 					//TODO error handling
 					String s = "Mismatched types for + operation.";
+					SemanticErrorObject seo = new SemanticErrorObject(
+							be.getColumnNumber(), 
+							be.getLineNumber(),
+							s
+							);
+					Main.handleSemanticError(seo);
 				}
 			}
 			else if (leftType.isArray()) {
 				if (!leftType.equals(rightType)) {
 					// TODO: error handling
 					String s = "Mismatched types for + operation.";
+					SemanticErrorObject seo = new SemanticErrorObject(
+							be.getColumnNumber(), 
+							be.getLineNumber(),
+							s
+							);
+					Main.handleSemanticError(seo);
 				}
 			}
 			else {
 				//TODO error handling
 				String s = "Invalid types for + operation.";
+				SemanticErrorObject seo = new SemanticErrorObject(
+						be.getColumnNumber(), 
+						be.getLineNumber(),
+						s
+						);
+				Main.handleSemanticError(seo);
 			}
 		}
 		// if !=, == (i) both are int/bool (ii) both are arrays with same element type
@@ -307,6 +337,12 @@ public class TypeCheckVisitor implements Visitor {
 					// TODO: error handling
 					String s = "Mismatched types for " + op.toString() 
 								+ " operation.";
+					SemanticErrorObject seo = new SemanticErrorObject(
+							be.getColumnNumber(), 
+							be.getLineNumber(),
+							s
+							);
+					Main.handleSemanticError(seo);
 				}
 			}
 			if (leftType.isInt()) {
@@ -314,6 +350,12 @@ public class TypeCheckVisitor implements Visitor {
 					//TODO error handling
 					String s = "Mismatched types for " + op.toString() 
 								+ " operation.";
+					SemanticErrorObject seo = new SemanticErrorObject(
+							be.getColumnNumber(), 
+							be.getLineNumber(),
+							s
+							);
+					Main.handleSemanticError(seo);
 				}
 			}
 			else if (leftType.isArray()) {
@@ -321,11 +363,23 @@ public class TypeCheckVisitor implements Visitor {
 					//TODO error handling
 					String s = "Mismatched types for " + op.toString() 
 								+ " operation.";
+					SemanticErrorObject seo = new SemanticErrorObject(
+							be.getColumnNumber(), 
+							be.getLineNumber(),
+							s
+							);
+					Main.handleSemanticError(seo);
 				}
 			}
 			else {
 				//TODO error handling
 				String s = "Invalid types for " + op.toString() + " operation.";
+				SemanticErrorObject seo = new SemanticErrorObject(
+						be.getColumnNumber(), 
+						be.getLineNumber(),
+						s
+						);
+				Main.handleSemanticError(seo);
 			}
 		}
 	}
@@ -812,6 +866,14 @@ public class TypeCheckVisitor implements Visitor {
 		
 		if (!(tempType instanceof VarType)) {
 			//TODO error handling
+			String s = "Expected a variable type, but found " + 
+					tempType.toString();
+			SemanticErrorObject seo = new SemanticErrorObject(
+					ue.getColumnNumber(), 
+					ue.getLineNumber(),
+					s
+					);
+			Main.handleSemanticError(seo);
 		}
 		
 		VarType exprType = (VarType) tempType;
@@ -820,11 +882,27 @@ public class TypeCheckVisitor implements Visitor {
 		if (op.toString().equals("!")) {
 			if (!exprType.isBool()) {
 				//TODO error handling
+				String s = "Expected a boolean, but found " + 
+						exprType.toString();
+				SemanticErrorObject seo = new SemanticErrorObject(
+						ue.getColumnNumber(), 
+						ue.getLineNumber(),
+						s
+						);
+				Main.handleSemanticError(seo);
 			}
 		}
 		else if (op.toString().equals("-")) {
 			if (!exprType.isInt()) {
 				//TODO error handling
+				String s = "Expected an int, but found " + 
+						exprType.toString();
+				SemanticErrorObject seo = new SemanticErrorObject(
+						ue.getColumnNumber(), 
+						ue.getLineNumber(),
+						s
+						);
+				Main.handleSemanticError(seo);
 			}
 		}
 	}

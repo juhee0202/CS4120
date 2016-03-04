@@ -120,4 +120,13 @@ public class FunType implements VType {
 		return (this.getParamTypes()).equals(vt.getParamTypes()) 
 				&& (this.getReturnTypes()).equals(vt.getReturnTypes());
 	}
+	
+	@Override
+	public String toString() {
+		String returnString = "(";
+		returnString += paramTypes.toString();
+		returnString += "):";
+		returnString += returnTypes.toString();
+		return returnString;
+	}
 }

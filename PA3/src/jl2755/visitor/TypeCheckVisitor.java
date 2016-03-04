@@ -39,21 +39,36 @@ public class TypeCheckVisitor implements Visitor {
 		int index = ae.getIndex();
 		if (index == 0){
 			if (!(env.containsKey(ae.getIdentifier().toString()))){
-				// TODO: ERROR HANDLING
 				String errorDesc = "Name " + ae.getIdentifier().toString() +
 						" cannot be resolved.";
+				SemanticErrorObject seo = new SemanticErrorObject(
+						ae.getIdentifier_col(), 
+						ae.getIdentifier_line(),
+						errorDesc
+						);
+				Main.handleSemanticError(seo);
 			}
 			VType tempScopeType = env.get(ae.getIdentifier().toString());
 			if (!(tempScopeType instanceof VarType)){
-				// TODO: ERROR HANDLING
 				String errorDesc = "Name " + ae.getIdentifier().toString() +
-						" is not of VarType";
+						" is not of variable type.";
+				SemanticErrorObject seo = new SemanticErrorObject(
+						ae.getIdentifier_col(), 
+						ae.getIdentifier_line(),
+						errorDesc
+						);
+				Main.handleSemanticError(seo);
 			}
 			VarType varTypeView = (VarType) tempScopeType;
 			int numberOfBrackets = ae.getIndexedBrackets().getNumBrackets();
 			if (numberOfBrackets > varTypeView.getNumBrackets()){
-				// TODO: ERROR HANDLING
 				String errorDesc = "Array dimensions don't match.";
+				SemanticErrorObject seo = new SemanticErrorObject(
+						ae.getIdentifier_col(), 
+						ae.getIdentifier_line(),
+						errorDesc
+						);
+				Main.handleSemanticError(seo);
 			}
 			tempType = new VarType(varTypeView.getIsBool(), varTypeView.getNumBrackets() - numberOfBrackets);
 		}
@@ -61,14 +76,24 @@ public class TypeCheckVisitor implements Visitor {
 			ae.getFunctionCall().accept(this);
 			int numberOfBrackets = ae.getIndexedBrackets().getNumBrackets();
 			if (!(tempType instanceof VarType)){
-				// TODO: ERROR HANDLING
 				String errorDesc = "Name " + ae.getIdentifier().toString() +
-						" is not of VarType";
+						" is not of variable type.";
+				SemanticErrorObject seo = new SemanticErrorObject(
+						ae.getFunctionCall_col(), 
+						ae.getFunctionCall_line(),
+						errorDesc
+						);
+				Main.handleSemanticError(seo);
 			}
 			VarType arrayTypeAfterVisit = (VarType) tempType;
 			if (numberOfBrackets > arrayTypeAfterVisit.getNumBrackets()){
-				// TODO: ERROR HANDLING
 				String errorDesc = "Array dimensions don't match.";
+				SemanticErrorObject seo = new SemanticErrorObject(
+						ae.getFunctionCall_col(), 
+						ae.getFunctionCall_line(),
+						errorDesc
+						);
+				Main.handleSemanticError(seo);
 			}
 			boolean oldIsBool = arrayTypeAfterVisit.getIsBool();
 			int oldNumBrackets = arrayTypeAfterVisit.getNumBrackets();
@@ -77,15 +102,25 @@ public class TypeCheckVisitor implements Visitor {
 		else if (index == 2){
 			ae.getArrayLiteral().accept(this);
 			if (!(tempType instanceof VarType)){
-				// TODO: ERROR HANDLING
 				String errorDesc = "Name " + ae.getIdentifier().toString() +
-						" is not of VarType";
+						" is not of variable type.";
+				SemanticErrorObject seo = new SemanticErrorObject(
+						ae.getArrayLiteral_col(), 
+						ae.getArrayLiteral_line(),
+						errorDesc
+						);
+				Main.handleSemanticError(seo);
 			}
 			VarType arrayTypeAfterVisit = (VarType) tempType;
 			int numberOfBrackets = ae.getIndexedBrackets().getNumBrackets();
 			if (numberOfBrackets > arrayTypeAfterVisit.getNumBrackets()){
-				// TODO: ERROR HANDLING
 				String errorDesc = "Array dimensions don't match.";
+				SemanticErrorObject seo = new SemanticErrorObject(
+						ae.getArrayLiteral_col(), 
+						ae.getArrayLiteral_line(),
+						errorDesc
+						);
+				Main.handleSemanticError(seo);
 			}
 			boolean oldIsBool = arrayTypeAfterVisit.getIsBool();
 			int oldNumBrackets = arrayTypeAfterVisit.getNumBrackets();

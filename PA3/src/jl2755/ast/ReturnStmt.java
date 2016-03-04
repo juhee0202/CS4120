@@ -6,19 +6,25 @@ import jl2755.visitor.Visitor;
 
 public class ReturnStmt {
 	private ReturnList returnList;
+	private int return_col;
+	private int return_line;
 	/**
 	 * 0 if it's a procedural return, 1 if it returns something
 	 */
 	private int index;
 	
-	public ReturnStmt() {
+	public ReturnStmt(int rleft, int rright) {
 		returnList = null;
 		index = 0;
+		return_col = rleft;
+		return_line = rright;
 	}
 	
-	public ReturnStmt(ReturnList rl) {
+	public ReturnStmt(ReturnList rl, int rleft, int rright) {
 		returnList = rl;
 		index = 1;
+		return_col = rleft;
+		return_line = rright;
 	}
 	
 	public void prettyPrintNode() {
@@ -47,6 +53,22 @@ public class ReturnStmt {
 		this.index = index;
 	}
 	
+	public int getReturn_col() {
+		return return_col;
+	}
+
+	public void setReturn_col(int return_col) {
+		this.return_col = return_col;
+	}
+
+	public int getReturn_line() {
+		return return_line;
+	}
+
+	public void setReturn_line(int return_line) {
+		this.return_line = return_line;
+	}
+
 	public void accept(Visitor v){
 		v.visit(this);
 	}

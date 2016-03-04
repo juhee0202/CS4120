@@ -7,10 +7,14 @@ import jl2755.visitor.Visitor;
 public class UnaryExpr implements OpExpr {
 	private Expr expr;
 	private UnaryOp op;
+	private int op_col;
+	private int op_line;
 
-	public UnaryExpr(Expr e, UnaryOp o) {
+	public UnaryExpr(Expr e, UnaryOp o, int oleft, int oright) {
 		expr = e;
 		op = o;
+		op_col = oleft;
+		op_line = oright;
 	}
 
 	public UnaryOp getUnaryOp() {
@@ -39,5 +43,15 @@ public class UnaryExpr implements OpExpr {
 	
 	public void accept(Visitor v){
 		v.visit(this);
+	}
+
+	@Override
+	public int getColumnNumber() {
+		return op_col;
+	}
+
+	@Override
+	public int getLineNumber() {
+		return op_line;
 	}
 }

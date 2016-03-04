@@ -15,46 +15,31 @@ import jl2755.visitor.Visitor;
  */
 public class TupleInit implements NakedStmt {
 	private TupleDeclList tupleDeclList;
-	private int tupleDeclList_col;
-	private int tupleDeclList_line;
 	private FunctionCall functionCall;
 	private int functionCall_col;
 	private int functionCall_line;
 	private VarDecl varDecl;
-	private int varDecl_col;
-	private int varDecl_line;
 	private int index;
 	
-	public TupleInit(FunctionCall fc, int fcleft, int fcright) {
+	public TupleInit(FunctionCall fc) {
 		functionCall = fc;
-		functionCall_col = fcleft;
-		functionCall_line = fcright;
+		functionCall_col = fc.getColumnNumber();
+		functionCall_line = fc.getLineNumber();
 		index = 0;
 	}
 	
-	public TupleInit(TupleDeclList tdl, FunctionCall fc, 
-					 int tdlleft, int tdlright, int fcleft, int fcright) {
+	public TupleInit(TupleDeclList tdl, FunctionCall fc) {
 		tupleDeclList = tdl;
-		tupleDeclList_col = tdlleft;
-		tupleDeclList_line = tdlright;
 		functionCall = fc;
-		functionCall_col = fcleft;
-		functionCall_line = fcright;
+		functionCall_col = fc.getColumnNumber();
+		functionCall_line = fc.getLineNumber();
 		index = 1;
 	}
 	
-	public TupleInit(VarDecl vd, TupleDeclList tdl, FunctionCall fc,
-					 int vdleft, int vdright, int tdlleft, int tdlright,
-					 int fcleft, int fcright) {
+	public TupleInit(VarDecl vd, TupleDeclList tdl, FunctionCall fc) {
 		varDecl = vd;
-		varDecl_col = vdleft;
-		varDecl_line = vdright;
 		tupleDeclList = tdl;
-		tupleDeclList_col = tdlleft;
-		tupleDeclList_line = tdlright;
 		functionCall = fc;
-		functionCall_col = fcleft;
-		functionCall_line = fcright;
 		index = 2;
 	}
 	
@@ -118,22 +103,6 @@ public class TupleInit implements NakedStmt {
 		this.index = index;
 	}
 
-	public int getTupleDeclList_col() {
-		return tupleDeclList_col;
-	}
-
-	public void setTupleDeclList_col(int tupleDeclList_col) {
-		this.tupleDeclList_col = tupleDeclList_col;
-	}
-
-	public int getTupleDeclList_line() {
-		return tupleDeclList_line;
-	}
-
-	public void setTupleDeclList_line(int tupleDeclList_line) {
-		this.tupleDeclList_line = tupleDeclList_line;
-	}
-
 	public int getFunctionCall_col() {
 		return functionCall_col;
 	}
@@ -148,21 +117,5 @@ public class TupleInit implements NakedStmt {
 
 	public void setFunctionCall_line(int functionCall_line) {
 		this.functionCall_line = functionCall_line;
-	}
-
-	public int getVarDecl_col() {
-		return varDecl_col;
-	}
-
-	public void setVarDecl_col(int varDecl_col) {
-		this.varDecl_col = varDecl_col;
-	}
-
-	public int getVarDecl_line() {
-		return varDecl_line;
-	}
-
-	public void setVarDecl_line(int varDecl_line) {
-		this.varDecl_line = varDecl_line;
 	}
 }

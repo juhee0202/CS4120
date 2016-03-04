@@ -225,8 +225,9 @@ public class TypeCheckVisitor implements Visitor {
 											);
 				Main.handleSemanticError(seo);
 			}
-			
+			System.out.println("HERE");
 			as.getExpr().accept(this);
+			System.out.println("THERE");
 			VType exprType = tempType;
 			
 			// Check types
@@ -241,6 +242,7 @@ public class TypeCheckVisitor implements Visitor {
 											);
 				Main.handleSemanticError(seo);
 			}
+			
 		
 		//ex: arr[2] = 3;
 		} else if (index == 1) {
@@ -339,7 +341,7 @@ public class TypeCheckVisitor implements Visitor {
 			Main.handleSemanticError(seo);
 		}
 		VarType leftType = (VarType) tempType;
-		
+		System.out.println("lefttype: " + leftType.toString());
 		// check that rightExpr is of VarType
 		right.accept(this);
 		if (!(tempType instanceof VarType)) {
@@ -354,6 +356,7 @@ public class TypeCheckVisitor implements Visitor {
 			Main.handleSemanticError(seo);
 		}
 		VarType rightType = (VarType) tempType;
+		System.out.println("righttype: " + rightType.toString());
 		
 		BinaryOp op = be.getBinaryOp();
 		

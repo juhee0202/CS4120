@@ -459,8 +459,8 @@ public class TypeCheckVisitor implements Visitor {
 			if (!args.equals(paramType)) {
 				String s = "Expected " + paramType.toString() + ", but found " + args.toString();
 				SemanticErrorObject seo = new SemanticErrorObject(
-											fc.getFunctionArg_col(),
-											fc.getFunctionArg_line(),
+											fc.getIdentifier_col(),
+											fc.getIdentifier_line(),
 											s
 											);
 				Main.handleSemanticError(seo);

@@ -23,6 +23,7 @@ import jl2755.ast.Program;
 import jl2755.ast.XiFile;
 import jl2755.type.FunType;
 import jl2755.type.VType;
+import jl2755.visitor.TypeCheckVisitor;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -163,6 +164,9 @@ public class Main {
 				files = concat(parseFiles, typecheckFiles);
 				files = concat(files, leftoverFiles);
 			}
+			else {
+				files = lexFiles;
+			}
 						
 			if (files == null || files.length == 0) {
 				System.out.println("Missing argument for option: --lex");
@@ -188,6 +192,9 @@ public class Main {
 				files = concat(lexFiles, typecheckFiles);
 				files = concat(files, leftoverFiles);
 			}
+			else {
+				files = parseFiles;
+			}
 						
 			if (files == null || files.length == 0) {
 				System.out.println("Missing argument for option: --parse");
@@ -209,11 +216,13 @@ public class Main {
 
 		if (cmd.hasOption("-typecheck")) {
 			String[] files = null;
-			if (lexFiles == null) {
+			if (typecheckFiles == null) {
 				files = concat(parseFiles, lexFiles);
 				files = concat(files, leftoverFiles);
 			}
-						
+			else {
+				files = typecheckFiles;
+			}
 			if (files == null || files.length == 0) {
 				System.out.println("Missing argument for option: --typecheck");
 				return;
@@ -321,6 +330,7 @@ public class Main {
 			new GlobalPrettyPrinter(rmExtension + ".parsed");
 			result.prettyPrintNode();
 			GlobalPrettyPrinter.getInstance().flush();		
+			bw.close();
 			System.out.println("[xic] Parsing completed");
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -351,6 +361,8 @@ public class Main {
 			TypeCheckVisitor visitor = new TypeCheckVisitor(result);
 			visitor.visit(result);
 			
+			bw.write("Valid Xi program");
+			bw.close();
 			System.out.println("[xic] Typechecking completed");
 			
 		} catch (Exception e) {

@@ -387,6 +387,14 @@ public class Main {
 	
 	public static void handleSemanticError(SemanticErrorObject seo) {
 		// TODO: implement
+		try {
+			bw.write(seo.toString());
+			bw.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		throw new RuntimeException("[xic] Typecheck Failed.");
 	}
 	
 	public static Map<String, VType> checkInterface(String interfaceName){

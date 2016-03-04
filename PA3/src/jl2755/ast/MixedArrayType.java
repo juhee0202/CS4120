@@ -114,6 +114,6 @@ public class MixedArrayType implements Type {
 	}
 	
 	public void accept(Visitor v){
-		v.visit(this);
+		return;
 	}
 }

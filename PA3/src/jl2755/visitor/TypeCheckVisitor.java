@@ -1,11 +1,14 @@
 package jl2755.visitor;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Stack;
 
+import jl2755.Main;
+import jl2755.SemanticErrorObject;
 import jl2755.ast.*;
 import jl2755.type.FunType;
 import jl2755.type.TupleType;
@@ -26,6 +29,9 @@ public class TypeCheckVisitor implements Visitor {
 		// TODO add length function to the env
 	}
 	
+	/**
+	 * Dirties tempType
+	 */
 	@Override
 	public void visit(ArrayElement ae) {
 		int index = ae.getIndex();
@@ -42,7 +48,7 @@ public class TypeCheckVisitor implements Visitor {
 			if (numberOfBrackets > varTypeView.getNumBrackets()){
 				// TODO: ERROR HANDLING
 			}
-			tempType = new VarType(varTypeView.isBool(), varTypeView.getNumBrackets() - numberOfBrackets);
+			tempType = new VarType(varTypeView.getIsBool(), varTypeView.getNumBrackets() - numberOfBrackets);
 		}
 		else if (index == 1){
 			ae.getFunctionCall().accept(this);
@@ -54,7 +60,7 @@ public class TypeCheckVisitor implements Visitor {
 			if (numberOfBrackets > arrayTypeAfterVisit.getNumBrackets()){
 				// TODO: ERROR HANDLING
 			}
-			boolean oldIsBool = arrayTypeAfterVisit.isBool();
+			boolean oldIsBool = arrayTypeAfterVisit.getIsBool();
 			int oldNumBrackets = arrayTypeAfterVisit.getNumBrackets();
 			tempType = new VarType(oldIsBool, oldNumBrackets - numberOfBrackets);
 		}
@@ -68,22 +74,47 @@ public class TypeCheckVisitor implements Visitor {
 			if (numberOfBrackets > arrayTypeAfterVisit.getNumBrackets()){
 				// TODO: ERROR HANDLING
 			}
-			boolean oldIsBool = arrayTypeAfterVisit.isBool();
+			boolean oldIsBool = arrayTypeAfterVisit.getIsBool();
 			int oldNumBrackets = arrayTypeAfterVisit.getNumBrackets();
 			tempType = new VarType(oldIsBool, oldNumBrackets - numberOfBrackets);
 		}
 	}
 
+	/**
+	 * Dirties tempType
+	 */
 	@Override
 	public void visit(ArrayElementList ael) {
-		// TODO Auto-generated method stub
-		
+		List<Expr> tempExprs = ael.getAllExprInArray();
+		List<VarType> tempTypesOfExprs = new ArrayList<VarType>();
+		for (int i = 0; i < tempExprs.size(); i++){
+			tempExprs.get(i).accept(this);
+			if (!(tempType instanceof VarType)){
+				// TODO: ERROR HANDLING
+			}
+			tempTypesOfExprs.add((VarType)tempType);
+		}
+		for (int i = 0; i < tempTypesOfExprs.size() - 1; i++){
+			if (!(tempTypesOfExprs.get(i).equals(tempTypesOfExprs.get(i+1)))){
+				// TODO: ERROR HANDLING on i+1
+			}
+		}
+		tempType = new VarType(tempTypesOfExprs.get(0).getIsBool(), tempTypesOfExprs.get(0).getNumBrackets());
 	}
 
+	/**
+	 * Dirties tempType
+	 */
 	@Override
 	public void visit(ArrayLiteral al) {
-		// TODO Auto-generated method stub
-		
+		al.getArrElemList().accept(this);
+		if (!(tempType instanceof VarType)){
+			// TODO: ERROR HANDLING
+		}
+		VarType tempVarView = (VarType) tempType;
+		boolean oldIsBool = tempVarView.getIsBool();
+		int oldNumBrackets = tempVarView.getNumBrackets();
+		tempType = new VarType(oldIsBool, oldNumBrackets + 1);
 	}
 
 	/**
@@ -244,11 +275,35 @@ public class TypeCheckVisitor implements Visitor {
 	@Override
 	public void visit(FunctionCall fc) {
 		int index = fc.getIndex();
-		String id = index == 2 ? "length" : fc.getIdentifier().toString();
+		
+		/* Special Case: length(expr) */
+		if (index == 2) {
+			fc.getExpr().accept(this);
+			VarType arrayType = (VarType)tempType;
+			if (!arrayType.isArray()) {
+				String s = "Argument to the length method should be an array type";
+				SemanticErrorObject seo = new SemanticErrorObject(
+											fc.getExpr_col(), 
+											fc.getExpr_line(),
+											s
+											);
+				Main.handleSemanticError(seo);
+			}
+			tempType = arrayType.getPrimitiveType();
+			return;
+		}
+		
+		String id = fc.getIdentifier().toString();
 		
 		/* Check if the function is declared */
 		if (!env.containsKey(id)) {
-			// TODO error handling
+			String s = "Name " + id.toString() + " cannot be resolved";
+			SemanticErrorObject seo = new SemanticErrorObject(
+										fc.getIdentifier_col(),
+										fc.getIdentifier_line(),
+										s
+										);
+			Main.handleSemanticError(seo);
 		}
 		
 		FunType funType = (FunType)env.get(id);
@@ -259,7 +314,14 @@ public class TypeCheckVisitor implements Visitor {
 		if (index == 0) {
 			args = new UnitType();
 			if (!args.equals(paramType)) {
-				// TODO error handling
+				String s = "Expected " + paramType.toString() + ", but found unit";
+				SemanticErrorObject seo = new SemanticErrorObject(
+											fc.getIdentifier_col(),
+											fc.getIdentifier_line(),
+											s
+											);
+				// TODO revisit for the correct col, line number
+				Main.handleSemanticError(seo);
 			}
 		}
 		/* Case: id(funtionArg) */
@@ -267,17 +329,14 @@ public class TypeCheckVisitor implements Visitor {
 			fc.getFunctionArg().accept(this);
 			args = tempType;
 			if (!args.equals(paramType)) {
-				// TODO error handling
+				String s = "Expected " + paramType.toString() + ", but found " + args.toString();
+				SemanticErrorObject seo = new SemanticErrorObject(
+											fc.getFunctionArg_col(),
+											fc.getFunctionArg_line(),
+											s
+											);
+				Main.handleSemanticError(seo);
 			}
-		}
-		/* Case: length(expr) */
-		else if (index == 2) {
-			fc.getExpr().accept(this);
-			args = tempType;
-			if (!((VarType)args).isArray()) {
-				// TODO error handling
-			}
-			id = "length";
 		}
 		
 		tempType = funType.getReturnTypes();
@@ -295,7 +354,13 @@ public class TypeCheckVisitor implements Visitor {
 	public void visit(FunctionDecl fd) {
 		/* Check if the function identifier is not in env */
 		if (env.containsKey(fd.getIdentifier().toString())) {
-			// TODO error handling
+			String s = "Name " + fd.getIdentifier().toString() + " cannot be resolved";
+			SemanticErrorObject seo = new SemanticErrorObject(
+										fd.getIdentifier_col(),
+										fd.getIdentifier_line(),
+										s
+										);
+			Main.handleSemanticError(seo);
 		}
 		
 		/* Put function declaration in env */
@@ -320,6 +385,8 @@ public class TypeCheckVisitor implements Visitor {
 		/* Typecheck function body */
 		fd.getBlockStmt().accept(this);
 		
+		// TODO check if the return value is correct
+		
 		/* Restore the parent scope env */
 		for (Entry<String, Type> entry : paramToType.entrySet()) {
 			String id = entry.getKey();
@@ -342,17 +409,6 @@ public class TypeCheckVisitor implements Visitor {
 		for (FunctionDecl fd : functionDecls) {
 			fd.accept(this);
 		}
-	}
-
-	/**
-	 * Dirties tempType
-	 */
-	@Override
-	public void visit(Identifier i) {
-		if (!env.containsKey(i.getTheValue())) {
-			// TODO: error handling
-		}
-		tempType = env.get(i.getTheValue());
 	}
 
 	/**
@@ -448,10 +504,6 @@ public class TypeCheckVisitor implements Visitor {
 		// Check functions
 		(p.getFunctionDeclList()).accept(this);
 	}
-		
-	public void visit(PureContentArrayType pca) {
-		// TODO Auto-generated method stub
-	}
 
 	@Override
 	public void visit(ReturnList rl) {
@@ -502,16 +554,88 @@ public class TypeCheckVisitor implements Visitor {
 		
 	}
 
-	@Override
-	public void visit(TupleDeclList tdl) {
-		// TODO Auto-generated method stub
-		
-	}
-
+	/**
+	 * Similar to typechecking VarInit 
+	 * @param TupleInit ti
+	 */
 	@Override
 	public void visit(TupleInit ti) {
-		// TODO Auto-generated method stub
-		
+		int index = ti.getIndex();
+		ti.getFunctionCall().accept(this);
+		VType returnType = tempType;
+		/* Case: _ = f() */
+		if (index == 0) {
+			if (!(returnType instanceof VarType)) {
+				if (returnType instanceof UnitType) {
+					String id = ti.getFunctionCall().getIdentifier().toString();
+					String s = id + " does not have a return value";
+					SemanticErrorObject seo = new SemanticErrorObject(
+												ti.getFunctionCall_col(),
+												ti.getFunctionCall_line(),
+												s
+												);
+					Main.handleSemanticError(seo);
+				} else {
+					String s = "Mismatched number of values";
+					SemanticErrorObject seo = new SemanticErrorObject(
+												ti.getFunctionCall_col(),
+												ti.getFunctionCall_line(),
+												s
+												);
+					Main.handleSemanticError(seo);	
+				}
+			}
+		}
+		/* Case: _, tdl = f() */
+		// TODO need refactoring
+		else if (index == 1) {
+			if (!(returnType instanceof TupleType)) {
+				// TODO col,line numbering might be off
+				String s = "Mismatched number of values";
+				SemanticErrorObject seo = new SemanticErrorObject(
+											ti.getFunctionCall_col(),
+											ti.getFunctionCall_line(),
+											s
+											);
+				Main.handleSemanticError(seo);	
+			}
+			returnType = (TupleType)returnType;
+			TupleType tupleType = new TupleType(ti);
+			if (!returnType.equals(tupleType)) {
+				String s = "Mismatched number of values";
+				SemanticErrorObject seo = new SemanticErrorObject(
+											ti.getFunctionCall_col(),
+											ti.getFunctionCall_line(),
+											s
+											);
+				Main.handleSemanticError(seo);	
+			}
+		}
+		/* Case: vd, tdl = f() */
+		// TODO need refactoring
+		else {
+			if (!(returnType instanceof TupleType)) {
+				String s = "Mismatched number of values";
+				SemanticErrorObject seo = new SemanticErrorObject(
+											ti.getFunctionCall_col(),
+											ti.getFunctionCall_line(),
+											s
+											);
+				Main.handleSemanticError(seo);	
+			}
+			returnType = (TupleType)returnType;
+			TupleType tupleType = new TupleType(ti);
+			tupleType.prependToTypes(new VarType(ti.getVarDecl()));
+			if (!returnType.equals(tupleType)) {
+				String s = "Mismatched number of values";
+				SemanticErrorObject seo = new SemanticErrorObject(
+											ti.getFunctionCall_col(),
+											ti.getFunctionCall_line(),
+											s
+											);
+				Main.handleSemanticError(seo);	
+			}
+		}
 	}
 
 	@Override

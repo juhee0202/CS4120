@@ -13,23 +13,39 @@ import jl2755.visitor.Visitor;
  */
 public class FunctionCall implements Expr,NakedStmt {
 	private Identifier identifier;
+	private int identifier_col;
+	private int identifier_line;
 	private FunctionArg functionArg;
+	private int functionArg_col;
+	private int functionArg_line;
 	private Expr expr;
+	private int expr_col;
+	private int expr_line;
     private int index;
 
-    public FunctionCall(Identifier id){
+    public FunctionCall(Identifier id, int idleft, int idright){
         identifier = id;
+        identifier_col = idleft;
+        identifier_line = idright;
         index = 0;
     }
     
-	public FunctionCall(Identifier id, FunctionArg fArg) {
+	public FunctionCall(Identifier id, FunctionArg fArg, 
+						int idleft, int idright,
+						int faleft, int faright) {
 		identifier = id;
+        identifier_col = idleft;
+        identifier_line = idright;
 		functionArg = fArg; 
+		functionArg_col = faleft;
+		functionArg_line = faright;
         index = 1;
 	}
 	
-	public FunctionCall(Expr e) {
+	public FunctionCall(Expr e, int eleft, int eright) {
 		expr = e;
+		expr_col = eleft;
+		expr_line = eright;
 		index = 2;
 	}
 	
@@ -79,6 +95,54 @@ public class FunctionCall implements Expr,NakedStmt {
 
 	public void setExpr(Expr expr) {
 		this.expr = expr;
+	}
+
+	public int getIdentifier_col() {
+		return identifier_col;
+	}
+
+	public void setIdentifier_col(int identifier_col) {
+		this.identifier_col = identifier_col;
+	}
+
+	public int getIdentifier_line() {
+		return identifier_line;
+	}
+
+	public void setIdentifier_line(int identifier_line) {
+		this.identifier_line = identifier_line;
+	}
+
+	public int getFunctionArg_col() {
+		return functionArg_col;
+	}
+
+	public void setFunctionArg_col(int functionArg_col) {
+		this.functionArg_col = functionArg_col;
+	}
+
+	public int getFunctionArg_line() {
+		return functionArg_line;
+	}
+
+	public void setFunctionArg_line(int functionArg_line) {
+		this.functionArg_line = functionArg_line;
+	}
+
+	public int getExpr_col() {
+		return expr_col;
+	}
+
+	public void setExpr_col(int expr_col) {
+		this.expr_col = expr_col;
+	}
+
+	public int getExpr_line() {
+		return expr_line;
+	}
+
+	public void setExpr_line(int expr_line) {
+		this.expr_line = expr_line;
 	}
 
 	@Override

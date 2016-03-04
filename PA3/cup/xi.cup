@@ -48,6 +48,9 @@ non terminal FunctionParam function_param;
 non terminal Identifier identifier;
 non terminal IfStmt if_stmt;
 non terminal IndexedBrackets indexed_brackets;
+non terminal Interface interface;
+non terminal InterfaceFunc interface_func;
+non terminal InterfaceList interface_list;
 non terminal Literal literal;
 non terminal MixedArrayType mixed_array_type;
 non terminal MixedBrackets mixed_brackets;
@@ -67,6 +70,7 @@ non terminal UseId use_id;
 non terminal VarDecl var_decl;
 non terminal VarInit var_init;
 non terminal WhileStmt while_stmt;
+non terminal XiFile xi_file;
 
 
 /* Precedences */
@@ -82,7 +86,7 @@ precedence nonassoc ELSE;     // to avoid "dangling else" problem
 precedence nonassoc SEMICOLON;
 
 
-start with program;
+start with xi_file;
 
 /* Grammar */
 
@@ -153,15 +157,15 @@ function_arg ::= expr:expression                                    {: RESULT = 
                  ;
 
 function_call ::= identifier:id OPEN_PAREN 
-                  function_arg:fa CLOSE_PAREN                       {: RESULT = new FunctionCall(id, fa); :}
+                  function_arg:fa CLOSE_PAREN                       {: RESULT = new FunctionCall(id, fa, idleft, idright, faleft, faright); :}
                   |
-                  identifier:id OPEN_PAREN CLOSE_PAREN              {: RESULT = new FunctionCall(id); :}
+                  identifier:id OPEN_PAREN CLOSE_PAREN              {: RESULT = new FunctionCall(id, idleft, idright); :}
                   |
-                  LENGTH OPEN_PAREN expr:e CLOSE_PAREN              {: RESULT = new FunctionCall(e); :}
+                  LENGTH OPEN_PAREN expr:e CLOSE_PAREN              {: RESULT = new FunctionCall(e, eleft, eright); :}
                   ;
 
 function_decl ::= identifier:id OPEN_PAREN function_param:fp 
-                  CLOSE_PAREN return_type:rt block_stmt:bs          {: RESULT = new FunctionDecl(id, fp, rt, bs); :}
+                  CLOSE_PAREN return_type:rt block_stmt:bs          {: RESULT = new FunctionDecl(id, fp, rt, bs, idleft, idright, fpleft, fpright, rtleft, rtright, bsleft, bsright); :}
                   ;
 
 function_decl_list ::= function_decl:fd function_decl_list:fdl      {: RESULT = new FunctionDeclList(fd, fdl); :}
@@ -178,7 +182,7 @@ function_param ::= identifier:id COLON type:t                       {: RESULT = 
                    ;
 
 identifier ::= IDENTIFIER:id                                        {: RESULT = new Identifier(id); :}
-               ;
+               ; 
 
 if_stmt ::= IF OPEN_PAREN expr:e CLOSE_PAREN stmt:s                 {: RESULT = new IfStmt(e, s); :}
             | 
@@ -190,6 +194,18 @@ indexed_brackets ::= OPEN_BRACKET expr:e CLOSE_BRACKET              {: RESULT = 
                      OPEN_BRACKET expr:e CLOSE_BRACKET
                      indexed_brackets:ib                            {: RESULT = new IndexedBrackets(e, ib); :}
                      ;
+
+interface ::= interface_list:il                                     {: RESULT = new Interface(il); :}
+              ;
+
+interface_func ::= identifier:id OPEN_PAREN function_param:fp 
+                   CLOSE_PAREN return_type:rt                       {: RESULT = new InterfaceFunc(id, fp, rt); :}
+                   ;
+
+interface_list ::= interface_func:ifd interface_list:il             {: RESULT = new InterfaceList(ifd, il); :}
+                   |                       
+                   interface_func:ifd                               {: RESULT = new InterfaceList(ifd); :}
+                   ;
 
 literal ::= INTEGER_LITERAL:il                                      {: RESULT = new Literal(il); :}
             |
@@ -207,17 +223,13 @@ mixed_array_type ::= primitive_type:pt brackets:b                   {: RESULT = 
                      primitive_type:pt mixed_brackets:mb            {: RESULT = new MixedArrayType(pt, mb); :}
                      ;
 
-
-
-
-mixed_brackets ::=        OPEN_BRACKET expr:e CLOSE_BRACKET         {: RESULT = new MixedBrackets(e); :}
-                          |
-                          OPEN_BRACKET expr:e CLOSE_BRACKET 
-                          mixed_brackets:mb                         {: RESULT = new MixedBrackets(e, mb); :}
-                          |
-                          OPEN_BRACKET expr:e 
-                          CLOSE_BRACKET brackets:b                  {: RESULT = new MixedBrackets(e, b); :}
-                          ;
+mixed_brackets ::= OPEN_BRACKET expr:e CLOSE_BRACKET                {: RESULT = new MixedBrackets(e); :}
+                   |
+                   OPEN_BRACKET expr:e CLOSE_BRACKET 
+                   mixed_brackets:mb                                {: RESULT = new MixedBrackets(e, mb); :}
+                   |
+                   OPEN_BRACKET expr:e CLOSE_BRACKET brackets:b     {: RESULT = new MixedBrackets(e, b); :}
+                   ;
 
 naked_stmt ::= assignment_stmt:ass                                  {: RESULT = ass; :}
                |
@@ -277,8 +289,6 @@ primitive_type ::= INT:i                                            {: RESULT = 
 program ::= function_decl_list:fdl                                  {: RESULT = new Program(fdl); :}
             |
             use_id:useidc function_decl_list:fdl                    {: RESULT = new Program(useidc, fdl); :}
-            |
-            error:e                                                 {: Main.handleError("Unexpected token "); :}  
             ;
 
 return_list ::= expr:e                                              {: RESULT = new ReturnList(e); :}
@@ -319,12 +329,12 @@ tuple_decl_list ::= COMMA var_decl:vd                               {: RESULT = 
                     COMMA UNDERSCORE tuple_decl_list:tdl            {: RESULT = new TupleDeclList(tdl, true); :}
                     ;
 
-tuple_init ::= UNDERSCORE tuple_decl_list:tdl GETS function_call:fc {: RESULT = new TupleInit(tdl, fc); :}
+tuple_init ::= UNDERSCORE tuple_decl_list:tdl GETS function_call:fc {: RESULT = new TupleInit(tdl, fc, tdlleft, tdlright, fcleft, fcright); :}
                |
                var_decl:vd tuple_decl_list:tdl 
-               GETS function_call:fc                                {: RESULT = new TupleInit(vd, tdl, fc); :}
+               GETS function_call:fc                                {: RESULT = new TupleInit(vd, tdl, fc, vdleft, vdright, tdlleft, tdlright, fcleft, fcright); :}
                |
-               UNDERSCORE GETS function_call:fc                     {: RESULT = new TupleInit(fc); :}
+               UNDERSCORE GETS function_call:fc                     {: RESULT = new TupleInit(fc, fcleft, fcright); :}
                ;
 
 type ::= primitive_type:pt                                          {: RESULT = pt; :}
@@ -358,3 +368,10 @@ var_init ::= var_decl:vd GETS expr:expression                       {: RESULT = 
 
 while_stmt ::= WHILE OPEN_PAREN expr:expression CLOSE_PAREN stmt:s  {: RESULT = new WhileStmt(expression, s); :}
                ;
+
+xi_file ::= program:p                                               {: RESULT = p; :}
+            |
+            interface:i                                             {: RESULT = i; :}
+            |
+            error:e                                                 {: Main.handleError("Unexpected token "); :}  
+            ;

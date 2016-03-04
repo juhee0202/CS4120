@@ -97,8 +97,4 @@ public class FunctionParam {
 			functionParam.prettyPrintNode();
 		}	
 	}
-	
-	public void accept(Visitor v){
-		v.visit(this);
-	}
 }

@@ -17,29 +17,41 @@ public class TupleType implements VType {
 	}
 	
 	/** 
+	 * Shouldn't use this to create a one element tuple object 
+	 * 
 	 * Creates a TupleType object from the left side of a TupleInit stmt.
 	 * @param argTupleInit and makes a List of
 	 * VarTypes for the elements in the Tuple
 	 * 
-	 * underscores are represented by UnitType
+	 * UNDERSCOREs are represented by UnitType
 	 */
 	public TupleType(TupleInit argTupleInit) {
 		types = new ArrayList<VType>();
 		if (argTupleInit.getIndex() == 0){
-			types.add(null);
+			types.add(new UnitType());
 		}
 		if (argTupleInit.getIndex() == 1){
-			types.add(null);
+			types.add(new UnitType());
 			List<VarDecl> tempDecls = argTupleInit.getTupleDeclList().getVarDecls();
 			for (int i = 0; i < tempDecls.size(); i++){
-				types.add(new VarType(tempDecls.get(i)));
+				if (tempDecls.get(i) == null) {
+					types.add(new UnitType());
+				}
+				else {
+					types.add(new VarType(tempDecls.get(i)));
+				}
 			}
 		}
 		if (argTupleInit.getIndex() == 2){
 			types.add(new VarType(argTupleInit.getVarDecl()));
 			List<VarDecl> tempDecls = argTupleInit.getTupleDeclList().getVarDecls();
 			for (int i = 0; i < tempDecls.size(); i++){
-				types.add(new VarType(tempDecls.get(i)));
+				if (tempDecls.get(i) == null) {
+					types.add(new UnitType());
+				}
+				else {
+					types.add(new VarType(tempDecls.get(i)));
+				}
 			}
 		}
 	}
@@ -52,10 +64,32 @@ public class TupleType implements VType {
 		this.types = types;
 	}
 	
-	public void addToTypes(VarType argType) {
+	/**
+	 * appends argType to this TupleType object
+	 * null argument is appended as a UnitType
+	 * @param VType argType
+	 */
+	public void addToTypes(VType argType) {
+		if (argType == null) {
+			types.add(new UnitType());
+		}
 		types.add(argType);
 	}
+	
+	/**
+	 * Similar to addToTypes except it prepends argType
+	 * @param VType argType
+	 */
+	public void prependToTypes(VType argType) {
+		if (argType == null) {
+			types.add(new UnitType());
+		}
+		types.add(0, argType);
+	}
 
+	/**
+	 * Allows underscore to be matched with any VarType
+	 */
 	@Override
 	public boolean equals(Object o){
 		if (!(o instanceof TupleType)){
@@ -67,7 +101,9 @@ public class TupleType implements VType {
 			return false;
 		}
 		for (int i = 0; i < types.size(); i++){
-			if (!(types.get(i).equals(otherVarTypes.get(i)))){
+			if ( !(types.get(i).equals(otherVarTypes.get(i)) 
+					|| types.get(i) instanceof UnitType
+					|| otherVarTypes.get(i) instanceof UnitType) ) {
 				return false;
 			}
 		}

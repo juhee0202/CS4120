@@ -219,4 +219,8 @@ public class Main {
 		bw.close();
 		throw new RuntimeException("[xic] Parsing Failed.");
 	}
+	
+	public static void handleSemanticError(SemanticErrorObject seo) {
+		// TODO impelment
+	}
 }

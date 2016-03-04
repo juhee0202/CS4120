@@ -728,7 +728,7 @@ class CUP$parser$actions {
                 int ibleft = CUP$parser$stack.peek().left;
                 int ibright = CUP$parser$stack.peek().right;
                 IndexedBrackets ib = CUP$parser$stack.peek().<IndexedBrackets> value();
-                 RESULT = new ArrayElement(id, ib, idleft, idright); 
+                 RESULT = new ArrayElement(id, ib); 
                 CUP$parser$result = parser.getSymbolFactory().newSymbol("array_element",0, CUP$parser$stack.elementAt(CUP$parser$top-1), CUP$parser$stack.peek(), RESULT);
             }
             return CUP$parser$result;
@@ -743,7 +743,7 @@ class CUP$parser$actions {
                 int ibleft = CUP$parser$stack.peek().left;
                 int ibright = CUP$parser$stack.peek().right;
                 IndexedBrackets ib = CUP$parser$stack.peek().<IndexedBrackets> value();
-                 RESULT = new ArrayElement(fc, ib, fcleft, fcright); 
+                 RESULT = new ArrayElement(fc, ib); 
                 CUP$parser$result = parser.getSymbolFactory().newSymbol("array_element",0, CUP$parser$stack.elementAt(CUP$parser$top-1), CUP$parser$stack.peek(), RESULT);
             }
             return CUP$parser$result;
@@ -758,7 +758,7 @@ class CUP$parser$actions {
                 int ibleft = CUP$parser$stack.peek().left;
                 int ibright = CUP$parser$stack.peek().right;
                 IndexedBrackets ib = CUP$parser$stack.peek().<IndexedBrackets> value();
-                 RESULT = new ArrayElement(al, ib, alleft, alright); 
+                 RESULT = new ArrayElement(al, ib); 
                 CUP$parser$result = parser.getSymbolFactory().newSymbol("array_element",0, CUP$parser$stack.elementAt(CUP$parser$top-1), CUP$parser$stack.peek(), RESULT);
             }
             return CUP$parser$result;

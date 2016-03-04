@@ -27,6 +27,11 @@ public class TypeCheckVisitor implements Visitor {
 	
 	public TypeCheckVisitor(Program p){
 		env = new HashMap<String, VType>();
+		// add print(s) to the environment 
+		FunType printType = new FunType();
+		printType.setParamTypes(new VarType(false, 1));
+		printType.setReturnTypes(new UnitType());
+		env.put("print", printType);
 		if_env = new HashMap<String, VType>();
 		stack = new Stack<String>();
 	}

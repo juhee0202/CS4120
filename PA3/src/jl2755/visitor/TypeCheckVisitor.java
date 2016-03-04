@@ -391,20 +391,14 @@ public class TypeCheckVisitor implements Visitor {
 			if (!(tempType instanceof VarType)) {
 				String s = "Argument to the length method should be an array type";
 				SemanticErrorObject seo = new SemanticErrorObject(
-											fc.getExpr_col(), 
-											fc.getExpr_line(),
-											s
-											);
+						fc.getExpr_line(), fc.getExpr_col(), s);
 				Main.handleSemanticError(seo);
 			}
 			VarType arrayType = (VarType)tempType;
 			if (!arrayType.isArray()) {
 				String s = "Argument to the length method should be an array type";
 				SemanticErrorObject seo = new SemanticErrorObject(
-											fc.getExpr_col(), 
-											fc.getExpr_line(),
-											s
-											);
+						fc.getExpr_line(), fc.getExpr_col(), s);
 				Main.handleSemanticError(seo);
 			}
 			tempType = arrayType.getPrimitiveType();
@@ -417,10 +411,7 @@ public class TypeCheckVisitor implements Visitor {
 		if (!env.containsKey(id)) {
 			String s = "Name " + id.toString() + " cannot be resolved";
 			SemanticErrorObject seo = new SemanticErrorObject(
-										fc.getIdentifier_col(),
-										fc.getIdentifier_line(),
-										s
-										);
+					fc.getIdentifier_line(), fc.getIdentifier_col(), s);
 			Main.handleSemanticError(seo);
 		}
 		
@@ -428,10 +419,7 @@ public class TypeCheckVisitor implements Visitor {
 		if (!(temp instanceof FunType)) {
 			String s = "Expected function type, but found " + temp.toString();
 			SemanticErrorObject seo = new SemanticErrorObject(
-										fc.getIdentifier_col(),
-										fc.getIdentifier_line(),
-										s
-										);
+					fc.getIdentifier_line(), fc.getIdentifier_col(), s);
 			Main.handleSemanticError(seo);
 		}
 		FunType funType = (FunType)temp;
@@ -444,11 +432,7 @@ public class TypeCheckVisitor implements Visitor {
 			if (!args.equals(paramType)) {
 				String s = "Expected " + paramType.toString() + ", but found unit";
 				SemanticErrorObject seo = new SemanticErrorObject(
-											fc.getIdentifier_col(),
-											fc.getIdentifier_line(),
-											s
-											);
-				// TODO revisit for the correct col, line number
+						fc.getIdentifier_line(), fc.getIdentifier_col(), s);
 				Main.handleSemanticError(seo);
 			}
 		}
@@ -459,10 +443,7 @@ public class TypeCheckVisitor implements Visitor {
 			if (!args.equals(paramType)) {
 				String s = "Expected " + paramType.toString() + ", but found " + args.toString();
 				SemanticErrorObject seo = new SemanticErrorObject(
-											fc.getIdentifier_col(),
-											fc.getIdentifier_line(),
-											s
-											);
+						fc.getIdentifier_line(), fc.getIdentifier_col(), s);
 				Main.handleSemanticError(seo);
 			}
 		}
@@ -486,6 +467,9 @@ public class TypeCheckVisitor implements Visitor {
 			if (env.containsKey(id)) {
 				// TODO error handling
 				String s = id + " is already declared";
+				SemanticErrorObject seo = new SemanticErrorObject(
+						fd.getIdentifier_line(), fd.getIdentifier_col(), s);
+				Main.handleSemanticError(seo);
 			} else {
 				env.put(id, type);
 			}
@@ -503,13 +487,9 @@ public class TypeCheckVisitor implements Visitor {
 			String s = "Expected " + returnTypes.toString() 
 						+ ", but found " + bodyReturnType.toString();
 			ReturnStmt rs = fd.getBlockStmt().getReturnStmt();
-			// TODO Error handling
-//			SemanticErrorObject seo = new SemanticErrorObject(
-//										fc.getFunctionArg_col(),
-//										fc.getFunctionArg_line(),
-//										s
-//										);
-//			Main.handleSemanticError(seo);
+			SemanticErrorObject seo = new SemanticErrorObject(
+					rs.getReturn_line(), rs.getReturn_col(), s);
+			Main.handleSemanticError(seo);
 		}
 		
 		/* Restore the parent scope */
@@ -600,18 +580,6 @@ public class TypeCheckVisitor implements Visitor {
 			default: // TODO error handling
 		}
 	}
-
-	@Override
-	public void visit(MixedArrayType mat) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void visit(PrimitiveType pt) {
-		// TODO Auto-generated method stub
-		
-	}
 	
 	/**
 	 * 1) Update if_env with function decls from interface files
@@ -636,14 +604,18 @@ public class TypeCheckVisitor implements Visitor {
 			if (if_env.containsKey(id)) {
 				FunType ifFunType = (FunType) if_env.get(id); // safe
 				if (!funType.equals(ifFunType)) {
-					// TODO error handling
 					String s = "Multiple declaration found for function " + id;
+					SemanticErrorObject seo = new SemanticErrorObject(
+							fd.getIdentifier_line(), fd.getIdentifier_col(), s);
+					Main.handleSemanticError(seo);
 				}
 			}
 			// if the function was declared before
 			if (env.containsKey(id)) {
-				// TODO error handling
 				String s = "Multiple declaration found for function " + id;
+				SemanticErrorObject seo = new SemanticErrorObject(
+						fd.getIdentifier_line(), fd.getIdentifier_col(), s);
+				Main.handleSemanticError(seo);
 			}
 			env.put(id, funType);
 		}
@@ -731,18 +703,14 @@ public class TypeCheckVisitor implements Visitor {
 					String id = ti.getFunctionCall().getIdentifier().toString();
 					String s = id + " does not have a return value";
 					SemanticErrorObject seo = new SemanticErrorObject(
-												ti.getFunctionCall_col(),
-												ti.getFunctionCall_line(),
-												s
-												);
+							ti.getFunctionCall_line(), ti.getFunctionCall_col(), 
+							s);
 					Main.handleSemanticError(seo);
 				} else {
 					String s = "Mismatched number of values";
 					SemanticErrorObject seo = new SemanticErrorObject(
-												ti.getFunctionCall_col(),
-												ti.getFunctionCall_line(),
-												s
-												);
+							ti.getFunctionCall_line(), ti.getFunctionCall_col(), 
+							s);
 					Main.handleSemanticError(seo);	
 				}
 			}
@@ -754,10 +722,7 @@ public class TypeCheckVisitor implements Visitor {
 				// TODO col,line numbering might be off
 				String s = "Mismatched number of values";
 				SemanticErrorObject seo = new SemanticErrorObject(
-											ti.getFunctionCall_col(),
-											ti.getFunctionCall_line(),
-											s
-											);
+						ti.getFunctionCall_line(), ti.getFunctionCall_col(), s);
 				Main.handleSemanticError(seo);	
 			}
 			returnType = (TupleType)returnType;
@@ -765,23 +730,16 @@ public class TypeCheckVisitor implements Visitor {
 			if (!returnType.equals(tupleType)) {
 				String s = "Mismatched number of values";
 				SemanticErrorObject seo = new SemanticErrorObject(
-											ti.getFunctionCall_col(),
-											ti.getFunctionCall_line(),
-											s
-											);
+						ti.getFunctionCall_line(), ti.getFunctionCall_col(), s);
 				Main.handleSemanticError(seo);	
 			}
 		}
 		/* Case: vd, tdl = f() */
-		// TODO need refactoring
 		else {
 			if (!(returnType instanceof TupleType)) {
 				String s = "Mismatched number of values";
 				SemanticErrorObject seo = new SemanticErrorObject(
-											ti.getFunctionCall_col(),
-											ti.getFunctionCall_line(),
-											s
-											);
+						ti.getFunctionCall_line(), ti.getFunctionCall_col(), s);
 				Main.handleSemanticError(seo);	
 			}
 			returnType = (TupleType)returnType;
@@ -790,10 +748,7 @@ public class TypeCheckVisitor implements Visitor {
 			if (!returnType.equals(tupleType)) {
 				String s = "Mismatched number of values";
 				SemanticErrorObject seo = new SemanticErrorObject(
-											ti.getFunctionCall_col(),
-											ti.getFunctionCall_line(),
-											s
-											);
+						ti.getFunctionCall_line(), ti.getFunctionCall_col(), s);
 				Main.handleSemanticError(seo);	
 			}
 		}

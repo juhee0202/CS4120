@@ -29,7 +29,6 @@ public class TypeCheckVisitor implements Visitor {
 		env = new HashMap<String, VType>();
 		if_env = new HashMap<String, VType>();
 		stack = new Stack<String>();
-		// TODO add length function to the env
 	}
 	
 	/**

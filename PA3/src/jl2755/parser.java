@@ -728,7 +728,7 @@ class CUP$parser$actions {
                 int ibleft = CUP$parser$stack.peek().left;
                 int ibright = CUP$parser$stack.peek().right;
                 IndexedBrackets ib = CUP$parser$stack.peek().<IndexedBrackets> value();
-                 RESULT = new ArrayElement(id, ib); 
+                 RESULT = new ArrayElement(id, ib, idleft, idright); 
                 CUP$parser$result = parser.getSymbolFactory().newSymbol("array_element",0, CUP$parser$stack.elementAt(CUP$parser$top-1), CUP$parser$stack.peek(), RESULT);
             }
             return CUP$parser$result;
@@ -743,7 +743,7 @@ class CUP$parser$actions {
                 int ibleft = CUP$parser$stack.peek().left;
                 int ibright = CUP$parser$stack.peek().right;
                 IndexedBrackets ib = CUP$parser$stack.peek().<IndexedBrackets> value();
-                 RESULT = new ArrayElement(fc, ib); 
+                 RESULT = new ArrayElement(fc, ib, fcleft, fcright); 
                 CUP$parser$result = parser.getSymbolFactory().newSymbol("array_element",0, CUP$parser$stack.elementAt(CUP$parser$top-1), CUP$parser$stack.peek(), RESULT);
             }
             return CUP$parser$result;
@@ -758,7 +758,7 @@ class CUP$parser$actions {
                 int ibleft = CUP$parser$stack.peek().left;
                 int ibright = CUP$parser$stack.peek().right;
                 IndexedBrackets ib = CUP$parser$stack.peek().<IndexedBrackets> value();
-                 RESULT = new ArrayElement(al, ib); 
+                 RESULT = new ArrayElement(al, ib, alleft, alright); 
                 CUP$parser$result = parser.getSymbolFactory().newSymbol("array_element",0, CUP$parser$stack.elementAt(CUP$parser$top-1), CUP$parser$stack.peek(), RESULT);
             }
             return CUP$parser$result;
@@ -767,10 +767,10 @@ class CUP$parser$actions {
         case 4: // array_element_list ::= expr 
             {
                 ArrayElementList RESULT = null;
-                int expressionleft = CUP$parser$stack.peek().left;
-                int expressionright = CUP$parser$stack.peek().right;
-                Expr expression = CUP$parser$stack.peek().<Expr> value();
-                 RESULT = new ArrayElementList(expression); 
+                int eleft = CUP$parser$stack.peek().left;
+                int eright = CUP$parser$stack.peek().right;
+                Expr e = CUP$parser$stack.peek().<Expr> value();
+                 RESULT = new ArrayElementList(e); 
                 CUP$parser$result = parser.getSymbolFactory().newSymbol("array_element_list",1, CUP$parser$stack.peek(), CUP$parser$stack.peek(), RESULT);
             }
             return CUP$parser$result;
@@ -779,13 +779,13 @@ class CUP$parser$actions {
         case 5: // array_element_list ::= expr COMMA array_element_list 
             {
                 ArrayElementList RESULT = null;
-                int expressionleft = CUP$parser$stack.elementAt(CUP$parser$top-2).left;
-                int expressionright = CUP$parser$stack.elementAt(CUP$parser$top-2).right;
-                Expr expression = CUP$parser$stack.elementAt(CUP$parser$top-2).<Expr> value();
+                int eleft = CUP$parser$stack.elementAt(CUP$parser$top-2).left;
+                int eright = CUP$parser$stack.elementAt(CUP$parser$top-2).right;
+                Expr e = CUP$parser$stack.elementAt(CUP$parser$top-2).<Expr> value();
                 int aelleft = CUP$parser$stack.peek().left;
                 int aelright = CUP$parser$stack.peek().right;
                 ArrayElementList ael = CUP$parser$stack.peek().<ArrayElementList> value();
-                 RESULT = new ArrayElementList(expression,ael); 
+                 RESULT = new ArrayElementList(e,ael); 
                 CUP$parser$result = parser.getSymbolFactory().newSymbol("array_element_list",1, CUP$parser$stack.elementAt(CUP$parser$top-2), CUP$parser$stack.peek(), RESULT);
             }
             return CUP$parser$result;
@@ -803,10 +803,13 @@ class CUP$parser$actions {
         case 7: // array_literal ::= OPEN_BRACE array_element_list CLOSE_BRACE 
             {
                 ArrayLiteral RESULT = null;
+                int obleft = CUP$parser$stack.elementAt(CUP$parser$top-2).left;
+                int obright = CUP$parser$stack.elementAt(CUP$parser$top-2).right;
+                Object ob = CUP$parser$stack.elementAt(CUP$parser$top-2).<Object> value();
                 int aelleft = CUP$parser$stack.elementAt(CUP$parser$top-1).left;
                 int aelright = CUP$parser$stack.elementAt(CUP$parser$top-1).right;
                 ArrayElementList ael = CUP$parser$stack.elementAt(CUP$parser$top-1).<ArrayElementList> value();
-                 RESULT = new ArrayLiteral(ael); 
+                 RESULT = new ArrayLiteral(ael, obleft, obright); 
                 CUP$parser$result = parser.getSymbolFactory().newSymbol("array_literal",2, CUP$parser$stack.elementAt(CUP$parser$top-2), CUP$parser$stack.peek(), RESULT);
             }
             return CUP$parser$result;
@@ -1079,7 +1082,7 @@ class CUP$parser$actions {
                 int faleft = CUP$parser$stack.elementAt(CUP$parser$top-1).left;
                 int faright = CUP$parser$stack.elementAt(CUP$parser$top-1).right;
                 FunctionArg fa = CUP$parser$stack.elementAt(CUP$parser$top-1).<FunctionArg> value();
-                 RESULT = new FunctionCall(id, fa, idleft, idright, faleft, faright); 
+                 RESULT = new FunctionCall(id, fa); 
                 CUP$parser$result = parser.getSymbolFactory().newSymbol("function_call",11, CUP$parser$stack.elementAt(CUP$parser$top-3), CUP$parser$stack.peek(), RESULT);
             }
             return CUP$parser$result;
@@ -1091,7 +1094,7 @@ class CUP$parser$actions {
                 int idleft = CUP$parser$stack.elementAt(CUP$parser$top-2).left;
                 int idright = CUP$parser$stack.elementAt(CUP$parser$top-2).right;
                 Identifier id = CUP$parser$stack.elementAt(CUP$parser$top-2).<Identifier> value();
-                 RESULT = new FunctionCall(id, idleft, idright); 
+                 RESULT = new FunctionCall(id); 
                 CUP$parser$result = parser.getSymbolFactory().newSymbol("function_call",11, CUP$parser$stack.elementAt(CUP$parser$top-2), CUP$parser$stack.peek(), RESULT);
             }
             return CUP$parser$result;
@@ -1100,10 +1103,13 @@ class CUP$parser$actions {
         case 30: // function_call ::= LENGTH OPEN_PAREN expr CLOSE_PAREN 
             {
                 FunctionCall RESULT = null;
+                int lleft = CUP$parser$stack.elementAt(CUP$parser$top-3).left;
+                int lright = CUP$parser$stack.elementAt(CUP$parser$top-3).right;
+                Object l = CUP$parser$stack.elementAt(CUP$parser$top-3).<Object> value();
                 int eleft = CUP$parser$stack.elementAt(CUP$parser$top-1).left;
                 int eright = CUP$parser$stack.elementAt(CUP$parser$top-1).right;
                 Expr e = CUP$parser$stack.elementAt(CUP$parser$top-1).<Expr> value();
-                 RESULT = new FunctionCall(e, eleft, eright); 
+                 RESULT = new FunctionCall(e, lleft, lright); 
                 CUP$parser$result = parser.getSymbolFactory().newSymbol("function_call",11, CUP$parser$stack.elementAt(CUP$parser$top-3), CUP$parser$stack.peek(), RESULT);
             }
             return CUP$parser$result;
@@ -1124,7 +1130,7 @@ class CUP$parser$actions {
                 int bsleft = CUP$parser$stack.peek().left;
                 int bsright = CUP$parser$stack.peek().right;
                 BlockStmt bs = CUP$parser$stack.peek().<BlockStmt> value();
-                 RESULT = new FunctionDecl(id, fp, rt, bs, idleft, idright, fpleft, fpright, rtleft, rtright, bsleft, bsright); 
+                 RESULT = new FunctionDecl(id, fp, rt, bs); 
                 CUP$parser$result = parser.getSymbolFactory().newSymbol("function_decl",12, CUP$parser$stack.elementAt(CUP$parser$top-5), CUP$parser$stack.peek(), RESULT);
             }
             return CUP$parser$result;
@@ -1202,7 +1208,7 @@ class CUP$parser$actions {
                 int idleft = CUP$parser$stack.peek().left;
                 int idright = CUP$parser$stack.peek().right;
                 String id = CUP$parser$stack.peek().<String> value();
-                 RESULT = new Identifier(id); 
+                 RESULT = new Identifier(id, idleft, idright); 
                 CUP$parser$result = parser.getSymbolFactory().newSymbol("identifier",15, CUP$parser$stack.peek(), CUP$parser$stack.peek(), RESULT);
             }
             return CUP$parser$result;
@@ -1331,7 +1337,7 @@ class CUP$parser$actions {
                 int illeft = CUP$parser$stack.peek().left;
                 int ilright = CUP$parser$stack.peek().right;
                 Long il = CUP$parser$stack.peek().<Long> value();
-                 RESULT = new Literal(il); 
+                 RESULT = new Literal(il, illeft, ilright); 
                 CUP$parser$result = parser.getSymbolFactory().newSymbol("literal",21, CUP$parser$stack.peek(), CUP$parser$stack.peek(), RESULT);
             }
             return CUP$parser$result;
@@ -1343,7 +1349,7 @@ class CUP$parser$actions {
                 int clleft = CUP$parser$stack.peek().left;
                 int clright = CUP$parser$stack.peek().right;
                 Character cl = CUP$parser$stack.peek().<Character> value();
-                 RESULT = new Literal(cl); 
+                 RESULT = new Literal(cl, clleft, clright); 
                 CUP$parser$result = parser.getSymbolFactory().newSymbol("literal",21, CUP$parser$stack.peek(), CUP$parser$stack.peek(), RESULT);
             }
             return CUP$parser$result;
@@ -1355,7 +1361,7 @@ class CUP$parser$actions {
                 int slleft = CUP$parser$stack.peek().left;
                 int slright = CUP$parser$stack.peek().right;
                 String sl = CUP$parser$stack.peek().<String> value();
-                 RESULT = new Literal(sl); 
+                 RESULT = new Literal(sl, slleft, slright); 
                 CUP$parser$result = parser.getSymbolFactory().newSymbol("literal",21, CUP$parser$stack.peek(), CUP$parser$stack.peek(), RESULT);
             }
             return CUP$parser$result;
@@ -1364,7 +1370,10 @@ class CUP$parser$actions {
         case 49: // literal ::= TRUE 
             {
                 Literal RESULT = null;
-                 RESULT = new Literal(true); 
+                int tleft = CUP$parser$stack.peek().left;
+                int tright = CUP$parser$stack.peek().right;
+                Boolean t = CUP$parser$stack.peek().<Boolean> value();
+                 RESULT = new Literal(true, tleft, tright); 
                 CUP$parser$result = parser.getSymbolFactory().newSymbol("literal",21, CUP$parser$stack.peek(), CUP$parser$stack.peek(), RESULT);
             }
             return CUP$parser$result;
@@ -1373,7 +1382,10 @@ class CUP$parser$actions {
         case 50: // literal ::= FALSE 
             {
                 Literal RESULT = null;
-                 RESULT = new Literal(false); 
+                int fleft = CUP$parser$stack.peek().left;
+                int fright = CUP$parser$stack.peek().right;
+                Boolean f = CUP$parser$stack.peek().<Boolean> value();
+                 RESULT = new Literal(false, fleft, fright); 
                 CUP$parser$result = parser.getSymbolFactory().newSymbol("literal",21, CUP$parser$stack.peek(), CUP$parser$stack.peek(), RESULT);
             }
             return CUP$parser$result;
@@ -1550,10 +1562,13 @@ class CUP$parser$actions {
         case 64: // op_expr ::= MINUS expr 
             {
                 Expr RESULT = null;
+                int mleft = CUP$parser$stack.elementAt(CUP$parser$top-1).left;
+                int mright = CUP$parser$stack.elementAt(CUP$parser$top-1).right;
+                Object m = CUP$parser$stack.elementAt(CUP$parser$top-1).<Object> value();
                 int eleft = CUP$parser$stack.peek().left;
                 int eright = CUP$parser$stack.peek().right;
                 Expr e = CUP$parser$stack.peek().<Expr> value();
-                 RESULT = new UnaryExpr(e, UnaryOp.INT_NEG); 
+                 RESULT = new UnaryExpr(e, UnaryOp.INT_NEG, mleft, mright); 
                 CUP$parser$result = parser.getSymbolFactory().newSymbol("op_expr",9, CUP$parser$stack.elementAt(CUP$parser$top-1), CUP$parser$stack.peek(), RESULT);
             }
             return CUP$parser$result;
@@ -1562,10 +1577,13 @@ class CUP$parser$actions {
         case 65: // op_expr ::= NOT expr 
             {
                 Expr RESULT = null;
+                int nleft = CUP$parser$stack.elementAt(CUP$parser$top-1).left;
+                int nright = CUP$parser$stack.elementAt(CUP$parser$top-1).right;
+                Object n = CUP$parser$stack.elementAt(CUP$parser$top-1).<Object> value();
                 int eleft = CUP$parser$stack.peek().left;
                 int eright = CUP$parser$stack.peek().right;
                 Expr e = CUP$parser$stack.peek().<Expr> value();
-                 RESULT = new UnaryExpr(e, UnaryOp.LOG_NEG); 
+                 RESULT = new UnaryExpr(e, UnaryOp.LOG_NEG, nleft, nright); 
                 CUP$parser$result = parser.getSymbolFactory().newSymbol("op_expr",9, CUP$parser$stack.elementAt(CUP$parser$top-1), CUP$parser$stack.peek(), RESULT);
             }
             return CUP$parser$result;
@@ -1862,7 +1880,10 @@ class CUP$parser$actions {
         case 86: // return_stmt ::= RETURN 
             {
                 ReturnStmt RESULT = null;
-                 RESULT = new ReturnStmt(); 
+                int rleft = CUP$parser$stack.peek().left;
+                int rright = CUP$parser$stack.peek().right;
+                Object r = CUP$parser$stack.peek().<Object> value();
+                 RESULT = new ReturnStmt(rleft, rright); 
                 CUP$parser$result = parser.getSymbolFactory().newSymbol("return_stmt",28, CUP$parser$stack.peek(), CUP$parser$stack.peek(), RESULT);
             }
             return CUP$parser$result;
@@ -1871,10 +1892,13 @@ class CUP$parser$actions {
         case 87: // return_stmt ::= RETURN return_list 
             {
                 ReturnStmt RESULT = null;
+                int rleft = CUP$parser$stack.elementAt(CUP$parser$top-1).left;
+                int rright = CUP$parser$stack.elementAt(CUP$parser$top-1).right;
+                Object r = CUP$parser$stack.elementAt(CUP$parser$top-1).<Object> value();
                 int rlleft = CUP$parser$stack.peek().left;
                 int rlright = CUP$parser$stack.peek().right;
                 ReturnList rl = CUP$parser$stack.peek().<ReturnList> value();
-                 RESULT = new ReturnStmt(rl); 
+                 RESULT = new ReturnStmt(rl, rleft, rright); 
                 CUP$parser$result = parser.getSymbolFactory().newSymbol("return_stmt",28, CUP$parser$stack.elementAt(CUP$parser$top-1), CUP$parser$stack.peek(), RESULT);
             }
             return CUP$parser$result;
@@ -1883,7 +1907,10 @@ class CUP$parser$actions {
         case 88: // return_stmt ::= RETURN SEMICOLON 
             {
                 ReturnStmt RESULT = null;
-                 RESULT = new ReturnStmt(); 
+                int rleft = CUP$parser$stack.elementAt(CUP$parser$top-1).left;
+                int rright = CUP$parser$stack.elementAt(CUP$parser$top-1).right;
+                Object r = CUP$parser$stack.elementAt(CUP$parser$top-1).<Object> value();
+                 RESULT = new ReturnStmt(rleft, rright); 
                 CUP$parser$result = parser.getSymbolFactory().newSymbol("return_stmt",28, CUP$parser$stack.elementAt(CUP$parser$top-1), CUP$parser$stack.peek(), RESULT);
             }
             return CUP$parser$result;
@@ -1892,10 +1919,13 @@ class CUP$parser$actions {
         case 89: // return_stmt ::= RETURN return_list SEMICOLON 
             {
                 ReturnStmt RESULT = null;
+                int rleft = CUP$parser$stack.elementAt(CUP$parser$top-2).left;
+                int rright = CUP$parser$stack.elementAt(CUP$parser$top-2).right;
+                Object r = CUP$parser$stack.elementAt(CUP$parser$top-2).<Object> value();
                 int rlleft = CUP$parser$stack.elementAt(CUP$parser$top-1).left;
                 int rlright = CUP$parser$stack.elementAt(CUP$parser$top-1).right;
                 ReturnList rl = CUP$parser$stack.elementAt(CUP$parser$top-1).<ReturnList> value();
-                 RESULT = new ReturnStmt(rl); 
+                 RESULT = new ReturnStmt(rl, rleft, rright); 
                 CUP$parser$result = parser.getSymbolFactory().newSymbol("return_stmt",28, CUP$parser$stack.elementAt(CUP$parser$top-2), CUP$parser$stack.peek(), RESULT);
             }
             return CUP$parser$result;
@@ -2030,7 +2060,7 @@ class CUP$parser$actions {
                 int fcleft = CUP$parser$stack.peek().left;
                 int fcright = CUP$parser$stack.peek().right;
                 FunctionCall fc = CUP$parser$stack.peek().<FunctionCall> value();
-                 RESULT = new TupleInit(tdl, fc, tdlleft, tdlright, fcleft, fcright); 
+                 RESULT = new TupleInit(tdl, fc); 
                 CUP$parser$result = parser.getSymbolFactory().newSymbol("tuple_init",33, CUP$parser$stack.elementAt(CUP$parser$top-3), CUP$parser$stack.peek(), RESULT);
             }
             return CUP$parser$result;
@@ -2048,7 +2078,7 @@ class CUP$parser$actions {
                 int fcleft = CUP$parser$stack.peek().left;
                 int fcright = CUP$parser$stack.peek().right;
                 FunctionCall fc = CUP$parser$stack.peek().<FunctionCall> value();
-                 RESULT = new TupleInit(vd, tdl, fc, vdleft, vdright, tdlleft, tdlright, fcleft, fcright); 
+                 RESULT = new TupleInit(vd, tdl, fc); 
                 CUP$parser$result = parser.getSymbolFactory().newSymbol("tuple_init",33, CUP$parser$stack.elementAt(CUP$parser$top-3), CUP$parser$stack.peek(), RESULT);
             }
             return CUP$parser$result;
@@ -2060,7 +2090,7 @@ class CUP$parser$actions {
                 int fcleft = CUP$parser$stack.peek().left;
                 int fcright = CUP$parser$stack.peek().right;
                 FunctionCall fc = CUP$parser$stack.peek().<FunctionCall> value();
-                 RESULT = new TupleInit(fc, fcleft, fcright); 
+                 RESULT = new TupleInit(fc); 
                 CUP$parser$result = parser.getSymbolFactory().newSymbol("tuple_init",33, CUP$parser$stack.elementAt(CUP$parser$top-2), CUP$parser$stack.peek(), RESULT);
             }
             return CUP$parser$result;

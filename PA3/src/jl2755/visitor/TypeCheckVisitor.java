@@ -478,6 +478,26 @@ public class TypeCheckVisitor implements Visitor {
 		fd.getBlockStmt().accept(this);
 		
 		// TODO check if the return value is correct
+		List<Type> returnTypes = fd.getReturnTypes();
+		if (returnTypes.size() == 1) {
+			VType returnType = returnTypes.get(0);
+			if (!returnType.equals(tempType)) {
+				String s = "Expected " + returnType.toString() + ", but found " + tempType.toString();
+				SemanticErrorObject seo = new SemanticErrorObject(
+											fc.getIdentifier_col(),
+											fc.getIdentifier_line(),
+											s
+											);
+				Main.handleSemanticError(seo);
+			}
+		}
+		else {
+			TupleType returnType = new TupleType();
+			for (Type t : returnTypes) {
+				if ()
+				returnType.addToTypes(argType);
+			}
+		}
 		
 		/* Restore the parent scope env */
 		for (Entry<String, Type> entry : paramToType.entrySet()) {

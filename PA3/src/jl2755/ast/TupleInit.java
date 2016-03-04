@@ -1,5 +1,8 @@
 package jl2755.ast;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import edu.cornell.cs.cs4120.util.CodeWriterSExpPrinter;
 import jl2755.GlobalPrettyPrinter;
 import jl2755.visitor.Visitor;
@@ -11,7 +14,7 @@ import jl2755.visitor.Visitor;
  * index 
  * 	- 0: _ = f()
  *  - 1: _, tupleDeclList = f()
- *  - 2: id:type, tupleDeclList = f()
+ *  - 2: vd, tupleDeclList = f()
  */
 public class TupleInit implements NakedStmt {
 	private TupleDeclList tupleDeclList;
@@ -43,6 +46,21 @@ public class TupleInit implements NakedStmt {
 		functionCall_col = fc.getColumnNumber();
 		functionCall_line = fc.getLineNumber();
 		index = 2;
+	}
+	
+	/**
+	 * @return a List of VarDecls in the tuple initialization statement
+	 */
+	public List<VarDecl> getVarDecls() {
+		List<VarDecl> list = new ArrayList<VarDecl>();
+		if (index == 0) {
+			return list;
+		}
+		if (index == 2) {
+			list.add(varDecl);
+		}
+		list.addAll(tupleDeclList.getVarDecls());
+		return list;
 	}
 	
 	public void prettyPrintNode() {

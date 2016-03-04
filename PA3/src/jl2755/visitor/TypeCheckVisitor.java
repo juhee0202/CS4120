@@ -885,7 +885,6 @@ public class TypeCheckVisitor implements Visitor {
 		// TODO need refactoring
 		if (index == 1) {
 			if (!(returnType instanceof TupleType)) {
-				// TODO col,line numbering might be off
 				String s = "Mismatched number of values";
 				SemanticErrorObject seo = new SemanticErrorObject(
 						ti.getFunctionCall_line(), ti.getFunctionCall_col(), s);
@@ -898,6 +897,14 @@ public class TypeCheckVisitor implements Visitor {
 				SemanticErrorObject seo = new SemanticErrorObject(
 						ti.getFunctionCall_line(), ti.getFunctionCall_col(), s);
 				Main.handleSemanticError(seo);	
+			}
+			
+			List<VarDecl> varDecls = ti.getVarDecls();
+			for (VarDecl vd : varDecls) {
+				String id = vd.getIdentifier().toString();
+				VType type = new VarType(vd);
+				env.put(id, type);
+				stack.push(id);
 			}
 		}
 		/* Case: vd, tdl = f() */
@@ -916,6 +923,14 @@ public class TypeCheckVisitor implements Visitor {
 						ti.getVarDecl().getIdentifier().getLineNumber(), 
 						ti.getVarDecl().getIdentifier().getColumnNumber(), s);
 				Main.handleSemanticError(seo);	
+			}
+			
+			List<VarDecl> varDecls = ti.getVarDecls();
+			for (VarDecl vd : varDecls) {
+				String id = vd.getIdentifier().toString();
+				VType type = new VarType(vd);
+				env.put(id, type);
+				stack.push(id);
 			}
 		}
 	}

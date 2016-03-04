@@ -866,6 +866,7 @@ public class TypeCheckVisitor implements Visitor {
 		/* Case: _, tdl = f() */
 		// TODO need refactoring
 		if (index == 1) {
+			// typecheck
 			if (!(returnType instanceof TupleType)) {
 				String s = "Mismatched number of values";
 				SemanticErrorObject seo = new SemanticErrorObject(
@@ -881,8 +882,12 @@ public class TypeCheckVisitor implements Visitor {
 				Main.handleSemanticError(seo);	
 			}
 			
+			// add to env
 			List<VarDecl> varDecls = ti.getVarDecls();
 			for (VarDecl vd : varDecls) {
+				if (vd == null) {
+					continue;
+				}
 				String id = vd.getIdentifier().toString();
 				VType type = new VarType(vd);
 				env.put(id, type);
@@ -891,6 +896,7 @@ public class TypeCheckVisitor implements Visitor {
 		}
 		/* Case: vd, tdl = f() */
 		else {
+			// typecheck
 			if (!(returnType instanceof TupleType)) {
 				String s = "Mismatched number of values";
 				SemanticErrorObject seo = new SemanticErrorObject(
@@ -907,8 +913,12 @@ public class TypeCheckVisitor implements Visitor {
 				Main.handleSemanticError(seo);	
 			}
 			
+			// add to env
 			List<VarDecl> varDecls = ti.getVarDecls();
 			for (VarDecl vd : varDecls) {
+				if (vd == null) {
+					continue;
+				}
 				String id = vd.getIdentifier().toString();
 				VType type = new VarType(vd);
 				env.put(id, type);

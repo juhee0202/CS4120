@@ -50,16 +50,21 @@ public class TupleInit implements NakedStmt {
 	
 	/**
 	 * @return a List of VarDecls in the tuple initialization statement
+	 * UNDERSCOREs are represented by null
 	 */
 	public List<VarDecl> getVarDecls() {
 		List<VarDecl> list = new ArrayList<VarDecl>();
 		if (index == 0) {
-			return list;
+			list.add(null);
 		}
-		if (index == 2) {
+		else if (index == 1) {
+			list.add(null);
+			list.addAll(tupleDeclList.getVarDecls());
+		}
+		else {
 			list.add(varDecl);
+			list.addAll(tupleDeclList.getVarDecls());
 		}
-		list.addAll(tupleDeclList.getVarDecls());
 		return list;
 	}
 	

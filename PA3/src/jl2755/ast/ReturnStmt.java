@@ -16,15 +16,15 @@ public class ReturnStmt {
 	public ReturnStmt(int rleft, int rright) {
 		returnList = null;
 		index = 0;
-		return_col = rleft;
-		return_line = rright;
+		return_line = rleft;
+		return_col = rright;
 	}
 	
 	public ReturnStmt(ReturnList rl, int rleft, int rright) {
 		returnList = rl;
 		index = 1;
-		return_col = rleft;
-		return_line = rright;
+		return_line = rleft;
+		return_col = rright;
 	}
 	
 	public void prettyPrintNode() {

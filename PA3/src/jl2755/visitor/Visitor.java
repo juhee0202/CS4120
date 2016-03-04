@@ -18,11 +18,9 @@ public interface Visitor {
 	public void visit(Literal l);
 	public void visit(Program p);
 	public void visit(ReturnStmt rs);
-	public void visit(ReturnType rt);
 	public void visit(Stmt s);
 	public void visit(StmtList sl);
 	public void visit(TupleInit ti);
-	public void visit(TypeList tl);
 	public void visit(UnaryExpr ue);
 	public void visit(UseId ui);
 	public void visit(VarDecl vd);

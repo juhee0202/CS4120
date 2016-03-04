@@ -3,8 +3,6 @@ package jl2755;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.nio.file.Paths;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,7 +18,6 @@ import java_cup.runtime.Symbol;
 import jl2755.ast.Interface;
 import jl2755.ast.InterfaceFunc;
 import jl2755.ast.Program;
-import jl2755.ast.XiFile;
 import jl2755.type.FunType;
 import jl2755.type.VType;
 import jl2755.visitor.TypeCheckVisitor;
@@ -303,7 +300,7 @@ public class Main {
 			bw.close();
 			System.out.println("[xic] Lexing completed");
 		} catch (IOException e) {	
-			e.printStackTrace();
+//			e.printStackTrace();
 		}
 	}
 	
@@ -334,7 +331,7 @@ public class Main {
 			bw.close();
 			System.out.println("[xic] Parsing completed");
 		} catch (Exception e) {
-			e.printStackTrace();
+//			e.printStackTrace();
 		}
 	}
 	
@@ -368,7 +365,7 @@ public class Main {
 			System.out.println("[xic] Typechecking completed");
 			
 		} catch (Exception e) {
-			e.printStackTrace();
+//			e.printStackTrace();
 		}
 	}
 

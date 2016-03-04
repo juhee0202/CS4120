@@ -47,8 +47,8 @@ public class TypeCheckVisitor implements Visitor {
 				String errorDesc = "Name " + ae.getIdentifier().toString() +
 						" cannot be resolved.";
 				SemanticErrorObject seo = new SemanticErrorObject(
-						ae.getIdentifier_col(), 
 						ae.getIdentifier_line(),
+						ae.getIdentifier_col(), 
 						errorDesc
 						);
 				Main.handleSemanticError(seo);
@@ -58,8 +58,8 @@ public class TypeCheckVisitor implements Visitor {
 				String errorDesc = "Name " + ae.getIdentifier().toString() +
 						" is not of variable type.";
 				SemanticErrorObject seo = new SemanticErrorObject(
-						ae.getIdentifier_col(), 
 						ae.getIdentifier_line(),
+						ae.getIdentifier_col(), 
 						errorDesc
 						);
 				Main.handleSemanticError(seo);
@@ -69,8 +69,8 @@ public class TypeCheckVisitor implements Visitor {
 			if (numberOfBrackets > varTypeView.getNumBrackets()){
 				String errorDesc = "Array dimensions don't match.";
 				SemanticErrorObject seo = new SemanticErrorObject(
-						ae.getIdentifier_col(), 
 						ae.getIdentifier_line(),
+						ae.getIdentifier_col(), 
 						errorDesc
 						);
 				Main.handleSemanticError(seo);
@@ -84,8 +84,8 @@ public class TypeCheckVisitor implements Visitor {
 				String errorDesc = "Name " + ae.getIdentifier().toString() +
 						" is not of variable type.";
 				SemanticErrorObject seo = new SemanticErrorObject(
-						ae.getFunctionCall_col(), 
 						ae.getFunctionCall_line(),
+						ae.getFunctionCall_col(), 
 						errorDesc
 						);
 				Main.handleSemanticError(seo);
@@ -94,8 +94,8 @@ public class TypeCheckVisitor implements Visitor {
 			if (numberOfBrackets > arrayTypeAfterVisit.getNumBrackets()){
 				String errorDesc = "Array dimensions don't match.";
 				SemanticErrorObject seo = new SemanticErrorObject(
-						ae.getFunctionCall_col(), 
 						ae.getFunctionCall_line(),
+						ae.getFunctionCall_col(), 
 						errorDesc
 						);
 				Main.handleSemanticError(seo);
@@ -110,8 +110,8 @@ public class TypeCheckVisitor implements Visitor {
 				String errorDesc = "Name " + ae.getIdentifier().toString() +
 						" is not of variable type.";
 				SemanticErrorObject seo = new SemanticErrorObject(
-						ae.getArrayLiteral_col(), 
 						ae.getArrayLiteral_line(),
+						ae.getArrayLiteral_col(), 
 						errorDesc
 						);
 				Main.handleSemanticError(seo);
@@ -121,8 +121,8 @@ public class TypeCheckVisitor implements Visitor {
 			if (numberOfBrackets > arrayTypeAfterVisit.getNumBrackets()){
 				String errorDesc = "Array dimensions don't match.";
 				SemanticErrorObject seo = new SemanticErrorObject(
-						ae.getArrayLiteral_col(), 
 						ae.getArrayLiteral_line(),
+						ae.getArrayLiteral_col(), 
 						errorDesc
 						);
 				Main.handleSemanticError(seo);
@@ -146,8 +146,8 @@ public class TypeCheckVisitor implements Visitor {
 				String errorDesc = "Name " + tempExprs.get(i).toString() +
 						" is not of VarType";
 				SemanticErrorObject seo = new SemanticErrorObject(
-						tempExprs.get(i).getColumnNumber(), 
 						tempExprs.get(i).getLineNumber(),
+						tempExprs.get(i).getColumnNumber(), 
 						errorDesc
 						);
 				Main.handleSemanticError(seo);
@@ -159,8 +159,8 @@ public class TypeCheckVisitor implements Visitor {
 				String errorDesc = "Expected " + tempTypesOfExprs.get(i).toString() + ", but found "
 						+ tempTypesOfExprs.get(i+1).toString();
 				SemanticErrorObject seo = new SemanticErrorObject(
-						tempExprs.get(i+1).getColumnNumber(), 
 						tempExprs.get(i+1).getLineNumber(),
+						tempExprs.get(i+1).getColumnNumber(), 
 						errorDesc
 						);
 				Main.handleSemanticError(seo);
@@ -178,9 +178,9 @@ public class TypeCheckVisitor implements Visitor {
 		if (!(tempType instanceof VarType)){
 			String errorDesc = "Name " + tempType.toString() +
 					" is not of VarType";
-			SemanticErrorObject seo = new SemanticErrorObject(
-					al.getColumnNumber(), 
+			SemanticErrorObject seo = new SemanticErrorObject( 
 					al.getLineNumber(),
+					al.getColumnNumber(),
 					errorDesc
 					);
 			Main.handleSemanticError(seo);
@@ -206,10 +206,9 @@ public class TypeCheckVisitor implements Visitor {
 				// TODO error handling
 				String s = "Name " + id + " cannot be resolved";
 				SemanticErrorObject seo = new SemanticErrorObject(
-											as.getIdentifier().getLineNumber(), 
-											as.getIdentifier().getColumnNumber(),
-											s
-											);
+						as.getIdentifier().getLineNumber(), 
+						as.getIdentifier().getColumnNumber(),
+						s);
 				Main.handleSemanticError(seo);
 			}
 			
@@ -634,9 +633,7 @@ public class TypeCheckVisitor implements Visitor {
 		String id = fd.getIdentifier().toString();
 		FunType funType = (FunType) env.get(id);	// safe
 		VType returnTypes = funType.getReturnTypes();
-		
-		System.out.println(bodyReturnType);
-		
+				
 		if (!returnTypes.equals(bodyReturnType)) {
 			String s = "Expected " + returnTypes.toString() 
 						+ ", but found " + bodyReturnType.toString();
@@ -839,12 +836,6 @@ public class TypeCheckVisitor implements Visitor {
 	}
 
 	@Override
-	public void visit(ReturnType rt) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
 	public void visit(Stmt s) {
 		(s.getNakedStmt()).accept(this);
 	}
@@ -930,12 +921,6 @@ public class TypeCheckVisitor implements Visitor {
 	}
 
 	@Override
-	public void visit(TypeList tl) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
 	public void visit(UnaryExpr ue) {
 		// TODO Auto-generated method stub
 		ue.getExpr().accept(this);
@@ -1003,10 +988,9 @@ public class TypeCheckVisitor implements Visitor {
 						// TODO: ERROR HANDLINGGDIGNDIGNDINGDNIGDIGNDIGN
 						String s = tempFuncNames + "is already declared";
 						SemanticErrorObject seo = new SemanticErrorObject(
-													ui.getIdentifier().getLineNumber(), 
-													ui.getIdentifier().getColumnNumber(),
-													s
-													);
+								ui.getIdentifier().getLineNumber(), 
+								ui.getIdentifier().getColumnNumber(),
+								s);
 						Main.handleSemanticError(seo);
 					}
 				}

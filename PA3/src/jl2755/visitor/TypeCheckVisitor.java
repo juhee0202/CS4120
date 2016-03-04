@@ -166,7 +166,12 @@ public class TypeCheckVisitor implements Visitor {
 				Main.handleSemanticError(seo);
 			}
 		}
-		tempType = new VarType(tempTypesOfExprs.get(0).getIsBool(), tempTypesOfExprs.get(0).getNumBrackets());
+		if (tempTypesOfExprs.size() == 0) {
+			tempType = new VarType(false,0);
+		}
+		else {
+			tempType = new VarType(tempTypesOfExprs.get(0).getIsBool(), tempTypesOfExprs.get(0).getNumBrackets());
+		}
 	}
 
 	/**

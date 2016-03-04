@@ -283,8 +283,8 @@ public class TypeCheckVisitor implements Visitor {
 			String s = "Expected a variable type, but found " + 
 					tempType.toString();
 			SemanticErrorObject seo = new SemanticErrorObject(
-					be.getColumnNumber(), 
 					be.getLineNumber(),
+					be.getColumnNumber(), 
 					s
 					);
 			Main.handleSemanticError(seo);
@@ -298,8 +298,8 @@ public class TypeCheckVisitor implements Visitor {
 			String s = "Expected a variable type, but found " + 
 					tempType.toString();
 			SemanticErrorObject seo = new SemanticErrorObject(
-					be.getColumnNumber(), 
 					be.getLineNumber(),
+					be.getColumnNumber(), 
 					s
 					);
 			Main.handleSemanticError(seo);
@@ -315,8 +315,8 @@ public class TypeCheckVisitor implements Visitor {
 					//TODO error handling
 					String s = "Mismatched types for + operation.";
 					SemanticErrorObject seo = new SemanticErrorObject(
-							be.getColumnNumber(), 
 							be.getLineNumber(),
+							be.getColumnNumber(), 
 							s
 							);
 					Main.handleSemanticError(seo);
@@ -327,8 +327,8 @@ public class TypeCheckVisitor implements Visitor {
 					// TODO: error handling
 					String s = "Mismatched types for + operation.";
 					SemanticErrorObject seo = new SemanticErrorObject(
-							be.getColumnNumber(), 
 							be.getLineNumber(),
+							be.getColumnNumber(), 
 							s
 							);
 					Main.handleSemanticError(seo);
@@ -338,8 +338,8 @@ public class TypeCheckVisitor implements Visitor {
 				//TODO error handling
 				String s = "Invalid types for + operation.";
 				SemanticErrorObject seo = new SemanticErrorObject(
-						be.getColumnNumber(), 
 						be.getLineNumber(),
+						be.getColumnNumber(), 
 						s
 						);
 				Main.handleSemanticError(seo);
@@ -353,8 +353,8 @@ public class TypeCheckVisitor implements Visitor {
 					String s = "Mismatched types for " + op.toString() 
 								+ " operation.";
 					SemanticErrorObject seo = new SemanticErrorObject(
-							be.getColumnNumber(), 
 							be.getLineNumber(),
+							be.getColumnNumber(), 
 							s
 							);
 					Main.handleSemanticError(seo);
@@ -366,8 +366,8 @@ public class TypeCheckVisitor implements Visitor {
 					String s = "Mismatched types for " + op.toString() 
 								+ " operation.";
 					SemanticErrorObject seo = new SemanticErrorObject(
-							be.getColumnNumber(), 
 							be.getLineNumber(),
+							be.getColumnNumber(), 
 							s
 							);
 					Main.handleSemanticError(seo);
@@ -379,8 +379,8 @@ public class TypeCheckVisitor implements Visitor {
 					String s = "Mismatched types for " + op.toString() 
 								+ " operation.";
 					SemanticErrorObject seo = new SemanticErrorObject(
-							be.getColumnNumber(), 
 							be.getLineNumber(),
+							be.getColumnNumber(), 
 							s
 							);
 					Main.handleSemanticError(seo);
@@ -390,8 +390,8 @@ public class TypeCheckVisitor implements Visitor {
 				//TODO error handling
 				String s = "Invalid types for " + op.toString() + " operation.";
 				SemanticErrorObject seo = new SemanticErrorObject(
-						be.getColumnNumber(), 
 						be.getLineNumber(),
+						be.getColumnNumber(), 
 						s
 						);
 				Main.handleSemanticError(seo);
@@ -884,8 +884,8 @@ public class TypeCheckVisitor implements Visitor {
 			String s = "Expected a variable type, but found " + 
 					tempType.toString();
 			SemanticErrorObject seo = new SemanticErrorObject(
-					ue.getColumnNumber(), 
 					ue.getLineNumber(),
+					ue.getColumnNumber(), 
 					s
 					);
 			Main.handleSemanticError(seo);
@@ -900,8 +900,8 @@ public class TypeCheckVisitor implements Visitor {
 				String s = "Expected a boolean, but found " + 
 						exprType.toString();
 				SemanticErrorObject seo = new SemanticErrorObject(
-						ue.getColumnNumber(), 
 						ue.getLineNumber(),
+						ue.getColumnNumber(), 
 						s
 						);
 				Main.handleSemanticError(seo);
@@ -913,8 +913,8 @@ public class TypeCheckVisitor implements Visitor {
 				String s = "Expected an int, but found " + 
 						exprType.toString();
 				SemanticErrorObject seo = new SemanticErrorObject(
-						ue.getColumnNumber(), 
 						ue.getLineNumber(),
+						ue.getColumnNumber(), 
 						s
 						);
 				Main.handleSemanticError(seo);

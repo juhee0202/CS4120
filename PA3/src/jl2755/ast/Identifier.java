@@ -6,9 +6,13 @@ import jl2755.visitor.Visitor;
 
 public class Identifier implements Expr{
 	private String theValue;
+	private int theValue_col;
+	private int theValue_line;
 	
-	public Identifier(String argValue){
+	public Identifier(String argValue, int idleft, int idright){
 		theValue = argValue;
+		theValue_col = idleft;
+		theValue_line = idright;
 	}
 	
 	public void prettyPrintNode(){
@@ -25,8 +29,38 @@ public class Identifier implements Expr{
 		return theValue;
 	}
 
+	public int getTheValue_col() {
+		return theValue_col;
+	}
+
+	public void setTheValue_col(int theValue_col) {
+		this.theValue_col = theValue_col;
+	}
+
+	public int getTheValue_line() {
+		return theValue_line;
+	}
+
+	public void setTheValue_line(int theValue_line) {
+		this.theValue_line = theValue_line;
+	}
+
+	public void setTheValue(String theValue) {
+		this.theValue = theValue;
+	}
+
 	@Override
 	public void accept(Visitor v) {
 		return;
+	}
+
+	@Override
+	public int getColumnNumber() {
+		return theValue_col;
+	}
+
+	@Override
+	public int getLineNumber() {
+		return theValue_line;
 	}
 }

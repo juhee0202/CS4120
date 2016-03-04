@@ -110,4 +110,12 @@ public class TupleType implements VType {
 		return true;
 	}
 	
+	@Override
+	public String toString() {
+		String returnString = types.get(0).toString();
+		for (int i = 1; i < types.size(); i++) {
+			returnString += ", " + types.get(i).toString();
+		}
+		return returnString;
+	}
 }

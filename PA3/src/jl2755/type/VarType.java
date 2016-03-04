@@ -109,4 +109,19 @@ public class VarType implements VType {
 		return this.isBool == vt.isBool 
 				&& this.getNumBrackets() == vt.getNumBrackets(); 
 	}
+	
+	@Override
+	public String toString() {
+		String returnString = "";
+		if (isBool) { 
+			returnString += "bool";
+		}
+		else {
+			returnString += "int";
+		}
+		for (int i = 0; i < numBrackets; i++) {
+			returnString += "[]";
+		}
+		return returnString;
+	}
 }

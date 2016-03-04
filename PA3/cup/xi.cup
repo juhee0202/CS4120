@@ -97,14 +97,14 @@ array_element ::= identifier:id indexed_brackets:ib                 {: RESULT = 
                   array_literal:al indexed_brackets:ib              {: RESULT = new ArrayElement(al, ib); :}
                   ;
 
-array_element_list ::= expr:expression                              {: RESULT = new ArrayElementList(expression); :}
+array_element_list ::= expr:e                                       {: RESULT = new ArrayElementList(e); :}
                        |
-                       expr:expression COMMA array_element_list:ael {: RESULT = new ArrayElementList(expression,ael); :}
+                       expr:e COMMA array_element_list:ael          {: RESULT = new ArrayElementList(e,ael); :}
                        |
                                                                     {: RESULT = new ArrayElementList(); :}
                        ;
 
-array_literal ::= OPEN_BRACE array_element_list:ael CLOSE_BRACE     {: RESULT = new ArrayLiteral(ael); :}
+array_literal ::= OPEN_BRACE:ob array_element_list:ael CLOSE_BRACE  {: RESULT = new ArrayLiteral(ael, obleft, obright); :}
                   ;
 
 assignment_stmt ::= identifier:id GETS expr:expression              {: RESULT = new AssignmentStmt(id, expression); :}
@@ -157,15 +157,15 @@ function_arg ::= expr:expression                                    {: RESULT = 
                  ;
 
 function_call ::= identifier:id OPEN_PAREN 
-                  function_arg:fa CLOSE_PAREN                       {: RESULT = new FunctionCall(id, fa, idleft, idright, faleft, faright); :}
+                  function_arg:fa CLOSE_PAREN                       {: RESULT = new FunctionCall(id, fa); :}
                   |
-                  identifier:id OPEN_PAREN CLOSE_PAREN              {: RESULT = new FunctionCall(id, idleft, idright); :}
+                  identifier:id OPEN_PAREN CLOSE_PAREN              {: RESULT = new FunctionCall(id); :}
                   |
-                  LENGTH OPEN_PAREN expr:e CLOSE_PAREN              {: RESULT = new FunctionCall(e, eleft, eright); :}
+                  LENGTH:l OPEN_PAREN expr:e CLOSE_PAREN            {: RESULT = new FunctionCall(e, lleft, lright); :}
                   ;
 
 function_decl ::= identifier:id OPEN_PAREN function_param:fp 
-                  CLOSE_PAREN return_type:rt block_stmt:bs          {: RESULT = new FunctionDecl(id, fp, rt, bs, idleft, idright, fpleft, fpright, rtleft, rtright, bsleft, bsright); :}
+                  CLOSE_PAREN return_type:rt block_stmt:bs          {: RESULT = new FunctionDecl(id, fp, rt, bs); :}
                   ;
 
 function_decl_list ::= function_decl:fd function_decl_list:fdl      {: RESULT = new FunctionDeclList(fd, fdl); :}
@@ -181,7 +181,7 @@ function_param ::= identifier:id COLON type:t                       {: RESULT = 
                                                                     {: RESULT = new FunctionParam(); :}
                    ;
 
-identifier ::= IDENTIFIER:id                                        {: RESULT = new Identifier(id); :}
+identifier ::= IDENTIFIER:id                                        {: RESULT = new Identifier(id, idleft, idright); :}
                ; 
 
 if_stmt ::= IF OPEN_PAREN expr:e CLOSE_PAREN stmt:s                 {: RESULT = new IfStmt(e, s); :}
@@ -207,15 +207,15 @@ interface_list ::= interface_func:ifd interface_list:il             {: RESULT = 
                    interface_func:ifd                               {: RESULT = new InterfaceList(ifd); :}
                    ;
 
-literal ::= INTEGER_LITERAL:il                                      {: RESULT = new Literal(il); :}
+literal ::= INTEGER_LITERAL:il                                      {: RESULT = new Literal(il, illeft, ilright); :}
             |
-            CHARACTER_LITERAL:cl                                    {: RESULT = new Literal(cl); :}
+            CHARACTER_LITERAL:cl                                    {: RESULT = new Literal(cl, clleft, clright); :}
             |
-            STRING_LITERAL:sl                                       {: RESULT = new Literal(sl); :}
+            STRING_LITERAL:sl                                       {: RESULT = new Literal(sl, slleft, slright); :}
             |
-            TRUE                                                    {: RESULT = new Literal(true); :}
+            TRUE:t                                                  {: RESULT = new Literal(true, tleft, tright); :}
             | 
-            FALSE                                                   {: RESULT = new Literal(false); :}
+            FALSE:f                                                 {: RESULT = new Literal(false, fleft, fright); :}
             ;
 
 mixed_array_type ::= primitive_type:pt brackets:b                   {: RESULT = new MixedArrayType(pt, b); :}
@@ -248,9 +248,9 @@ naked_stmt ::= assignment_stmt:ass                                  {: RESULT = 
                tuple_init:ti                                        {: RESULT = ti; :}
                ;
 
-op_expr ::= MINUS expr:e                                            {: RESULT = new UnaryExpr(e, UnaryOp.INT_NEG); :} %prec UMINUS
+op_expr ::= MINUS:m expr:e                                          {: RESULT = new UnaryExpr(e, UnaryOp.INT_NEG, mleft, mright); :} %prec UMINUS
             |
-            NOT expr:e                                              {: RESULT = new UnaryExpr(e, UnaryOp.LOG_NEG); :}
+            NOT:n expr:e                                            {: RESULT = new UnaryExpr(e, UnaryOp.LOG_NEG, nleft, nright); :}
             |
             expr:e1 PLUS expr:e2                                    {: RESULT = new BinaryExpr(e1, e2, BinaryOp.PLUS); :}
             |
@@ -296,13 +296,13 @@ return_list ::= expr:e                                              {: RESULT = 
                 expr:e COMMA return_list:rl                         {: RESULT = new ReturnList(e, rl); :}
                 ;
 
-return_stmt ::= RETURN                                              {: RESULT = new ReturnStmt(); :}
+return_stmt ::= RETURN:r                                            {: RESULT = new ReturnStmt(rleft, rright); :}
                 |
-                RETURN return_list:rl                               {: RESULT = new ReturnStmt(rl); :}
+                RETURN:r return_list:rl                             {: RESULT = new ReturnStmt(rl, rleft, rright); :}
                 |
-                RETURN SEMICOLON                                    {: RESULT = new ReturnStmt(); :}
+                RETURN:r SEMICOLON                                  {: RESULT = new ReturnStmt(rleft, rright); :}
                 |
-                RETURN return_list:rl SEMICOLON                     {: RESULT = new ReturnStmt(rl); :}
+                RETURN:r return_list:rl SEMICOLON                   {: RESULT = new ReturnStmt(rl, rleft, rright); :}
                 ;
 
 return_type ::= COLON type_list:tl                                  {: RESULT = new ReturnType(tl); :}
@@ -329,12 +329,12 @@ tuple_decl_list ::= COMMA var_decl:vd                               {: RESULT = 
                     COMMA UNDERSCORE tuple_decl_list:tdl            {: RESULT = new TupleDeclList(tdl, true); :}
                     ;
 
-tuple_init ::= UNDERSCORE tuple_decl_list:tdl GETS function_call:fc {: RESULT = new TupleInit(tdl, fc, tdlleft, tdlright, fcleft, fcright); :}
+tuple_init ::= UNDERSCORE tuple_decl_list:tdl GETS function_call:fc {: RESULT = new TupleInit(tdl, fc); :}
                |
                var_decl:vd tuple_decl_list:tdl 
-               GETS function_call:fc                                {: RESULT = new TupleInit(vd, tdl, fc, vdleft, vdright, tdlleft, tdlright, fcleft, fcright); :}
+               GETS function_call:fc                                {: RESULT = new TupleInit(vd, tdl, fc); :}
                |
-               UNDERSCORE GETS function_call:fc                     {: RESULT = new TupleInit(fc, fcleft, fcright); :}
+               UNDERSCORE GETS function_call:fc                     {: RESULT = new TupleInit(fc); :}
                ;
 
 type ::= primitive_type:pt                                          {: RESULT = pt; :}

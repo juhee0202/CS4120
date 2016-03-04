@@ -45,8 +45,4 @@ public class TypeList {
 		}
 		return l;
 	}	
-	
-	public void accept(Visitor v){
-		v.visit(this);
-	}
 }

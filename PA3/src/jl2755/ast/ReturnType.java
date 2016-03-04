@@ -47,8 +47,4 @@ public class ReturnType {
 		typeList.prettyPrintNode();
 		tempPrinter.endList();
 	}
-	
-	public void accept(Visitor v){
-		v.visit(this);
-	}
 }

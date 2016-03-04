@@ -229,6 +229,9 @@ public class TypeCheckVisitor implements Visitor {
 		// Check return stmt
 		if (bs.getIndex() == 2) {
 			(bs.getReturnStmt()).accept(this);
+		} else {
+		// Set tempType to unit
+			tempType = new UnitType();
 		}
 		
 		// Pop out of scope

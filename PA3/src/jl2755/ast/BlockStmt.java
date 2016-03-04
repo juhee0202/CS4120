@@ -7,6 +7,12 @@ import jl2755.visitor.Visitor;
 public class BlockStmt implements NakedStmt {
 	private StmtList stmtList;
 	private ReturnStmt returnStmt;
+	/**
+	 * 0 for no stmtList,
+	 * 1 for only stmtList,
+	 * 2 for both,
+	 * 3 for only returnStmt.
+	 */
 	private int index;
 	
 	public BlockStmt() {
@@ -25,6 +31,12 @@ public class BlockStmt implements NakedStmt {
 		stmtList = sl;
 		returnStmt = rs;
 		index = 2;
+	}
+	
+	public BlockStmt(ReturnStmt rs) {
+		stmtList = null;
+		returnStmt = rs;
+		index = 3;
 	}
 	
 	public void prettyPrintNode() {

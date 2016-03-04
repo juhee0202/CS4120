@@ -260,7 +260,9 @@ public class TypeCheckVisitor implements Visitor {
 			}
 			
 			VarType idType = (VarType)env.get(id);
+			
 			VType elementType = new VarType(idType,as.getIndexedBrackets());
+
 			
 			as.getExpr().accept(this);
 			VType exprType = tempType;
@@ -354,7 +356,18 @@ public class TypeCheckVisitor implements Visitor {
 		
 		VarType rightType = (VarType) tempType;
 
-		// if "+", int or array type
+		// check that left & right expr have the same type
+		if (!leftType.equals(rightType)) {
+			String s = "Mismatched types for binary operation.";
+			SemanticErrorObject seo = new SemanticErrorObject(
+					be.getLineNumber(),
+					be.getColumnNumber(), 
+					s
+					);
+			Main.handleSemanticError(seo);
+		}
+		
+		// if "+": int or array type
 		BinaryOp op = be.getBinaryOp();
 		if (op.toString().equals("+")) {
 			if (leftType.isInt()) {
@@ -368,6 +381,7 @@ public class TypeCheckVisitor implements Visitor {
 							);
 					Main.handleSemanticError(seo);
 				}
+				tempType = new VarType(false, 0);
 			}
 			else if (leftType.isArray()) {
 				if (!leftType.equals(rightType)) {
@@ -380,6 +394,8 @@ public class TypeCheckVisitor implements Visitor {
 							);
 					Main.handleSemanticError(seo);
 				}
+				tempType = new VarType(leftType.getIsBool(), 
+						leftType.getNumBrackets());
 			}
 			else {
 				//TODO error handling
@@ -406,6 +422,7 @@ public class TypeCheckVisitor implements Visitor {
 							);
 					Main.handleSemanticError(seo);
 				}
+				tempType = new VarType(true, 0);
 			}
 			if (leftType.isInt()) {
 				if (!rightType.isInt()) {
@@ -419,6 +436,7 @@ public class TypeCheckVisitor implements Visitor {
 							);
 					Main.handleSemanticError(seo);
 				}
+				tempType = new VarType(true, 0);
 			}
 			else if (leftType.isArray()) {
 				if (!rightType.isArray()) {
@@ -432,6 +450,7 @@ public class TypeCheckVisitor implements Visitor {
 							);
 					Main.handleSemanticError(seo);
 				}
+				tempType = new VarType(true,0);
 			}
 			else {
 				//TODO error handling
@@ -444,18 +463,34 @@ public class TypeCheckVisitor implements Visitor {
 				Main.handleSemanticError(seo);
 			}
 		}
+		
+		else if (op.toString().equals("<") || 
+			op.toString().equals("<=") ||
+			op.toString().equals(">") ||
+			op.toString().equals(">=") ||
+			op.toString().equals("&") ||
+			op.toString().equals("|")) {
+			
+			tempType = new VarType(true,0);
+		}
+		else {
+			tempType = new VarType(false,0);
+		}
+
 	}
 		
 	@Override
 	public void visit(BlockStmt bs) {
 		// Start of scope
 		stack.add("_");
-
-		// Check stmt list
-		(bs.getStmtList()).accept(this);
+		
+		if (bs.getIndex() != 0 && bs.getIndex() != 3) { 
+			// Check stmt list
+			(bs.getStmtList()).accept(this);
+		}
 		
 		// Check return stmt
-		if (bs.getIndex() == 2) {
+		if (bs.getIndex() >= 2) {
 			(bs.getReturnStmt()).accept(this);
 		} else {
 		// Set tempType to unit
@@ -588,6 +623,7 @@ public class TypeCheckVisitor implements Visitor {
 				Main.handleSemanticError(seo);
 			} else {
 				env.put(id, type);
+				stack.push(id);
 			}
 		}
 		
@@ -599,12 +635,20 @@ public class TypeCheckVisitor implements Visitor {
 		FunType funType = (FunType) env.get(id);	// safe
 		VType returnTypes = funType.getReturnTypes();
 		
+		System.out.println(bodyReturnType);
+		
 		if (!returnTypes.equals(bodyReturnType)) {
 			String s = "Expected " + returnTypes.toString() 
 						+ ", but found " + bodyReturnType.toString();
 			ReturnStmt rs = fd.getBlockStmt().getReturnStmt();
-			SemanticErrorObject seo = new SemanticErrorObject(
-					rs.getReturn_line(), rs.getReturn_col(), s);
+			SemanticErrorObject seo;
+			if (fd.getBlockStmt().getIndex() < 2) {
+				seo = new SemanticErrorObject(
+						fd.getIdentifier_line(), fd.getIdentifier_col(), s);
+			} else {
+				seo = new SemanticErrorObject(
+						rs.getReturn_line(), rs.getReturn_col(), s);
+			}
 			Main.handleSemanticError(seo);
 		}
 		
@@ -625,7 +669,24 @@ public class TypeCheckVisitor implements Visitor {
 			fd.accept(this);
 		}
 	}
-
+	
+	/**
+	 * Dirties tempType
+	 */
+	@Override
+	public void visit(Identifier id) {
+		if (!(env.containsKey(id.toString()))){
+			String s = "Name " + id.toString() + " cannot be resolved.";
+			SemanticErrorObject seo = new SemanticErrorObject(
+					id.getLineNumber(), 
+					id.getColumnNumber(),
+					s
+					);
+			Main.handleSemanticError(seo);
+		}
+		tempType = env.get(id.toString());
+	}
+	
 	/**
 	 * Dirties tempType
 	 */
@@ -740,6 +801,7 @@ public class TypeCheckVisitor implements Visitor {
 				Main.handleSemanticError(seo);
 			}
 			env.put(id, funType);
+			stack.push(id);
 		}
 		
 		/* Merge if_env with env */
@@ -789,18 +851,9 @@ public class TypeCheckVisitor implements Visitor {
 
 	@Override
 	public void visit(StmtList sl) {
-		// Start new scope
-		stack.push("_");
-		
 		// Check stmt
 		(sl.getStmt()).accept(this);
 		
-		// Pop out of scope
-		String id = stack.pop();
-		while (id != "_") {
-			env.remove(id);
-			id = stack.pop();
-		}
 		
 		// Check stmt list
 		if (sl.getIndex() == 1) {
@@ -839,7 +892,7 @@ public class TypeCheckVisitor implements Visitor {
 		}
 		/* Case: _, tdl = f() */
 		// TODO need refactoring
-		else if (index == 1) {
+		if (index == 1) {
 			if (!(returnType instanceof TupleType)) {
 				// TODO col,line numbering might be off
 				String s = "Mismatched number of values";
@@ -866,11 +919,11 @@ public class TypeCheckVisitor implements Visitor {
 			}
 			returnType = (TupleType)returnType;
 			TupleType tupleType = new TupleType(ti);
-			tupleType.prependToTypes(new VarType(ti.getVarDecl()));
 			if (!returnType.equals(tupleType)) {
 				String s = "Mismatched number of values";
 				SemanticErrorObject seo = new SemanticErrorObject(
-						ti.getFunctionCall_line(), ti.getFunctionCall_col(), s);
+						ti.getVarDecl().getIdentifier().getLineNumber(), 
+						ti.getVarDecl().getIdentifier().getColumnNumber(), s);
 				Main.handleSemanticError(seo);	
 			}
 		}
@@ -914,6 +967,7 @@ public class TypeCheckVisitor implements Visitor {
 						);
 				Main.handleSemanticError(seo);
 			}
+			tempType = new VarType(true, 0);
 		}
 		else if (op.toString().equals("-")) {
 			if (!exprType.isInt()) {
@@ -927,6 +981,7 @@ public class TypeCheckVisitor implements Visitor {
 						);
 				Main.handleSemanticError(seo);
 			}
+			tempType = new VarType(false, 0);
 		}
 	}
 
@@ -968,9 +1023,9 @@ public class TypeCheckVisitor implements Visitor {
 	@Override
 	public void visit(VarDecl vd) {
 		// Check if predeclared
-		if (env.containsKey(vd.getIdentifier())){
+		if (env.containsKey(vd.getIdentifier().toString())){
 			// TODO: ERROR HaNdLiNG
-			String s = vd.getIdentifier().toString() + "is already declared";
+			String s = vd.getIdentifier().toString() + " is already declared";
 			SemanticErrorObject seo = new SemanticErrorObject(
 										vd.getIdentifier().getLineNumber(), 
 										vd.getIdentifier().getColumnNumber(),
@@ -982,6 +1037,7 @@ public class TypeCheckVisitor implements Visitor {
 			String id = vd.getIdentifier().toString();
 			env.put(id, new VarType(vd));
 			tempType = env.get(id);
+			stack.push(id);
 		}
 	}
 

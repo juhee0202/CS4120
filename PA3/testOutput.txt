@@ -1,4 +1,4 @@
-Testpath "/home/vagrant/xth/tests/pa2/" specified.
+Testpath "/home/vagrant/xth/tests/pa3/" specified.
 Test script: xthScript
   xic-build: Cannot run program "/home/vagrant/shared/cs4120/pa3/xic-build" (in directory "/home/vagrant/shared/cs4120/pa3"): error=2, No such file or directory
   Test collection: xic (Test --help)
@@ -8,6 +8,7 @@ where possible options include
   --lex: Generate output from lexical analysis.
   --parse: Generate output from syntactic analysis.
   -sourcepath: Specify where to find input source files.
+  -libpath: Specify where to find library interface files. The default is the current directory in which xic is run. 
   -D: Specify where to place generated diagnostic files.
 OK
   xic (Test --help): 1 out of 1 tests succeeded.
@@ -64,6 +65,7 @@ OK
 OK
     ex3.xi: [xic] Parsing
 instead expected token classes are [EOF, IDENTIFIER, USE]
+Syntax error beginning at 1:1 error:Unexpected token +
 OK
     spec1.xi: [xic] Parsing
 [xic] Parsing completed
@@ -97,9 +99,140 @@ OK
 OK
     add.xi: [xic] Parsing
 instead expected token classes are [EOF, IDENTIFIER, USE]
+Syntax error beginning at 1:1 error:Unexpected token +
 OK
     beauty.xi: [xic] Parsing
 instead expected token classes are [EOF, IDENTIFIER, USE]
+Syntax error beginning at 1:1 error:Unexpected token ==
 OK
   xic (Test --parse): 15 out of 15 tests succeeded.
-xthScript: 30 out of 31 tests succeeded.
+  Test collection: xic (Test --typecheck)
+    ex01.xi: ex01.xi
+[xic] Typechecking
+unit
+[xic] Typechecking completed
+OK
+    ex02.xi: ex02.xi
+[xic] Typechecking
+bool, int
+unit
+[xic] Typechecking completed
+OK
+    ex03.xi: ex03.xi
+[xic] Typechecking
+int[]
+[xic] Typechecking completed
+OK
+    ex04.xi: ex04.xi
+[xic] Typechecking
+Semantic error beginning at 2:12: Expected bool, but found int
+OK
+    ex05.xi: ex05.xi
+[xic] Typechecking
+Semantic error beginning at 2:18: Mismatched types for binary operation.
+OK
+    ex06.xi: ex06.xi
+[xic] Typechecking
+Semantic error beginning at 1:22: Name baz cannot be resolved
+OK
+    ex07.xi: ex07.xi
+[xic] Typechecking
+unit
+Semantic error beginning at 4:3: Expected bool[], but found int[]
+OK
+    ex08.xi: ex08.xi
+[xic] Typechecking
+unit
+Semantic error beginning at 1:1: Expected bool, but found unit
+OK
+    ex09.xi: ex09.xi
+[xic] Typechecking
+instead expected token classes are []
+Syntax error beginning at 1:13 error:Invalid assignment operator.2
+OK
+    ex10.xi: ex10.xi
+[xic] Typechecking
+int, int, int
+Semantic error beginning at 2:9: Mismatched number of values
+OK
+    ex11.xi: ex11.xi
+[xic] Typechecking
+int, int, int
+Semantic error beginning at 2:9: Mismatched number of values
+OK
+    ex12.xi: ex12.xi
+[xic] Typechecking
+unit
+Semantic error beginning at 2:17: Expected int, but found unit
+OK
+    spec1-full.xi: spec1-full.xi
+[xic] Typechecking
+unit
+bool, int
+[xic] Typechecking completed
+OK
+    spec1.xi: spec1.xi
+[xic] Typechecking
+Semantic error beginning at 4:22: Name f cannot be resolved
+OK
+    spec2.xi: spec2.xi
+[xic] Typechecking
+Semantic error beginning at 2:3: Name x cannot be resolved
+OK
+    spec3.xi: spec3.xi
+[xic] Typechecking
+unit
+[xic] Typechecking completed
+OK
+    gcd.xi: gcd.xi
+[xic] Typechecking
+int
+[xic] Typechecking completed
+OK
+    ratadd-full.xi: ratadd-full.xi
+[xic] Typechecking
+int
+int, int
+[xic] Typechecking completed
+OK
+    ratadd.xi: ratadd.xi
+[xic] Typechecking
+Semantic error beginning at 4:13: Name gcd cannot be resolved
+OK
+    ratadduse-full.xi: ratadduse-full.xi
+[xic] Typechecking
+int
+int, int
+unit
+[xic] Typechecking completed
+OK
+    ratadduse.xi: ratadduse.xi
+[xic] Typechecking
+Semantic error beginning at 2:20: Name ratadd cannot be resolved
+OK
+    insertionsort.xi: insertionsort.xi
+[xic] Typechecking
+unit
+[xic] Typechecking completed
+OK
+    arrayinit.xi: arrayinit.xi
+[xic] Typechecking
+Semantic error beginning at 3:5: a is already declared
+OK
+    arrayinit2-full.xi: arrayinit2-full.xi
+[xic] Typechecking
+unit
+int
+[xic] Typechecking completed
+OK
+    arrayinit2.xi: arrayinit2.xi
+[xic] Typechecking
+Semantic error beginning at 2:14: Name gcd cannot be resolved
+OK
+    mdarrays.xi: mdarrays.xi
+[xic] Typechecking
+unit
+[xic] Typechecking completed
+OK
+  xic (Test --typecheck): 26 out of 26 tests succeeded.
+xthScript: 56 out of 57 tests succeeded.

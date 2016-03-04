@@ -11,8 +11,8 @@ public class Identifier implements Expr{
 	
 	public Identifier(String argValue, int idleft, int idright){
 		theValue = argValue;
-		theValue_col = idleft;
-		theValue_line = idright;
+		theValue_line = idleft;
+		theValue_col = idright;
 	}
 	
 	public void prettyPrintNode(){
@@ -51,7 +51,7 @@ public class Identifier implements Expr{
 
 	@Override
 	public void accept(Visitor v) {
-		return;
+		v.visit(this);
 	}
 
 	@Override

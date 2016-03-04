@@ -121,6 +121,8 @@ block_stmt ::= OPEN_BRACE CLOSE_BRACE                               {: RESULT = 
                OPEN_BRACE stmt_list:sl CLOSE_BRACE                  {: RESULT = new BlockStmt(sl); :}
                |
                OPEN_BRACE stmt_list:sl return_stmt:rs CLOSE_BRACE   {: RESULT = new BlockStmt(sl, rs); :}
+               |
+               OPEN_BRACE return_stmt:rs CLOSE_BRACE                {: RESULT = new BlockStmt(rs); :}
                ;
 
 brackets ::= OPEN_BRACKET CLOSE_BRACKET                             {: RESULT = new Brackets(); :}

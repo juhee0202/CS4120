@@ -40,10 +40,15 @@ public class MixedBrackets {
 	}
 	
 	public int getNumBrackets(){
-		if (brackets == null){
-			return 0;
+		if (index == 0) {
+			return 1 + mixedBrackets.getNumBrackets();
 		}
-		return brackets.getNumBrackets();
+		if (index == 1) {
+			return 1;
+		}
+		else {
+			return 1 + brackets.getNumBrackets();
+		}
 	}
 	
 	public void prettyPrintNode() {

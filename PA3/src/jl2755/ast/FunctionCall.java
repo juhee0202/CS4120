@@ -42,8 +42,8 @@ public class FunctionCall implements Expr,NakedStmt {
 		expr = e;
 		expr_col = e.getColumnNumber();
 		expr_line = e.getLineNumber();
-		length_col = lleft;
-		length_line = lright;
+		length_line = lleft;
+		length_col = lright;
 		index = 2;
 	}
 	
@@ -57,9 +57,7 @@ public class FunctionCall implements Expr,NakedStmt {
 			functionArg.prettyPrintNode();
 		} else if (index == 2) {
 			tempPrinter.printAtom("length");
-			tempPrinter.startList();
 			expr.prettyPrintNode();		// TODO revisit. NOT TOO SURE
-			tempPrinter.endList();
 		}
 		tempPrinter.endList();
 	}

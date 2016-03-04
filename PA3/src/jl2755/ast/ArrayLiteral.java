@@ -16,8 +16,8 @@ public class ArrayLiteral implements Constant {
 	
 	public ArrayLiteral(ArrayElementList l, int obleft, int obright) {
 		arrElemList = l;
-		openBracket_col = obleft;
-		openBracket_line = obright;
+		openBracket_line = obleft;
+		openBracket_col = obright;
 	}
 	
 	public void prettyPrintNode(){

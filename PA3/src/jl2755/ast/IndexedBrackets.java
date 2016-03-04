@@ -36,8 +36,4 @@ public class IndexedBrackets {
 	public int getNumBrackets() {
 		return getContent().size();
 	}
-	
-	
-	
-	
 }

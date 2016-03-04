@@ -13,6 +13,7 @@ public interface Visitor {
 	public void visit(FunctionCall fc);
 	public void visit(FunctionDecl fd);
 	public void visit(FunctionDeclList fdl);
+	public void visit(Identifier id);
 	public void visit(IfStmt is);
 	public void visit(Literal l);
 	public void visit(Program p);

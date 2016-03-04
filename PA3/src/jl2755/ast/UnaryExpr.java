@@ -13,8 +13,8 @@ public class UnaryExpr implements OpExpr {
 	public UnaryExpr(Expr e, UnaryOp o, int oleft, int oright) {
 		expr = e;
 		op = o;
-		op_col = oleft;
-		op_line = oright;
+		op_line = oleft;
+		op_col = oright;
 	}
 
 	public UnaryOp getUnaryOp() {

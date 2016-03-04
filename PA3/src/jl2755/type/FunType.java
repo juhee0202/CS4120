@@ -53,7 +53,7 @@ public class FunType implements VType {
 			returnTypes = new UnitType();
 		}
 		else if (ll.size() == 1) {
-			returnTypes = new VarType(l.get(0));
+			returnTypes = new VarType(ll.get(0));
 		}
 		else {
 			returnTypes = new TupleType();
@@ -87,7 +87,7 @@ public class FunType implements VType {
 			returnTypes = new UnitType();
 		}
 		else if (ll.size() == 1) {
-			returnTypes = new VarType(l.get(0));
+			returnTypes = new VarType(ll.get(0));
 		}
 		else {
 			returnTypes = new TupleType();

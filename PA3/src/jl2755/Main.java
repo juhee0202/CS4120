@@ -87,6 +87,7 @@ public class Main {
 		CommandLine cmd;
 		srcPath = "";
 		destPath = "";
+		libPath = "";
 		currPath = System.getProperty("user.dir") + "/";
 		
 		try {
@@ -339,6 +340,7 @@ public class Main {
 	
 	public static void typecheck(String filename) throws IOException {
 		try {
+			System.out.println(filename);
 			int index = filename.lastIndexOf('.');
 			if (index == -1) {
 				index = filename.length();
@@ -361,7 +363,7 @@ public class Main {
 			TypeCheckVisitor visitor = new TypeCheckVisitor(result);
 			visitor.visit(result);
 			
-			bw.write("Valid Xi program");
+			bw.write("Valid Xi Program");
 			bw.close();
 			System.out.println("[xic] Typechecking completed");
 			
@@ -382,6 +384,7 @@ public class Main {
 				" error:" + msg + error.value;
 		bw.write(errorMessage);
 		bw.close();
+		System.out.println("Syntax error beginning at " + errorMessage);
 		throw new RuntimeException("[xic] Parsing Failed.");
 	}
 	
@@ -393,12 +396,14 @@ public class Main {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
+		System.out.println("Semantic error beginning at " + 
+				seo.getLineNumber() + ":" + seo.getColNumber() + ": "
+				+ seo.getDescription());
 		throw new RuntimeException("[xic] Typecheck Failed.");
 	}
 	
 	public static Map<String, VType> checkInterface(String interfaceName){
-		String absPath = srcPath + interfaceName + ".ixi";
+		String absPath = libPath + interfaceName + ".ixi";
 		Map<String, VType> tempMap = new HashMap<String, VType>();
 		try {
 			parser p = new parser(new Scanner(new FileReader(absPath)));

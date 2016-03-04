@@ -101,8 +101,8 @@ SingleCharacter = [^\n\'\\\"]
   "while"                        { return symbol(sym.WHILE,"while"); }
   
   /* boolean literals */
-  "true"                         { return symbol(sym.TRUE,"true"); }
-  "false"                        { return symbol(sym.FALSE,"false"); }
+  "true"                         { return symbol(sym.TRUE,Boolean.TRUE); }
+  "false"                        { return symbol(sym.FALSE,Boolean.FALSE); }
   
   
   /* separators */
@@ -185,6 +185,7 @@ SingleCharacter = [^\n\'\\\"]
   \\[x]{HexLiteral}\'            { yybegin(YYINITIAL); return symbol(sym.CHARACTER_LITERAL, origLine, origCol, yytext().substring(0, yylength()-1)); }
   
   /* error cases */
+  \'                             { throw new RuntimeException(origLine + ":" + origCol + " error: Illegal input \"\'\""); }
   {LineTerminator}               { throw new RuntimeException(yyline() + ":" + yycolumn() + " error: Illegal input \"\\n\""); }
 }
 

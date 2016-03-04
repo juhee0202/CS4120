@@ -45,16 +45,12 @@ public class MixedArrayType implements Type {
 			}
 		} else if (index == 1) {
 			list = mixedBrackets.getContent();
-			for (int i = 0; i < list.size(); i++) {
-				tempPrinter.startList();
-				tempPrinter.printAtom("[]");
-			}
 			for (int i = 0; i < mixedBrackets.getNumBrackets(); i++){
 				tempPrinter.startList();
 				tempPrinter.printAtom("[]");
 			}
 			p_type.prettyPrintNode();
-			for (int i = 0; i < mixedBrackets.getNumBrackets(); i++){
+			for (int i = 0; i < mixedBrackets.getNumBrackets() - list.size(); i++) {
 				tempPrinter.endList();
 			}
 			for (int i = list.size()-1; i >= 0; i--){

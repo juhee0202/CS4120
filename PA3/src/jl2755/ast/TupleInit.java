@@ -40,6 +40,8 @@ public class TupleInit implements NakedStmt {
 		varDecl = vd;
 		tupleDeclList = tdl;
 		functionCall = fc;
+		functionCall_col = fc.getColumnNumber();
+		functionCall_line = fc.getLineNumber();
 		index = 2;
 	}
 	

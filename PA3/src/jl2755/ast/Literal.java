@@ -27,29 +27,29 @@ public class Literal implements Constant {
 	
 	public Literal(long i, int ileft, int iright) {
 		intLit = i;
-		intLit_col = ileft;
-		intLit_line = iright;
+		intLit_line = ileft;
+		intLit_col = iright;
 		index = 0;
 	}
 	
 	public Literal(String s, int sleft, int sright) {
 		stringLit = s;
-		stringLit_col = sleft;
-		stringLit_line = sright;
+		stringLit_line = sleft;
+		stringLit_col = sright;
 		index = 1;
 	}
 	
 	public Literal(char c, int cleft, int cright) {
 		charLit = c;
-		charLit_col = cleft;
-		charLit_line = cright;
+		charLit_line = cleft;
+		charLit_col = cright;
 		index = 2;
 	}
 	
 	public Literal(boolean b, int bleft, int bright) {
 		boolLit = b;
-		boolLit_col = bleft;
-		boolLit_line = bright;
+		boolLit_line = bleft;
+		boolLit_col = bright;
 		index = 3;
 	}
 	

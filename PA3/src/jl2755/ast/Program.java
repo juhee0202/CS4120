@@ -1,5 +1,7 @@
 package jl2755.ast;
 
+import java.util.List;
+
 import edu.cornell.cs.cs4120.util.CodeWriterSExpPrinter;
 import jl2755.GlobalPrettyPrinter;
 import jl2755.visitor.Visitor;
@@ -38,6 +40,10 @@ public class Program extends XiFile {
 			tempPrinter.endList();
 		}
 		tempPrinter.endList();
+	}
+	
+	public List<FunctionDecl> getFunctionDecls() {
+		return functionDeclList.getFunctionDecls();
 	}
 	
 	@Override

@@ -21,11 +21,13 @@ public class TypeCheckVisitor implements Visitor {
 
 	/** HashMap of all declared variables */
 	private HashMap<String, VType> env;
+	private HashMap<String, VType> if_env;
 	private Stack<String> stack;	// "_": special marker
 	private VType tempType;
 	
 	public TypeCheckVisitor(Program p){
 		env = new HashMap<String, VType>();
+		if_env = new HashMap<String, VType>();
 		stack = new Stack<String>();
 		// TODO add length function to the env
 	}
@@ -435,79 +437,50 @@ public class TypeCheckVisitor implements Visitor {
 	}
 
 	/**
-	 * 1) check if the function identifier is in env
-	 * 2) if not, add the function decl to the env.
-	 * 3) typecheck the statement
-	 * 		- create a temporary function scope
-	 * 		- restore after typechecking function body
+	 * 1) update env
+	 * 2) typecheck the function body
+	 * 3) restore the original env
 	 * @param FunctionDecl fd
 	 */
 	@Override
 	public void visit(FunctionDecl fd) {
-		/* Check if the function identifier is not in env */
-		if (env.containsKey(fd.getIdentifier().toString())) {
-			String s = "Name " + fd.getIdentifier().toString() + " cannot be resolved";
-			SemanticErrorObject seo = new SemanticErrorObject(
-										fd.getIdentifier_col(),
-										fd.getIdentifier_line(),
-										s
-										);
-			Main.handleSemanticError(seo);
-		}
-		
-		/* Put function declaration in env */
-		FunType funType = new FunType(fd);
-		env.put(fd.getIdentifier().toString(), funType);
-		
 		/* Update the function scope env */
 		Map<String, Type> paramToType = fd.getParamsWithTypes();
-		// Stores parent scope's bindings in case the same id is used in FunDecl
-		Map<String, VType> tempMap = new HashMap<String, VType>();	
 		for (Entry<String, Type> entry : paramToType.entrySet()) {
 			String id = entry.getKey();
 			VType type = new VarType(entry.getValue());
 			if (env.containsKey(id)) {
-				tempMap.put(id, env.get(id));
-			}
-			else {
+				// TODO error handling
+				String s = id + " is already declared";
+			} else {
 				env.put(id, type);
 			}
 		}
 		
 		/* Typecheck function body */
 		fd.getBlockStmt().accept(this);
+		VType bodyReturnType = tempType;
 		
-		// TODO check if the return value is correct
-		List<Type> returnTypes = fd.getReturnTypes();
-		if (returnTypes.size() == 1) {
-			VType returnType = returnTypes.get(0);
-			if (!returnType.equals(tempType)) {
-				String s = "Expected " + returnType.toString() + ", but found " + tempType.toString();
-				SemanticErrorObject seo = new SemanticErrorObject(
-											fc.getIdentifier_col(),
-											fc.getIdentifier_line(),
-											s
-											);
-				Main.handleSemanticError(seo);
-			}
-		}
-		else {
-			TupleType returnType = new TupleType();
-			for (Type t : returnTypes) {
-				if ()
-				returnType.addToTypes(argType);
-			}
+		String id = fd.getIdentifier().toString();
+		FunType funType = (FunType) env.get(id);	// safe
+		VType returnTypes = funType.getReturnTypes();
+		
+		if (!returnTypes.equals(bodyReturnType)) {
+			String s = "Expected " + returnTypes.toString() 
+						+ ", but found " + bodyReturnType.toString();
+			ReturnStmt rs = fd.getBlockStmt().getReturnStmt();
+			// TODO Error handling
+//			SemanticErrorObject seo = new SemanticErrorObject(
+//										fc.getFunctionArg_col(),
+//										fc.getFunctionArg_line(),
+//										s
+//										);
+//			Main.handleSemanticError(seo);
 		}
 		
-		/* Restore the parent scope env */
+		/* Restore the parent scope */
 		for (Entry<String, Type> entry : paramToType.entrySet()) {
-			String id = entry.getKey();
-			env.remove(id);
-		}
-		for (Entry<String, VType> entry : tempMap.entrySet()) {
-			String id = entry.getKey();
-			VType type = entry.getValue();
-			env.put(id, type);
+			env.remove(entry.getKey());
 		}
 	}
 
@@ -606,12 +579,43 @@ public class TypeCheckVisitor implements Visitor {
 		
 	}
 	
+	/**
+	 * 1) Update if_env with function decls from interface files
+	 * 2) Update env with function decls from the file.
+	 * 
+	 * @param Program p
+	 */
 	@Override
 	public void visit(Program p) {
-		// Check use
+		/* Update if_env if interface files are used */
 		if (p.getIndex() == 1) {
-			// something
+			p.getUseId().accept(this);
 		}
+		
+		/* Add the function declarations to the environment */
+		List<FunctionDecl> functionDecls = p.getFunctionDecls();
+		for (FunctionDecl fd : functionDecls) {
+			String id = fd.getIdentifier().toString();
+			FunType funType = new FunType(fd);
+			// if the function was declared in interface files
+			// OK if same FunType
+			if (if_env.containsKey(id)) {
+				FunType ifFunType = (FunType) if_env.get(id); // safe
+				if (!funType.equals(ifFunType)) {
+					// TODO error handling
+					String s = "Multiple declaration found for function " + id;
+				}
+			}
+			// if the function was declared before
+			if (env.containsKey(id)) {
+				// TODO error handling
+				String s = "Multiple declaration found for function " + id;
+			}
+			env.put(id, funType);
+		}
+		
+		/* Merge if_env with env */
+		env.putAll(if_env);
 		
 		// Check functions
 		(p.getFunctionDeclList()).accept(this);
@@ -792,7 +796,7 @@ public class TypeCheckVisitor implements Visitor {
 	}
 
 	/**
-	 * Update env with function declarations from the interface files
+	 * Update if_env with function declarations from the interface files
 	 */
 	@Override
 	public void visit(UseId ui) {
@@ -803,14 +807,14 @@ public class TypeCheckVisitor implements Visitor {
 			Iterator<String> itFuncNames = tempMap.keySet().iterator();
 			while (itFuncNames.hasNext()){
 				String tempFuncNames = itFuncNames.next();
-				if (env.containsKey(tempFuncNames)){
-					VType existingType = env.get(tempFuncNames);
+				if (if_env.containsKey(tempFuncNames)) {
+					VType existingType = if_env.get(tempFuncNames);
 					if (!(existingType.equals(tempMap.get(tempFuncNames)))){
 						// TODO: ERROR HANDLINGGDIGNDIGNDINGDNIGDIGNDIGN
 					}
 				}
 				else{
-					env.put(tempFuncNames, tempMap.get(tempFuncNames));
+					if_env.put(tempFuncNames, tempMap.get(tempFuncNames));
 				}
 			}
 		}

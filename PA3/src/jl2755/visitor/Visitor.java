@@ -15,8 +15,6 @@ public interface Visitor {
 	public void visit(FunctionDeclList fdl);
 	public void visit(IfStmt is);
 	public void visit(Literal l);
-	public void visit(MixedArrayType mat);
-	public void visit(PrimitiveType pt);
 	public void visit(Program p);
 	public void visit(ReturnStmt rs);
 	public void visit(ReturnType rt);

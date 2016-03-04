@@ -32,6 +32,6 @@ public class PrimitiveType implements Type{
 	
 	@Override
 	public void accept(Visitor v){
-		v.visit(this);
+		return;
 	}
 }

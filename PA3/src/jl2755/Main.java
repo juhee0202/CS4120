@@ -238,7 +238,7 @@ public class Main {
 					System.out.println("Failed to write to output file");
 //					e.printStackTrace();
 				} catch (Exception e) {
-					System.out.println("Missing argument for option: --typecheck");
+//					e.printStackTrace();
 				}
 			}
 		}
@@ -291,10 +291,21 @@ public class Main {
 				index = filename.length();
 			}
 			
-			String rmExtension = filename.substring(0,index);
+			int firstSlash = filename.lastIndexOf('/');
+			String rmExtension;
+			if (index == -1) {
+				rmExtension = filename.substring(0,index);
+			}
+			else {
+				rmExtension = filename.substring(firstSlash+1, index);
+			}
+			
 			File file = new File(destPath + rmExtension + ".lexed");
-
+			
 			if (!file.exists()) {
+				if (file.getParentFile() != null) {
+					file.getParentFile().mkdirs();
+				}
 				file.createNewFile();
 			}
 
@@ -317,9 +328,21 @@ public class Main {
 				index = filename.length();
 			}
 			
-			String rmExtension = filename.substring(0,index);
-			File file = new File(rmExtension + ".parsed");
+			int firstSlash = filename.lastIndexOf('/');
+			String rmExtension;
+			if (index == -1) {
+				rmExtension = filename.substring(0,index);
+			}
+			else {
+				rmExtension = filename.substring(firstSlash+1, index);
+			}
+			
+			File file = new File(destPath + rmExtension + ".parsed");
+			
 			if (!file.exists()) {
+				if (file.getParentFile() != null) {
+					file.getParentFile().mkdirs();
+				}
 				file.createNewFile();
 			}
 			FileWriter fw = new FileWriter(file.getAbsoluteFile());
@@ -341,15 +364,25 @@ public class Main {
 	
 	public static void typecheck(String filename) throws IOException {
 		try {
-//			System.out.println(filename);
 			int index = filename.lastIndexOf('.');
 			if (index == -1) {
 				index = filename.length();
 			}
 			
-			String rmExtension = filename.substring(0,index);
-			File file = new File(rmExtension + ".typed");
+			int firstSlash = filename.lastIndexOf('/');
+			String rmExtension;
+			if (index == -1) {
+				rmExtension = filename.substring(0,index);
+			}
+			else {
+				rmExtension = filename.substring(firstSlash+1, index);
+			}
+			
+			File file = new File(destPath + rmExtension + ".typed");
 			if (!file.exists()) {
+				if (file.getParentFile() != null) {
+					file.getParentFile().mkdirs();
+				}
 				file.createNewFile();
 			}
 			FileWriter fw = new FileWriter(file.getAbsoluteFile());
@@ -368,6 +401,15 @@ public class Main {
 			bw.close();
 			System.out.println("[xic] Typechecking completed");
 			
+		} catch (RuntimeException e) {
+//			e.printStackTrace();
+			String msg = e.getMessage();
+			if (msg != null 
+					&& !msg.equals("[xic] Typecheck Failed.") 
+					&& !msg.equals("[xic] Parsing Failed.")
+					&& !msg.equals("[xic] Lexing Failed.")) {
+				System.out.println("Lexical error beginning at " + e.getMessage());
+			}
 		} catch (Exception e) {
 //			e.printStackTrace();
 		}

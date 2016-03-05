@@ -24,6 +24,7 @@ public class TypeCheckVisitor implements Visitor {
 	private HashMap<String, VType> if_env;
 	private Stack<String> stack;	// "_": special marker
 	private VType tempType;
+	private boolean negativeNumber; // needed for UnaryExpr, Literal
 	
 	public TypeCheckVisitor(Program p){
 		env = new HashMap<String, VType>();
@@ -230,7 +231,6 @@ public class TypeCheckVisitor implements Visitor {
 											);
 				Main.handleSemanticError(seo);
 			}
-			
 			as.getExpr().accept(this);
 			VType exprType = tempType;
 			
@@ -246,6 +246,7 @@ public class TypeCheckVisitor implements Visitor {
 											);
 				Main.handleSemanticError(seo);
 			}
+			
 		
 		//ex: arr[2] = 3;
 		} else if (index == 1) {
@@ -326,6 +327,7 @@ public class TypeCheckVisitor implements Visitor {
 		}
 	}
 
+	// TODO: catch NumberOutOfBound error from Literal typecheck in UnaryOp
 	@Override
 	public void visit(BinaryExpr be) {
 		Expr left = be.getLeftExpr();
@@ -334,7 +336,6 @@ public class TypeCheckVisitor implements Visitor {
 		// check that leftExpr is of VarType
 		left.accept(this);
 		if (!(tempType instanceof VarType)) {
-			// TODO: error
 			String s = "Expected a variable type, but found " + 
 					tempType.toString();
 			SemanticErrorObject seo = new SemanticErrorObject(
@@ -345,11 +346,9 @@ public class TypeCheckVisitor implements Visitor {
 			Main.handleSemanticError(seo);
 		}
 		VarType leftType = (VarType) tempType;
-		
 		// check that rightExpr is of VarType
 		right.accept(this);
 		if (!(tempType instanceof VarType)) {
-			// TODO: error
 			String s = "Expected a variable type, but found " + 
 					tempType.toString();
 			SemanticErrorObject seo = new SemanticErrorObject(
@@ -381,13 +380,10 @@ public class TypeCheckVisitor implements Visitor {
 		if (op.toString().equals("+")) {
 			if (leftType.isInt()) {
 				tempType = new VarType(false, 0);
-			}
-			else if (leftType.isArray()) {
+			} else if (leftType.isArray()) {
 				tempType = new VarType(leftType.getIsBool(), 
 						leftType.getNumBrackets());
-			}
-			else {
-				//TODO error handling
+			} else {
 				String s = "Invalid expression types for + operation.";
 				SemanticErrorObject seo = new SemanticErrorObject(
 						be.getLineNumber(),
@@ -415,6 +411,11 @@ public class TypeCheckVisitor implements Visitor {
 				Main.handleSemanticError(seo);
 			}
 		}
+		/* 
+		 * <, <=, >, >= operator
+		 * 		(i) only allow int types
+		 * 		entire BinaryExpr evaluates to bool
+		 */
 		else if (op.toString().equals("<") || 
 				 op.toString().equals("<=") ||
 				 op.toString().equals(">") ||
@@ -432,6 +433,11 @@ public class TypeCheckVisitor implements Visitor {
 			}
 			tempType = new VarType(true,0);
 		}
+		/*
+		 * &, | operator
+		 * 		(i) only allows bool types
+		 * 		entire BinaryExpr evaluates to bool
+		 */
 		else if (op.toString().equals("&") ||
 				 op.toString().equals("|")) {
 			
@@ -447,6 +453,11 @@ public class TypeCheckVisitor implements Visitor {
 			}
 			tempType = new VarType(true,0);
 		}
+		/*
+		 * -, *, *<<, /, %
+		 * 		(i) only allows ints
+		 * 		entire BinaryExpr evaluates to int
+		 */
 		else {
 			if (!leftType.equals(new VarType(false,0))) {
 				String s = "Expected int for " + op.toString() + " operation, " +
@@ -464,7 +475,7 @@ public class TypeCheckVisitor implements Visitor {
 	}
 		
 	@Override
-	public void visit(BlockStmt bs) {
+	public void visit(BlockStmt bs) {		
 		// Start of scope
 		stack.add("_");
 		
@@ -498,8 +509,7 @@ public class TypeCheckVisitor implements Visitor {
 		int index = fa.getIndex();
 		if (index == 0) {
 			fa.getExpr().accept(this);
-		}
-		else {
+		} else {
 			List<Expr> argExprs = fa.getArgExprs();
 			TupleType argType = new TupleType();
 			for (Expr e : argExprs) {
@@ -738,11 +748,25 @@ public class TypeCheckVisitor implements Visitor {
 	public void visit(Literal l) {
 		int index = l.getIndex();
 		switch (index) {
-			case 0: tempType = new VarType(false, 0); break;		// int
+			case 0: 												// int
+				String intLiteral = l.getIntLit();
+				try {
+					if (negativeNumber) {
+						Long.parseLong("-" + intLiteral);
+					} else {
+						Long.parseLong(intLiteral);
+					}
+				} catch (NumberFormatException e) {
+					String s = "Integer out of bounds";
+					SemanticErrorObject seo = new SemanticErrorObject(
+							l.getLineNumber(), l.getColumnNumber(), s);
+					Main.handleSemanticError(seo);
+				}
+				tempType = new VarType(false, 0); 
+				break;		
 			case 1: tempType = new VarType(false, 1); break;		// string
 			case 2: tempType = new VarType(false, 0); break;		// char
 			case 3: tempType = new VarType(true, 0);  break;		// boolean
-			default: // TODO error handling
 		}
 	}
 	
@@ -892,6 +916,14 @@ public class TypeCheckVisitor implements Visitor {
 					continue;
 				}
 				String id = vd.getIdentifier().toString();
+				if (env.containsKey(id)) {
+					String s = id + " is already declared";
+					SemanticErrorObject seo = new SemanticErrorObject(
+							vd.getIdentifier().getLineNumber(), 
+							vd.getIdentifier().getColumnNumber(), 
+							s);
+					Main.handleSemanticError(seo);	
+				}
 				VType type = new VarType(vd);
 				env.put(id, type);
 				stack.push(id);
@@ -923,6 +955,14 @@ public class TypeCheckVisitor implements Visitor {
 					continue;
 				}
 				String id = vd.getIdentifier().toString();
+				if (env.containsKey(id)) {
+					String s = id + " is already declared";
+					SemanticErrorObject seo = new SemanticErrorObject(
+							vd.getIdentifier().getLineNumber(), 
+							vd.getIdentifier().getColumnNumber(), 
+							s);
+					Main.handleSemanticError(seo);	
+				}
 				VType type = new VarType(vd);
 				env.put(id, type);
 				stack.push(id);
@@ -932,11 +972,16 @@ public class TypeCheckVisitor implements Visitor {
 
 	@Override
 	public void visit(UnaryExpr ue) {
-		// TODO Auto-generated method stub
+		if (ue.getExpr() instanceof Literal 
+			|| ue.getExpr() instanceof UnaryExpr) {
+			negativeNumber = (!negativeNumber);
+		} else {
+			negativeNumber = false;
+		}
+		
 		ue.getExpr().accept(this);
 		
 		if (!(tempType instanceof VarType)) {
-			//TODO error handling
 			String s = "Expected a variable type, but found " + 
 					tempType.toString();
 			SemanticErrorObject seo = new SemanticErrorObject(
@@ -952,7 +997,6 @@ public class TypeCheckVisitor implements Visitor {
 		UnaryOp op = ue.getUnaryOp();
 		if (op.toString().equals("!")) {
 			if (!exprType.isBool()) {
-				//TODO error handling
 				String s = "Expected a boolean, but found " + 
 						exprType.toString();
 				SemanticErrorObject seo = new SemanticErrorObject(
@@ -966,7 +1010,6 @@ public class TypeCheckVisitor implements Visitor {
 		}
 		else if (op.toString().equals("-")) {
 			if (!exprType.isInt()) {
-				//TODO error handling
 				String s = "Expected an int, but found " + 
 						exprType.toString();
 				SemanticErrorObject seo = new SemanticErrorObject(
@@ -977,6 +1020,10 @@ public class TypeCheckVisitor implements Visitor {
 				Main.handleSemanticError(seo);
 			}
 			tempType = new VarType(false, 0);
+		}
+		
+		if (ue.getExpr() instanceof Literal) {
+			negativeNumber = false;
 		}
 	}
 

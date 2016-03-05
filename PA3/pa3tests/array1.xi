@@ -1,3 +1,6 @@
+// tests empty arry 
+
 foo() {
-  a:int[][] = {}
+  a:int[][] = {{}};
+  b:int[][] = {};
 }

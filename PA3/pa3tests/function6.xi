@@ -8,3 +8,4 @@ f1(x:int, y:int): int {
 f2(): int, int, int {
   return 1,2,3;
 }
+

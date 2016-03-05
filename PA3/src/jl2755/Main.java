@@ -369,9 +369,14 @@ public class Main {
 			System.out.println("[xic] Typechecking completed");
 			
 		} catch (RuntimeException e) {
-			System.out.println("Lexical error beginning at " + e.getMessage());
+			String msg = e.getMessage();
+			if (!msg.equals("[xic] Typecheck Failed.") 
+					&& !msg.equals("[xic] Parsing Failed.")
+					&& !msg.equals("[xic] Lexing Failed.")) {
+				System.out.println("Lexical error beginning at " + e.getMessage());
+			}
 		} catch (Exception e) {
-			e.printStackTrace();
+//			e.printStackTrace();
 		}
 	}
 

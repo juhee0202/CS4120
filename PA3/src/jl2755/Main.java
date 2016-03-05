@@ -178,7 +178,8 @@ public class Main {
 				} catch (FileNotFoundException e) {
 					System.out.println(srcPath + files[i] + " is not found.");
 				} catch (IOException e) {
-					e.printStackTrace();
+					System.out.println("Failed to write to output file");
+//					e.printStackTrace();
 				} catch (Exception e) {
 					System.out.println("Missing argument for option: --lex");
 				}
@@ -206,7 +207,8 @@ public class Main {
 				} catch (FileNotFoundException e) {
 					System.out.println(srcPath + files[i] + " is not found.");
 				} catch (IOException e) {
-					e.printStackTrace();
+					System.out.println("Failed to write to output file");
+//					e.printStackTrace();
 				} catch (Exception e) {
 					System.out.println("Missing argument for option: --lex");
 				}
@@ -233,7 +235,8 @@ public class Main {
 				} catch (FileNotFoundException e) {
 					System.out.println(srcPath + files[i] + " is not found.");
 				} catch (IOException e) {
-					e.printStackTrace();
+					System.out.println("Failed to write to output file");
+//					e.printStackTrace();
 				} catch (Exception e) {
 					System.out.println("Missing argument for option: --typecheck");
 				}
@@ -338,7 +341,7 @@ public class Main {
 	
 	public static void typecheck(String filename) throws IOException {
 		try {
-			System.out.println(filename);
+//			System.out.println(filename);
 			int index = filename.lastIndexOf('.');
 			if (index == -1) {
 				index = filename.length();
@@ -366,7 +369,7 @@ public class Main {
 			System.out.println("[xic] Typechecking completed");
 			
 		} catch (Exception e) {
-			e.printStackTrace();
+//			e.printStackTrace();
 		}
 	}
 
@@ -391,7 +394,8 @@ public class Main {
 			bw.write(seo.toString());
 			bw.close();
 		} catch (IOException e) {
-			e.printStackTrace();
+			System.out.println("Failed to write to output file");
+//			e.printStackTrace();
 		}
 		System.out.println("Semantic error beginning at " + 
 				seo.getLineNumber() + ":" + seo.getColNumber() + ": "
@@ -413,7 +417,8 @@ public class Main {
 					bw.write("1:1 error: Interface file is invalid");
 					bw.close();
 				} catch (IOException e) {
-					e.printStackTrace();
+					System.out.println("Failed to write to output file");
+//					e.printStackTrace();
 				}
 				throw new RuntimeException("[xic] Typecheck Failed.");
 			}
@@ -432,7 +437,7 @@ public class Main {
 			}
 			
 		} catch (Exception e) {
-			e.printStackTrace();
+//			e.printStackTrace();
 		}
 		return tempMap;
 	}

@@ -74,7 +74,8 @@ public class VarType implements VType {
 	
 	public VarType(VarType idType, IndexedBrackets indexedBrackets, FunctionCall fc) {
 		if (idType.getNumBrackets() < indexedBrackets.getNumBrackets()){
-			String s = "Array " + fc.toString() + " does not have that many dimensions.";
+			String s = "Return type of function " + fc.getIdentifier().toString() + 
+					" does not have that many dimensions.";
 			SemanticErrorObject seo = new SemanticErrorObject(
 					fc.getLineNumber(), 
 					fc.getColumnNumber(),

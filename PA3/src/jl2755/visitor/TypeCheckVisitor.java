@@ -231,9 +231,7 @@ public class TypeCheckVisitor implements Visitor {
 											);
 				Main.handleSemanticError(seo);
 			}
-			System.out.println("HERE");
 			as.getExpr().accept(this);
-			System.out.println("THERE");
 			VType exprType = tempType;
 			
 			// Check types
@@ -338,7 +336,6 @@ public class TypeCheckVisitor implements Visitor {
 		// check that leftExpr is of VarType
 		left.accept(this);
 		if (!(tempType instanceof VarType)) {
-			// TODO: error
 			String s = "Expected a variable type, but found " + 
 					tempType.toString();
 			SemanticErrorObject seo = new SemanticErrorObject(
@@ -349,11 +346,9 @@ public class TypeCheckVisitor implements Visitor {
 			Main.handleSemanticError(seo);
 		}
 		VarType leftType = (VarType) tempType;
-		System.out.println("lefttype: " + leftType.toString());
 		// check that rightExpr is of VarType
 		right.accept(this);
 		if (!(tempType instanceof VarType)) {
-			// TODO: error
 			String s = "Expected a variable type, but found " + 
 					tempType.toString();
 			SemanticErrorObject seo = new SemanticErrorObject(
@@ -364,7 +359,6 @@ public class TypeCheckVisitor implements Visitor {
 			Main.handleSemanticError(seo);
 		}
 		VarType rightType = (VarType) tempType;
-		System.out.println("righttype: " + rightType.toString());
 		
 		BinaryOp op = be.getBinaryOp();
 		
@@ -386,13 +380,10 @@ public class TypeCheckVisitor implements Visitor {
 		if (op.toString().equals("+")) {
 			if (leftType.isInt()) {
 				tempType = new VarType(false, 0);
-			}
-			else if (leftType.isArray()) {
+			} else if (leftType.isArray()) {
 				tempType = new VarType(leftType.getIsBool(), 
 						leftType.getNumBrackets());
-			}
-			else {
-				//TODO error handling
+			} else {
 				String s = "Invalid expression types for + operation.";
 				SemanticErrorObject seo = new SemanticErrorObject(
 						be.getLineNumber(),
@@ -420,6 +411,11 @@ public class TypeCheckVisitor implements Visitor {
 				Main.handleSemanticError(seo);
 			}
 		}
+		/* 
+		 * <, <=, >, >= operator
+		 * 		(i) only allow int types
+		 * 		entire BinaryExpr evaluates to bool
+		 */
 		else if (op.toString().equals("<") || 
 				 op.toString().equals("<=") ||
 				 op.toString().equals(">") ||
@@ -437,6 +433,11 @@ public class TypeCheckVisitor implements Visitor {
 			}
 			tempType = new VarType(true,0);
 		}
+		/*
+		 * &, | operator
+		 * 		(i) only allows bool types
+		 * 		entire BinaryExpr evaluates to bool
+		 */
 		else if (op.toString().equals("&") ||
 				 op.toString().equals("|")) {
 			
@@ -452,6 +453,11 @@ public class TypeCheckVisitor implements Visitor {
 			}
 			tempType = new VarType(true,0);
 		}
+		/*
+		 * -, *, *<<, /, %
+		 * 		(i) only allows ints
+		 * 		entire BinaryExpr evaluates to int
+		 */
 		else {
 			if (!leftType.equals(new VarType(false,0))) {
 				String s = "Expected int for " + op.toString() + " operation, " +
@@ -503,8 +509,7 @@ public class TypeCheckVisitor implements Visitor {
 		int index = fa.getIndex();
 		if (index == 0) {
 			fa.getExpr().accept(this);
-		}
-		else {
+		} else {
 			List<Expr> argExprs = fa.getArgExprs();
 			TupleType argType = new TupleType();
 			for (Expr e : argExprs) {

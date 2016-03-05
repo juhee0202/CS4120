@@ -28,11 +28,6 @@ public class TypeCheckVisitor implements Visitor {
 	
 	public TypeCheckVisitor(Program p){
 		env = new HashMap<String, VType>();
-		// add print(s) to the environment 
-		FunType printType = new FunType();
-		printType.setParamTypes(new VarType(false, 1));
-		printType.setReturnTypes(new UnitType());
-		env.put("print", printType);
 		if_env = new HashMap<String, VType>();
 		stack = new Stack<String>();
 	}
@@ -209,7 +204,6 @@ public class TypeCheckVisitor implements Visitor {
 			// Identifier visit checks if its in env
 			String id = as.getIdentifier().toString();
 			if (!env.containsKey(id)) {
-				// TODO error handling
 				String s = "Name " + id + " cannot be resolved";
 				SemanticErrorObject seo = new SemanticErrorObject(
 						as.getIdentifier().getLineNumber(), 
@@ -222,7 +216,6 @@ public class TypeCheckVisitor implements Visitor {
 			
 			//check that identifier is a var type
 			if (!(idType instanceof VarType)) {
-				// TODO error handling
 				String s = "Expected variable type, but found function type.";
 				SemanticErrorObject seo = new SemanticErrorObject(
 											as.getIdentifier().getLineNumber(), 
@@ -236,7 +229,6 @@ public class TypeCheckVisitor implements Visitor {
 			
 			// Check types
 			if (!idType.equals(exprType)) {
-				// TODO: error handling
 				String s = "Expected " + idType.toString() 
 							+ ", but found " + exprType.toString();
 				SemanticErrorObject seo = new SemanticErrorObject(
@@ -254,7 +246,6 @@ public class TypeCheckVisitor implements Visitor {
 			// check if identifier is in env
 			String id = as.getIdentifier().toString();
 			if (!env.containsKey(id)) {
-				// TODO error handling
 				String s = "Name " + id + " cannot be resolved";
 				SemanticErrorObject seo = new SemanticErrorObject(
 											as.getIdentifier().getLineNumber(), 
@@ -272,9 +263,7 @@ public class TypeCheckVisitor implements Visitor {
 			as.getExpr().accept(this);
 			VType exprType = tempType;
 			
-			if (!elementType.equals(exprType)) {
-				// TODO: error handling
-				
+			if (!elementType.equals(exprType)) {				
 				String s = "Expected " + elementType.toString() 
 				+ ", but found " + exprType.toString();
 				SemanticErrorObject seo = new SemanticErrorObject(
@@ -290,7 +279,6 @@ public class TypeCheckVisitor implements Visitor {
 			as.getFunctionCall().accept(this);
 			VType functionCallType = tempType;
 			if (!(functionCallType instanceof VarType)) {
-				//TODO error handling
 				String s;
 				if (functionCallType instanceof TupleType) {
 					s = "Expected variable type, but found tuple type";
@@ -314,7 +302,6 @@ public class TypeCheckVisitor implements Visitor {
 			VType exprType = tempType;
 			
 			if (!elementType.equals(exprType)) {
-				// TODO error handling
 				String s = "Expected " + elementType.toString() 
 				+ ", but found " + exprType.toString();
 				SemanticErrorObject seo = new SemanticErrorObject(
@@ -327,7 +314,6 @@ public class TypeCheckVisitor implements Visitor {
 		}
 	}
 
-	// TODO: catch NumberOutOfBound error from Literal typecheck in UnaryOp
 	@Override
 	public void visit(BinaryExpr be) {
 		Expr left = be.getLeftExpr();
@@ -401,7 +387,6 @@ public class TypeCheckVisitor implements Visitor {
 			if (leftType.isBool() ||leftType.isInt() || leftType.isArray()) {	
 				tempType = new VarType(true, 0);
 			} else {
-				// TODO: error handling
 				String s = "Invalid types for " + op.toString() + " operation.";
 				SemanticErrorObject seo = new SemanticErrorObject(
 						be.getLineNumber(),
@@ -610,7 +595,6 @@ public class TypeCheckVisitor implements Visitor {
 			String id = entry.getKey();
 			VType type = new VarType(entry.getValue());
 			if (env.containsKey(id)) {
-				// TODO error handling
 				String s = id + " is already declared";
 				SemanticErrorObject seo = new SemanticErrorObject(
 						fd.getIdentifier_line(), fd.getIdentifier_col(), s);
@@ -690,7 +674,6 @@ public class TypeCheckVisitor implements Visitor {
 		
 		// Check type of conditional
 		if (!exprType.equals(bType)) {
-			// TODO: error handling
 			String s = "Expected bool, but found " + exprType.toString();
 			SemanticErrorObject seo = new SemanticErrorObject(
 										is.getExpr().getLineNumber(), 
@@ -891,7 +874,6 @@ public class TypeCheckVisitor implements Visitor {
 			}
 		}
 		/* Case: _, tdl = f() */
-		// TODO need refactoring
 		if (index == 1) {
 			// typecheck
 			if (!(returnType instanceof TupleType)) {
@@ -1042,7 +1024,6 @@ public class TypeCheckVisitor implements Visitor {
 				if (if_env.containsKey(tempFuncNames)) {
 					VType existingType = if_env.get(tempFuncNames);
 					if (!(existingType.equals(tempMap.get(tempFuncNames)))){
-						// TODO: ERROR HANDLINGGDIGNDIGNDINGDNIGDIGNDIGN
 						String s = tempFuncNames + "is already declared";
 						SemanticErrorObject seo = new SemanticErrorObject(
 								ui.getIdentifier().getLineNumber(), 
@@ -1065,7 +1046,6 @@ public class TypeCheckVisitor implements Visitor {
 	public void visit(VarDecl vd) {
 		// Check if predeclared
 		if (env.containsKey(vd.getIdentifier().toString())){
-			// TODO: ERROR HaNdLiNG
 			String s = vd.getIdentifier().toString() + " is already declared";
 			SemanticErrorObject seo = new SemanticErrorObject(
 										vd.getIdentifier().getLineNumber(), 
@@ -1090,7 +1070,6 @@ public class TypeCheckVisitor implements Visitor {
 		vi.getExpr().accept(this);
 		VType tempRightType = tempType;
 		if (!(tempLeftType.equals(tempRightType))){
-			// TODO: ERROR HANDLING
 			String s = "Expected " + tempLeftType.toString() 
 						+ ", but found " + tempRightType.toString();
 			SemanticErrorObject seo = new SemanticErrorObject(
@@ -1116,7 +1095,6 @@ public class TypeCheckVisitor implements Visitor {
 		
 		// Check type of conditional
 		if (!exprType.equals(bType)) {
-			// TODO: error handling
 			String s = "Expected bool, but found " + exprType.toString();
 			SemanticErrorObject seo = new SemanticErrorObject(
 										ws.getExpr().getLineNumber(), 

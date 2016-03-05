@@ -387,7 +387,6 @@ public class Main {
 	}
 	
 	public static void handleSemanticError(SemanticErrorObject seo) {
-		// TODO: implement
 		try {
 			bw.write(seo.toString());
 			bw.close();
@@ -407,15 +406,21 @@ public class Main {
 			parser p = new parser(new Scanner(new FileReader(absPath)));
 			Symbol s = p.parse();
 			if (s.value instanceof Program) {
-				String e = "Interface file is invalid";
-				SemanticErrorObject seo = new SemanticErrorObject(1,1,e);
-				Main.handleSemanticError(seo);
+				String errorMsg = "(" + interfaceName + ".ixi"+ ")" + 
+						" Syntax error beginning at 1:1: Interface file is invalid";
+				System.out.println(errorMsg);
+				try {
+					bw.write("1:1 error: Interface file is invalid");
+					bw.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+				throw new RuntimeException("[xic] Typecheck Failed.");
 			}
 			Interface result = (Interface) s.value;
 			List<InterfaceFunc> tempFuncs = result.getInterfaceFuncs();
 			for (int i = 0; i < tempFuncs.size(); i++){
 				if (tempMap.containsKey(tempFuncs.get(i).getIdentifier().toString())){
-					// TODO: ERROR AHNDLING ASSUMING METHOD WAS ALREADY DECLARED
 					Identifier id = tempFuncs.get(i).getIdentifier();
 					String e = "Duplicate function declaration found";
 					SemanticErrorObject seo = new SemanticErrorObject(

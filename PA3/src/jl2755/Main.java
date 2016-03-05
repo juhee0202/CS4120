@@ -15,6 +15,7 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
 import java_cup.runtime.Symbol;
+import jl2755.ast.Identifier;
 import jl2755.ast.Interface;
 import jl2755.ast.InterfaceFunc;
 import jl2755.ast.Program;
@@ -404,14 +405,22 @@ public class Main {
 		Map<String, VType> tempMap = new HashMap<String, VType>();
 		try {
 			parser p = new parser(new Scanner(new FileReader(absPath)));
-//			p.setScanner(new Scanner(new FileReader(filename)));
 			Symbol s = p.parse();
+			if (s.value instanceof Program) {
+				String e = "Interface file is invalid";
+				SemanticErrorObject seo = new SemanticErrorObject(1,1,e);
+				Main.handleSemanticError(seo);
+			}
 			Interface result = (Interface) s.value;
 			List<InterfaceFunc> tempFuncs = result.getInterfaceFuncs();
 			for (int i = 0; i < tempFuncs.size(); i++){
-				// TODO: CHECK IF INTERFACE CAN HAVE 2 METHODS WITH SAME SIGNATURE
 				if (tempMap.containsKey(tempFuncs.get(i).getIdentifier().toString())){
 					// TODO: ERROR AHNDLING ASSUMING METHOD WAS ALREADY DECLARED
+					Identifier id = tempFuncs.get(i).getIdentifier();
+					String e = "Duplicate function declaration found";
+					SemanticErrorObject seo = new SemanticErrorObject(
+							id.getLineNumber(),id.getColumnNumber(),e);
+					Main.handleSemanticError(seo);
 				}
 				tempMap.put(tempFuncs.get(i).getIdentifier().toString(),
 						new FunType(tempFuncs.get(i)));

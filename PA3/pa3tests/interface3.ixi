@@ -1,5 +1,5 @@
 foo()
 
-foo(int x)
+foo(x:int)
 
-foo(int x):int y
+foo(x:int): int

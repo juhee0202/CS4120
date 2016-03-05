@@ -1,7 +1,7 @@
 // Tests while stmt conditional
 
 ws(){
-	while () {
-		x:int = 5
-	}
+    while (5) {
+        x:int = 5
+    }
 }

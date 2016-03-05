@@ -1,4 +1,0 @@
-main(args: int[][]) {
-c3po: int = 'x' + 47;
-c3po: int = c3po // No Han Solo
-}

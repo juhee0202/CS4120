@@ -1,5 +1,0 @@
-foo()
-
-foo1(x: int)
-
-foo2(x: int): int

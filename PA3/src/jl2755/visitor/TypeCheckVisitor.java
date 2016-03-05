@@ -892,7 +892,7 @@ public class TypeCheckVisitor implements Visitor {
 		}
 		/* Case: _, tdl = f() */
 		// TODO need refactoring
-		if (index == 1) {
+		else if (index == 1) {
 			// typecheck
 			if (!(returnType instanceof TupleType)) {
 				String s = "Mismatched number of values";

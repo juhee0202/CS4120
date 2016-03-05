@@ -368,8 +368,10 @@ public class Main {
 			bw.close();
 			System.out.println("[xic] Typechecking completed");
 			
+		} catch (RuntimeException e) {
+			System.out.println("Lexical error beginning at " + e.getMessage());
 		} catch (Exception e) {
-//			e.printStackTrace();
+			e.printStackTrace();
 		}
 	}
 

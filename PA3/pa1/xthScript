@@ -6,10 +6,9 @@
 #   ScriptFile      ::= Commands+
 #   Command         ::= build
 #                     | CompilerTest
-#   CompilerTest    ::= TestKind (\(TestName\))? ([TestPath])? ("CmdLineArgs")?
-#                           { (FileTest;)* }
-#   TestKind        ::= xic
-#   TestName        ::= LitString
+#   CompilerTest    ::= TestKind ([TestPath])? ("CmdLineArgs")?
+#                           { FileTest (; FileTest)* }
+#   TestKind        ::= test
 #   FileTest        ::= Filenames Description? FailureSet?
 #   Filenames       ::= Filename+
 #   Description     ::= LitString
@@ -17,8 +16,8 @@
 #   Failure         ::= \( ErrorKind \)
 #                     | \( ErrorKind, LitString \)
 #
-#   TestPath        :   the path to the test files, enclosed in quotes,
-#                       relative to the path given in xth's -testpath flag.
+#   TestPath        :   the path to the test files; if ignored, defaults to the
+#                       directory in which xth is run.
 #   CmdLineArgs     :   command-line arguments for xic
 #   Filename        :   the name of a file, interpreted from TestPath.
 #   LitString       :   a literal string, enclosed in quotes.
@@ -31,11 +30,11 @@
 # build compiler first
 build
 
-xic ("Test --help") "--help" {
-    ;
+test "--help" {
+    ex1.xi;
 }
 
-xic ("Test --lex") "--lex" {
+test "--lex" {
     ex1.xi;
     ex2.xi (Lexical, "empty character literal");
     spec1.xi;

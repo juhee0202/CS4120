@@ -1,0 +1,5 @@
+foo()
+
+foo(int x)
+
+foo(int x):int y

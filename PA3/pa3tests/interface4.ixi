@@ -1,0 +1,5 @@
+foo()
+
+foo1(int x)
+
+foo2(int x):int

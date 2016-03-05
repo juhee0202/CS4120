@@ -1352,7 +1352,7 @@ class CUP$parser$actions {
                 Literal RESULT = null;
                 int illeft = CUP$parser$stack.peek().left;
                 int ilright = CUP$parser$stack.peek().right;
-                Long il = CUP$parser$stack.peek().<Long> value();
+                String il = CUP$parser$stack.peek().<String> value();
                  RESULT = new Literal(il, 0, illeft, ilright); 
                 CUP$parser$result = parser.getSymbolFactory().newSymbol("literal",21, CUP$parser$stack.peek(), CUP$parser$stack.peek(), RESULT);
             }
@@ -1364,7 +1364,7 @@ class CUP$parser$actions {
                 Literal RESULT = null;
                 int clleft = CUP$parser$stack.peek().left;
                 int clright = CUP$parser$stack.peek().right;
-                Character cl = CUP$parser$stack.peek().<Character> value();
+                String cl = CUP$parser$stack.peek().<String> value();
                  RESULT = new Literal(cl, 2, clleft, clright); 
                 CUP$parser$result = parser.getSymbolFactory().newSymbol("literal",21, CUP$parser$stack.peek(), CUP$parser$stack.peek(), RESULT);
             }

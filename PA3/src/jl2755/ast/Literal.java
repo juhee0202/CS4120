@@ -27,9 +27,9 @@ public class Literal implements Constant {
 		line = left;
 		col = right;
 		if (index == 0) {
-			stringLit = s;
-		} else if (index == 1) {
 			intLit = s;
+		} else if (index == 1) {
+			stringLit = s;
 		} else {
 			charLit = s;
 		}

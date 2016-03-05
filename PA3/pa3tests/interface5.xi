@@ -7,10 +7,10 @@ foo() {
 	return
 }
 
-foo1(int x) {
+foo1(x: int) {
 	return
 }
 
-foo2(int x): int {
+foo2(x: int): int {
 	return x
 }

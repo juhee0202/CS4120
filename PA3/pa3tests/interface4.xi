@@ -2,6 +2,6 @@
 
 use interface4
 
-foo():int{
+foo(): int {
 	return 6;
 }

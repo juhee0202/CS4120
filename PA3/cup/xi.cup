@@ -209,11 +209,11 @@ interface_list ::= interface_func:ifd interface_list:il             {: RESULT = 
                    interface_func:ifd                               {: RESULT = new InterfaceList(ifd); :}
                    ;
 
-literal ::= INTEGER_LITERAL:il                                      {: RESULT = new Literal(il, illeft, ilright); :}
+literal ::= INTEGER_LITERAL:il                                      {: RESULT = new Literal(il, 0, illeft, ilright); :}
             |
-            CHARACTER_LITERAL:cl                                    {: RESULT = new Literal(cl, clleft, clright); :}
+            CHARACTER_LITERAL:cl                                    {: RESULT = new Literal(cl, 2, clleft, clright); :}
             |
-            STRING_LITERAL:sl                                       {: RESULT = new Literal(sl, slleft, slright); :}
+            STRING_LITERAL:sl                                       {: RESULT = new Literal(sl, 1, slleft, slright); :}
             |
             TRUE:t                                                  {: RESULT = new Literal(true, tleft, tright); :}
             | 

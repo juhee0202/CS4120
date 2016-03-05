@@ -238,7 +238,7 @@ public class Main {
 					System.out.println("Failed to write to output file");
 //					e.printStackTrace();
 				} catch (Exception e) {
-					System.out.println("Missing argument for option: --typecheck");
+//					e.printStackTrace();
 				}
 			}
 		}
@@ -303,7 +303,9 @@ public class Main {
 			File file = new File(destPath + rmExtension + ".lexed");
 			
 			if (!file.exists()) {
-				file.getParentFile().mkdirs();
+				if (file.getParentFile() != null) {
+					file.getParentFile().mkdirs();
+				}
 				file.createNewFile();
 			}
 
@@ -313,7 +315,7 @@ public class Main {
 			bw.close();
 			System.out.println("[xic] Lexing completed");
 		} catch (IOException e) {	
-			e.printStackTrace();
+//			e.printStackTrace();
 		}
 	}
 	
@@ -338,7 +340,9 @@ public class Main {
 			File file = new File(destPath + rmExtension + ".parsed");
 			
 			if (!file.exists()) {
-				file.getParentFile().mkdirs();
+				if (file.getParentFile() != null) {
+					file.getParentFile().mkdirs();
+				}
 				file.createNewFile();
 			}
 			FileWriter fw = new FileWriter(file.getAbsoluteFile());
@@ -354,7 +358,7 @@ public class Main {
 			bw.close();
 			System.out.println("[xic] Parsing completed");
 		} catch (Exception e) {
-			e.printStackTrace();
+//			e.printStackTrace();
 		}
 	}
 	
@@ -376,7 +380,9 @@ public class Main {
 			
 			File file = new File(destPath + rmExtension + ".typed");
 			if (!file.exists()) {
-				file.getParentFile().mkdirs();
+				if (file.getParentFile() != null) {
+					file.getParentFile().mkdirs();
+				}
 				file.createNewFile();
 			}
 			FileWriter fw = new FileWriter(file.getAbsoluteFile());
@@ -396,8 +402,10 @@ public class Main {
 			System.out.println("[xic] Typechecking completed");
 			
 		} catch (RuntimeException e) {
+//			e.printStackTrace();
 			String msg = e.getMessage();
-			if (!msg.equals("[xic] Typecheck Failed.") 
+			if (msg != null 
+					&& !msg.equals("[xic] Typecheck Failed.") 
 					&& !msg.equals("[xic] Parsing Failed.")
 					&& !msg.equals("[xic] Lexing Failed.")) {
 				System.out.println("Lexical error beginning at " + e.getMessage());

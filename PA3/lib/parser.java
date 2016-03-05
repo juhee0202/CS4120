@@ -1352,8 +1352,8 @@ class CUP$parser$actions {
                 Literal RESULT = null;
                 int illeft = CUP$parser$stack.peek().left;
                 int ilright = CUP$parser$stack.peek().right;
-                Long il = CUP$parser$stack.peek().<Long> value();
-                 RESULT = new Literal(il, illeft, ilright); 
+                String il = CUP$parser$stack.peek().<String> value();
+                 RESULT = new Literal(il, 0, illeft, ilright); 
                 CUP$parser$result = parser.getSymbolFactory().newSymbol("literal",21, CUP$parser$stack.peek(), CUP$parser$stack.peek(), RESULT);
             }
             return CUP$parser$result;
@@ -1364,8 +1364,8 @@ class CUP$parser$actions {
                 Literal RESULT = null;
                 int clleft = CUP$parser$stack.peek().left;
                 int clright = CUP$parser$stack.peek().right;
-                Character cl = CUP$parser$stack.peek().<Character> value();
-                 RESULT = new Literal(cl, clleft, clright); 
+                String cl = CUP$parser$stack.peek().<String> value();
+                 RESULT = new Literal(cl, 2, clleft, clright); 
                 CUP$parser$result = parser.getSymbolFactory().newSymbol("literal",21, CUP$parser$stack.peek(), CUP$parser$stack.peek(), RESULT);
             }
             return CUP$parser$result;
@@ -1377,7 +1377,7 @@ class CUP$parser$actions {
                 int slleft = CUP$parser$stack.peek().left;
                 int slright = CUP$parser$stack.peek().right;
                 String sl = CUP$parser$stack.peek().<String> value();
-                 RESULT = new Literal(sl, slleft, slright); 
+                 RESULT = new Literal(sl, 1, slleft, slright); 
                 CUP$parser$result = parser.getSymbolFactory().newSymbol("literal",21, CUP$parser$stack.peek(), CUP$parser$stack.peek(), RESULT);
             }
             return CUP$parser$result;

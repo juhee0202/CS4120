@@ -291,10 +291,19 @@ public class Main {
 				index = filename.length();
 			}
 			
-			String rmExtension = filename.substring(0,index);
+			int firstSlash = filename.lastIndexOf('/');
+			String rmExtension;
+			if (index == -1) {
+				rmExtension = filename.substring(0,index);
+			}
+			else {
+				rmExtension = filename.substring(firstSlash+1, index);
+			}
+			
 			File file = new File(destPath + rmExtension + ".lexed");
-
+			
 			if (!file.exists()) {
+				file.getParentFile().mkdirs();
 				file.createNewFile();
 			}
 
@@ -304,7 +313,7 @@ public class Main {
 			bw.close();
 			System.out.println("[xic] Lexing completed");
 		} catch (IOException e) {	
-//			e.printStackTrace();
+			e.printStackTrace();
 		}
 	}
 	
@@ -317,9 +326,19 @@ public class Main {
 				index = filename.length();
 			}
 			
-			String rmExtension = filename.substring(0,index);
-			File file = new File(rmExtension + ".parsed");
+			int firstSlash = filename.lastIndexOf('/');
+			String rmExtension;
+			if (index == -1) {
+				rmExtension = filename.substring(0,index);
+			}
+			else {
+				rmExtension = filename.substring(firstSlash+1, index);
+			}
+			
+			File file = new File(destPath + rmExtension + ".parsed");
+			
 			if (!file.exists()) {
+				file.getParentFile().mkdirs();
 				file.createNewFile();
 			}
 			FileWriter fw = new FileWriter(file.getAbsoluteFile());
@@ -335,21 +354,29 @@ public class Main {
 			bw.close();
 			System.out.println("[xic] Parsing completed");
 		} catch (Exception e) {
-//			e.printStackTrace();
+			e.printStackTrace();
 		}
 	}
 	
 	public static void typecheck(String filename) throws IOException {
 		try {
-//			System.out.println(filename);
 			int index = filename.lastIndexOf('.');
 			if (index == -1) {
 				index = filename.length();
 			}
 			
-			String rmExtension = filename.substring(0,index);
-			File file = new File(rmExtension + ".typed");
+			int firstSlash = filename.lastIndexOf('/');
+			String rmExtension;
+			if (index == -1) {
+				rmExtension = filename.substring(0,index);
+			}
+			else {
+				rmExtension = filename.substring(firstSlash+1, index);
+			}
+			
+			File file = new File(destPath + rmExtension + ".typed");
 			if (!file.exists()) {
+				file.getParentFile().mkdirs();
 				file.createNewFile();
 			}
 			FileWriter fw = new FileWriter(file.getAbsoluteFile());

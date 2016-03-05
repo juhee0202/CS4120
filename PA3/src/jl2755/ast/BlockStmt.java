@@ -42,10 +42,10 @@ public class BlockStmt implements NakedStmt {
 	public void prettyPrintNode() {
 		CodeWriterSExpPrinter tempPrinter = GlobalPrettyPrinter.getInstance();
 		tempPrinter.startList();
-		if (index > 0) {
+		if (index != 0 && index != 3) {
 			stmtList.prettyPrintNode();
 		}
-		if (index == 2) {
+		if (index >= 2) {
 			returnStmt.prettyPrintNode();
 		}
 		tempPrinter.endList();

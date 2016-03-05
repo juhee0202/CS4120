@@ -175,7 +175,7 @@ public class Main {
 				try { 
 					lex(srcPath + files[i]);
 				} catch (FileNotFoundException e) {
-					System.out.println(srcPath + files[1] + " is not found.");
+					System.out.println(srcPath + files[i] + " is not found.");
 				} catch (IOException e) {
 					e.printStackTrace();
 				} catch (Exception e) {
@@ -203,7 +203,7 @@ public class Main {
 				try { 
 					parse(srcPath + files[i]);
 				} catch (FileNotFoundException e) {
-					System.out.println(srcPath + files[1] + " is not found.");
+					System.out.println(srcPath + files[i] + " is not found.");
 				} catch (IOException e) {
 					e.printStackTrace();
 				} catch (Exception e) {
@@ -230,7 +230,7 @@ public class Main {
 				try { 
 					typecheck(srcPath + files[i]);
 				} catch (FileNotFoundException e) {
-					System.out.println(srcPath + files[1] + " is not found.");
+					System.out.println(srcPath + files[i] + " is not found.");
 				} catch (IOException e) {
 					e.printStackTrace();
 				} catch (Exception e) {

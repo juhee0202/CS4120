@@ -167,7 +167,12 @@ public class TypeCheckVisitor implements Visitor {
 				Main.handleSemanticError(seo);
 			}
 		}
-		tempType = new VarType(tempTypesOfExprs.get(0).getIsBool(), tempTypesOfExprs.get(0).getNumBrackets());
+		if (tempTypesOfExprs.size() == 0) {
+			tempType = new VarType(false,0);
+		}
+		else {
+			tempType = new VarType(tempTypesOfExprs.get(0).getIsBool(), tempTypesOfExprs.get(0).getNumBrackets());
+		}
 	}
 
 	/**
@@ -226,8 +231,9 @@ public class TypeCheckVisitor implements Visitor {
 											);
 				Main.handleSemanticError(seo);
 			}
-			
+			System.out.println("HERE");
 			as.getExpr().accept(this);
+			System.out.println("THERE");
 			VType exprType = tempType;
 			
 			// Check types
@@ -242,6 +248,7 @@ public class TypeCheckVisitor implements Visitor {
 											);
 				Main.handleSemanticError(seo);
 			}
+			
 		
 		//ex: arr[2] = 3;
 		} else if (index == 1) {
@@ -261,7 +268,7 @@ public class TypeCheckVisitor implements Visitor {
 			
 			VarType idType = (VarType)env.get(id);
 			
-			VType elementType = new VarType(idType,as.getIndexedBrackets());
+			VType elementType = new VarType(idType,as.getIndexedBrackets(),as.getIdentifier());
 
 			
 			as.getExpr().accept(this);
@@ -269,6 +276,7 @@ public class TypeCheckVisitor implements Visitor {
 			
 			if (!elementType.equals(exprType)) {
 				// TODO: error handling
+				
 				String s = "Expected " + elementType.toString() 
 				+ ", but found " + exprType.toString();
 				SemanticErrorObject seo = new SemanticErrorObject(
@@ -302,7 +310,7 @@ public class TypeCheckVisitor implements Visitor {
 			}
 			
 			VarType funcCallType = (VarType) functionCallType;
-			VType elementType = new VarType (funcCallType, as.getIndexedBrackets());
+			VType elementType = new VarType (funcCallType, as.getIndexedBrackets(), as.getFunctionCall());
 			
 			as.getExpr().accept(this);
 			VType exprType = tempType;
@@ -341,7 +349,7 @@ public class TypeCheckVisitor implements Visitor {
 			Main.handleSemanticError(seo);
 		}
 		VarType leftType = (VarType) tempType;
-		
+		System.out.println("lefttype: " + leftType.toString());
 		// check that rightExpr is of VarType
 		right.accept(this);
 		if (!(tempType instanceof VarType)) {
@@ -356,6 +364,7 @@ public class TypeCheckVisitor implements Visitor {
 			Main.handleSemanticError(seo);
 		}
 		VarType rightType = (VarType) tempType;
+		System.out.println("righttype: " + rightType.toString());
 		
 		BinaryOp op = be.getBinaryOp();
 		

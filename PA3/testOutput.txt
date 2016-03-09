@@ -107,132 +107,86 @@ Syntax error beginning at 1:1 error:Unexpected token ==
 OK
   xic (Test --parse): 15 out of 15 tests succeeded.
   Test collection: xic (Test --typecheck)
-    ex01.xi: ex01.xi
-[xic] Typechecking
-unit
+    ex01.xi: [xic] Typechecking
+Semantic error beginning at 4:3: Name print cannot be resolved
+Mismatch detected at line 1 of file ex01.typed.nml
+expected: Valid Xi Program
+found   : : error:
+    ex02.xi: [xic] Typechecking
 [xic] Typechecking completed
 OK
-    ex02.xi: ex02.xi
-[xic] Typechecking
-bool, int
-unit
+    ex03.xi: [xic] Typechecking
 [xic] Typechecking completed
 OK
-    ex03.xi: ex03.xi
-[xic] Typechecking
-int[]
-[xic] Typechecking completed
-OK
-    ex04.xi: ex04.xi
-[xic] Typechecking
+    ex04.xi: [xic] Typechecking
 Semantic error beginning at 2:12: Expected bool, but found int
 OK
-    ex05.xi: ex05.xi
-[xic] Typechecking
-Semantic error beginning at 2:18: Mismatched types for binary operation.
+    ex05.xi: [xic] Typechecking
+Semantic error beginning at 2:18: Mismatched types for binary operation &
 OK
-    ex06.xi: ex06.xi
-[xic] Typechecking
+    ex06.xi: [xic] Typechecking
 Semantic error beginning at 1:22: Name baz cannot be resolved
 OK
-    ex07.xi: ex07.xi
-[xic] Typechecking
-unit
+    ex07.xi: [xic] Typechecking
 Semantic error beginning at 4:3: Expected bool[], but found int[]
 OK
-    ex08.xi: ex08.xi
-[xic] Typechecking
-unit
+    ex08.xi: [xic] Typechecking
 Semantic error beginning at 1:1: Expected bool, but found unit
 OK
-    ex09.xi: ex09.xi
-[xic] Typechecking
+    ex09.xi: [xic] Typechecking
 instead expected token classes are []
 Syntax error beginning at 1:13 error:Invalid assignment operator.2
 OK
-    ex10.xi: ex10.xi
-[xic] Typechecking
-int, int, int
+    ex10.xi: [xic] Typechecking
 Semantic error beginning at 2:9: Mismatched number of values
 OK
-    ex11.xi: ex11.xi
-[xic] Typechecking
-int, int, int
+    ex11.xi: [xic] Typechecking
 Semantic error beginning at 2:9: Mismatched number of values
 OK
-    ex12.xi: ex12.xi
-[xic] Typechecking
-unit
+    ex12.xi: [xic] Typechecking
 Semantic error beginning at 2:17: Expected int, but found unit
 OK
-    spec1-full.xi: spec1-full.xi
-[xic] Typechecking
-unit
-bool, int
+    spec1-full.xi: [xic] Typechecking
 [xic] Typechecking completed
 OK
-    spec1.xi: spec1.xi
-[xic] Typechecking
+    spec1.xi: [xic] Typechecking
 Semantic error beginning at 4:22: Name f cannot be resolved
 OK
-    spec2.xi: spec2.xi
-[xic] Typechecking
+    spec2.xi: [xic] Typechecking
 Semantic error beginning at 2:3: Name x cannot be resolved
 OK
-    spec3.xi: spec3.xi
-[xic] Typechecking
-unit
+    spec3.xi: [xic] Typechecking
 [xic] Typechecking completed
 OK
-    gcd.xi: gcd.xi
-[xic] Typechecking
-int
+    gcd.xi: [xic] Typechecking
 [xic] Typechecking completed
 OK
-    ratadd-full.xi: ratadd-full.xi
-[xic] Typechecking
-int
-int, int
+    ratadd-full.xi: [xic] Typechecking
 [xic] Typechecking completed
 OK
-    ratadd.xi: ratadd.xi
-[xic] Typechecking
+    ratadd.xi: [xic] Typechecking
 Semantic error beginning at 4:13: Name gcd cannot be resolved
 OK
-    ratadduse-full.xi: ratadduse-full.xi
-[xic] Typechecking
-int
-int, int
-unit
+    ratadduse-full.xi: [xic] Typechecking
 [xic] Typechecking completed
 OK
-    ratadduse.xi: ratadduse.xi
-[xic] Typechecking
+    ratadduse.xi: [xic] Typechecking
 Semantic error beginning at 2:20: Name ratadd cannot be resolved
 OK
-    insertionsort.xi: insertionsort.xi
-[xic] Typechecking
-unit
+    insertionsort.xi: [xic] Typechecking
 [xic] Typechecking completed
 OK
-    arrayinit.xi: arrayinit.xi
-[xic] Typechecking
+    arrayinit.xi: [xic] Typechecking
 Semantic error beginning at 3:5: a is already declared
 OK
-    arrayinit2-full.xi: arrayinit2-full.xi
-[xic] Typechecking
-unit
-int
+    arrayinit2-full.xi: [xic] Typechecking
 [xic] Typechecking completed
 OK
-    arrayinit2.xi: arrayinit2.xi
-[xic] Typechecking
+    arrayinit2.xi: [xic] Typechecking
 Semantic error beginning at 2:14: Name gcd cannot be resolved
 OK
-    mdarrays.xi: mdarrays.xi
-[xic] Typechecking
-unit
+    mdarrays.xi: [xic] Typechecking
 [xic] Typechecking completed
 OK
-  xic (Test --typecheck): 26 out of 26 tests succeeded.
-xthScript: 56 out of 57 tests succeeded.
+  xic (Test --typecheck): 25 out of 26 tests succeeded.
+xthScript: 55 out of 57 tests succeeded.

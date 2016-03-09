@@ -1,7 +1,6 @@
 package edu.cornell.cs.cs4120.xic.ir;
 
-import java.util.Arrays;
-
+import edu.cornell.cs.cs4120.util.SExpPrinter;
 import edu.cornell.cs.cs4120.xic.ir.visit.IRVisitor;
 
 /**
@@ -47,52 +46,11 @@ public class IRESeq extends IRExpr {
     }
 
     @Override
-    public boolean containsCalls() {
-        return stmt.containsCalls() || expr.containsCalls();
-    }
-
-    @Override
-    public int computeMaximumCallResults() {
-        int l = stmt.computeMaximumCallResults();
-        int r = expr.computeMaximumCallResults();
-        return Math.max(l, r);
-    }
-
-    // TODO
-//    @Override
-//    public int computeMaximumCallArguments() {
-//        int l = stmt.computeMaximumCallArguments();
-//        int r = expr.computeMaximumCallArguments();
-//        return Math.max(l, r);
-//    }
-//
-//    @Override
-//    public int nodeCount() {
-//        return 1 + stmt.nodeCount() + expr.nodeCount();
-//    }
-//
-//    @Override
-//    public boolean equalsTree(Object object) {
-//        if (!(object instanceof IRESeq)) return false;
-//        IRESeq eseq = (IRESeq) object;
-//        return eseq.stmt.equalsTree(stmt) && eseq.expr.equalsTree(expr);
-//    }
-//
-//    @Override
-//    public int treeHashCode() {
-//        return 17 + stmt.treeHashCode() + expr.treeHashCode() * 37;
-//    }
-//
-//    public Copyable copy() {
-//        return new IRESeq(stmt, expr);
-//    }
-//
-//    public Copyable deepCopy() {
-//        return new IRESeq((IRStmt) stmt.deepCopy(), (IRExpr) expr.deepCopy());
-//    }
-
-    @Override
-    public Iterable<IRNode> children() {
-        return Arrays.asList(new IRNode[] { stmt, expr });
+    public void printSExp(SExpPrinter p) {
+        p.startList();
+        p.printAtom("ESEQ");
+        stmt.printSExp(p);
+        expr.printSExp(p);
+        p.endList();
     }
 }

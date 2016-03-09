@@ -1,7 +1,6 @@
 package edu.cornell.cs.cs4120.xic.ir;
 
-import java.util.Arrays;
-
+import edu.cornell.cs.cs4120.util.SExpPrinter;
 import edu.cornell.cs.cs4120.xic.ir.visit.IRVisitor;
 import edu.cornell.cs.cs4120.xic.ir.visit.InsnMapsBuilder;
 
@@ -9,12 +8,10 @@ import edu.cornell.cs.cs4120.xic.ir.visit.InsnMapsBuilder;
 public class IRFuncDecl extends IRNode {
     private String name;
     private IRStmt body;
-    private boolean isProcedure;
 
-    public IRFuncDecl(String name, IRStmt stmt, boolean isProcedure) {
+    public IRFuncDecl(String name, IRStmt stmt) {
         this.name = name;
         body = stmt;
-        this.isProcedure = isProcedure;
     }
 
     public String name() {
@@ -34,7 +31,7 @@ public class IRFuncDecl extends IRNode {
     public IRNode visitChildren(IRVisitor v) {
         IRStmt stmt = (IRStmt) v.visit(this, body);
 
-        if (stmt != body) return new IRFuncDecl(name, stmt, isProcedure);
+        if (stmt != body) return new IRFuncDecl(name, stmt);
 
         return this;
     }
@@ -42,56 +39,21 @@ public class IRFuncDecl extends IRNode {
     @Override
     public InsnMapsBuilder buildInsnMapsEnter(InsnMapsBuilder v) {
         v.addNameToCurrentIndex(name);
+        v.addInsn(this);
         return v;
     }
 
     @Override
-    public boolean containsCalls() {
-        return body.containsCalls();
+    public IRNode buildInsnMaps(InsnMapsBuilder v) {
+        return this;
     }
 
     @Override
-    public int computeMaximumCallResults() {
-        return body.computeMaximumCallResults();
-    }
-
-    // TODO
-//    @Override
-//    public int nodeCount() {
-//        return 1 + body.nodeCount();
-//    }
-//
-//    @Override
-//    public boolean equalsTree(Object object) {
-//        if (!(object instanceof IRFuncDecl)) return false;
-//        IRFuncDecl other = (IRFuncDecl) object;
-//        return name.equals(other.name) && body.equals(other.body);
-//    }
-//
-//    @Override
-//    public int treeHashCode() {
-//        return 17 + name.hashCode() + body.treeHashCode() * 37;
-//    }
-//
-//    public boolean isProcedure() {
-//        return isProcedure;
-//    }
-//
-//    @Override
-//    public int computeMaximumCallArguments() {
-//        return body.computeMaximumCallArguments();
-//    }
-//
-//    public Copyable copy() {
-//        return new IRFuncDecl(name, body, isProcedure);
-//    }
-//
-//    public Copyable deepCopy() {
-//        return new IRFuncDecl(name, (IRStmt) body.deepCopy(), isProcedure);
-//    }
-
-    @Override
-    public Iterable<IRNode> children() {
-        return Arrays.asList(new IRNode[] { body });
+    public void printSExp(SExpPrinter p) {
+        p.startList();
+        p.printAtom("FUNC");
+        p.printAtom(name);
+        body.printSExp(p);
+        p.endList();
     }
 }

@@ -1,7 +1,6 @@
 package edu.cornell.cs.cs4120.xic.ir;
 
-import java.util.Arrays;
-
+import edu.cornell.cs.cs4120.util.SExpPrinter;
 import edu.cornell.cs.cs4120.xic.ir.visit.IRVisitor;
 
 /**
@@ -47,52 +46,11 @@ public class IRMove extends IRStmt {
     }
 
     @Override
-    public boolean containsCalls() {
-        return target.containsCalls() || expr.containsCalls();
-    }
-
-    @Override
-    public int computeMaximumCallResults() {
-        int l = target.computeMaximumCallResults();
-        int r = expr.computeMaximumCallResults();
-        return Math.max(l, r);
-    }
-
-    // TODO
-//    @Override
-//    public int nodeCount() {
-//        return 1 + target.nodeCount() + expr.nodeCount();
-//    }
-//
-//    @Override
-//    public int computeMaximumCallArguments() {
-//        int l = target.computeMaximumCallArguments();
-//        int r = expr.computeMaximumCallArguments();
-//        return Math.max(l, r);
-//    }
-//
-//    @Override
-//    public boolean equalsTree(Object object) {
-//        if (!(object instanceof IRMove)) return false;
-//        IRMove other = (IRMove) object;
-//        return other.expr.equalsTree(expr) && other.target.equalsTree(target);
-//    }
-//
-//    @Override
-//    public int treeHashCode() {
-//        return 17 + target.treeHashCode() + expr.treeHashCode() * 37;
-//    }
-//
-//    public Copyable copy() {
-//        return new IRMove(target, expr);
-//    }
-//
-//    public Copyable deepCopy() {
-//        return new IRMove((IRExpr) target.deepCopy(), (IRExpr) expr.deepCopy());
-//    }
-
-    @Override
-    public Iterable<IRNode> children() {
-        return Arrays.asList(new IRNode[] { target, expr });
+    public void printSExp(SExpPrinter p) {
+        p.startList();
+        p.printAtom("MOVE");
+        target.printSExp(p);
+        expr.printSExp(p);
+        p.endList();
     }
 }

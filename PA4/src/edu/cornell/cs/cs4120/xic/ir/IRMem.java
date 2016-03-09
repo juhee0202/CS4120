@@ -1,9 +1,8 @@
 package edu.cornell.cs.cs4120.xic.ir;
 
-import java.util.Arrays;
-
-import edu.cornell.cs.cs4120.xic.ir.visit.IRVisitor;
+import edu.cornell.cs.cs4120.util.SExpPrinter;
 import edu.cornell.cs.cs4120.xic.InternalCompilerError;
+import edu.cornell.cs.cs4120.xic.ir.visit.IRVisitor;
 
 /**
  * An intermediate representation for a memory location
@@ -11,7 +10,18 @@ import edu.cornell.cs.cs4120.xic.InternalCompilerError;
  */
 public class IRMem extends IRExpr {
     public enum MemType {
-        NORMAL, IMMUTABLE
+        NORMAL, IMMUTABLE;
+
+        @Override
+        public String toString() {
+            switch (this) {
+            case NORMAL:
+                return "MEM";
+            case IMMUTABLE:
+                return "MEM_I";
+            }
+            throw new InternalCompilerError("Unknown mem type!");
+        }
     };
 
     private IRExpr expr;
@@ -40,14 +50,7 @@ public class IRMem extends IRExpr {
 
     @Override
     public String label() {
-        switch (memType) {
-        case NORMAL:
-            return "MEM";
-        case IMMUTABLE:
-            return "MEM_I";
-        default:
-            throw new InternalCompilerError("Unknown mem type!");
-        }
+        return memType.toString();
     }
 
     @Override
@@ -60,46 +63,10 @@ public class IRMem extends IRExpr {
     }
 
     @Override
-    public boolean containsCalls() {
-        return expr.containsCalls();
-    }
-
-    @Override
-    public int computeMaximumCallResults() {
-        return expr.computeMaximumCallResults();
-    }
-
-    // TODO
-//    @Override
-//    public int nodeCount() {
-//        return 1 + expr.nodeCount();
-//    }
-//
-//    @Override
-//    public int computeMaximumCallArguments() {
-//        return expr.computeMaximumCallArguments();
-//    }
-//
-//    @Override
-//    public boolean equalsTree(Object object) {
-//        if (!(object instanceof IRMem)) return false;
-//        return ((IRMem) object).expr.equalsTree(expr);
-//    }
-//
-//    @Override
-//    public int treeHashCode() {
-//        return expr.treeHashCode();
-//    }
-//
-//    public Copyable copy() {
-//        return new IRMem(expr, memType);
-//    }
-//
-//    public Copyable deepCopy() {
-//        return new IRMem((IRExpr) expr.deepCopy(), memType);
-//    }
-    @Override
-    public Iterable<IRNode> children() {
-        return Arrays.asList(new IRNode[] { expr });
+    public void printSExp(SExpPrinter p) {
+        p.startList();
+        p.printAtom(memType.toString());
+        expr.printSExp(p);
+        p.endList();
     }
 }

@@ -4,6 +4,11 @@ import edu.cornell.cs.cs4120.util.CodeWriterSExpPrinter;
 import jl2755.GlobalPrettyPrinter;
 import jl2755.visitor.Visitor;
 
+/**
+ * Class that represents a while statement. There should be an
+ * expression to check every iteration, and Stmt (which can
+ * be a block statement) to run every iteration.
+ */
 public class WhileStmt implements NakedStmt {
 	private Expr expr;
 	private Stmt stmt;

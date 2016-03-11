@@ -4,6 +4,10 @@ import edu.cornell.cs.cs4120.util.CodeWriterSExpPrinter;
 import jl2755.GlobalPrettyPrinter;
 import jl2755.visitor.Visitor;
 
+/**
+ * Class that encapsulates raw literals strings, characters,
+ * integers, and booleans.
+ */
 public class Literal implements Constant {
 	private String intLit;
 	private int col;

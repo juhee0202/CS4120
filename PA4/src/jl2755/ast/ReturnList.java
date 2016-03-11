@@ -3,6 +3,10 @@ package jl2755.ast;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Class that represents a list of expressions
+ * used in a return statement.
+ */
 public class ReturnList {
 	private Expr expr;
 	private ReturnList returnList;

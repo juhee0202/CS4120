@@ -2,6 +2,10 @@ package jl2755.ast;
 
 import jl2755.visitor.Visitor;
 
+/**
+ * Class that holds a nakedStmt but also keeps
+ * track of whether there's a semi colon in this statement.
+ */
 public class Stmt {
 	private NakedStmt nakedStmt;
 	private boolean hasSemicolon;

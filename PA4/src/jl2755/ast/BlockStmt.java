@@ -4,6 +4,10 @@ import edu.cornell.cs.cs4120.util.CodeWriterSExpPrinter;
 import jl2755.GlobalPrettyPrinter;
 import jl2755.visitor.Visitor;
 
+/**
+ * Class that encapsulates a list of statements preceded by
+ * an open curly brace and proceeded by a closed curly brace.
+ */
 public class BlockStmt implements NakedStmt {
 	private StmtList stmtList;
 	private ReturnStmt returnStmt;

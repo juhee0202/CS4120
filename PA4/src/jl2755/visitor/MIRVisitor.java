@@ -50,6 +50,7 @@ public class MIRVisitor implements Visitor{
 
 	@Override
 	public void visit(AssignmentStmt as) {
+		// TODO: Finish index 1 and 2
 		int index = as.getIndex();
 		if (index == 0) {
 			as.getIdentifier().accept(this);
@@ -181,12 +182,30 @@ public class MIRVisitor implements Visitor{
 
 	@Override
 	public void visit(WhileStmt ws) {
-		// TODO Auto-generated method stub
-		
+		// TODO: Optimize this naive way
+		IRLabel startOfLoop = new IRLabel("Head");
+		ws.getExpr().accept(this);
+		IRExpr conditionalExpr = (IRExpr) tempNode;
+		IRLabel trueLabel = new IRLabel("True");
+		IRLabel falseLabel = new IRLabel("False");
+		IRCJump cJumpNode = new IRCJump(conditionalExpr, "True", "False");
+		ws.getStmt().accept(this);
+		IRStmt loopStmts = (IRStmt) tempNode;
+		IRJump jumpToStart = new IRJump(new IRName("Head"));
+		tempNode = new IRSeq(startOfLoop, cJumpNode, trueLabel, loopStmts,
+				jumpToStart, falseLabel);
 	}
 
-	private IRExpr createIRExprForBrackets(IndexedBrackets ib) {
-		// TODO: JEFF (thomas upvote) (juhee upvote) (jonathan upvote)
+	/**
+	 * IndexedBrackets should represent the recursive case, where
+	 * there are indices to be put into a IRMem and IRBinOp node.
+	 * 
+	 * @param ib is the rest of the indexed brackets to parse
+	 * @return an IRExpr that points to the memory location pointed
+	 * from IRExpr and IndexedBrackets
+	 */
+	private IRExpr createIRExprForBrackets(IRExpr ire, IndexedBrackets ib) {
+		// TODO
 		return null;
 	}
 	

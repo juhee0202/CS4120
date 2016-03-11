@@ -4,7 +4,7 @@ package edu.cornell.cs.cs4120.xic;
 public class InternalCompilerError extends RuntimeException {
 
     //protected Position pos;
-
+	
     public InternalCompilerError(String msg) {
         super(msg);
     }

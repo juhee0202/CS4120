@@ -2,6 +2,7 @@
 PA1/bin/
 PA2/bin/
 PA3/bin/
+PA4/bin/
 tmp/
 *.tmp
 *.bak
@@ -15,6 +16,7 @@ local.properties
 PA1/.project
 PA2/.project
 PA3/.project
+PA4/.project
 
 # External tool builders
 .externalToolBuilders/
@@ -26,6 +28,7 @@ PA3/.project
 PA1/.classpath
 PA2/.classpath
 PA3/.classpath
+PA4/.classpath
 
 # Java annotation processor (APT)
 .factorypath

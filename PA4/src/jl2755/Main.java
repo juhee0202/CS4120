@@ -10,6 +10,7 @@ import java.util.Map;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.GnuParser;
+import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
@@ -38,147 +39,75 @@ public class Main {
 	public static String libPath;		// example/libPath/
 	public static BufferedWriter bw;
 	public static java_cup.runtime.Symbol error;
+	/** true if optimizations are enabled
+	 *  false if optimizations are disabled 
+	 */
+	public static boolean optimize = true;
 	
+	
+	/* All path strings are responsible for adding their own trailing forward-slash
+	 * and deleting their own leading forward-slash
+	 */
 	public static void main(String[] args) {
-		
-		// set a custom UncaughtExceptionHandler		
-//		Thread.setDefaultUncaughtExceptionHandler(
-//	        new Thread.UncaughtExceptionHandler() {
-//	            @Override public void uncaughtException(Thread t, Throwable e) {
-//	                System.out.println(e.getMessage());
-//	            }
-//        });
-		
-		Options options = new Options();
-		
-		// help
-		options.addOption("h", "help", false, "Print a synopsis of options.");
-		
-		// lex
-		Option lexOpt = new Option("l", "lex", false, 
-				"Generate output from lexical analysis.");
-		lexOpt.setArgs(Option.UNLIMITED_VALUES);
-		lexOpt.setOptionalArg(true);
-		options.addOption(lexOpt);
-		
-		// parse
-		Option parseOpt = new Option("p", "parse", false, 
-				"Generate output from syntactic analysis.");
-		parseOpt.setArgs(Option.UNLIMITED_VALUES);
-		parseOpt.setOptionalArg(true);
-		options.addOption(parseOpt);
-		
-		// typecheck
-		Option typecheckOpt = new Option("t", "typecheck", false, 
-				"Generate output from semantic analysis. ");
-		typecheckOpt.setArgs(Option.UNLIMITED_VALUES);
-		typecheckOpt.setOptionalArg(true);
-		options.addOption(typecheckOpt);
-		
-		// path options
-		Option srcOpt = new Option("sourcepath", true, 
-				"Specify where to find input source files.");
-		srcOpt.setArgs(1);
-		options.addOption(srcOpt);
-		
-		Option libOpt = new Option("libpath", true, 
-				"Specify where to find library interface files. " +
-				"The default is the current directory in which xic is run. ");
-		libOpt.setArgs(1);
-		options.addOption(libOpt);
-		
-		Option destOpt = new Option ("D", true, 
-				"Specify where to place generated diagnostic files.");
-		destOpt.setArgs(1);
-		options.addOption(destOpt);
-		
+		// Initialize command line
+		Options options = optionsInit();
 		CommandLineParser parser = new GnuParser();
 		CommandLine cmd;
-		srcPath = "";
-		destPath = "";
-		libPath = "";
-		currPath = System.getProperty("user.dir") + "/";
-		
 		try {
 			cmd = parser.parse(options, args);
 		} catch (ParseException exp) {
 			System.err.println(exp.getMessage());
 			return;
 		}
-				
-		if ((cmd.getOptions().length == 0 && cmd.getArgs().length == 0) ||
-			 cmd.hasOption("-help")) {
 			
-			System.out.println("Usage: xic [options] <source files>\n" +
-					"where possible options include");
-			System.out.println("  --help: Print a synopsis of options.");
-			System.out.println("  --lex: Generate output from lexical analysis.");
-			System.out.println("  --parse: Generate output from syntactic analysis.");
-			System.out.println("  -sourcepath: " +
-					"Specify where to find input source files.");
-			System.out.println("  -libpath: " +
-					"Specify where to find " +
-					"library interface files. The default " +
-					"is the current directory in which xic is run. ");
-			System.out.println("  -D: " +
-					"Specify where to place generated diagnostic files.");
+		if (cmd.hasOption("-help") ||
+				(cmd.getOptions().length == 0 && cmd.getArgs().length == 0)) {
+			
+			HelpFormatter format = new HelpFormatter();
+			format.printHelp("xic", options);
+			
+//			System.out.println("Usage: xic [options] <source files>\n" +
+//					"where possible options include");
+//			System.out.println("  --help: Print a synopsis of options.");
+//			System.out.println("  --lex: Generate output from lexical analysis.");
+//			System.out.println("  --parse: Generate output from syntactic analysis.");
+//			System.out.println("  -sourcepath: " +
+//					"Specify where to find input source files.");
+//			System.out.println("  -libpath: " +
+//					"Specify where to find library interface files. " +
+//					"The default is the current directory in which xic is run. ");
+//			System.out.println("  -D: " +
+//					"Specify where to place generated diagnostic files.");
+//			System.out.println("  -O: " +
+//					"If specified, optimizations such as constant" +
+//					" folding will not be performed.");
 			return;
 		}
 		
-		if (cmd.hasOption("sourcepath")) {
-			String src = cmd.getOptionValue("sourcepath");
-			if (src != null) {
-				if (src.charAt(0) == '/') {
-					src = src.substring(1, src.length());
-				}
-				if (src.charAt(src.length()-1) != '/') {
-					src += "/";
-				}
-				srcPath = src;
-			}
-		}
-
-		if (cmd.hasOption("libpath")) {
-			String lib = cmd.getOptionValue("libpath");
-			if (lib != null) {
-				if (lib.charAt(0) == '/') {
-					lib = lib.substring(1, lib.length());
-				}
-				if (lib.charAt(lib.length()-1) != '/') {
-					lib += "/";
-				}
-				libPath = lib;
-			}
-		}
+		// Default paths
+		srcPath = "";
+		destPath = "";
+		libPath = "";
+		currPath = System.getProperty("user.dir") + "/";
 		
-		if (cmd.hasOption("D")) {
-			String dest = cmd.getOptionValue("D");
-			if (dest != null) {
-				if (dest.charAt(0) == '/') {
-					dest = dest.substring(1, dest.length());
-				}
-				if (dest.charAt(dest.length()-1) != '/') {
-					dest += "/";
-				}
-				destPath = dest;
-			}
-		}
+		// Check path and optimization options
+		optionsCheck(cmd);
 		
+		// Get files to process
 		String[] lexFiles = cmd.getOptionValues("l");;
 		String[] parseFiles = cmd.getOptionValues("p");
 		String[] typecheckFiles = cmd.getOptionValues("t");
 		String[] leftoverFiles = cmd.getArgs();
-
+		String[] files;
+		
+		/* LEX */
 		if (cmd.hasOption("-lex")) {
-			String[] files = null;
 			if (lexFiles == null) {
 				files = concat(parseFiles, typecheckFiles);
 				files = concat(files, leftoverFiles);
-			}
-			else {
+			} else {
 				files = lexFiles;
-			}
-						
+			}			
 			if (files == null || files.length == 0) {
 				System.out.println("Missing argument for option: --lex");
 				return;
@@ -189,23 +118,23 @@ public class Main {
 					lex(srcPath + files[i]);
 				} catch (FileNotFoundException e) {
 					System.out.println(srcPath + files[i] + " is not found.");
+				} catch (IOException e) {
+					System.out.println("Failed to write to output file");
+//					e.printStackTrace();
 				} catch (Exception e) {
-					// TODO: Q. why don't we specify the exception for missing argument here?
 					System.out.println("Missing argument for option: --lex");
 				}
 			}
 		}
 		
+		/* PARSE */
 		if (cmd.hasOption("-parse")) {
-			String[] files = null;
 			if (parseFiles == null) {
 				files = concat(lexFiles, typecheckFiles);
 				files = concat(files, leftoverFiles);
-			}
-			else {
+			} else {
 				files = parseFiles;
 			}
-						
 			if (files == null || files.length == 0) {
 				System.out.println("Missing argument for option: --parse");
 				return;
@@ -216,20 +145,21 @@ public class Main {
 					parse(srcPath + files[i]);
 				} catch (FileNotFoundException e) {
 					System.out.println(srcPath + files[i] + " is not found.");
+				} catch (IOException e) {
+					System.out.println("Failed to write to output file");
+//					e.printStackTrace();
 				} catch (Exception e) {
-					// TODO: Q. why don't we specify the exception for missing argument here?
 					System.out.println("Missing argument for option: --lex");
 				}
 			}
 		}
 
+		/* TYPECHECK */
 		if (cmd.hasOption("-typecheck")) {
-			String[] files = null;
 			if (typecheckFiles == null) {
 				files = concat(parseFiles, lexFiles);
 				files = concat(files, leftoverFiles);
-			}
-			else {
+			} else {
 				files = typecheckFiles;
 			}
 			if (files == null || files.length == 0) {
@@ -242,12 +172,25 @@ public class Main {
 					typecheck(srcPath + files[i]);
 				} catch (FileNotFoundException e) {
 					System.out.println(srcPath + files[i] + " is not found.");
+				} catch (IOException e) {
+					System.out.println("Failed to write to output file");
+//					e.printStackTrace();
 				} catch (Exception e) {
-					// TODO: Q. why don't we specify the exception for missing argument here?
 					System.out.println("Missing argument for option: --typecheck");
 				}
 			}
 		}
+		
+		/* IR GENERATION */
+		if (cmd.hasOption("-irgen")) {
+			// TODO: Generate intermediate code
+		}
+		
+		/* IR INTERPRET */
+		if (cmd.hasOption("-irrun")) {
+			// TODO: Generate and interpret intermediate code
+		}
+		
 	}
 	
 	public static void lex(String filename) throws FileNotFoundException {
@@ -412,8 +355,7 @@ public class Main {
 	 */
 	public static void handleSyntaxError(String msg) {
 		
-		String errorMessage = error.left + ":" + error.right + 
-				" error:" + msg + error.value;
+		String errorMessage = error.left + ":" + error.right + " error:" + msg + error.value;
 		try {
 			bw.write(errorMessage);
 			bw.close();	
@@ -436,14 +378,19 @@ public class Main {
 			bw.close();
 		} catch (IOException e) {
 			System.out.println("Failed to write to output file");
-		}
-		
+		}		
 		throw new SemanticError(seo.getLineNumber(), 
 								seo.getColNumber(), 
 								seo.getDescription());
 	}
-	
-	public static Map<String, VType> checkInterface(String interfaceName) {
+
+	/**
+	 * Parses the interface files used by the program we are typechecking
+	 * 
+	 * @param interfaceName	the name of the interface file to parse
+	 * @return				a hashmap representing the function environment
+	 */
+	public static Map<String, VType> checkInterface(String interfaceName){
 		String absPath = libPath + interfaceName + ".ixi";
 		Map<String, VType> tempMap = new HashMap<String, VType>();
 		Symbol s;
@@ -488,6 +435,13 @@ public class Main {
 		return tempMap;
 	}
 	
+	/**
+	 * Concatenates strings a and b together and returns the result
+	 * 
+	 * @param a	the first string to be concatenated
+	 * @param b	the second string to be concatenated
+	 * @return	the result of concatenation
+	 */
 	public static String[] concat(String[] a, String[] b) {
 		if (a == null) {
 			return b;
@@ -502,4 +456,124 @@ public class Main {
 	   System.arraycopy(b, 0, c, aLen, bLen);
 	   return c;
 	}
+	
+	/**
+	 * Initializes all the command-line options and args
+	 * 
+	 * @return	the Options object to be used in command line parsing
+	 */
+	private static Options optionsInit() {
+		Options options = new Options();
+		
+		// help
+		options.addOption("h", "help", false, "Print a synopsis of options.");
+		
+		// lex
+		Option lexOpt = new Option("l", "lex", false, 
+				"Generate output from lexical analysis.");
+		lexOpt.setArgs(Option.UNLIMITED_VALUES);
+		lexOpt.setOptionalArg(true);
+		options.addOption(lexOpt);
+		
+		// parse
+		Option parseOpt = new Option("p", "parse", false, 
+				"Generate output from syntactic analysis.");
+		parseOpt.setArgs(Option.UNLIMITED_VALUES);
+		parseOpt.setOptionalArg(true);
+		options.addOption(parseOpt);
+		
+		// typecheck
+		Option typecheckOpt = new Option("t", "typecheck", false, 
+				"Generate output from semantic analysis. ");
+		typecheckOpt.setArgs(Option.UNLIMITED_VALUES);
+		typecheckOpt.setOptionalArg(true);
+		options.addOption(typecheckOpt);
+		
+		// irgen
+		Option irgenOpt = new Option("irgen", false, "Generate intermediate code.");
+		irgenOpt.setArgs(Option.UNLIMITED_VALUES);
+		irgenOpt.setOptionalArg(true);
+		options.addOption(irgenOpt);
+		
+		// irrun
+		Option irrunOpt = new Option("irrun", false, 
+				"Generate and interpret intermediate code.");
+		irrunOpt.setArgs(Option.UNLIMITED_VALUES);
+		irrunOpt.setOptionalArg(true);
+		options.addOption(irrunOpt);
+		
+		// path options
+		Option srcOpt = new Option("sourcepath", true, 
+				"Specify where to find input source files.");
+		srcOpt.setArgs(1);
+		options.addOption(srcOpt);
+		
+		Option libOpt = new Option("libpath", true, 
+				"Specify where to find library interface files. " +
+				"The default is the current directory in which xic is run. ");
+		libOpt.setArgs(1);
+		options.addOption(libOpt);
+		
+		Option destOpt = new Option ("D", true, 
+				"Specify where to place generated diagnostic files.");
+		destOpt.setArgs(1);
+		options.addOption(destOpt);
+
+		// optimization
+		options.addOption("O", false, 
+				"If specified, optimizations such as constant" +
+				" folding will not be performed.");
+		
+		return options;
+	}
+	
+	/**
+	 * Checks all auxiliary the options and sets global variables
+	 */
+	private static void optionsCheck(CommandLine cmd) {
+		if (cmd.hasOption("sourcepath")) {
+			String src = cmd.getOptionValue("sourcepath");
+			if (src != null) {
+				if (src.charAt(0) == '/') {
+					src = src.substring(1, src.length());
+				}
+				if (src.charAt(src.length()-1) != '/') {
+					src += "/";
+				}
+				srcPath = src;
+			}
+		}
+
+		if (cmd.hasOption("libpath")) {
+			String lib = cmd.getOptionValue("libpath");
+			if (lib != null) {
+				if (lib.charAt(0) == '/') {
+					lib = lib.substring(1, lib.length());
+				}
+				if (lib.charAt(lib.length()-1) != '/') {
+					lib += "/";
+				}
+				libPath = lib;
+			}
+		}
+		
+		if (cmd.hasOption("D")) {
+			String dest = cmd.getOptionValue("D");
+			if (dest != null) {
+				if (dest.charAt(0) == '/') {
+					dest = dest.substring(1, dest.length());
+				}
+				if (dest.charAt(dest.length()-1) != '/') {
+					dest += "/";
+				}
+				destPath = dest;
+			}
+		}
+		
+		/* Specify to disable optimizations. */
+		if (cmd.hasOption("O")) {
+			optimize = false;
+		}
+	}
+	
 }

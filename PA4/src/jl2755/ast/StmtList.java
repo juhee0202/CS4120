@@ -2,9 +2,18 @@ package jl2755.ast;
 
 import jl2755.visitor.Visitor;
 
+/**
+ * Class that encapsulates a list of statements. Used
+ * as a recursive box for statements and is used in
+ * BlockStmt.
+ */
 public class StmtList {
 	private Stmt stmt;
 	private StmtList stmtList;
+	/**
+	 * 0 if base case: {s1},
+	 * 1 if recursive case: {..., sn, ...}.
+	 */
 	private int index;
 	
 	public StmtList(Stmt s) {

@@ -15,6 +15,7 @@ public interface Visitor {
 	public void visit(FunctionDeclList fdl);
 	public void visit(Identifier id);
 	public void visit(IfStmt is);
+	public void visit(IndexedBrackets ib);
 	public void visit(Literal l);
 	public void visit(Program p);
 	public void visit(ReturnStmt rs);

@@ -1,7 +1,6 @@
 package edu.cornell.cs.cs4120.xic.ir;
 
-import java.util.Arrays;
-
+import edu.cornell.cs.cs4120.util.SExpPrinter;
 import edu.cornell.cs.cs4120.xic.ir.visit.IRVisitor;
 
 /**
@@ -11,6 +10,16 @@ import edu.cornell.cs.cs4120.xic.ir.visit.IRVisitor;
 public class IRCJump extends IRStmt {
     private IRExpr expr;
     private String trueLabel, falseLabel;
+
+    /**
+     * Construct a CJUMP instruction with fall-through on false.
+     * @param expr the condition for the jump
+     * @param trueLabel the destination of the jump if {@code expr} evaluates
+     *          to true
+     */
+    public IRCJump(IRExpr expr, String trueLabel) {
+        this(expr, trueLabel, null);
+    }
 
     /**
      *
@@ -38,6 +47,10 @@ public class IRCJump extends IRStmt {
         return falseLabel;
     }
 
+    public boolean hasFalseLabel() {
+        return falseLabel != null;
+    }
+
     @Override
     public String label() {
         return "CJUMP";
@@ -53,67 +66,12 @@ public class IRCJump extends IRStmt {
     }
 
     @Override
-    public boolean containsCalls() {
-        return expr.containsCalls();
+    public void printSExp(SExpPrinter p) {
+        p.startList();
+        p.printAtom("CJUMP");
+        expr.printSExp(p);
+        p.printAtom(trueLabel);
+        if (hasFalseLabel()) p.printAtom(falseLabel);
+        p.endList();
     }
-
-    @Override
-    public int computeMaximumCallResults() {
-        return 0;
-    }
-
-    @Override
-    public Iterable<IRNode> children() {
-        return Arrays.asList(new IRNode[] { expr });
-    }
-
-    // TODO
-//    @Override
-//    public int nodeCount() {
-//        return 1 + expr.nodeCount();
-//    }
-//
-//    @Override
-//    public int computeMaximumCallArguments() {
-//        return 0;
-//    }
-//
-//    public boolean hasTrueLabel() {
-//        return trueLabel != null;
-//    }
-//
-//    public boolean hasFalseLabel() {
-//        return falseLabel != null;
-//    }
-//
-//    @Override
-//    public boolean equalsTree(Object object) {
-//        if (!(object instanceof IRCJump)) return false;
-//        IRCJump other = (IRCJump) object;
-//        if (!other.expr.equalsTree(expr)) return false;
-//        if (hasTrueLabel() && !other.hasTrueLabel()
-//                || !hasTrueLabel() && other.hasTrueLabel())
-//            return false;
-//        if (hasFalseLabel() && !other.hasFalseLabel()
-//                || !hasFalseLabel() && other.hasFalseLabel())
-//            return false;
-//        if (hasTrueLabel() && !other.trueLabel.equals(trueLabel)) return false;
-//        if (hasFalseLabel() && !other.falseLabel.equals(falseLabel))
-//            return false;
-//        return true;
-//    }
-//
-//    @Override
-//    public int treeHashCode() {
-//        return 17 + expr.treeHashCode() + trueLabel.hashCode() * 37
-//                + falseLabel.hashCode() * 37 * 37;
-//    }
-//
-//    public Copyable copy() {
-//        return new IRCJump(expr, trueLabel, falseLabel);
-//    }
-//
-//    public Copyable deepCopy() {
-//        return new IRCJump((IRExpr) expr.deepCopy(), trueLabel, falseLabel);
-//    }
 }

@@ -8,6 +8,10 @@ public class IfStmt implements NakedStmt {
 	private Expr expr;
 	private Stmt stmt1;
 	private Stmt stmt2;
+	/**
+	 * 0 if there's no else clause,
+	 * 1 if there is an else clause.
+	 */
 	private int index;
 
 	public IfStmt(Expr e, Stmt s) {

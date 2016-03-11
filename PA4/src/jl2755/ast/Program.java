@@ -9,6 +9,10 @@ import jl2755.visitor.Visitor;
 public class Program extends XiFile {
 	private UseId useId;
 	private FunctionDeclList functionDeclList;
+	/**
+	 * 0 if there are no use statements,
+	 * 1 if there are use statements.
+	 */
 	private int index;
 	
 	public Program(FunctionDeclList fdl) {

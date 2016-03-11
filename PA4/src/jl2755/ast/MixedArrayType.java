@@ -7,6 +7,10 @@ import edu.cornell.cs.cs4120.util.CodeWriterSExpPrinter;
 import jl2755.GlobalPrettyPrinter;
 import jl2755.visitor.Visitor;
 
+/**
+ * Class that encapsulates the array type of
+ * a variable in its initialization.
+ */
 public class MixedArrayType implements Type {
 	
 	private PrimitiveType p_type;

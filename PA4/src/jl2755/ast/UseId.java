@@ -7,6 +7,10 @@ import edu.cornell.cs.cs4120.util.CodeWriterSExpPrinter;
 import jl2755.GlobalPrettyPrinter;
 import jl2755.visitor.Visitor;
 
+/**
+ * Class that is a recursive box for
+ * holding use statements.
+ */
 public class UseId {
 	private Identifier identifier;
 	private UseId useId;

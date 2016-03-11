@@ -14,6 +14,11 @@ import jl2755.visitor.Visitor;
 public class ArrayElementList {
 	private Expr expr;
 	private ArrayElementList arrElemList;
+	/**
+	 * 0 if base case {..., x},
+	 * 1 if recursive case {..., x, ...},
+	 * 2 if blank list {}.
+	 */
 	private int index;
 	
     public ArrayElementList(Expr e) {

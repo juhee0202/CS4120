@@ -4,6 +4,10 @@ import edu.cornell.cs.cs4120.util.CodeWriterSExpPrinter;
 import jl2755.GlobalPrettyPrinter;
 import jl2755.visitor.Visitor;
 
+/**
+ * Class that encapsulates the return statement of a block
+ * statement. 
+ */
 public class ReturnStmt {
 	private ReturnList returnList;
 	private int return_col;

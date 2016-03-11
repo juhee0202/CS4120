@@ -4,10 +4,17 @@ import edu.cornell.cs.cs4120.util.CodeWriterSExpPrinter;
 import jl2755.GlobalPrettyPrinter;
 import jl2755.visitor.Visitor;
 
+/**
+ * Class that encapsulates a raw array type. There can be
+ * no numbers in the brackets. Examples are int[][], bool[].
+ */
 public class EmptyArrayType implements Type{
 	
 	private PrimitiveType primitiveType;
 	private Brackets brackets;
+	/**
+	 * 0 if it's a primitive type followed by empty brackets: int[][].
+	 */
 	private int index;
 	
 	public EmptyArrayType(PrimitiveType pt, Brackets b){

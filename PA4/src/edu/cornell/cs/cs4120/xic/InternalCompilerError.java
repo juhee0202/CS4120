@@ -1,28 +1,20 @@
 package edu.cornell.cs.cs4120.xic;
 
+import polyglot.util.SerialVersionUID;
+
 /** Exception thrown when the compiler is confused. */
 public class InternalCompilerError extends RuntimeException {
+    private static final long serialVersionUID = SerialVersionUID.generate();
 
-    //protected Position pos;
-	
     public InternalCompilerError(String msg) {
         super(msg);
     }
 
     public InternalCompilerError(Throwable cause) {
-        super(cause.getMessage(), cause);
+        this(cause.getMessage(), cause);
     }
 
     public InternalCompilerError(String msg, Throwable cause) {
         super(msg, cause);
-    }
-
-    public String message() {
-        return super.getMessage();
-    }
-
-    @Override
-    public String getMessage() {
-        return message();
     }
 }

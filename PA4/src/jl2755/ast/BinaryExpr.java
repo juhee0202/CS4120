@@ -4,6 +4,10 @@ import edu.cornell.cs.cs4120.util.CodeWriterSExpPrinter;
 import jl2755.GlobalPrettyPrinter;
 import jl2755.visitor.Visitor;
 
+/**
+ * Class that encapsulates two expressions joined together
+ * by a BinaryOp.
+ */
 public class BinaryExpr implements OpExpr {
 	private Expr leftExpr;
 	private int leftExpr_col;

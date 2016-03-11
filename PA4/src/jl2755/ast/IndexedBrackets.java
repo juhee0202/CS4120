@@ -3,6 +3,8 @@ package jl2755.ast;
 import java.util.ArrayList;
 import java.util.List;
 
+import jl2755.visitor.Visitor;
+
 /**
  * Represents brackets with contents.
  * index
@@ -47,5 +49,18 @@ public class IndexedBrackets {
 	 */
 	public int getNumBrackets() {
 		return getContent().size();
+	}
+	
+	public List<Expr> getAllExprInIndexedBrackets() {
+		List<Expr> tempListExpr = new ArrayList<Expr>();
+		tempListExpr.add(expression);
+		if (index == 1) {
+			tempListExpr.addAll(indexedBrackets.getAllExprInIndexedBrackets());
+		}
+		return tempListExpr;
+	}
+	
+	public void accept(Visitor v) {
+		v.visit(this);
 	}
 }

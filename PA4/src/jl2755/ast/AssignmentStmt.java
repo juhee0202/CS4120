@@ -6,11 +6,20 @@ import edu.cornell.cs.cs4120.util.CodeWriterSExpPrinter;
 import jl2755.GlobalPrettyPrinter;
 import jl2755.visitor.Visitor;
 
+/**
+ * Class that encapsulates an assignment of an expression
+ * to an already declared variable.
+ */
 public class AssignmentStmt implements NakedStmt {
 	private Identifier identifier;
 	private IndexedBrackets indexedBrackets;
 	private FunctionCall functionCall;
 	private Expr expr;
+	/**
+	 * 0 if the left side is just an identifier: foo = 3;,
+	 * 1 if the left side is an index of an identifier: foo[2] = 3;,
+	 * 2 if the left side is an index of a function call foo(x,y)[2] = 3;.
+	 */
 	private int index;
 	
 	public AssignmentStmt(Identifier id, Expr e) {

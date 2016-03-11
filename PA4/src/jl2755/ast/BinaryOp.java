@@ -1,5 +1,9 @@
 package jl2755.ast;
 
+/**
+ * Enum class that encapsulates all the possible
+ * operations between two expressions in a BinaryExpression.
+ */
 public enum BinaryOp {
 	PLUS,
 	MINUS,

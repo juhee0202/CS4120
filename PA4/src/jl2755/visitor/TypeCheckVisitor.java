@@ -721,7 +721,11 @@ public class TypeCheckVisitor implements Visitor {
 			}
 
 		}
-		
+	}
+	
+	@Override
+	public void visit(IndexedBrackets ib) {
+		// Nothing should be done here
 	}
 
 	/** 

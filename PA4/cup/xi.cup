@@ -105,6 +105,9 @@ array_element_list ::= expr:e                                       {: RESULT = 
                        ;
 
 array_literal ::= OPEN_BRACE:ob array_element_list:ael CLOSE_BRACE  {: RESULT = new ArrayLiteral(ael, obleft, obright); :}
+                  |
+                  OPEN_BRACE:ob array_element_list:ael COMMA
+                  CLOSE_BRACE                                       {: RESULT = new ArrayLiteral(ael, obleft, obright); :}
                   ;
 
 assignment_stmt ::= identifier:id GETS expr:expression              {: RESULT = new AssignmentStmt(id, expression); :}

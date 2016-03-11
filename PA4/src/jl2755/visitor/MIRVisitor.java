@@ -1,14 +1,12 @@
 package jl2755.visitor;
 
-import java.util.List;
-
+import edu.cornell.cs.cs4120.xic.ir.*;
 import jl2755.ast.ArrayElement;
 import jl2755.ast.ArrayElementList;
 import jl2755.ast.ArrayLiteral;
 import jl2755.ast.AssignmentStmt;
 import jl2755.ast.BinaryExpr;
 import jl2755.ast.BlockStmt;
-import jl2755.ast.Expr;
 import jl2755.ast.FunctionArg;
 import jl2755.ast.FunctionCall;
 import jl2755.ast.FunctionDecl;
@@ -28,53 +26,55 @@ import jl2755.ast.VarDecl;
 import jl2755.ast.VarInit;
 import jl2755.ast.WhileStmt;
 
-/**
- * This visitor's goal is to sniff out and hunt expressions
- * that may be literals. If a unary or binary expression contains
- * only literals, then it can be reduced to one constant.
- */
-public class ConstantFolderVisitor implements Visitor{
+public class MIRVisitor implements Visitor{
+	
+	private IRNode tempNode;
 
 	@Override
 	public void visit(ArrayElement ae) {
-		// ArrayElements always have IndexedBrackets that
-		// might contain expressions
-		ae.getIndexedBrackets().accept(this);
+		// TODO Auto-generated method stub
+		
 	}
 
 	@Override
 	public void visit(ArrayElementList ael) {
-		// ArrayElementList has expressions in
-		// its list that may be foldable
-		List<Expr> listOfExprs = ael.getAllExprInArray();
-		for (int i = 0; i < listOfExprs.size(); i++) {
-			listOfExprs.get(i).accept(this);
-		}
+		// TODO Auto-generated method stub
+		
 	}
 
 	@Override
 	public void visit(ArrayLiteral al) {
-		// Simply visit the child ArrayElementList
-		al.getArrElemList().accept(this);
+		// TODO Auto-generated method stub
+		
 	}
 
-		@Override
-		public void visit(AssignmentStmt as) {
+	@Override
+	public void visit(AssignmentStmt as) {
+		int index = as.getIndex();
+		if (index == 0) {
+			as.getIdentifier().accept(this);
+			IRExpr tempID = (IRExpr) tempNode;
 			as.getExpr().accept(this);
-			if (as.getIndex() != 0) {
-				as.getIndexedBrackets().accept(this);
-			}
-		}
-	
-		@Override
-		public void visit(BinaryExpr be) {
+			IRExpr tempExpr = (IRExpr) tempNode;
+			tempNode = new IRMove(tempID, tempExpr);
+		} else if (index == 1) {
+			IRName arrayIDName = new IRName(as.getIdentifier().toString());
+			
+		} else {
 			
 		}
-	
-		@Override
-		public void visit(BlockStmt bs) {
-			// TODO Auto-generated method stub
-			
+	}
+
+	@Override
+	public void visit(BinaryExpr be) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void visit(BlockStmt bs) {
+		// TODO Auto-generated method stub
+		
 	}
 
 	@Override
@@ -112,10 +112,11 @@ public class ConstantFolderVisitor implements Visitor{
 		// TODO Auto-generated method stub
 		
 	}
-	
+
 	@Override
 	public void visit(IndexedBrackets ib) {
 		// TODO Auto-generated method stub
+		
 	}
 
 	@Override
@@ -184,4 +185,9 @@ public class ConstantFolderVisitor implements Visitor{
 		
 	}
 
+	private IRExpr createIRExprForBrackets(IndexedBrackets ib) {
+		// TODO: JEFF (thomas upvote) (juhee upvote) (jonathan upvote)
+		return null;
+	}
+	
 }

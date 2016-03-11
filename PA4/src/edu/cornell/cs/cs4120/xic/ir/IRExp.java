@@ -10,7 +10,6 @@ import edu.cornell.cs.cs4120.xic.ir.visit.IRVisitor;
  */
 public class IRExp extends IRStmt {
     private IRExpr expr;
-
     /**
      *
      * @param expr the expression to be evaluated and result discarded

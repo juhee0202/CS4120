@@ -1,5 +1,8 @@
 package jl2755.visitor;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import edu.cornell.cs.cs4120.xic.ir.*;
 import jl2755.ast.ArrayElement;
 import jl2755.ast.ArrayElementList;
@@ -7,6 +10,7 @@ import jl2755.ast.ArrayLiteral;
 import jl2755.ast.AssignmentStmt;
 import jl2755.ast.BinaryExpr;
 import jl2755.ast.BlockStmt;
+import jl2755.ast.Expr;
 import jl2755.ast.FunctionArg;
 import jl2755.ast.FunctionCall;
 import jl2755.ast.FunctionDecl;
@@ -84,10 +88,36 @@ public class MIRVisitor implements Visitor{
 		
 	}
 
+	/**
+	 * f(a1,...,an) --IR--> CALL(NAME(f), e1,...,en)
+	 */
 	@Override
 	public void visit(FunctionCall fc) {
-		// TODO Auto-generated method stub
-		
+		int index = fc.getIndex();
+		if (index == 0) {									// f()
+			Identifier id = fc.getIdentifier();
+			IRName lf = new IRName(id.toString());
+			tempNode = new IRCall(lf);
+		} else if (index == 1) {							// f(a1,...,an) 
+			// get function label
+			Identifier id = fc.getIdentifier();
+			IRName lf = new IRName(id.toString());
+			
+			// get function args
+			FunctionArg functionArg = fc.getFunctionArg();
+			List<Expr> args = functionArg.getArgExprs();
+			List<IRExpr> irArgs = new ArrayList<IRExpr>();	
+			for (Expr arg : args) {
+				arg.accept(this);
+				irArgs.add((IRExpr) tempNode);
+			}
+			tempNode = new IRCall(lf, irArgs);
+		} else {											// length(e)
+			IRName lf = new IRName("length"); 
+			fc.getExpr().accept(this);
+			IRExpr arg = (IRExpr) tempNode;
+			tempNode = new IRCall(lf, arg);
+		}
 	}
 
 	@Override

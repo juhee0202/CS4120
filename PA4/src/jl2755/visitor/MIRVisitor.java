@@ -170,13 +170,31 @@ public class MIRVisitor implements Visitor{
 
 	@Override
 	public void visit(VarDecl vd) {
-		// TODO Auto-generated method stub
-		
+		// Unnecessary
+		if (vd.getIndex() == 0) {
+			// x: t[]
+			// Allocate memory for array
+		}
 	}
 
+	/**
+	 * Dirties tempNode to IRMove
+	 */
 	@Override
 	public void visit(VarInit vi) {
-		// TODO Auto-generated method stub
+		VarDecl vd = vi.getVarDecl();
+		int index = vd.getIndex();
+		if (index == 0) {
+			// x: t[] = e
+			
+		} else if (index == 1) {
+			// x: int = e or x: bool = e
+			vd.getIdentifier().accept(this);
+			IRExpr temp = (IRExpr) tempNode;
+			vi.getExpr().accept(this);
+			IRExpr e = (IRExpr) tempNode;
+			tempNode = new IRMove(temp,e);
+		}
 		
 	}
 

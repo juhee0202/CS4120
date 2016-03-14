@@ -76,6 +76,9 @@ public class MIRVisitor implements Visitor{
 		
 	}
 
+	/**
+	 * sets tempNode to IRSeq
+	 */
 	@Override
 	public void visit(BlockStmt bs) {
 		// TODO Auto-generated method stub
@@ -91,17 +94,19 @@ public class MIRVisitor implements Visitor{
 	/**
 	 * f(a1,...,an) --IR--> CALL(NAME(f), e1,...,en)
 	 */
+	
+	// TODO: emit symbol names following convention 
 	@Override
 	public void visit(FunctionCall fc) {
 		int index = fc.getIndex();
 		if (index == 0) {									// f()
-			Identifier id = fc.getIdentifier();
-			IRName lf = new IRName(id.toString());
+			String id = fc.getIdentifier().toString();
+			IRName lf = new IRName(id);
 			tempNode = new IRCall(lf);
 		} else if (index == 1) {							// f(a1,...,an) 
 			// get function label
-			Identifier id = fc.getIdentifier();
-			IRName lf = new IRName(id.toString());
+			String id = fc.getIdentifier().toString();
+			IRName lf = new IRName(id);
 			
 			// get function args
 			FunctionArg functionArg = fc.getFunctionArg();
@@ -119,11 +124,27 @@ public class MIRVisitor implements Visitor{
 			tempNode = new IRCall(lf, arg);
 		}
 	}
-
+	
+	/**
+	 * f(x1:t1,...,xn:tn):t' {s} --IR--> SEQ(LABEL(f), S[s])
+	 */
+	// TODO: function name convention
 	@Override
 	public void visit(FunctionDecl fd) {
-		// TODO Auto-generated method stub
+		 // get function label
+		String id = fd.getIdentifier().toString();
+		IRLabel irLabel = new IRLabel(id.toString());
 		
+		// get statement sequence
+		BlockStmt blockStmt = fd.getBlockStmt();
+		// options
+		// 1) recursively visit each stmt in block stmt here
+		// 2) recursively visit block stmt and make it return IRSeq <-- this
+		blockStmt.accept(this);
+		IRSeq irSeq = (IRSeq) tempNode;
+		List<IRStmt> stmts = irSeq.stmts();
+		stmts.add(0,irLabel);
+		tempNode = new IRSeq(stmts);
 	}
 
 	@Override

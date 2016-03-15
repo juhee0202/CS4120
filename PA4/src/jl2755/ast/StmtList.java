@@ -1,5 +1,8 @@
 package jl2755.ast;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import jl2755.visitor.Visitor;
 
 /**
@@ -58,7 +61,16 @@ public class StmtList {
 		this.index = index;
 	}
 	
-	public void accept(Visitor v){
+	public void accept(Visitor v) {
 		v.visit(this);
+	}
+	
+	public List<Stmt> getAllStmt() {
+		List<Stmt> tempList = new ArrayList<Stmt>();
+		tempList.add(stmt);
+		if (index == 1) {
+			tempList.addAll(stmtList.getAllStmt());
+		}
+		return tempList;
 	}
 }

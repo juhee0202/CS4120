@@ -223,8 +223,9 @@ public class MIRVisitor implements Visitor{
 	public void visit(VarDecl vd) {
 		// Unnecessary
 		if (vd.getIndex() == 0) {
-			// x: t[]
+			// x: t[e]
 			// Allocate memory for array
+			
 		}
 	}
 
@@ -237,6 +238,7 @@ public class MIRVisitor implements Visitor{
 		int index = vd.getIndex();
 		if (index == 0) {
 			// x: t[] = e
+			// Allocate memory for array
 			
 		} else if (index == 1) {
 			// x: int = e or x: bool = e

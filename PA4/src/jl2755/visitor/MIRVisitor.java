@@ -137,9 +137,6 @@ public class MIRVisitor implements Visitor{
 		
 		// get statement sequence
 		BlockStmt blockStmt = fd.getBlockStmt();
-		// options
-		// 1) recursively visit each stmt in block stmt here
-		// 2) recursively visit block stmt and make it return IRSeq <-- this
 		blockStmt.accept(this);
 		IRSeq irSeq = (IRSeq) tempNode;
 		List<IRStmt> stmts = irSeq.stmts();

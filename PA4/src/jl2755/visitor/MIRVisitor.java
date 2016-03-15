@@ -167,6 +167,11 @@ public class MIRVisitor implements Visitor{
 		// TODO Auto-generated method stub
 		
 	}
+	
+	@Override
+	public void visit(ReturnList rl) {
+		// Nothing should be done here.
+	}
 
 	@Override
 	public void visit(ReturnStmt rs) {
@@ -193,6 +198,11 @@ public class MIRVisitor implements Visitor{
 	/**
 	 * Dirties tempNode to IRExp or IRSeq
 	 */
+	@Override
+	public void visit(TupleDeclList tdl) {
+		// Nothing should be done here.
+	}
+	
 	@Override
 	public void visit(TupleInit ti) {
 		// TODO Auto-generated method stub

@@ -1,5 +1,6 @@
 package jl2755.visitor;
 
+import java.math.BigInteger;
 import java.util.List;
 
 import jl2755.ast.ArrayElement;
@@ -7,6 +8,7 @@ import jl2755.ast.ArrayElementList;
 import jl2755.ast.ArrayLiteral;
 import jl2755.ast.AssignmentStmt;
 import jl2755.ast.BinaryExpr;
+import jl2755.ast.BinaryOp;
 import jl2755.ast.BlockStmt;
 import jl2755.ast.Expr;
 import jl2755.ast.FunctionArg;
@@ -18,11 +20,14 @@ import jl2755.ast.IfStmt;
 import jl2755.ast.IndexedBrackets;
 import jl2755.ast.Literal;
 import jl2755.ast.Program;
+import jl2755.ast.ReturnList;
 import jl2755.ast.ReturnStmt;
 import jl2755.ast.Stmt;
 import jl2755.ast.StmtList;
+import jl2755.ast.TupleDeclList;
 import jl2755.ast.TupleInit;
 import jl2755.ast.UnaryExpr;
+import jl2755.ast.UnaryOp;
 import jl2755.ast.UseId;
 import jl2755.ast.VarDecl;
 import jl2755.ast.VarInit;
@@ -35,20 +40,45 @@ import jl2755.ast.WhileStmt;
  */
 public class ConstantFolderVisitor implements Visitor{
 
+	/**
+	 * 0 if int,
+	 * 1 if bool,
+	 * 2 if array,
+	 * 3 if none
+	 */
+	private int caseIndex;
+	private Long tempLong;
+	private Boolean tempBool;
+	private ArrayLiteral tempArray;
+	
+	
 	@Override
 	public void visit(ArrayElement ae) {
 		// ArrayElements always have IndexedBrackets that
 		// might contain expressions
 		ae.getIndexedBrackets().accept(this);
+		caseIndex = 3;
 	}
 
 	@Override
 	public void visit(ArrayElementList ael) {
 		// ArrayElementList has expressions in
 		// its list that may be foldable
-		List<Expr> listOfExprs = ael.getAllExprInArray();
-		for (int i = 0; i < listOfExprs.size(); i++) {
-			listOfExprs.get(i).accept(this);
+		int index = ael.getIndex();
+		if (index == 0 || index == 1) {
+			ael.getExpr().accept(this);
+			if (caseIndex == 0) {
+				ael.setExpr(new Literal(tempLong.toString(), 0));
+			}
+			if (caseIndex == 1) {
+				ael.setExpr(new Literal(tempBool));
+			}
+			if (caseIndex == 2) {
+				ael.setExpr(tempArray);
+			}
+		}
+		if (index == 1) {
+			ael.getArrElemList().accept(this);
 		}
 	}
 
@@ -56,132 +86,373 @@ public class ConstantFolderVisitor implements Visitor{
 	public void visit(ArrayLiteral al) {
 		// Simply visit the child ArrayElementList
 		al.getArrElemList().accept(this);
+		caseIndex = 2;
+		tempArray = al;
 	}
 
-		@Override
-		public void visit(AssignmentStmt as) {
-			as.getExpr().accept(this);
-			if (as.getIndex() != 0) {
-				as.getIndexedBrackets().accept(this);
+	@Override
+	public void visit(AssignmentStmt as) {
+		as.getExpr().accept(this);
+		if (caseIndex == 0) {
+			as.setExpr(new Literal(tempLong.toString(), 0));
+		}
+		if (caseIndex == 1) {
+			as.setExpr(new Literal(tempBool));
+		}
+		if (caseIndex == 2) {
+			as.setExpr(tempArray);
+		}
+		if (as.getIndex() != 0) {
+			as.getIndexedBrackets().accept(this);
+		}
+	}
+
+	@Override
+	public void visit(BinaryExpr be) {
+		be.getLeftExpr().accept(this);
+		if (caseIndex == 0) {
+			long leftLong = tempLong;
+			be.getRightExpr().accept(this);
+			if (caseIndex != 0) {
+				return;
+			}
+			long rightLong = tempLong;
+			BinaryOp theOp = be.getBinaryOp();
+			if (theOp == BinaryOp.PLUS) {
+				tempLong = leftLong + rightLong;
+			}
+			else if (theOp == BinaryOp.DIVIDE) {
+				tempLong = leftLong/rightLong;
+			}
+			else if (theOp == BinaryOp.TIMES) {
+				tempLong = leftLong * rightLong;
+			}
+			else if (theOp == BinaryOp.HIGH_MULT) {
+				tempLong = BigInteger.valueOf(leftLong).multiply
+						(BigInteger.valueOf(rightLong)).shiftRight(64).longValue();
+			}
+			else if (theOp == BinaryOp.MODULO) {
+				tempLong = leftLong%rightLong;
+			}
+			else if (theOp == BinaryOp.MINUS) {
+				tempLong = leftLong - rightLong;
+			}
+			else if (theOp == BinaryOp.LT) {
+				caseIndex = 1;
+				tempBool = leftLong < rightLong;
+			}
+			else if (theOp == BinaryOp.LEQ) {
+				caseIndex = 1;
+				tempBool = leftLong <= rightLong;
+			}
+			else if (theOp == BinaryOp.GEQ) {
+				caseIndex = 1;
+				tempBool = leftLong >= rightLong;
+			}
+			else if (theOp == BinaryOp.GT) {
+				caseIndex = 1;
+				tempBool = leftLong > rightLong;
+			}
+			else if (theOp == BinaryOp.EQUAL) {
+				caseIndex = 1;
+				tempBool = leftLong == rightLong;
+			}
+			else if (theOp == BinaryOp.NOT_EQUAL) {
+				caseIndex = 1;
+				tempBool = leftLong != rightLong;
 			}
 		}
-	
-		@Override
-		public void visit(BinaryExpr be) {
-			
+		else if (caseIndex == 1) {
+			boolean leftBool = tempBool;
+			be.getRightExpr().accept(this);
+			if (caseIndex != 1) {
+				return;
+			}
+			boolean rightBool = tempBool;
+			BinaryOp theOp = be.getBinaryOp();
+			if (theOp == BinaryOp.EQUAL) {
+				caseIndex = 1;
+				tempBool = leftBool == rightBool;
+			}
+			else if (theOp == BinaryOp.NOT_EQUAL) {
+				caseIndex = 1;
+				tempBool = leftBool != rightBool;
+			}
+			else if (theOp == BinaryOp.AND) {
+				caseIndex = 1;
+				tempBool = leftBool && rightBool;
+			}
+			else if (theOp == BinaryOp.OR) {
+				caseIndex = 1;
+				tempBool = leftBool || rightBool;
+			}
 		}
-	
-		@Override
-		public void visit(BlockStmt bs) {
-			// TODO Auto-generated method stub
-			
+		else if (caseIndex == 2) {
+			ArrayLiteral leftArray = tempArray;
+			be.getRightExpr().accept(this);
+			if (caseIndex != 2) {
+				return;
+			}
+			ArrayLiteral rightArray = tempArray;
+			BinaryOp theOp = be.getBinaryOp();
+			if (theOp == BinaryOp.PLUS) {
+				tempArray = ArrayLiteral.addTwoArrays(leftArray, rightArray);
+			}
+		}
+	}
+
+	@Override
+	public void visit(BlockStmt bs) {
+		if (bs.getIndex() == 1 || bs.getIndex() == 2) {
+			bs.getStmtList().accept(this);
+		}
+		if (bs.getIndex() == 2 || bs.getIndex() == 3) {
+			bs.getReturnStmt().accept(this);
+		}
 	}
 
 	@Override
 	public void visit(FunctionArg fa) {
-		// TODO Auto-generated method stub
-		
+		fa.getExpr().accept(this);
+		if (caseIndex == 0) {
+			fa.setExpr(new Literal(tempLong.toString(), 0));
+		}
+		if (caseIndex == 1) {
+			fa.setExpr(new Literal(tempBool));
+		}
+		if (caseIndex == 2) {
+			fa.setExpr(tempArray);
+		}
+		if (fa.getIndex() == 1) {
+			fa.getFunctionArg().accept(this);
+		}
 	}
 
 	@Override
 	public void visit(FunctionCall fc) {
-		// TODO Auto-generated method stub
-		
+		if (fc.getIndex() == 1) {
+			fc.getFunctionArg().accept(this);
+		}
+		if (fc.getIndex() == 2) {
+			fc.getExpr().accept(this);
+			if (caseIndex == 0) {
+				fc.setExpr(new Literal(tempLong.toString(), 0));
+			}
+			if (caseIndex == 1) {
+				fc.setExpr(new Literal(tempBool));
+			}
+			if (caseIndex == 2) {
+				fc.setExpr(tempArray);
+			}
+		}
+		caseIndex = 3;
 	}
 
 	@Override
 	public void visit(FunctionDecl fd) {
-		// TODO Auto-generated method stub
-		
+		fd.getBlockStmt().accept(this);
 	}
 
 	@Override
 	public void visit(FunctionDeclList fdl) {
-		// TODO Auto-generated method stub
-		
+		if (fdl.getIndex() == 1) {
+			fdl.getFunctionDecl().accept(this);
+			fdl.getFunctionDeclList().accept(this);
+		}
 	}
 
 	@Override
 	public void visit(Identifier id) {
-		// TODO Auto-generated method stub
-		
+		caseIndex = 3;
 	}
 
 	@Override
 	public void visit(IfStmt is) {
-		// TODO Auto-generated method stub
-		
+		is.getExpr().accept(this);
+		if (caseIndex == 0) {
+			is.setExpr(new Literal(tempLong.toString(), 0));
+		}
+		if (caseIndex == 1) {
+			is.setExpr(new Literal(tempBool));
+		}
+		if (caseIndex == 2) {
+			is.setExpr(tempArray);
+		}
+		is.getStmt1().accept(this);
+		if (is.getIndex() == 1) {
+			is.getStmt2().accept(this);
+		}
 	}
 	
 	@Override
 	public void visit(IndexedBrackets ib) {
-		// TODO Auto-generated method stub
+		ib.getExpression().accept(this);
+		if (caseIndex == 0) {
+			ib.setExpression(new Literal(tempLong.toString(), 0));
+		}
+		if (caseIndex == 1) {
+			ib.setExpression(new Literal(tempBool));
+		}
+		if (caseIndex == 2) {
+			ib.setExpression(tempArray);
+		}
+		if (ib.getIndex() == 1) {
+			ib.getIndexedBrackets().accept(this);
+		}
 	}
 
 	@Override
 	public void visit(Literal l) {
-		// TODO Auto-generated method stub
-		
+		if (l.getIndex() == 0) {
+			tempLong = Long.parseLong(l.getIntLit());
+			caseIndex = 0;
+			return;
+		}
+		if (l.getIndex() == 1) {
+			tempArray = new ArrayLiteral(l.getStringLit());
+			caseIndex = 2;
+		}
+		if (l.getIndex() == 2) {
+			caseIndex = 3;
+		}
+		if (l.getIndex() == 3) {
+			tempBool = l.getBoolLit();
+			caseIndex = 1;
+		}
 	}
 
 	@Override
 	public void visit(Program p) {
-		// TODO Auto-generated method stub
-		
+		p.getFunctionDeclList().accept(this);
+		if (p.getIndex() == 1) {
+			p.getUseId().accept(this);
+		}
 	}
 
 	@Override
+	public void visit(ReturnList rl) {
+		rl.getExpr().accept(this);
+		if (caseIndex == 0) {
+			rl.setExpr(new Literal(tempLong.toString(), 0));
+		}
+		if (caseIndex == 1) {
+			rl.setExpr(new Literal(tempBool));
+		}
+		if (caseIndex == 2) {
+			rl.setExpr(tempArray);
+		}
+		if (rl.getIndex() == 1) {
+			rl.getReturnList().accept(this);
+		}
+	}
+	
+	@Override
 	public void visit(ReturnStmt rs) {
-		// TODO Auto-generated method stub
-		
+		if (rs.getIndex() == 1) {
+			rs.getReturnList().accept(this);
+		}
 	}
 
 	@Override
 	public void visit(Stmt s) {
-		// TODO Auto-generated method stub
-		
+		s.getNakedStmt().accept(this);
 	}
 
 	@Override
 	public void visit(StmtList sl) {
-		// TODO Auto-generated method stub
-		
+		sl.getStmt().accept(this);
+		if (sl.getIndex() == 1) {
+			sl.getStmtList().accept(this);
+		}
 	}
 
 	@Override
+	public void visit(TupleDeclList tdl) {
+		if (tdl.getIndex() < 2) {
+			tdl.getVarDecl().accept(this);
+		}
+		if (tdl.getIndex() == 1) {
+			tdl.getTupleDeclList().accept(this);
+		}
+	}
+	
+	@Override
 	public void visit(TupleInit ti) {
-		// TODO Auto-generated method stub
-		
+		ti.getFunctionCall().accept(this);
+		if (ti.getIndex() > 0) {
+			ti.getTupleDeclList().accept(this);
+		}
+		if (ti.getIndex() == 2) {
+			ti.getVarDecl().accept(this);
+		}
 	}
 
 	@Override
 	public void visit(UnaryExpr ue) {
-		// TODO Auto-generated method stub
-		
+		ue.getExpr().accept(this);
+		if (caseIndex == 0) {
+			ue.setExpr(new Literal(tempLong.toString(), 0));
+		}
+		if (caseIndex == 1) {
+			ue.setExpr(new Literal(tempBool));
+		}
+		if (caseIndex == 2) {
+			ue.setExpr(tempArray);
+		}
+		if (caseIndex == 0) {
+			UnaryOp tempOp = ue.getUnaryOp();
+			if (tempOp == UnaryOp.INT_NEG) {
+				tempLong = -tempLong;
+			}
+		}
+		else if (caseIndex == 1) {
+			UnaryOp tempOp = ue.getUnaryOp();
+			if (tempOp == UnaryOp.LOG_NEG) {
+				tempBool = !tempBool;
+			}
+		}
 	}
 
 	@Override
 	public void visit(UseId ui) {
-		// TODO Auto-generated method stub
-		
+		// Nothing should be done here.
 	}
 
 	@Override
 	public void visit(VarDecl vd) {
-		// TODO Auto-generated method stub
-		
+		if (vd.getIndex() == 0) {
+			vd.getMixedArrayType().accept(this);
+		}
 	}
 
 	@Override
 	public void visit(VarInit vi) {
-		// TODO Auto-generated method stub
-		
+		vi.getVarDecl().accept(this);
+		vi.getExpr().accept(this);
+		if (caseIndex == 0) {
+			vi.setExpr(new Literal(tempLong.toString(), 0));
+		}
+		if (caseIndex == 1) {
+			vi.setExpr(new Literal(tempBool));
+		}
+		if (caseIndex == 2) {
+			vi.setExpr(tempArray);
+		}
 	}
 
 	@Override
 	public void visit(WhileStmt ws) {
-		// TODO Auto-generated method stub
-		
+		ws.getExpr().accept(this);
+		if (caseIndex == 0) {
+			ws.setExpr(new Literal(tempLong.toString(), 0));
+		}
+		if (caseIndex == 1) {
+			ws.setExpr(new Literal(tempBool));
+		}
+		if (caseIndex == 2) {
+			ws.setExpr(tempArray);
+		}
+		ws.getStmt().accept(this);
 	}
 
 }

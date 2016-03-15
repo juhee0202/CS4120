@@ -803,6 +803,11 @@ public class TypeCheckVisitor implements Visitor {
 		// Check functions
 		(p.getFunctionDeclList()).accept(this);
 	}
+	
+	@Override
+	public void visit(ReturnList rl) {
+		// Nothing should be done here.
+	}
 
 	/**
 	 * DIRTIES tempType to the return type
@@ -849,6 +854,11 @@ public class TypeCheckVisitor implements Visitor {
 		
 	}
 
+	@Override
+	public void visit(TupleDeclList tdl) {
+		// Nothing should be done here.
+	}
+	
 	/**
 	 * Similar to typechecking VarInit 
 	 * @param TupleInit ti

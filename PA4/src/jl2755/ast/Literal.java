@@ -46,6 +46,29 @@ public class Literal implements Constant {
 		index = 3;
 	}
 	
+	public Literal(String s) {
+		index = 0;
+		intLit = s;
+	}
+	
+	public Literal(String s, int i) {
+		index = i;
+		if (index == 0) {
+			intLit = s;
+		}
+		else if (index == 1) {
+			stringLit = s;
+		}
+		else {
+			charLit = s;
+		}
+	}
+	
+	public Literal(boolean b) {
+		boolLit = b;
+		index = 3;
+	}
+	
 	public String getIntLit() {
 		return intLit;
 	}

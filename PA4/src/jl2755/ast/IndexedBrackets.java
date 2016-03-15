@@ -63,4 +63,28 @@ public class IndexedBrackets {
 	public void accept(Visitor v) {
 		v.visit(this);
 	}
+
+	public Expr getExpression() {
+		return expression;
+	}
+
+	public void setExpression(Expr expression) {
+		this.expression = expression;
+	}
+
+	public IndexedBrackets getIndexedBrackets() {
+		return indexedBrackets;
+	}
+
+	public void setIndexedBrackets(IndexedBrackets indexedBrackets) {
+		this.indexedBrackets = indexedBrackets;
+	}
+
+	public int getIndex() {
+		return index;
+	}
+
+	public void setIndex(int index) {
+		this.index = index;
+	}
 }

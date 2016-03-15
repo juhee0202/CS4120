@@ -6,8 +6,10 @@ public class dohMyGod {
 
 	@Test
 	public void test() {
-		int[] test1 = new int[5];
-		int[] test2 = {1,2};
+		int a = 'H';
+		System.out.println(a);
+		int x = 5&10;
+		System.out.println(x);
 	}
 
 }

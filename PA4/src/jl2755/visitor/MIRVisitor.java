@@ -2,6 +2,7 @@ package jl2755.visitor;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import edu.cornell.cs.cs4120.xic.ir.*;
 import edu.cornell.cs.cs4120.xic.ir.IRBinOp.OpType;
@@ -192,10 +193,43 @@ public class MIRVisitor implements Visitor{
 		tempNode = new IRSeq(allIRStmts);
 	}
 
+	/**
+	 * Dirties tempNode to IRExp or IRSeq
+	 */
 	@Override
 	public void visit(TupleInit ti) {
 		// TODO Auto-generated method stub
 		// Jeff: "I got it"
+		ti.getFunctionCall().accept(this);
+		if (ti.getIndex() == 0) {
+			tempNode = new IRExp((IRExpr) tempNode);
+		} else {
+			// vd, tupleDeclList = f()
+			// THIS IMPLEMENTATION ASSUMES ALL RETURN VALUES ARE KEPT ON THE STACK
+			// TODO: finalize implementation
+			IRExpr stack = ((IRCall) tempNode).args().get(0);
+			IRExp exp = new IRExp((IRExpr) tempNode);
+			int count = 0;
+			IRTemp temp;
+			IRExpr result;
+			IRBinOp addr;
+			IRMove move;
+			List<IRStmt> stmts = new ArrayList<IRStmt>();
+			stmts.add(exp);
+			List<VarDecl> vdlist = ti.getVarDecls();
+			for (VarDecl vd : vdlist) {
+				if (vd != null) {
+					// Assign result of function call
+					temp = new IRTemp(vd.getIdentifier().toString());
+					addr = new IRBinOp(OpType.ADD,stack,new IRConst(8*count));
+					result = new IRMem(addr);
+					move = new IRMove(temp,result);
+					stmts.add(move);
+				}
+				count++;
+			}
+			tempNode = new IRSeq(stmts);
+		}
 	}
 
 	@Override
@@ -210,30 +244,25 @@ public class MIRVisitor implements Visitor{
 		// Din dew nuffin
 	}
 
-	@Override
-	public void visit(VarDecl vd) {
-		// Unnecessary
-		if (vd.getIndex() == 0) {
-			// x: t[e]
-			// Allocate memory for array
-			
-		}
-	}
-
 	/**
 	 * Dirties tempNode to IRMove
 	 */
 	@Override
 	public void visit(VarInit vi) {
 		VarDecl vd = vi.getVarDecl();
+		Identifier id = vd.getIdentifier();
 		int index = vd.getIndex();
 		if (index == 0) {
 			// x: t[] = e
-			// Allocate memory for array
-			
+			// move(temp(x),mem(e))
+			vi.getExpr().accept(this);
+			IRExpr array = (IRExpr) tempNode;
+			IRExpr temp = new IRTemp(id.toString());
+			tempNode = new IRMove(temp,array);
 		} else if (index == 1) {
 			// x: int = e or x: bool = e
-			vd.getIdentifier().accept(this);
+			// move(temp(x),E(e))
+			id.accept(this);
 			IRExpr temp = (IRExpr) tempNode;
 			vi.getExpr().accept(this);
 			IRExpr e = (IRExpr) tempNode;

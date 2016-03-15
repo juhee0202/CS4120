@@ -1056,7 +1056,7 @@ class CUP$parser$actions {
                 int eleft = CUP$parser$stack.peek().left;
                 int eright = CUP$parser$stack.peek().right;
                 Object e = CUP$parser$stack.peek().<Object> value();
-                 Main.handleError("Invalid expression."); 
+                 Main.handleSyntaxError("Invalid expression."); 
                 CUP$parser$result = parser.getSymbolFactory().newSymbol("expr",8, CUP$parser$stack.peek(), CUP$parser$stack.peek(), RESULT);
             }
             return CUP$parser$result;
@@ -2268,7 +2268,7 @@ class CUP$parser$actions {
                 int eleft = CUP$parser$stack.peek().left;
                 int eright = CUP$parser$stack.peek().right;
                 Object e = CUP$parser$stack.peek().<Object> value();
-                 Main.handleError("Invalid assignment operator."); 
+                 Main.handleSyntaxError("Invalid assignment operator."); 
                 CUP$parser$result = parser.getSymbolFactory().newSymbol("var_init",38, CUP$parser$stack.peek(), CUP$parser$stack.peek(), RESULT);
             }
             return CUP$parser$result;
@@ -2319,7 +2319,7 @@ class CUP$parser$actions {
                 int eleft = CUP$parser$stack.peek().left;
                 int eright = CUP$parser$stack.peek().right;
                 Object e = CUP$parser$stack.peek().<Object> value();
-                 Main.handleError("Unexpected token "); 
+                 Main.handleSyntaxError("Unexpected token "); 
                 CUP$parser$result = parser.getSymbolFactory().newSymbol("xi_file",40, CUP$parser$stack.peek(), CUP$parser$stack.peek(), RESULT);
             }
             return CUP$parser$result;

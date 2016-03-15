@@ -20,6 +20,9 @@ import jl2755.ast.Identifier;
 import jl2755.ast.Interface;
 import jl2755.ast.InterfaceFunc;
 import jl2755.ast.Program;
+import jl2755.exceptions.LexicalError;
+import jl2755.exceptions.SemanticError;
+import jl2755.exceptions.SyntaxError;
 import jl2755.type.FunType;
 import jl2755.type.VType;
 import jl2755.visitor.TypeCheckVisitor;
@@ -190,7 +193,7 @@ public class Main {
 		
 	}
 	
-	public static void lex(String filename) throws IOException {
+	public static void lex(String filename) throws FileNotFoundException {
 		Scanner lexer = new Scanner(new FileReader(filename));
 		String content = "";
 		
@@ -199,8 +202,11 @@ public class Main {
 		Symbol symbol = null;
 		try {
 			symbol = lexer.next_token();
-		} catch (RuntimeException ex) {
-			content += ex.getMessage();
+		} catch (LexicalError error) {
+			content += error.getMessage();
+		} catch (IOException e) {
+			// TODO: not too sure what kind of IOException would happen here (there are more in this function)
+			e.printStackTrace();
 		}
 		
 		while (symbol != null && symbol.sym != 0) {
@@ -223,9 +229,11 @@ public class Main {
 			
 			try {
 				symbol = lexer.next_token();
-			} catch (RuntimeException ex) {
-				content += ex.getMessage();
+			} catch (LexicalError error) {
+				content += error.getMessage();
 				break;
+			} catch (IOException e) {
+				e.printStackTrace();
 			}
 		}
 		
@@ -249,14 +257,14 @@ public class Main {
 			bw.close();
 			System.out.println("[xic] Lexing completed");
 		} catch (IOException e) {	
+			System.out.println("Failed to write to output file");
 //			e.printStackTrace();
 		}
 	}
 	
-	public static void parse(String filename) throws IOException {
-		try {
-			parser p = new parser(new Scanner(new FileReader(filename)));
-		
+	public static void parse(String filename) throws FileNotFoundException {
+		parser p = new parser(new Scanner(new FileReader(filename)));
+		try {		
 			int index = filename.lastIndexOf('.');
 			if (index == -1) {
 				index = filename.length();
@@ -279,12 +287,19 @@ public class Main {
 			GlobalPrettyPrinter.getInstance().flush();		
 			bw.close();
 			System.out.println("[xic] Parsing completed");
-		} catch (Exception e) {
-//			e.printStackTrace();
+		} catch(LexicalError error) {
+			System.out.println(error.getMessage());
+		} catch(SyntaxError error) {
+			System.out.println(error.getMessage());
+		} catch(IOException e) {
+			System.out.println("Failed to write to output file");
+		} catch(Exception e) {
+			// TODO: not sure what kind of exceptions would happen here
+			e.printStackTrace();
 		}
 	}
 	
-	public static void typecheck(String filename) throws IOException {
+	public static void typecheck(String filename) throws FileNotFoundException {
 		try {
 			int index = filename.lastIndexOf('.');
 			if (index == -1) {
@@ -312,8 +327,16 @@ public class Main {
 			bw.close();
 			System.out.println("[xic] Typechecking completed");
 			
+		} catch(LexicalError error) {
+			System.out.println(error.getMessage());
+		} catch(SyntaxError error) {
+			System.out.println(error.getMessage());
+		} catch(SemanticError error) {
+			System.out.println(error.getMessage());
+		} catch(IOException e) {
+			System.out.println("Failed to write to output file " + filename);
 		} catch (Exception e) {
-//			e.printStackTrace();
+			e.printStackTrace();
 		}
 	}
 
@@ -322,31 +345,45 @@ public class Main {
 		error = info;
 	}
 	
-	public static void handleError(String msg) 
-			throws RuntimeException, IOException {
+	/**
+	 * Write the error message to the output file and throws SyntaxError,
+	 * which is caught inside its parent function (parse or typecheck)
+	 * 
+	 * flow: parser -> handleSyntaxError -> parse/typecheck
+	 * 
+	 * @param msg
+	 */
+	public static void handleSyntaxError(String msg) {
 		
-		String errorMessage = error.left + ":" + error.right + 
-								" error:" + msg + error.value;
-		bw.write(errorMessage);
-		bw.close();
-		System.out.println("Syntax error beginning at " + errorMessage);
-		throw new RuntimeException("[xic] Parsing Failed.");
+		String errorMessage = error.left + ":" + error.right + " error:" + msg + error.value;
+		try {
+			bw.write(errorMessage);
+			bw.close();	
+		} catch (IOException e) {
+			System.out.println("Failed to write to output file");
+		}
+				
+		throw new SyntaxError(error.left, error.right, msg);
 	}
 	
+	/**
+	 * Write the error message to the output file and throws SemanticError,
+	 * which is caught in typecheck method.
+	 * 
+	 * @param seo
+	 */
 	public static void handleSemanticError(SemanticErrorObject seo) {
 		try {
 			bw.write(seo.toString());
 			bw.close();
 		} catch (IOException e) {
 			System.out.println("Failed to write to output file");
-//			e.printStackTrace();
-		}
-		System.out.println("Semantic error beginning at " + seo.getLineNumber() 
-							+ ":" + seo.getColNumber() 
-							+ ": " + seo.getDescription());
-		throw new RuntimeException("[xic] Typecheck Failed.");
+		}		
+		throw new SemanticError(seo.getLineNumber(), 
+								seo.getColNumber(), 
+								seo.getDescription());
 	}
-	
+
 	/**
 	 * Parses the interface files used by the program we are typechecking
 	 * 
@@ -356,39 +393,45 @@ public class Main {
 	public static Map<String, VType> checkInterface(String interfaceName){
 		String absPath = libPath + interfaceName + ".ixi";
 		Map<String, VType> tempMap = new HashMap<String, VType>();
+		Symbol s;
 		try {
 			parser p = new parser(new Scanner(new FileReader(absPath)));
-			Symbol s = p.parse();
-			if (s.value instanceof Program) {
-				String errorMsg = "(" + interfaceName + ".ixi"+ ")" + 
-						" Syntax error beginning at 1:1: Interface file is invalid";
-				System.out.println(errorMsg);
-				try {
-					bw.write("1:1 error: Interface file is invalid");
-					bw.close();
-				} catch (IOException e) {
-					System.out.println("Failed to write to output file");
-//					e.printStackTrace();
-				}
-				throw new RuntimeException("[xic] Typecheck Failed.");
-			}
-			Interface result = (Interface) s.value;
-			List<InterfaceFunc> tempFuncs = result.getInterfaceFuncs();
-			for (int i = 0; i < tempFuncs.size(); i++){
-				if (tempMap.containsKey(tempFuncs.get(i).getIdentifier().toString())){
-					Identifier id = tempFuncs.get(i).getIdentifier();
-					String e = "Duplicate function declaration found";
-					SemanticErrorObject seo = new SemanticErrorObject(
-							id.getLineNumber(),id.getColumnNumber(),e);
-					Main.handleSemanticError(seo);
-				}
-				tempMap.put(tempFuncs.get(i).getIdentifier().toString(),
-						new FunType(tempFuncs.get(i)));
-			}
-			
+			s = p.parse();
+		} catch (FileNotFoundException e) {
+			System.out.println("Failed to read input file " + absPath);
+			return tempMap;
 		} catch (Exception e) {
-//			e.printStackTrace();
+			e.printStackTrace();
+			return tempMap;
 		}
+
+		// if the interface file is syntactically invalid
+		if (s.value instanceof Program) {
+//				String errorMsg = "(" + interfaceName + ".ixi"+ ")" + 
+//						" Syntax error beginning at 1:1: Interface file is invalid";
+			try {
+				bw.write("1:1 error: Interface file is invalid");
+				bw.close();
+			} catch (IOException e) {
+				System.out.println("Failed to write to output file");
+			}
+			throw new SyntaxError(1,1, "Interface file is invalid"); 
+		}
+		
+		Interface result = (Interface) s.value;
+		List<InterfaceFunc> tempFuncs = result.getInterfaceFuncs();
+		for (int i = 0; i < tempFuncs.size(); i++){
+			if (tempMap.containsKey(tempFuncs.get(i).getIdentifier().toString())){
+				Identifier id = tempFuncs.get(i).getIdentifier();
+				String e = "Duplicate function declaration found";
+				SemanticErrorObject seo = new SemanticErrorObject(
+						id.getLineNumber(),id.getColumnNumber(),e);
+				Main.handleSemanticError(seo);
+			}
+			tempMap.put(tempFuncs.get(i).getIdentifier().toString(),
+					new FunType(tempFuncs.get(i)));
+		}
+
 		return tempMap;
 	}
 	

@@ -153,7 +153,7 @@ expr ::= constant:c                                                 {: RESULT = 
          |
          OPEN_PAREN expr:expression CLOSE_PAREN                     {: RESULT = expression; :}
          |
-         error:e                                                    {: Main.handleError("Invalid expression."); :}
+         error:e                                                    {: Main.handleSyntaxError("Invalid expression."); :}
          ;
 
 function_arg ::= expr:expression                                    {: RESULT = new FunctionArg(expression); :}
@@ -368,7 +368,7 @@ var_decl ::= identifier:id COLON mixed_array_type:mat               {: RESULT = 
 
 var_init ::= var_decl:vd GETS expr:expression                       {: RESULT = new VarInit(vd, expression); :}
              |
-             error:e                                                {: Main.handleError("Invalid assignment operator."); :}  
+             error:e                                                {: Main.handleSyntaxError("Invalid assignment operator."); :}  
              ;
 
 while_stmt ::= WHILE OPEN_PAREN expr:expression CLOSE_PAREN stmt:s  {: RESULT = new WhileStmt(expression, s); :}
@@ -378,5 +378,5 @@ xi_file ::= program:p                                               {: RESULT = 
             |
             interface:i                                             {: RESULT = i; :}
             |
-            error:e                                                 {: Main.handleError("Unexpected token "); :}  
+            error:e                                                 {: Main.handleSyntaxError("Unexpected token "); :}  
             ;

@@ -3,6 +3,7 @@
 package jl2755;
 
 import java_cup.runtime.*;
+import jl2755.exceptions.LexicalError;
 
 %%
 
@@ -169,8 +170,9 @@ SingleCharacter = [^\n\'\\\"]
   \\[x]{HexLiteral}              { string.append( yytext() ); currCol = currCol+4; }
   
   /* error cases */
-  {LineTerminator}               { throw new RuntimeException(yyline() + ":" + ++currCol + " error: Illegal input \"\\n\""); }
-  [^]                            { throw new RuntimeException(yyline() + ":" + ++currCol + " error: Illegal input \"" + yytext() + "\""); }
+  {LineTerminator}               { throw new LexicalError(yyline(), currCol+1, "Illegal input \"\\n\""); }
+
+  [^]                            { throw new LexicalError(yyline(), currCol+1, "Illegal input \"" + yytext() + "\""); }
 }
 
 <CHARLITERAL> {
@@ -186,10 +188,10 @@ SingleCharacter = [^\n\'\\\"]
   \\[x]{HexLiteral}\'            { yybegin(YYINITIAL); return symbol(sym.CHARACTER_LITERAL, origLine, origCol, yytext().substring(0, yylength())); }
   
   /* error cases */
-  \'                             { throw new RuntimeException(origLine + ":" + origCol + " error: Illegal input \"\'\""); }
-  {LineTerminator}               { throw new RuntimeException(yyline() + ":" + yycolumn() + " error: Illegal input \"\\n\""); }
+  \'                             { throw new LexicalError(origLine, origCol, "Illegal input \"\'\""); }
+  {LineTerminator}               { throw new LexicalError(yyline(), yycolumn(), "Illegal input \"\\n\""); }
 }
 
 /* error fallback */
-[^]                              { throw new RuntimeException(yyline() + ":" + yycolumn() + " error: Illegal input \"" + yytext() + "\""); }
+[^]                              { throw new LexicalError(yyline(), yycolumn(), "Illegal input \"" + yytext() + "\""); }
 <<EOF>>                          { return symbol(sym.EOF); }

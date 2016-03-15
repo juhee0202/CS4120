@@ -1,30 +1,8 @@
 package jl2755.visitor;
 
 import edu.cornell.cs.cs4120.xic.ir.*;
-import jl2755.ast.ArrayElement;
-import jl2755.ast.ArrayElementList;
-import jl2755.ast.ArrayLiteral;
-import jl2755.ast.AssignmentStmt;
-import jl2755.ast.BinaryExpr;
-import jl2755.ast.BlockStmt;
-import jl2755.ast.FunctionArg;
-import jl2755.ast.FunctionCall;
-import jl2755.ast.FunctionDecl;
-import jl2755.ast.FunctionDeclList;
-import jl2755.ast.Identifier;
-import jl2755.ast.IfStmt;
-import jl2755.ast.IndexedBrackets;
-import jl2755.ast.Literal;
-import jl2755.ast.Program;
-import jl2755.ast.ReturnStmt;
-import jl2755.ast.Stmt;
-import jl2755.ast.StmtList;
-import jl2755.ast.TupleInit;
-import jl2755.ast.UnaryExpr;
-import jl2755.ast.UseId;
-import jl2755.ast.VarDecl;
-import jl2755.ast.VarInit;
-import jl2755.ast.WhileStmt;
+import edu.cornell.cs.cs4120.xic.ir.IRBinOp.OpType;
+import jl2755.ast.*;
 
 public class MIRVisitor implements Visitor{
 	
@@ -68,8 +46,17 @@ public class MIRVisitor implements Visitor{
 
 	@Override
 	public void visit(BinaryExpr be) {
-		// TODO Auto-generated method stub
-		
+		BinaryOp op = be.getBinaryOp();
+		be.getLeftExpr().accept(this);
+		IRExpr leftNode = (IRExpr) tempNode;
+		be.getRightExpr().accept(this);
+		IRExpr rightNode = (IRExpr) tempNode;
+		OpType tempOp = null;
+		switch(op){
+		case PLUS: tempOp = OpType.ADD; break;
+		// TODO: Pls.
+		}
+		tempNode = new IRBinOp(tempOp, leftNode, rightNode);
 	}
 
 	@Override

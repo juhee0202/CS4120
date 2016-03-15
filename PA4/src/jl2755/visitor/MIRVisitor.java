@@ -240,10 +240,14 @@ public class MIRVisitor implements Visitor{
 
 	@Override
 	public void visit(UseId ui) {
-		// TODO Auto-generated method stub
 		// Din dew nuffin
 	}
 
+	@Override
+	public void visit(VarDecl vd) {
+		// Should do nothing
+	}
+	
 	/**
 	 * Dirties tempNode to IRMove
 	 */

@@ -1,6 +1,7 @@
 package edu.cornell.cs.cs4120.xic.ir;
 
 import edu.cornell.cs.cs4120.util.SExpPrinter;
+import edu.cornell.cs.cs4120.xic.ir.visit.AggregateVisitor;
 import edu.cornell.cs.cs4120.xic.ir.visit.IRVisitor;
 import edu.cornell.cs.cs4120.xic.ir.visit.InsnMapsBuilder;
 
@@ -34,6 +35,13 @@ public class IRFuncDecl extends IRNode {
         if (stmt != body) return new IRFuncDecl(name, stmt);
 
         return this;
+    }
+
+    @Override
+    public <T> T aggregateChildren(AggregateVisitor<T> v) {
+        T result = v.unit();
+        result = v.bind(result, v.visit(body));
+        return result;
     }
 
     @Override

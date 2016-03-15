@@ -2,38 +2,18 @@ package jl2755.visitor;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import edu.cornell.cs.cs4120.xic.ir.*;
-import jl2755.ast.ArrayElement;
-import jl2755.ast.ArrayElementList;
-import jl2755.ast.ArrayLiteral;
-import jl2755.ast.AssignmentStmt;
-import jl2755.ast.BinaryExpr;
-import jl2755.ast.BlockStmt;
-import jl2755.ast.Expr;
-import jl2755.ast.FunctionArg;
-import jl2755.ast.FunctionCall;
-import jl2755.ast.FunctionDecl;
-import jl2755.ast.FunctionDeclList;
-import jl2755.ast.Identifier;
-import jl2755.ast.IfStmt;
-import jl2755.ast.IndexedBrackets;
-import jl2755.ast.Literal;
-import jl2755.ast.Program;
-import jl2755.ast.ReturnStmt;
-import jl2755.ast.Stmt;
-import jl2755.ast.StmtList;
-import jl2755.ast.TupleInit;
-import jl2755.ast.UnaryExpr;
-import jl2755.ast.UseId;
-import jl2755.ast.VarDecl;
-import jl2755.ast.VarInit;
-import jl2755.ast.WhileStmt;
+import edu.cornell.cs.cs4120.xic.ir.IRBinOp.OpType;
+import jl2755.ast.*;
 
 public class MIRVisitor implements Visitor{
 	
 	private IRNode tempNode;
-
+	private static final int TRUE = 1;
+	private static final int FALSE = 0;
+	
 	@Override
 	public void visit(ArrayElement ae) {
 		// TODO Auto-generated method stub
@@ -72,8 +52,17 @@ public class MIRVisitor implements Visitor{
 
 	@Override
 	public void visit(BinaryExpr be) {
-		// TODO Auto-generated method stub
-		
+		BinaryOp op = be.getBinaryOp();
+		be.getLeftExpr().accept(this);
+		IRExpr leftNode = (IRExpr) tempNode;
+		be.getRightExpr().accept(this);
+		IRExpr rightNode = (IRExpr) tempNode;
+		OpType tempOp = null;
+		switch(op){
+		case PLUS: tempOp = OpType.ADD; break;
+		// TODO: Pls.
+		}
+		tempNode = new IRBinOp(tempOp, leftNode, rightNode);
 	}
 
 	/**
@@ -81,14 +70,13 @@ public class MIRVisitor implements Visitor{
 	 */
 	@Override
 	public void visit(BlockStmt bs) {
-		// TODO Auto-generated method stub
+		// TODO Thomaz
 		
 	}
 
 	@Override
 	public void visit(FunctionArg fa) {
-		// TODO Auto-generated method stub
-		
+		// TODO Mebbe delete this shiet
 	}
 
 	/**
@@ -146,14 +134,12 @@ public class MIRVisitor implements Visitor{
 
 	@Override
 	public void visit(FunctionDeclList fdl) {
-		// TODO Auto-generated method stub
-		
+		// TODO Recursively visit and make SEQ
 	}
 
 	@Override
 	public void visit(Identifier id) {
-		// TODO Auto-generated method stub
-		
+		tempNode = new IRTemp(id.toString());
 	}
 
 	@Override
@@ -162,16 +148,18 @@ public class MIRVisitor implements Visitor{
 		
 	}
 
+	/**
+	 * Should not be visited
+	 */
 	@Override
 	public void visit(IndexedBrackets ib) {
-		// TODO Auto-generated method stub
-		
+		// Should not be visited
 	}
 
 	@Override
 	public void visit(Literal l) {
 		// TODO Auto-generated method stub
-		
+		// Ask about how to represent booleans
 	}
 
 	@Override
@@ -183,48 +171,104 @@ public class MIRVisitor implements Visitor{
 	@Override
 	public void visit(ReturnStmt rs) {
 		// TODO Auto-generated method stub
-		
+		// Thomas: "I got it"
 	}
 
 	@Override
 	public void visit(Stmt s) {
-		// TODO Auto-generated method stub
-		
+		s.getNakedStmt().accept(this);
 	}
 
 	@Override
 	public void visit(StmtList sl) {
-		// TODO Auto-generated method stub
-		
+		List<Stmt> allStmts = sl.getAllStmt();
+		List<IRStmt> allIRStmts = new ArrayList<IRStmt>();
+		for (int i = 0; i < allStmts.size(); i++) {
+			allStmts.get(i).accept(this);
+			allIRStmts.add((IRStmt) tempNode);
+		}
+		tempNode = new IRSeq(allIRStmts);
 	}
 
+	/**
+	 * Dirties tempNode to IRExp or IRSeq
+	 */
 	@Override
 	public void visit(TupleInit ti) {
 		// TODO Auto-generated method stub
-		
+		// Jeff: "I got it"
+		ti.getFunctionCall().accept(this);
+		if (ti.getIndex() == 0) {
+			tempNode = new IRExp((IRExpr) tempNode);
+		} else {
+			// vd, tupleDeclList = f()
+			// THIS IMPLEMENTATION ASSUMES ALL RETURN VALUES ARE KEPT ON THE STACK
+			// TODO: finalize implementation
+			IRExpr stack = ((IRCall) tempNode).args().get(0);
+			IRExp exp = new IRExp((IRExpr) tempNode);
+			int count = 0;
+			IRTemp temp;
+			IRExpr result;
+			IRBinOp addr;
+			IRMove move;
+			List<IRStmt> stmts = new ArrayList<IRStmt>();
+			stmts.add(exp);
+			List<VarDecl> vdlist = ti.getVarDecls();
+			for (VarDecl vd : vdlist) {
+				if (vd != null) {
+					// Assign result of function call
+					temp = new IRTemp(vd.getIdentifier().toString());
+					addr = new IRBinOp(OpType.ADD,stack,new IRConst(8*count));
+					result = new IRMem(addr);
+					move = new IRMove(temp,result);
+					stmts.add(move);
+				}
+				count++;
+			}
+			tempNode = new IRSeq(stmts);
+		}
 	}
 
 	@Override
 	public void visit(UnaryExpr ue) {
 		// TODO Auto-generated method stub
-		
+		// NOT with null right, MINUS with 0
 	}
 
 	@Override
 	public void visit(UseId ui) {
-		// TODO Auto-generated method stub
-		
+		// Din dew nuffin
 	}
 
 	@Override
 	public void visit(VarDecl vd) {
-		// TODO Auto-generated method stub
-		
+		// Should do nothing
 	}
-
+	
+	/**
+	 * Dirties tempNode to IRMove
+	 */
 	@Override
 	public void visit(VarInit vi) {
-		// TODO Auto-generated method stub
+		VarDecl vd = vi.getVarDecl();
+		Identifier id = vd.getIdentifier();
+		int index = vd.getIndex();
+		if (index == 0) {
+			// x: t[] = e
+			// move(temp(x),mem(e))
+			vi.getExpr().accept(this);
+			IRExpr array = (IRExpr) tempNode;
+			IRExpr temp = new IRTemp(id.toString());
+			tempNode = new IRMove(temp,array);
+		} else if (index == 1) {
+			// x: int = e or x: bool = e
+			// move(temp(x),E(e))
+			id.accept(this);
+			IRExpr temp = (IRExpr) tempNode;
+			vi.getExpr().accept(this);
+			IRExpr e = (IRExpr) tempNode;
+			tempNode = new IRMove(temp,e);
+		}
 		
 	}
 

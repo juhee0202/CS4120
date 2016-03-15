@@ -5,6 +5,8 @@ import java.util.Arrays;
 import java.util.List;
 
 import edu.cornell.cs.cs4120.util.SExpPrinter;
+import edu.cornell.cs.cs4120.xic.ir.visit.AggregateVisitor;
+import edu.cornell.cs.cs4120.xic.ir.visit.CheckCanonicalIRVisitor;
 import edu.cornell.cs.cs4120.xic.ir.visit.IRVisitor;
 
 /**
@@ -64,6 +66,20 @@ public class IRCall extends IRExpr {
         if (modified) return new IRCall(target, results);
 
         return this;
+    }
+
+    @Override
+    public <T> T aggregateChildren(AggregateVisitor<T> v) {
+        T result = v.unit();
+        result = v.bind(result, v.visit(target));
+        for (IRExpr arg : args)
+            result = v.bind(result, v.visit(arg));
+        return result;
+    }
+
+    @Override
+    public boolean isCanonical(CheckCanonicalIRVisitor v) {
+        return !v.inExpr();
     }
 
     @Override

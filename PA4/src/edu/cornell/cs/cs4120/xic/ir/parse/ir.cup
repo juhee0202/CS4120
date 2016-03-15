@@ -174,9 +174,6 @@ op ::=
     | XOR expr:x expr:y {:
         RESULT = new IRBinOp(IRBinOp.OpType.XOR, x,y);
     :}
-    | NOT expr:x expr:y {:
-        RESULT = new IRBinOp(IRBinOp.OpType.NOT, x,y);
-    :}
     | LSHIFT expr:x expr:y {:
         RESULT = new IRBinOp(IRBinOp.OpType.LSHIFT, x,y);
     :}

@@ -1,6 +1,7 @@
 package edu.cornell.cs.cs4120.xic.ir;
 
 import edu.cornell.cs.cs4120.util.SExpPrinter;
+import edu.cornell.cs.cs4120.xic.ir.visit.AggregateVisitor;
 import edu.cornell.cs.cs4120.xic.ir.visit.IRVisitor;
 
 /**
@@ -10,6 +11,7 @@ import edu.cornell.cs.cs4120.xic.ir.visit.IRVisitor;
  */
 public class IRExp extends IRStmt {
     private IRExpr expr;
+
     /**
      *
      * @param expr the expression to be evaluated and result discarded
@@ -34,6 +36,13 @@ public class IRExp extends IRStmt {
         if (expr != this.expr) return new IRExp(expr);
 
         return this;
+    }
+
+    @Override
+    public <T> T aggregateChildren(AggregateVisitor<T> v) {
+        T result = v.unit();
+        result = v.bind(result, v.visit(expr));
+        return result;
     }
 
     @Override

@@ -1,6 +1,8 @@
 package edu.cornell.cs.cs4120.xic.ir;
 
 import edu.cornell.cs.cs4120.util.SExpPrinter;
+import edu.cornell.cs.cs4120.xic.ir.visit.AggregateVisitor;
+import edu.cornell.cs.cs4120.xic.ir.visit.CheckCanonicalIRVisitor;
 import edu.cornell.cs.cs4120.xic.ir.visit.IRVisitor;
 
 /**
@@ -43,6 +45,19 @@ public class IRESeq extends IRExpr {
             return new IRESeq(stmt, expr);
 
         return this;
+    }
+
+    @Override
+    public <T> T aggregateChildren(AggregateVisitor<T> v) {
+        T result = v.unit();
+        result = v.bind(result, v.visit(stmt));
+        result = v.bind(result, v.visit(expr));
+        return result;
+    }
+
+    @Override
+    public boolean isCanonical(CheckCanonicalIRVisitor v) {
+        return false;
     }
 
     @Override

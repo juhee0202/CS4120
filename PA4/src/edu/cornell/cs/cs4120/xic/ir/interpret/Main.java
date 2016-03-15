@@ -1,7 +1,8 @@
 package edu.cornell.cs.cs4120.xic.ir.interpret;
 
-import java.io.ByteArrayOutputStream;
+import java.io.PrintWriter;
 import java.io.StringReader;
+import java.io.StringWriter;
 
 import edu.cornell.cs.cs4120.util.CodeWriterSExpPrinter;
 import edu.cornell.cs.cs4120.util.SExpPrinter;
@@ -19,6 +20,7 @@ import edu.cornell.cs.cs4120.xic.ir.IRStmt;
 import edu.cornell.cs.cs4120.xic.ir.IRTemp;
 import edu.cornell.cs.cs4120.xic.ir.parse.IRLexer;
 import edu.cornell.cs.cs4120.xic.ir.parse.IRParser;
+import edu.cornell.cs.cs4120.xic.ir.visit.CheckCanonicalIRVisitor;
 
 public class Main {
 
@@ -57,11 +59,12 @@ public class Main {
                                                 new IRTemp("i"),
                                                 new IRTemp("j"))),
                           new IRMove(new IRTemp("y"), new IRTemp(ret1)),
-                          new IRMove(new IRTemp(ret0), new IRBinOp(OpType.ADD,
-                                                                   new IRTemp("x"),
-                                                                   new IRBinOp(OpType.MUL,
-                                                                               new IRConst(5),
-                                                                               new IRTemp("y")))),
+                          new IRMove(new IRTemp(ret0),
+                                     new IRBinOp(OpType.ADD,
+                                                 new IRTemp("x"),
+                                                 new IRBinOp(OpType.MUL,
+                                                             new IRConst(5),
+                                                             new IRTemp("y")))),
 
                           new IRReturn());
         IRFuncDecl bFunc = new IRFuncDecl("b", bBody);
@@ -72,11 +75,12 @@ public class Main {
 
         // IR pretty-printer demo
         System.out.println("Code:");
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        SExpPrinter sp = new CodeWriterSExpPrinter(bos);
-        compUnit.printSExp(sp);
-        sp.flush();
-        System.out.println(bos);
+        StringWriter sw = new StringWriter();
+        try (PrintWriter pw = new PrintWriter(sw);
+             SExpPrinter sp = new CodeWriterSExpPrinter(pw)) {
+            compUnit.printSExp(sp);
+        }
+        System.out.println(sw);
 
         // IR interpreter demo
         {
@@ -85,8 +89,15 @@ public class Main {
             System.out.println("b(2,1) == " + result);
         }
 
+        // IR canonical checker demo
+        {
+            CheckCanonicalIRVisitor cv = new CheckCanonicalIRVisitor();
+            System.out.print("Canonical?: ");
+            System.out.println(cv.visit(compUnit));
+        }
+
         // IR parser demo
-        String prog = bos.toString();
+        String prog = sw.toString();
         try (StringReader r = new StringReader(prog)) {
             IRParser parser = new IRParser(new IRLexer(r));
             IRCompUnit compUnit_ = null;

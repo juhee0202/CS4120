@@ -553,6 +553,8 @@ public class TypeCheckVisitor implements Visitor {
 			Main.handleSemanticError(seo);
 		}
 		FunType funType = (FunType)temp;
+		String ABIName = functionToABIName(id, funType);
+		fc.setABIName(ABIName);
 		VType paramType = funType.getParamTypes();
 		VType args;
 		
@@ -1135,5 +1137,61 @@ public class TypeCheckVisitor implements Visitor {
 			}
 		}
 
+	}
+	
+	/**
+	 * Convert a VType to ABI string
+	 * Used for converting function params/returns
+	 * @param VType t (t cannot be of FunType)
+	 * @return ABI string translation of t
+	 */
+	private String translateVTypeToABIString(VType t) {
+		String ABIString = "";
+		if (t instanceof VarType) {
+			if (((VarType) t).isArray()) {		// array
+				int numBrackets = ((VarType) t).getNumBrackets();
+				for (int i = 0; i < numBrackets; i++) {
+					ABIString += "a";
+				}
+				ABIString += ((VarType) t).getIsBool() ? "b" : "i";
+			} else if (((VarType) t).isInt()) {	// int
+				ABIString = "i";
+			} else {							// bool
+				ABIString = "b";
+			}
+		} else if (t instanceof TupleType) {
+			List<VType> tList = ((TupleType) t).getTypes();
+			for (VType tt : tList) {
+				assert(!(tt instanceof UnitType));
+				ABIString += translateVTypeToABIString(tt);
+			}
+		}
+		
+		return ABIString;
+	}
+	
+	/**
+	 * @param fnName
+	 * @param fnType
+	 * @return ABI string translation of the function
+	 */
+	private String functionToABIName(String fnName, FunType fnType) {
+		String ABIName = "_I" + fnName + "_";
+		
+		String returnTypeString = "";
+		VType returnTypes = fnType.getReturnTypes();
+		if (returnTypes instanceof UnitType) {
+			returnTypeString = "p";
+		} else if (returnTypes instanceof VarType) {
+			returnTypeString = translateVTypeToABIString(returnTypes);
+		} else if (returnTypes instanceof TupleType) {
+			int numTypes = ((TupleType) returnTypes).numTypes();
+			returnTypeString = "t" + numTypes + translateVTypeToABIString(returnTypes);
+		}
+		
+		VType paramTypes = fnType.getParamTypes();
+		String paramTypesString = translateVTypeToABIString(paramTypes);
+		
+		return ABIName + returnTypeString + paramTypesString;
 	}
 }

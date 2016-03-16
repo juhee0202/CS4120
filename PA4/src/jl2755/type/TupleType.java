@@ -110,6 +110,13 @@ public class TupleType implements VType {
 		return true;
 	}
 	
+	/**
+	 * @return number of types in the tuple
+	 */
+	public int numTypes() {
+		return types.size();
+	}
+	
 	@Override
 	public String toString() {
 		String returnString = types.get(0).toString();

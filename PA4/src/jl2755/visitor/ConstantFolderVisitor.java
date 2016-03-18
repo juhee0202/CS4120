@@ -255,14 +255,6 @@ public class ConstantFolderVisitor implements Visitor{
 	}
 
 	@Override
-	public void visit(FunctionDeclList fdl) {
-		if (fdl.getIndex() == 1) {
-			fdl.getFunctionDecl().accept(this);
-			fdl.getFunctionDeclList().accept(this);
-		}
-	}
-
-	@Override
 	public void visit(Identifier id) {
 		caseIndex = 3;
 	}
@@ -324,9 +316,9 @@ public class ConstantFolderVisitor implements Visitor{
 
 	@Override
 	public void visit(Program p) {
-		p.getFunctionDeclList().accept(this);
-		if (p.getIndex() == 1) {
-			p.getUseId().accept(this);
+		List<FunctionDecl> funcs = p.getFunctionDecls();
+		for (FunctionDecl fd: funcs) {
+			fd.accept(this);
 		}
 	}
 	

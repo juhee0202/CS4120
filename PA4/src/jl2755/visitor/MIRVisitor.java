@@ -139,11 +139,6 @@ public class MIRVisitor implements Visitor{
 	}
 
 	@Override
-	public void visit(FunctionDeclList fdl) {
-		// TODO Recursively visit and make SEQ
-	}
-
-	@Override
 	public void visit(Identifier id) {
 		tempNode = new IRTemp(id.toString());
 	}
@@ -187,7 +182,13 @@ public class MIRVisitor implements Visitor{
 	@Override
 	public void visit(Program p) {
 		// TODO Auto-generated method stub
-		
+		List<FunctionDecl> funcs = p.getFunctionDecls();
+		List<IRStmt> list = new ArrayList<IRStmt>();
+		for (FunctionDecl fd: funcs) {
+			fd.accept(this);
+			list.add((IRStmt) tempNode);
+		}
+		tempNode = new IRSeq(list);
 	}
 
 	@Override

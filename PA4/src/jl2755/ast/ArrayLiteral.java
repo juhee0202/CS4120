@@ -20,6 +20,19 @@ public class ArrayLiteral implements Constant {
 		openBracket_col = obright;
 	}
 	
+	public ArrayLiteral(String stringToArray) {
+		arrElemList = new ArrayElementList(stringToArray);
+	}
+	
+	public ArrayLiteral(ArrayElementList l) {
+		arrElemList = l;
+	}
+	
+	public static ArrayLiteral addTwoArrays(ArrayLiteral leftArray, ArrayLiteral rightArray) {
+		return new ArrayLiteral(ArrayElementList.addTwoArrayElementLists(leftArray.getArrElemList(),
+				rightArray.getArrElemList()));
+	}
+	
 	public void prettyPrintNode(){
 		CodeWriterSExpPrinter tempPrinter = GlobalPrettyPrinter.getInstance();
 		tempPrinter.startList();

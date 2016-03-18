@@ -105,4 +105,28 @@ public class TupleDeclList {
 		}
 		return temp;
 	}
+
+	public VarDecl getVarDecl() {
+		return varDecl;
+	}
+
+	public void setVarDecl(VarDecl varDecl) {
+		this.varDecl = varDecl;
+	}
+
+	public TupleDeclList getTupleDeclList() {
+		return tupleDeclList;
+	}
+
+	public void setTupleDeclList(TupleDeclList tupleDeclList) {
+		this.tupleDeclList = tupleDeclList;
+	}
+
+	public int getIndex() {
+		return index;
+	}
+
+	public void setIndex(int index) {
+		this.index = index;
+	}
 }

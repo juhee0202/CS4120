@@ -2,6 +2,7 @@ package jl2755.visitor;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import edu.cornell.cs.cs4120.xic.ir.*;
 import edu.cornell.cs.cs4120.xic.ir.IRBinOp.OpType;
@@ -10,7 +11,15 @@ import jl2755.ast.*;
 public class MIRVisitor implements Visitor{
 	
 	private IRNode tempNode;
-
+	private static final int TRUE = 1;
+	private static final int FALSE = 0;
+	private int labelCount;
+	
+	public MIRVisitor(Program p) {
+		labelCount = 0;
+		// TODO: Constructor
+	}
+	
 	@Override
 	public void visit(ArrayElement ae) {
 		// TODO Auto-generated method stub
@@ -96,14 +105,31 @@ public class MIRVisitor implements Visitor{
 	 */
 	@Override
 	public void visit(BlockStmt bs) {
-		// TODO Auto-generated method stub
-		
+		int index = bs.getIndex();
+		if (index == 1) {
+			bs.getStmtList().accept(this);	// tempNode is set in here
+		} else if (index == 2) {
+			// visit stmt list
+			bs.getStmtList().accept(this);	// tempNode is set in here
+			IRSeq stmtSeq = (IRSeq) tempNode;
+			List<IRStmt> irStmtList = stmtSeq.stmts();
+			
+			// visit return stmt
+			bs.getReturnStmt().accept(this);
+			if (tempNode != null) {	// there is a return value
+				IRSeq returnSeq = (IRSeq) tempNode;
+				List<IRStmt> returnStmtList = returnSeq.stmts();	
+				irStmtList.addAll(returnStmtList);	// merge stmt seq and return seq
+			}
+			tempNode = new IRSeq(irStmtList);
+		} else if (index == 3){
+			bs.getReturnStmt().accept(this);	// tempNode is set in here
+		}
 	}
 
 	@Override
 	public void visit(FunctionArg fa) {
-		// TODO Auto-generated method stub
-		
+		// TODO Mebbe delete this shiet
 	}
 
 	/**
@@ -115,12 +141,12 @@ public class MIRVisitor implements Visitor{
 	public void visit(FunctionCall fc) {
 		int index = fc.getIndex();
 		if (index == 0) {									// f()
-			String id = fc.getIdentifier().toString();
+			String id = fc.getABIName();
 			IRName lf = new IRName(id);
 			tempNode = new IRCall(lf);
 		} else if (index == 1) {							// f(a1,...,an) 
 			// get function label
-			String id = fc.getIdentifier().toString();
+			String id = fc.getABIName();
 			IRName lf = new IRName(id);
 			
 			// get function args
@@ -133,7 +159,7 @@ public class MIRVisitor implements Visitor{
 			}
 			tempNode = new IRCall(lf, irArgs);
 		} else {											// length(e)
-			IRName lf = new IRName("length"); 
+			IRName lf = new IRName("_Ilength_iai"); 	// TODO confirm function length's ABIName
 			fc.getExpr().accept(this);
 			IRExpr arg = (IRExpr) tempNode;
 			tempNode = new IRCall(lf, arg);
@@ -147,14 +173,11 @@ public class MIRVisitor implements Visitor{
 	@Override
 	public void visit(FunctionDecl fd) {
 		 // get function label
-		String id = fd.getIdentifier().toString();
-		IRLabel irLabel = new IRLabel(id.toString());
+		String label = fd.getABIName();
+		IRLabel irLabel = new IRLabel(label);
 		
 		// get statement sequence
 		BlockStmt blockStmt = fd.getBlockStmt();
-		// options
-		// 1) recursively visit each stmt in block stmt here
-		// 2) recursively visit block stmt and make it return IRSeq <-- this
 		blockStmt.accept(this);
 		IRSeq irSeq = (IRSeq) tempNode;
 		List<IRStmt> stmts = irSeq.stmts();
@@ -164,31 +187,47 @@ public class MIRVisitor implements Visitor{
 
 	@Override
 	public void visit(FunctionDeclList fdl) {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
 	public void visit(Identifier id) {
-		// TODO Auto-generated method stub
-		
+		tempNode = new IRTemp(id.toString());
 	}
 
 	@Override
 	public void visit(IfStmt is) {
-		// TODO Auto-generated method stub
-		
+		IRLabel trueLabel = new IRLabel("l"+labelCount++);
+		IRLabel falseLabel = new IRLabel("l"+labelCount++);
+		IRStmt ifJump = controlFlow(is.getExpr(),trueLabel,falseLabel);
+		if (is.getIndex() == 0) {
+			is.getStmt1().accept(this);
+			IRStmt stmt = (IRStmt) tempNode;
+			tempNode = new IRSeq(ifJump,trueLabel,stmt,falseLabel);
+		} else {
+			String end = "l"+labelCount++;
+			IRLabel endLabel = new IRLabel(end);
+			IRJump endJump = new IRJump(new IRName(end));
+			is.getStmt1().accept(this);
+			IRStmt stmt1 = (IRStmt) tempNode;
+			is.getStmt2().accept(this);
+			IRStmt stmt2 = (IRStmt) tempNode;
+			tempNode = new IRSeq(ifJump,trueLabel,stmt1,
+					endJump,falseLabel,stmt2,endLabel);
+		}
 	}
 
+	/**
+	 * Should not be visited
+	 */
 	@Override
 	public void visit(IndexedBrackets ib) {
-		// TODO Auto-generated method stub
-		
+		// Should not be visited
 	}
 
 	@Override
 	public void visit(Literal l) {
 		// TODO Auto-generated method stub
+
 		int index = l.getIndex();
 		/*
 		 * 0 for int literal,
@@ -230,38 +269,90 @@ public class MIRVisitor implements Visitor{
 			}
 			tempNode = new IRConst(character);
 		case 3:
-			tempNode = l.getBoolLit()? new IRConst(1) : new IRConst(0);
+			tempNode = l.getBoolLit()? new IRConst(TRUE) : new IRConst(FALSE);
 		}
+
+		// Ask about how to represent booleans
+
 	}
 
 	@Override
 	public void visit(Program p) {
-		// TODO Auto-generated method stub
+		// TODO handle use
 		
+		// recursively visit each function declaration
+		FunctionDeclList fdl = p.getFunctionDeclList();
+		List<FunctionDecl> functionDeclList = fdl.getFunctionDecls();
+		for (FunctionDecl fd : functionDeclList) {
+			fd.accept(this);
+		}
 	}
 
 	@Override
 	public void visit(ReturnStmt rs) {
-		// TODO Auto-generated method stub
-		
+		int index = rs.getIndex();
+		if (index == 0) {
+			tempNode = null;
+		} else {
+			List<Expr> exprList = rs.getListOfExpr();
+			List<IRStmt> stmtList = new ArrayList<IRStmt>(); 
+			
+			// add all return values in _RET temp
+			for (int i = 0; i < exprList.size(); i++) {
+				exprList.get(i).accept(this);
+				IRTemp ret = new IRTemp("_RET"+i);
+				IRMove irMove = new IRMove(ret, (IRExpr) tempNode);
+				stmtList.add(irMove);
+			}
+			
+			tempNode = new IRSeq(stmtList);
+		}
 	}
 
 	@Override
 	public void visit(Stmt s) {
-		// TODO Auto-generated method stub
-		
+		s.getNakedStmt().accept(this);
 	}
 
 	@Override
 	public void visit(StmtList sl) {
-		// TODO Auto-generated method stub
-		
+		List<Stmt> allStmts = sl.getAllStmt();
+		List<IRStmt> allIRStmts = new ArrayList<IRStmt>();
+		for (int i = 0; i < allStmts.size(); i++) {
+			allStmts.get(i).accept(this);
+			allIRStmts.add((IRStmt) tempNode);
+		}
+		tempNode = new IRSeq(allIRStmts);
 	}
-
+	
+	/**
+	 * Dirties tempNode to IRCall or IRSeq
+	 */
 	@Override
 	public void visit(TupleInit ti) {
 		// TODO Auto-generated method stub
-		
+		// Jeff: "I got it"
+		ti.getFunctionCall().accept(this);
+		if (ti.getIndex() != 0) {
+			// vd, tupleDeclList = f()
+			int count = 0;
+			IRTemp temp;
+			IRExpr result;
+			IRMove move;
+			List<IRStmt> stmts = new ArrayList<IRStmt>();
+			List<VarDecl> vdlist = ti.getVarDecls();
+			for (VarDecl vd : vdlist) {
+				if (vd != null) {
+					// Assign result of function call
+					temp = new IRTemp(vd.getIdentifier().toString());
+					result = new IRTemp("_RET"+count);
+					move = new IRMove(temp,result);
+					stmts.add(move);
+				}
+				count++;
+			}
+			tempNode = new IRSeq(stmts);
+		}
 	}
 
 	@Override
@@ -276,46 +367,62 @@ public class MIRVisitor implements Visitor{
 			tempNode = new IRBinOp(OpType.SUB, zero, expr);
 			break;
 		case LOG_NEG: 
-			tempNode = new IRBinOp(OpType.NOT, expr, null);
+			tempNode = new IRBinOp(OpType.XOR, expr, new IRConst(TRUE));
 			break;
 		default:
 			// TODO: error handling
 		}
-				
 	}
 
 	@Override
 	public void visit(UseId ui) {
-		// TODO Auto-generated method stub
-		
+		// Din dew nuffin
 	}
 
 	@Override
 	public void visit(VarDecl vd) {
-		// TODO Auto-generated method stub
-		
+		// Should do nothing
 	}
-
+	
+	/**
+	 * Dirties tempNode to IRMove
+	 */
 	@Override
 	public void visit(VarInit vi) {
-		// TODO Auto-generated method stub
+		VarDecl vd = vi.getVarDecl();
+		Identifier id = vd.getIdentifier();
+		int index = vd.getIndex();
+		if (index == 0) {
+			// x: t[] = e
+			// move(temp(x),mem(e))
+			vi.getExpr().accept(this);
+			IRExpr array = (IRExpr) tempNode;
+			IRExpr temp = new IRTemp(id.toString());
+			tempNode = new IRMove(temp,array);
+		} else if (index == 1) {
+			// x: int = e or x: bool = e
+			// move(temp(x),E(e))
+			id.accept(this);
+			IRExpr temp = (IRExpr) tempNode;
+			vi.getExpr().accept(this);
+			IRExpr e = (IRExpr) tempNode;
+			tempNode = new IRMove(temp,e);
+		}
 		
 	}
 
 	@Override
 	public void visit(WhileStmt ws) {
-		// TODO: Optimize this naive way
-		IRLabel startOfLoop = new IRLabel("Head");
-		ws.getExpr().accept(this);
-		IRExpr conditionalExpr = (IRExpr) tempNode;
-		IRLabel trueLabel = new IRLabel("True");
-		IRLabel falseLabel = new IRLabel("False");
-		IRCJump cJumpNode = new IRCJump(conditionalExpr, "True", "False");
+		String start = "l"+labelCount++;
+		IRLabel startOfLoop = new IRLabel(start);
+		IRLabel trueLabel = new IRLabel("l"+labelCount++);
+		IRLabel falseLabel = new IRLabel("l"+labelCount++);
+		IRStmt cJumpNode = controlFlow(ws.getExpr(),trueLabel,falseLabel);
 		ws.getStmt().accept(this);
 		IRStmt loopStmts = (IRStmt) tempNode;
-		IRJump jumpToStart = new IRJump(new IRName("Head"));
-		tempNode = new IRSeq(startOfLoop, cJumpNode, trueLabel, loopStmts,
-				jumpToStart, falseLabel);
+		IRJump jumpToStart = new IRJump(new IRName(start));
+		tempNode = new IRSeq(startOfLoop, cJumpNode, trueLabel, 
+				loopStmts, jumpToStart, falseLabel);
 	}
 
 	/**
@@ -331,4 +438,54 @@ public class MIRVisitor implements Visitor{
 		return null;
 	}
 	
+	/**
+	 * Creates and returns an IRStmt that corresponds to the control flow given.
+	 * 
+	 * May dirty tempNode to IRExpr
+	 * 
+	 * @param e	the expression to evaluate, must be boolean
+	 * @param t the IR label to jump to if e evaluates to true
+	 * @param f the IR label to jump to if e evaluates to false
+	 * @return	an IR statement that gives the execution of the control flow
+	 */
+	private IRStmt controlFlow(Expr e, IRLabel t, IRLabel f) {
+		if (e instanceof Literal) {
+			// true or false
+			Literal e1 = (Literal) e;
+			if (e1.getBoolLit()) {
+				return new IRJump(new IRName(t.name()));
+			} else {
+				return new IRJump(new IRName(f.name()));
+			}
+		} else if (e instanceof UnaryExpr) {
+			// !e
+			UnaryExpr e1 = (UnaryExpr) e;
+			Expr e2 = e1.getExpr();
+			return controlFlow(e2, f, t);
+		} else if (e instanceof BinaryExpr) {
+			// e1 == e2, e1 != e2, e1 & e2, e1 | e2, e1 < e2, e1 > e2
+			BinaryExpr e1 = (BinaryExpr) e;
+			BinaryOp op = e1.getBinaryOp();
+			if (op == BinaryOp.AND) {
+				IRLabel trueLabel = new IRLabel("l"+labelCount++);
+				IRStmt c1 = controlFlow(e1.getLeftExpr(),trueLabel,f);
+				IRStmt c2 = controlFlow(e1.getRightExpr(),t,f);
+				return new IRSeq(c1,trueLabel,c2);
+			} else if (op == BinaryOp.OR) {
+				IRLabel falseLabel = new IRLabel("l"+labelCount++);
+				IRStmt c1 = controlFlow(e1.getLeftExpr(),t,falseLabel);
+				IRStmt c2 = controlFlow(e1.getRightExpr(),t,f);
+				return new IRSeq(c1,falseLabel,c2);
+			} else {
+				e.accept(this);
+				IRExpr e2 = (IRExpr) tempNode;
+				return new IRCJump(e2,t.name(),f.name());
+			}
+		} else {
+			// x, a[i], f() 
+			e.accept(this);
+			IRExpr e2 = (IRExpr) tempNode;
+			return new IRCJump(e2,t.name(),f.name());
+		}		
+	}
 }

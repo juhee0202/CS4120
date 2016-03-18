@@ -63,14 +63,6 @@ public class BinaryExpr implements OpExpr {
 		this.leftExpr_line = leftExpr_line;
 	}
 
-	public BinaryOp getOp() {
-		return op;
-	}
-
-	public void setOp(BinaryOp op) {
-		this.op = op;
-	}
-
 	public void prettyPrintNode() {
 		CodeWriterSExpPrinter tempPrinter = GlobalPrettyPrinter.getInstance();
 		tempPrinter.startList();

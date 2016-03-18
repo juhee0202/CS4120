@@ -3,6 +3,8 @@ package jl2755.ast;
 import java.util.ArrayList;
 import java.util.List;
 
+import jl2755.visitor.Visitor;
+
 /**
  * Class that represents a list of expressions
  * used in a return statement.
@@ -70,4 +72,5 @@ public class ReturnList {
 		}
 		return tempList;
 	}
+
 }

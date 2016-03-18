@@ -1,8 +1,8 @@
 #!/bin/sh
 
-prg=$(basename "$0")
-reldir=$(dirname "$0")
-dir=$(cd "$reldir"; pwd -P)
+this=$(readlink -e "$0")
+prg=$(basename "$this")
+dir=$(dirname "$this")
 
 usage() {
   compiler "-help"

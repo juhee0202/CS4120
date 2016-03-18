@@ -5,6 +5,8 @@ import java.util.Arrays;
 import java.util.List;
 
 import edu.cornell.cs.cs4120.util.SExpPrinter;
+import edu.cornell.cs.cs4120.xic.ir.visit.AggregateVisitor;
+import edu.cornell.cs.cs4120.xic.ir.visit.CheckCanonicalIRVisitor;
 import edu.cornell.cs.cs4120.xic.ir.visit.IRVisitor;
 
 /**
@@ -55,8 +57,27 @@ public class IRSeq extends IRStmt {
     }
 
     @Override
+    public <T> T aggregateChildren(AggregateVisitor<T> v) {
+        T result = v.unit();
+        for (IRStmt stmt : stmts)
+            result = v.bind(result, v.visit(stmt));
+        return result;
+    }
+
+    @Override
+    public CheckCanonicalIRVisitor checkCanonicalEnter(
+            CheckCanonicalIRVisitor v) {
+        return v.enterSeq();
+    }
+
+    @Override
+    public boolean isCanonical(CheckCanonicalIRVisitor v) {
+        return !v.inSeq();
+    }
+
+    @Override
     public void printSExp(SExpPrinter p) {
-        p.startList();
+        p.startUnifiedList();
         p.printAtom("SEQ");
         for (IRStmt stmt : stmts)
             stmt.printSExp(p);

@@ -13,6 +13,7 @@ import jl2755.visitor.Visitor;
  */
 public class FunctionCall implements Expr,NakedStmt {
 	private Identifier identifier;
+	private String ABIName;
 	private int identifier_col;
 	private int identifier_line;
 	private FunctionArg functionArg;
@@ -92,6 +93,14 @@ public class FunctionCall implements Expr,NakedStmt {
 
 	public void setExpr(Expr expr) {
 		this.expr = expr;
+	}
+
+	public String getABIName() {
+		return ABIName;
+	}
+
+	public void setABIName(String aBIName) {
+		ABIName = aBIName;
 	}
 
 	public int getIdentifier_col() {

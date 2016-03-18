@@ -12,7 +12,7 @@ import java.util.Random;
 import java.util.Set;
 import java.util.Stack;
 
-import edu.cornell.cs.cs4120.xic.InternalCompilerError;
+import edu.cornell.cs.cs4120.util.InternalCompilerError;
 import edu.cornell.cs.cs4120.xic.ir.IRBinOp;
 import edu.cornell.cs.cs4120.xic.ir.IRCJump;
 import edu.cornell.cs.cs4120.xic.ir.IRCall;

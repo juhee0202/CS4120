@@ -102,7 +102,6 @@ DecimalNumeral = 0 | "-"?[1-9][0-9]*
 "AND"               { return new Symbol(IRSym.AND);        }
 "OR"                { return new Symbol(IRSym.OR);         }
 "XOR"               { return new Symbol(IRSym.XOR);        }
-"NOT"               { return new Symbol(IRSym.NOT);        }
 "LSHIFT"            { return new Symbol(IRSym.LSHIFT);     }
 "RSHIFT"            { return new Symbol(IRSym.RSHIFT);     }
 "ARSHIFT"           { return new Symbol(IRSym.ARSHIFT);    }

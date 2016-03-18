@@ -230,10 +230,11 @@ public class MIRVisitor implements Visitor{
 			}
 			tempNode = new IRCall(lf, irArgs);
 		} else {											// length(e)
-			IRName lf = new IRName("_Ilength_iai"); 	// TODO confirm function length's ABIName
 			fc.getExpr().accept(this);
-			IRExpr arg = (IRExpr) tempNode;
-			tempNode = new IRCall(lf, arg);
+			IRExpr array = (IRExpr) tempNode;
+			IRConst offset = new IRConst(Configuration.WORD_SIZE);
+			IRBinOp lengthAddr = new IRBinOp(OpType.SUB, array, offset);
+			tempNode = new IRMem(lengthAddr);
 		}
 	}
 	

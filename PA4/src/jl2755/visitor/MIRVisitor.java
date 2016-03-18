@@ -72,7 +72,26 @@ public class MIRVisitor implements Visitor{
 	@Override
 	public void visit(BlockStmt bs) {
 		// TODO Thomaz
-		
+		int index = bs.getIndex();
+		if (index == 1) {
+			bs.getStmtList().accept(this);	// tempNode is set in here
+		} else if (index == 2) {
+			// visit stmt list
+			bs.getStmtList().accept(this);	// tempNode is set in here
+			IRSeq stmtSeq = (IRSeq) tempNode;
+			List<IRStmt> irStmtList = stmtSeq.stmts();
+			
+			// visit return stmt
+			bs.getReturnStmt().accept(this);
+			IRSeq returnSeq = (IRSeq) tempNode;
+			List<IRStmt> returnStmtList = returnSeq.stmts();
+			
+			// merge stmt seq and return seq
+			irStmtList.addAll(returnStmtList);
+			tempNode = new IRSeq(irStmtList);
+		} else if (index == 3){
+			bs.getReturnStmt().accept(this);	// tempNode is set in here
+		}
 	}
 
 	@Override

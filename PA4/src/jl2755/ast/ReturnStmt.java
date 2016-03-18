@@ -1,5 +1,7 @@
 package jl2755.ast;
 
+import java.util.List;
+
 import edu.cornell.cs.cs4120.util.CodeWriterSExpPrinter;
 import jl2755.GlobalPrettyPrinter;
 import jl2755.visitor.Visitor;
@@ -39,6 +41,10 @@ public class ReturnStmt {
 			returnList.prettyPrintNode();
 		}
 		tempPrinter.endList();
+	}
+	
+	public List<Expr> getListOfExpr() {
+		return returnList.getListOfExpr();
 	}
 
 	public ReturnList getReturnList() {

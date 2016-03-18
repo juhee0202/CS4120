@@ -112,7 +112,7 @@ public class MIRVisitor implements Visitor{
 			tempNode = new IRCall(lf);
 		} else if (index == 1) {							// f(a1,...,an) 
 			// get function label
-			String id = fc.getIdentifier().toString();
+			String id = fc.getABIName();
 			IRName lf = new IRName(id);
 			
 			// get function args
@@ -125,7 +125,7 @@ public class MIRVisitor implements Visitor{
 			}
 			tempNode = new IRCall(lf, irArgs);
 		} else {											// length(e)
-			IRName lf = new IRName("length"); 
+			IRName lf = new IRName("_Ilength_iai"); 	// TODO confirm function length's ABIName
 			fc.getExpr().accept(this);
 			IRExpr arg = (IRExpr) tempNode;
 			tempNode = new IRCall(lf, arg);
@@ -153,7 +153,6 @@ public class MIRVisitor implements Visitor{
 
 	@Override
 	public void visit(FunctionDeclList fdl) {
-		// TODO Recursively visit and make SEQ
 	}
 
 	@Override
@@ -199,8 +198,14 @@ public class MIRVisitor implements Visitor{
 
 	@Override
 	public void visit(Program p) {
-		// TODO Auto-generated method stub
+		// TODO handle use
 		
+		// recursively visit each function declaration
+		FunctionDeclList fdl = p.getFunctionDeclList();
+		List<FunctionDecl> functionDeclList = fdl.getFunctionDecls();
+		for (FunctionDecl fd : functionDeclList) {
+			fd.accept(this);
+		}
 	}
 	
 	@Override

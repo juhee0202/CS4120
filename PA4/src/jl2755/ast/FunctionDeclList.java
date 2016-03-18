@@ -80,7 +80,4 @@ public class FunctionDeclList {
 		this.index = index;
 	}
 
-	public void accept(Visitor v){
-		v.visit(this);
-	}
 }

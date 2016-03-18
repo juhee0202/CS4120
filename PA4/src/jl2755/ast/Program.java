@@ -1,5 +1,6 @@
 package jl2755.ast;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import edu.cornell.cs.cs4120.util.CodeWriterSExpPrinter;
@@ -82,4 +83,5 @@ public class Program extends XiFile {
 	public void accept(Visitor v){
 		v.visit(this);
 	}
+
 }

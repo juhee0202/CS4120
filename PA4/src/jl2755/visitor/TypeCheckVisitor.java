@@ -640,18 +640,6 @@ public class TypeCheckVisitor implements Visitor {
 			env.remove(entry.getKey());
 		}
 	}
-
-	/**
-	 * recursively typecheck function declarations
-	 * @param FunctionDeclList fdl
-	 */
-	@Override
-	public void visit(FunctionDeclList fdl) {
-		List<FunctionDecl> functionDecls = fdl.getFunctionDecls();
-		for (FunctionDecl fd : functionDecls) {
-			fd.accept(this);
-		}
-	}
 	
 	/**
 	 * Dirties tempType
@@ -808,7 +796,9 @@ public class TypeCheckVisitor implements Visitor {
 		env.putAll(if_env);
 		
 		// Check functions
-		(p.getFunctionDeclList()).accept(this);
+		for (FunctionDecl fd : functionDecls) {
+			fd.accept(this);
+		}
 	}
 
 	/**

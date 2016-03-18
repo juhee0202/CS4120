@@ -186,10 +186,6 @@ public class MIRVisitor implements Visitor{
 	}
 
 	@Override
-	public void visit(FunctionDeclList fdl) {
-	}
-
-	@Override
 	public void visit(Identifier id) {
 		tempNode = new IRTemp(id.toString());
 	}
@@ -278,14 +274,13 @@ public class MIRVisitor implements Visitor{
 
 	@Override
 	public void visit(Program p) {
-		// TODO handle use
-		
-		// recursively visit each function declaration
-		FunctionDeclList fdl = p.getFunctionDeclList();
-		List<FunctionDecl> functionDeclList = fdl.getFunctionDecls();
-		for (FunctionDecl fd : functionDeclList) {
+		List<FunctionDecl> funcs = p.getFunctionDecls();
+		List<IRStmt> list = new ArrayList<IRStmt>();
+		for (FunctionDecl fd: funcs) {
 			fd.accept(this);
+			list.add((IRStmt) tempNode);
 		}
+		tempNode = new IRSeq(list);
 	}
 
 	@Override

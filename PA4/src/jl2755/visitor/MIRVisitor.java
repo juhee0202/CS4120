@@ -15,6 +15,11 @@ public class MIRVisitor implements Visitor{
 	private static final int FALSE = 0;
 	private int labelCount;
 	
+	public MIRVisitor(Program p) {
+		labelCount = 0;
+		// TODO: Constructor
+	}
+	
 	@Override
 	public void visit(ArrayElement ae) {
 		// TODO Auto-generated method stub
@@ -184,11 +189,6 @@ public class MIRVisitor implements Visitor{
 		// TODO Auto-generated method stub
 		
 	}
-	
-	@Override
-	public void visit(ReturnList rl) {
-		// Nothing should be done here.
-	}
 
 	@Override
 	public void visit(ReturnStmt rs) {
@@ -211,42 +211,28 @@ public class MIRVisitor implements Visitor{
 		}
 		tempNode = new IRSeq(allIRStmts);
 	}
-
-	/**
-	 * Dirties tempNode to IRExp or IRSeq
-	 */
-	@Override
-	public void visit(TupleDeclList tdl) {
-		// Nothing should be done here.
-	}
 	
+	/**
+	 * Dirties tempNode to IRCall or IRSeq
+	 */
 	@Override
 	public void visit(TupleInit ti) {
 		// TODO Auto-generated method stub
 		// Jeff: "I got it"
 		ti.getFunctionCall().accept(this);
-		if (ti.getIndex() == 0) {
-			tempNode = new IRExp((IRExpr) tempNode);
-		} else {
+		if (ti.getIndex() != 0) {
 			// vd, tupleDeclList = f()
-			// THIS IMPLEMENTATION ASSUMES ALL RETURN VALUES ARE KEPT ON THE STACK
-			// TODO: finalize implementation
-			IRExpr stack = ((IRCall) tempNode).args().get(0);
-			IRExp exp = new IRExp((IRExpr) tempNode);
 			int count = 0;
 			IRTemp temp;
 			IRExpr result;
-			IRBinOp addr;
 			IRMove move;
 			List<IRStmt> stmts = new ArrayList<IRStmt>();
-			stmts.add(exp);
 			List<VarDecl> vdlist = ti.getVarDecls();
 			for (VarDecl vd : vdlist) {
 				if (vd != null) {
 					// Assign result of function call
 					temp = new IRTemp(vd.getIdentifier().toString());
-					addr = new IRBinOp(OpType.ADD,stack,new IRConst(8*count));
-					result = new IRMem(addr);
+					result = new IRTemp("_RET"+count);
 					move = new IRMove(temp,result);
 					stmts.add(move);
 				}

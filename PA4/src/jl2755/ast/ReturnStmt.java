@@ -1,5 +1,8 @@
 package jl2755.ast;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import edu.cornell.cs.cs4120.util.CodeWriterSExpPrinter;
 import jl2755.GlobalPrettyPrinter;
 import jl2755.visitor.Visitor;
@@ -75,5 +78,15 @@ public class ReturnStmt {
 
 	public void accept(Visitor v){
 		v.visit(this);
+	}
+	
+	/**
+	 * @return a List of Exprs in the return statement
+	 */
+	public List<Expr> getReturns() {
+		if (index == 0) {
+			return null;
+		}
+		return returnList.getListOfExpr();
 	}
 }

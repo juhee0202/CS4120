@@ -251,6 +251,7 @@ public class ConstantFolderVisitor implements Visitor{
 	@Override
 	public void visit(FunctionDecl fd) {
 		fd.getBlockStmt().accept(this);
+		
 	}
 
 	@Override
@@ -328,28 +329,24 @@ public class ConstantFolderVisitor implements Visitor{
 			p.getUseId().accept(this);
 		}
 	}
-
-	@Override
-	public void visit(ReturnList rl) {
-		rl.getExpr().accept(this);
-		if (caseIndex == 0) {
-			rl.setExpr(new Literal(tempLong.toString(), 0));
-		}
-		if (caseIndex == 1) {
-			rl.setExpr(new Literal(tempBool));
-		}
-		if (caseIndex == 2) {
-			rl.setExpr(tempArray);
-		}
-		if (rl.getIndex() == 1) {
-			rl.getReturnList().accept(this);
-		}
-	}
 	
 	@Override
 	public void visit(ReturnStmt rs) {
 		if (rs.getIndex() == 1) {
-			rs.getReturnList().accept(this);
+			List<Expr> returns = rs.getReturns();
+			ReturnList rl = rs.getReturnList();
+			for (Expr e: returns) {
+				e.accept(this);
+				if (caseIndex == 0) {
+					rl.setExpr(new Literal(tempLong.toString(), 0));
+				}
+				else if (caseIndex == 1) {
+					rl.setExpr(new Literal(tempBool));
+				}
+				else if (caseIndex == 2) {
+					rl.setExpr(tempArray);
+				}
+			}
 		}
 	}
 
@@ -365,25 +362,17 @@ public class ConstantFolderVisitor implements Visitor{
 			sl.getStmtList().accept(this);
 		}
 	}
-
-	@Override
-	public void visit(TupleDeclList tdl) {
-		if (tdl.getIndex() < 2) {
-			tdl.getVarDecl().accept(this);
-		}
-		if (tdl.getIndex() == 1) {
-			tdl.getTupleDeclList().accept(this);
-		}
-	}
 	
 	@Override
 	public void visit(TupleInit ti) {
 		ti.getFunctionCall().accept(this);
-		if (ti.getIndex() > 0) {
-			ti.getTupleDeclList().accept(this);
-		}
-		if (ti.getIndex() == 2) {
-			ti.getVarDecl().accept(this);
+		if (ti.getIndex() != 0) {
+			List<VarDecl> vdList = ti.getVarDecls();
+			for (VarDecl vd: vdList) {
+				if (vd != null) {
+					vd.accept(this);
+				}
+			}
 		}
 	}
 

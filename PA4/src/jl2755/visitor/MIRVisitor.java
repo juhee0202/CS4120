@@ -13,6 +13,7 @@ public class MIRVisitor implements Visitor{
 	private IRNode tempNode;
 	private static final int TRUE = 1;
 	private static final int FALSE = 0;
+	private int labelCount;
 	
 	@Override
 	public void visit(ArrayElement ae) {
@@ -120,8 +121,8 @@ public class MIRVisitor implements Visitor{
 	@Override
 	public void visit(FunctionDecl fd) {
 		 // get function label
-		String id = fd.toABIString();
-		IRLabel irLabel = new IRLabel(id.toString());
+		String label = fd.getABIName();
+		IRLabel irLabel = new IRLabel(label);
 		
 		// get statement sequence
 		BlockStmt blockStmt = fd.getBlockStmt();
@@ -144,8 +145,24 @@ public class MIRVisitor implements Visitor{
 
 	@Override
 	public void visit(IfStmt is) {
-		// TODO Auto-generated method stub
-		
+		IRLabel trueLabel = new IRLabel("l"+labelCount++);
+		IRLabel falseLabel = new IRLabel("l"+labelCount++);
+		IRStmt ifJump = controlFlow(is.getExpr(),trueLabel,falseLabel);
+		if (is.getIndex() == 0) {
+			is.getStmt1().accept(this);
+			IRStmt stmt = (IRStmt) tempNode;
+			tempNode = new IRSeq(ifJump,trueLabel,stmt,falseLabel);
+		} else {
+			String end = "l"+labelCount++;
+			IRLabel endLabel = new IRLabel(end);
+			IRJump endJump = new IRJump(new IRName(end));
+			is.getStmt1().accept(this);
+			IRStmt stmt1 = (IRStmt) tempNode;
+			is.getStmt2().accept(this);
+			IRStmt stmt2 = (IRStmt) tempNode;
+			tempNode = new IRSeq(ifJump,trueLabel,stmt1,
+					endJump,falseLabel,stmt2,endLabel);
+		}
 	}
 
 	/**
@@ -284,18 +301,16 @@ public class MIRVisitor implements Visitor{
 
 	@Override
 	public void visit(WhileStmt ws) {
-		// TODO: Optimize this naive way
-		IRLabel startOfLoop = new IRLabel("Head");
-		ws.getExpr().accept(this);
-		IRExpr conditionalExpr = (IRExpr) tempNode;
-		IRLabel trueLabel = new IRLabel("True");
-		IRLabel falseLabel = new IRLabel("False");
-		IRCJump cJumpNode = new IRCJump(conditionalExpr, "True", "False");
+		String start = "l"+labelCount++;
+		IRLabel startOfLoop = new IRLabel(start);
+		IRLabel trueLabel = new IRLabel("l"+labelCount++);
+		IRLabel falseLabel = new IRLabel("l"+labelCount++);
+		IRStmt cJumpNode = controlFlow(ws.getExpr(),trueLabel,falseLabel);
 		ws.getStmt().accept(this);
 		IRStmt loopStmts = (IRStmt) tempNode;
-		IRJump jumpToStart = new IRJump(new IRName("Head"));
-		tempNode = new IRSeq(startOfLoop, cJumpNode, trueLabel, loopStmts,
-				jumpToStart, falseLabel);
+		IRJump jumpToStart = new IRJump(new IRName(start));
+		tempNode = new IRSeq(startOfLoop, cJumpNode, trueLabel, 
+				loopStmts, jumpToStart, falseLabel);
 	}
 
 	/**
@@ -311,4 +326,54 @@ public class MIRVisitor implements Visitor{
 		return null;
 	}
 	
+	/**
+	 * Creates and returns an IRStmt that corresponds to the control flow given.
+	 * 
+	 * May dirty tempNode to IRExpr
+	 * 
+	 * @param e	the expression to evaluate, must be boolean
+	 * @param t the IR label to jump to if e evaluates to true
+	 * @param f the IR label to jump to if e evaluates to false
+	 * @return	an IR statement that gives the execution of the control flow
+	 */
+	private IRStmt controlFlow(Expr e, IRLabel t, IRLabel f) {
+		if (e instanceof Literal) {
+			// true or false
+			Literal e1 = (Literal) e;
+			if (e1.getBoolLit()) {
+				return new IRJump(new IRName(t.name()));
+			} else {
+				return new IRJump(new IRName(f.name()));
+			}
+		} else if (e instanceof UnaryExpr) {
+			// !e
+			UnaryExpr e1 = (UnaryExpr) e;
+			Expr e2 = e1.getExpr();
+			return controlFlow(e2, f, t);
+		} else if (e instanceof BinaryExpr) {
+			// e1 == e2, e1 != e2, e1 & e2, e1 | e2, e1 < e2, e1 > e2
+			BinaryExpr e1 = (BinaryExpr) e;
+			BinaryOp op = e1.getBinaryOp();
+			if (op == BinaryOp.AND) {
+				IRLabel trueLabel = new IRLabel("l"+labelCount++);
+				IRStmt c1 = controlFlow(e1.getLeftExpr(),trueLabel,f);
+				IRStmt c2 = controlFlow(e1.getRightExpr(),t,f);
+				return new IRSeq(c1,trueLabel,c2);
+			} else if (op == BinaryOp.OR) {
+				IRLabel falseLabel = new IRLabel("l"+labelCount++);
+				IRStmt c1 = controlFlow(e1.getLeftExpr(),t,falseLabel);
+				IRStmt c2 = controlFlow(e1.getRightExpr(),t,f);
+				return new IRSeq(c1,falseLabel,c2);
+			} else {
+				e.accept(this);
+				IRExpr e2 = (IRExpr) tempNode;
+				return new IRCJump(e2,t.name(),f.name());
+			}
+		} else {
+			// x, a[i], f() 
+			e.accept(this);
+			IRExpr e2 = (IRExpr) tempNode;
+			return new IRCJump(e2,t.name(),f.name());
+		}		
+	}
 }

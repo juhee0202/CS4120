@@ -399,23 +399,32 @@ public class MIRVisitor implements Visitor{
 		ti.getFunctionCall().accept(this);
 		if (ti.getIndex() != 0) {
 			// vd, tupleDeclList = f()
-			int count = 0;
+//			int count = 0;
 			IRTemp temp;
 			IRExpr result;
 			IRMove move;
 			List<IRStmt> stmts = new ArrayList<IRStmt>();
 			List<VarDecl> vdlist = ti.getVarDecls();
-			for (VarDecl vd : vdlist) {
+			for (int i = 0; i < vdlist.size(); i++) {
+				VarDecl vd = vdlist.get(i);
 				if (vd != null) {
-					// Assign result of function call
 					temp = new IRTemp(vd.getIdentifier().toString());
-					result = new IRTemp(Configuration.ABSTRACT_RET_PREFIX+count);
+					result = new IRTemp(Configuration.ABSTRACT_ARG_PREFIX+i);
 					move = new IRMove(temp,result);
 					stmts.add(move);
 				}
-				count++;
 			}
 			tempNode = new IRSeq(stmts);
+//			for (VarDecl vd : vdlist) {
+//				if (vd != null) {
+//					// Assign result of function call
+//					temp = new IRTemp(id);
+//					result = new IRTemp(Configuration.ABSTRACT_RET_PREFIX+count);
+//					move = new IRMove(temp,result);
+//					stmts.add(move);
+//				}
+//				count++;
+//			}
 		}
 	}
 
@@ -445,7 +454,7 @@ public class MIRVisitor implements Visitor{
 
 	@Override
 	public void visit(VarDecl vd) {
-		// Should do nothing
+		return;
 	}
 	
 	/**
@@ -455,24 +464,32 @@ public class MIRVisitor implements Visitor{
 	public void visit(VarInit vi) {
 		VarDecl vd = vi.getVarDecl();
 		Identifier id = vd.getIdentifier();
-		int index = vd.getIndex();
-		if (index == 0) {
-			// x: t[] = e
-			// move(temp(x),mem(e))
-			vi.getExpr().accept(this);
-			IRExpr array = (IRExpr) tempNode;
-			IRExpr temp = new IRTemp(id.toString());
-			tempNode = new IRMove(temp,array);
-		} else if (index == 1) {
-			// x: int = e or x: bool = e
-			// move(temp(x),E(e))
-			id.accept(this);
-			IRExpr temp = (IRExpr) tempNode;
-			vi.getExpr().accept(this);
-			IRExpr e = (IRExpr) tempNode;
-			tempNode = new IRMove(temp,e);
-		}
 		
+		id.accept(this);
+		IRExpr dest = (IRExpr) tempNode;
+		
+		vi.getExpr().accept(this);
+		IRExpr e = (IRExpr) tempNode;
+		
+		tempNode = new IRMove(dest,e);
+		
+//		int index = vd.getIndex();
+//		if (index == 0) {
+//			// x: t[] = e
+//			// move(temp(x),mem(e))
+//			vi.getExpr().accept(this);
+//			IRExpr array = (IRExpr) tempNode;
+//			IRExpr temp = new IRTemp(id.toString());
+//			tempNode = new IRMove(temp,array);
+//		} else if (index == 1) {
+//			// x: int = e or x: bool = e
+//			// move(temp(x),E(e))
+//			id.accept(this);
+//			IRExpr temp = (IRExpr) tempNode;
+//			vi.getExpr().accept(this);
+//			IRExpr e = (IRExpr) tempNode;
+//			tempNode = new IRMove(temp,e);
+//		}
 	}
 
 	@Override
@@ -516,7 +533,7 @@ public class MIRVisitor implements Visitor{
 	 * 
 	 * @param e	the expression to evaluate, must be boolean
 	 * @param t the IR label to jump to if e evaluates to true
-	 * @param f te IR label to jump to if e evaluates to falseh
+	 * @param f te IR label to jump to if e evaluates to false
 	 * @return	an IR statement that gives the execution of the control flow
 	 */
 	private IRStmt controlFlow(Expr e, IRLabel t, IRLabel f) {
@@ -528,7 +545,7 @@ public class MIRVisitor implements Visitor{
 			} else {
 				return new IRJump(new IRName(f.name()));
 			}
-		} else if (e instanceof UnaryExpr) {
+		} else if (e instanceof UnaryExpr) {			// not reachable
 			// !e
 			UnaryExpr e1 = (UnaryExpr) e;
 			Expr e2 = e1.getExpr();

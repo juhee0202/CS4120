@@ -7,6 +7,7 @@ import java.util.Map;
 import edu.cornell.cs.cs4120.xic.ir.*;
 import edu.cornell.cs.cs4120.xic.ir.IRBinOp.OpType;
 import jl2755.ast.*;
+import edu.cornell.cs.cs4120.xic.ir.interpret.Configuration;
 
 public class MIRVisitor implements Visitor{
 	
@@ -295,7 +296,7 @@ public class MIRVisitor implements Visitor{
 			// add all return values in _RET temp
 			for (int i = 0; i < exprList.size(); i++) {
 				exprList.get(i).accept(this);
-				IRTemp ret = new IRTemp("_RET"+i);
+				IRTemp ret = new IRTemp(Configuration.ABSTRACT_RET_PREFIX+i);
 				IRMove irMove = new IRMove(ret, (IRExpr) tempNode);
 				stmtList.add(irMove);
 			}
@@ -325,8 +326,6 @@ public class MIRVisitor implements Visitor{
 	 */
 	@Override
 	public void visit(TupleInit ti) {
-		// TODO Auto-generated method stub
-		// Jeff: "I got it"
 		ti.getFunctionCall().accept(this);
 		if (ti.getIndex() != 0) {
 			// vd, tupleDeclList = f()
@@ -340,7 +339,7 @@ public class MIRVisitor implements Visitor{
 				if (vd != null) {
 					// Assign result of function call
 					temp = new IRTemp(vd.getIdentifier().toString());
-					result = new IRTemp("_RET"+count);
+					result = new IRTemp(Configuration.ABSTRACT_RET_PREFIX+count);
 					move = new IRMove(temp,result);
 					stmts.add(move);
 				}

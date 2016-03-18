@@ -5,6 +5,11 @@ import java.util.Map;
 
 import edu.cornell.cs.cs4120.util.CodeWriterSExpPrinter;
 import jl2755.GlobalPrettyPrinter;
+import jl2755.type.FunType;
+import jl2755.type.TupleType;
+import jl2755.type.UnitType;
+import jl2755.type.VType;
+import jl2755.type.VarType;
 import jl2755.visitor.Visitor;
 
 /**
@@ -18,6 +23,7 @@ public class FunctionDecl {
 	private FunctionParam functionParam;
 	private ReturnType returnType;
 	private BlockStmt blockStmt;
+	private String ABIName;
 	
 	public FunctionDecl(Identifier s, FunctionParam fp, ReturnType rt, BlockStmt bs) {
 		identifier = s;
@@ -101,6 +107,14 @@ public class FunctionDecl {
 
 	public void setReturnType(ReturnType returnType) {
 		this.returnType = returnType;
+	}
+	
+	public String getABIName() {
+		return ABIName;
+	}
+
+	public void setABIName(String aBIName) {
+		ABIName = aBIName;
 	}
 
 	public void accept(Visitor v){

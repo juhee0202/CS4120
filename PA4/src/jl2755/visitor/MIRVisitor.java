@@ -88,7 +88,7 @@ public class MIRVisitor implements Visitor{
 	public void visit(FunctionCall fc) {
 		int index = fc.getIndex();
 		if (index == 0) {									// f()
-			String id = fc.getIdentifier().toString();
+			String id = fc.getABIName();
 			IRName lf = new IRName(id);
 			tempNode = new IRCall(lf);
 		} else if (index == 1) {							// f(a1,...,an) 
@@ -120,7 +120,7 @@ public class MIRVisitor implements Visitor{
 	@Override
 	public void visit(FunctionDecl fd) {
 		 // get function label
-		String id = fd.getIdentifier().toString();
+		String id = fd.toABIString();
 		IRLabel irLabel = new IRLabel(id.toString());
 		
 		// get statement sequence

@@ -590,7 +590,12 @@ public class TypeCheckVisitor implements Visitor {
 	 * @param FunctionDecl fd
 	 */
 	@Override
-	public void visit(FunctionDecl fd) {
+	public void visit(FunctionDecl fd) {		
+		String funId = fd.getIdentifier().toString();
+		FunType funType = (FunType) env.get(funId);
+		String ABIName = functionToABIName(funId, funType);
+		fd.setABIName(ABIName);
+				
 		/* Update the function scope env */
 		Map<String, Type> paramToType = fd.getParamsWithTypes();
 		for (Entry<String, Type> entry : paramToType.entrySet()) {
@@ -612,7 +617,7 @@ public class TypeCheckVisitor implements Visitor {
 		VType bodyReturnType = tempType;
 		
 		String id = fd.getIdentifier().toString();
-		FunType funType = (FunType) env.get(id);	// safe
+		funType = (FunType) env.get(id);	// safe
 		VType returnTypes = funType.getReturnTypes();
 				
 		if (!returnTypes.equals(bodyReturnType)) {

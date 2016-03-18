@@ -47,4 +47,8 @@ public class ReturnType {
 		typeList.prettyPrintNode();
 		tempPrinter.endList();
 	}
+
+	public int getIndex() {
+		return index;
+	}
 }

@@ -6,6 +6,7 @@ import java.util.Map;
 
 import edu.cornell.cs.cs4120.xic.ir.*;
 import edu.cornell.cs.cs4120.xic.ir.IRBinOp.OpType;
+import edu.cornell.cs.cs4120.xic.ir.interpret.Configuration;
 import jl2755.ast.*;
 
 public class MIRVisitor implements Visitor{
@@ -22,20 +23,45 @@ public class MIRVisitor implements Visitor{
 	
 	@Override
 	public void visit(ArrayElement ae) {
-		// TODO Auto-generated method stub
-		
+		IRExpr identifierIR = new IRTemp(ae.getIdentifier().toString());
+		tempNode = createIRExprForBrackets(identifierIR, ae.getIndexedBrackets());
 	}
 
 	@Override
 	public void visit(ArrayElementList ael) {
-		// TODO Auto-generated method stub
+		List<Expr> exprList = ael.getAllExprInArray();
+		int length = exprList.size();
+		IRName nameOfAlloc = new IRName("_I_alloc_i");
+		IRCall theIRCall = new IRCall(nameOfAlloc, new IRConst(length + 1));
+		IRTemp tempOfArray = new IRTemp("a");
+		IRMove moveCallIntoTemp = new IRMove(tempOfArray, theIRCall);
+		IRMove moveLengthIntoFirst = new IRMove(nameOfAlloc, new IRConst(length));
+		List<IRStmt> IRExprOfExpr = new ArrayList<IRStmt>();
+		IRExprOfExpr.add(moveCallIntoTemp);
+		IRExprOfExpr.add(moveLengthIntoFirst);
+		for (int i = 0; i < exprList.size(); i++) {
+			exprList.get(i).accept(this);
+			IRConst offSet = new IRConst((i+1)*Configuration.WORD_SIZE);
+			IRBinOp offsetBinOp = new IRBinOp(OpType.ADD, offSet, nameOfAlloc);
+			IRMem memOfCell = new IRMem(offsetBinOp);
+			IRMove moveElementIntoCell = new IRMove(memOfCell, (IRExpr) tempNode);
+			IRExprOfExpr.add(moveElementIntoCell);
+		}
 		
+		IRConst oneOffset = new IRConst(Configuration.WORD_SIZE);
+		IRMem memOfOneOffset = new IRMem(tempOfArray);
+		IRBinOp offSetAndMem = new IRBinOp(OpType.ADD, memOfOneOffset, oneOffset);
+		IRMove moveOffsetAndMem = new IRMove(tempOfArray, offSetAndMem);
+		IRExprOfExpr.add(moveOffsetAndMem);
+		IRSeq movingElementsIntoArray = new IRSeq(IRExprOfExpr);
+		// temp(a)
+		IRESeq pleaseFreeMe = new IRESeq(movingElementsIntoArray, tempOfArray);
+		tempNode = pleaseFreeMe;
 	}
 
 	@Override
 	public void visit(ArrayLiteral al) {
-		// TODO Auto-generated method stub
-		
+		al.getArrElemList().accept(this);
 	}
 
 	@Override
@@ -429,8 +455,15 @@ public class MIRVisitor implements Visitor{
 	 * from IRExpr and IndexedBrackets
 	 */
 	private IRExpr createIRExprForBrackets(IRExpr ire, IndexedBrackets ib) {
-		// TODO
-		return null;
+		Expr exprInBracket = ib.getExpression();
+		exprInBracket.accept(this);
+		IRConst byteOffset = new IRConst(Configuration.WORD_SIZE);
+		IRBinOp byteMult = new IRBinOp(IRBinOp.OpType.MUL, byteOffset, (IRExpr) tempNode);
+		IRBinOp offsetAddition = new IRBinOp(IRBinOp.OpType.ADD, ire, byteMult);
+		if (ib.getIndex() == 0) {
+			return offsetAddition;
+		}
+		return createIRExprForBrackets(offsetAddition, ib.getIndexedBrackets());
 	}
 	
 	/**

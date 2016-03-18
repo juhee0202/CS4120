@@ -439,7 +439,7 @@ public class MIRVisitor implements Visitor{
 	 * 
 	 * @param e	the expression to evaluate, must be boolean
 	 * @param t the IR label to jump to if e evaluates to true
-	 * @param f the IR label to jump to if e evaluates to false
+	 * @param f te IR label to jump to if e evaluates to falseh
 	 * @return	an IR statement that gives the execution of the control flow
 	 */
 	private IRStmt controlFlow(Expr e, IRLabel t, IRLabel f) {

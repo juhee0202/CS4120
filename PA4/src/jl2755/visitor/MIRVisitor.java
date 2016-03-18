@@ -76,8 +76,26 @@ public class MIRVisitor implements Visitor{
 	 */
 	@Override
 	public void visit(BlockStmt bs) {
-		// TODO Thomaz
-		
+		int index = bs.getIndex();
+		if (index == 1) {
+			bs.getStmtList().accept(this);	// tempNode is set in here
+		} else if (index == 2) {
+			// visit stmt list
+			bs.getStmtList().accept(this);	// tempNode is set in here
+			IRSeq stmtSeq = (IRSeq) tempNode;
+			List<IRStmt> irStmtList = stmtSeq.stmts();
+			
+			// visit return stmt
+			bs.getReturnStmt().accept(this);
+			if (tempNode != null) {	// there is a return value
+				IRSeq returnSeq = (IRSeq) tempNode;
+				List<IRStmt> returnStmtList = returnSeq.stmts();	
+				irStmtList.addAll(returnStmtList);	// merge stmt seq and return seq
+			}
+			tempNode = new IRSeq(irStmtList);
+		} else if (index == 3){
+			bs.getReturnStmt().accept(this);	// tempNode is set in here
+		}
 	}
 
 	@Override
@@ -99,7 +117,7 @@ public class MIRVisitor implements Visitor{
 			tempNode = new IRCall(lf);
 		} else if (index == 1) {							// f(a1,...,an) 
 			// get function label
-			String id = fc.getIdentifier().toString();
+			String id = fc.getABIName();
 			IRName lf = new IRName(id);
 			
 			// get function args
@@ -112,7 +130,7 @@ public class MIRVisitor implements Visitor{
 			}
 			tempNode = new IRCall(lf, irArgs);
 		} else {											// length(e)
-			IRName lf = new IRName("length"); 
+			IRName lf = new IRName("_Ilength_iai"); 	// TODO confirm function length's ABIName
 			fc.getExpr().accept(this);
 			IRExpr arg = (IRExpr) tempNode;
 			tempNode = new IRCall(lf, arg);
@@ -181,7 +199,6 @@ public class MIRVisitor implements Visitor{
 
 	@Override
 	public void visit(Program p) {
-		// TODO Auto-generated method stub
 		List<FunctionDecl> funcs = p.getFunctionDecls();
 		List<IRStmt> list = new ArrayList<IRStmt>();
 		for (FunctionDecl fd: funcs) {
@@ -193,8 +210,23 @@ public class MIRVisitor implements Visitor{
 
 	@Override
 	public void visit(ReturnStmt rs) {
-		// TODO Auto-generated method stub
-		// Thomas: "I got it"
+		int index = rs.getIndex();
+		if (index == 0) {
+			tempNode = null;
+		} else {
+			List<Expr> exprList = rs.getListOfExpr();
+			List<IRStmt> stmtList = new ArrayList<IRStmt>(); 
+			
+			// add all return values in _RET temp
+			for (int i = 0; i < exprList.size(); i++) {
+				exprList.get(i).accept(this);
+				IRTemp ret = new IRTemp("_RET"+i);
+				IRMove irMove = new IRMove(ret, (IRExpr) tempNode);
+				stmtList.add(irMove);
+			}
+			
+			tempNode = new IRSeq(stmtList);
+		}
 	}
 
 	@Override

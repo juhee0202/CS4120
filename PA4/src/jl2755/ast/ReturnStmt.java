@@ -1,5 +1,6 @@
 package jl2755.ast;
 
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,6 +43,10 @@ public class ReturnStmt {
 			returnList.prettyPrintNode();
 		}
 		tempPrinter.endList();
+	}
+	
+	public List<Expr> getListOfExpr() {
+		return returnList.getListOfExpr();
 	}
 
 	public ReturnList getReturnList() {

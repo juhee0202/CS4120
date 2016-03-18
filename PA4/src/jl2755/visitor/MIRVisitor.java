@@ -55,9 +55,38 @@ public class MIRVisitor implements Visitor{
 		be.getRightExpr().accept(this);
 		IRExpr rightNode = (IRExpr) tempNode;
 		OpType tempOp = null;
+		
 		switch(op){
-		case PLUS: tempOp = OpType.ADD; break;
-		// TODO: Pls.
+		case PLUS: 
+			tempOp = OpType.ADD; 	break;
+		case MINUS:
+			tempOp = OpType.SUB; 	break;
+		case TIMES:
+			tempOp = OpType.MUL; 	break;
+		case HIGH_MULT:
+			tempOp = OpType.HMUL; 	break;
+		case DIVIDE:
+			tempOp = OpType.DIV;	break;
+		case MODULO:
+			tempOp = OpType.MOD;	break;
+		case LT:
+			tempOp = OpType.LT;		break;
+		case LEQ:
+			tempOp = OpType.LEQ;	break;
+		case GT:
+			tempOp = OpType.GT;		break;
+		case GEQ:
+			tempOp = OpType.GEQ;	break;
+		case AND:
+			tempOp = OpType.AND;	break;
+		case OR:
+			tempOp = OpType.OR;		break;
+		case EQUAL:
+			tempOp = OpType.EQ;		break;
+		case NOT_EQUAL:
+			tempOp = OpType.NEQ;	break;
+		default:
+			// TODO: error handling
 		}
 		tempNode = new IRBinOp(tempOp, leftNode, rightNode);
 	}
@@ -160,7 +189,49 @@ public class MIRVisitor implements Visitor{
 	@Override
 	public void visit(Literal l) {
 		// TODO Auto-generated method stub
-		
+		int index = l.getIndex();
+		/*
+		 * 0 for int literal,
+		 * 1 for string literal,
+		 * 2 for character literal,
+		 * 3 for boolean literal
+		 */
+		switch (index) {
+		case 0:
+			tempNode = new IRConst(Long.parseLong(l.getIntLit()));
+			break;
+		case 1:
+			String stringLit = l.getStringLit();
+			IRExpr addr = new IRName("_I_alloc_i");
+			IRCall alloc = new IRCall(addr, new IRConst(stringLit.length()+1));
+			String t = "wat";
+			IRTemp reg = new IRTemp(t);
+			IRMove memAddr = new IRMove(reg, alloc);
+			
+			// fill up the allocated memory with stringLit
+			for (int i=-1; i <stringLit.length(); i++) {
+				IRConst val;
+				if (i == -1) {
+					val = new IRConst(stringLit.length());
+				}
+				else {
+					val = new IRConst(stringLit.charAt(i));
+				}
+				IRMove move = new IRMove(new IRMem(new IRBinOp(OpType.ADD, addr, new IRConst(i*8))), val);
+			}
+			tempNode = reg;
+		case 2:
+			int character=-1;
+			try {
+				character = l.getCharLit().charAt(0);
+			} catch (Exception e) {
+				// TODO
+				System.out.println("Expected a character stored in string");
+			}
+			tempNode = new IRConst(character);
+		case 3:
+			tempNode = l.getBoolLit()? new IRConst(1) : new IRConst(0);
+		}
 	}
 
 	@Override
@@ -195,8 +266,22 @@ public class MIRVisitor implements Visitor{
 
 	@Override
 	public void visit(UnaryExpr ue) {
-		// TODO Auto-generated method stub
-		
+		UnaryOp op = ue.getUnaryOp();
+		ue.getExpr().accept(this);
+		IRExpr expr = (IRExpr) tempNode;
+
+		switch (op) {
+		case INT_NEG: 
+			IRExpr zero = new IRConst(0);
+			tempNode = new IRBinOp(OpType.SUB, zero, expr);
+			break;
+		case LOG_NEG: 
+			tempNode = new IRBinOp(OpType.NOT, expr, null);
+			break;
+		default:
+			// TODO: error handling
+		}
+				
 	}
 
 	@Override

@@ -47,7 +47,7 @@ public class ConstantFolderVisitor implements Visitor{
 	 * 3 if none
 	 */
 	private int caseIndex;
-	private Long tempLong;
+	private long tempLong;
 	private Boolean tempBool;
 	private ArrayLiteral tempArray;
 	
@@ -68,7 +68,7 @@ public class ConstantFolderVisitor implements Visitor{
 		if (index == 0 || index == 1) {
 			ael.getExpr().accept(this);
 			if (caseIndex == 0) {
-				ael.setExpr(new Literal(tempLong.toString(), 0));
+				ael.setExpr(new Literal(tempLong + "", 0));
 			}
 			if (caseIndex == 1) {
 				ael.setExpr(new Literal(tempBool));
@@ -94,7 +94,7 @@ public class ConstantFolderVisitor implements Visitor{
 	public void visit(AssignmentStmt as) {
 		as.getExpr().accept(this);
 		if (caseIndex == 0) {
-			as.setExpr(new Literal(tempLong.toString(), 0));
+			as.setExpr(new Literal(tempLong + "", 0));
 		}
 		if (caseIndex == 1) {
 			as.setExpr(new Literal(tempBool));
@@ -122,6 +122,10 @@ public class ConstantFolderVisitor implements Visitor{
 				tempLong = leftLong + rightLong;
 			}
 			else if (theOp == BinaryOp.DIVIDE) {
+				if (rightLong == 0) {
+					caseIndex = 3;
+					return;
+				}
 				tempLong = leftLong/rightLong;
 			}
 			else if (theOp == BinaryOp.TIMES) {
@@ -215,7 +219,7 @@ public class ConstantFolderVisitor implements Visitor{
 	public void visit(FunctionArg fa) {
 		fa.getExpr().accept(this);
 		if (caseIndex == 0) {
-			fa.setExpr(new Literal(tempLong.toString(), 0));
+			fa.setExpr(new Literal(tempLong + "", 0));
 		}
 		if (caseIndex == 1) {
 			fa.setExpr(new Literal(tempBool));
@@ -236,7 +240,7 @@ public class ConstantFolderVisitor implements Visitor{
 		if (fc.getIndex() == 2) {
 			fc.getExpr().accept(this);
 			if (caseIndex == 0) {
-				fc.setExpr(new Literal(tempLong.toString(), 0));
+				fc.setExpr(new Literal(tempLong + "", 0));
 			}
 			if (caseIndex == 1) {
 				fc.setExpr(new Literal(tempBool));
@@ -263,7 +267,7 @@ public class ConstantFolderVisitor implements Visitor{
 	public void visit(IfStmt is) {
 		is.getExpr().accept(this);
 		if (caseIndex == 0) {
-			is.setExpr(new Literal(tempLong.toString(), 0));
+			is.setExpr(new Literal(tempLong + "", 0));
 		}
 		if (caseIndex == 1) {
 			is.setExpr(new Literal(tempBool));
@@ -281,7 +285,7 @@ public class ConstantFolderVisitor implements Visitor{
 	public void visit(IndexedBrackets ib) {
 		ib.getExpression().accept(this);
 		if (caseIndex == 0) {
-			ib.setExpression(new Literal(tempLong.toString(), 0));
+			ib.setExpression(new Literal(tempLong + "", 0));
 		}
 		if (caseIndex == 1) {
 			ib.setExpression(new Literal(tempBool));
@@ -330,7 +334,7 @@ public class ConstantFolderVisitor implements Visitor{
 			for (Expr e: returns) {
 				e.accept(this);
 				if (caseIndex == 0) {
-					rl.setExpr(new Literal(tempLong.toString(), 0));
+					rl.setExpr(new Literal(tempLong + "", 0));
 				}
 				else if (caseIndex == 1) {
 					rl.setExpr(new Literal(tempBool));
@@ -372,7 +376,7 @@ public class ConstantFolderVisitor implements Visitor{
 	public void visit(UnaryExpr ue) {
 		ue.getExpr().accept(this);
 		if (caseIndex == 0) {
-			ue.setExpr(new Literal(tempLong.toString(), 0));
+			ue.setExpr(new Literal(tempLong + "", 0));
 		}
 		if (caseIndex == 1) {
 			ue.setExpr(new Literal(tempBool));
@@ -411,7 +415,7 @@ public class ConstantFolderVisitor implements Visitor{
 		vi.getVarDecl().accept(this);
 		vi.getExpr().accept(this);
 		if (caseIndex == 0) {
-			vi.setExpr(new Literal(tempLong.toString(), 0));
+			vi.setExpr(new Literal(tempLong + "", 0));
 		}
 		if (caseIndex == 1) {
 			vi.setExpr(new Literal(tempBool));
@@ -425,7 +429,7 @@ public class ConstantFolderVisitor implements Visitor{
 	public void visit(WhileStmt ws) {
 		ws.getExpr().accept(this);
 		if (caseIndex == 0) {
-			ws.setExpr(new Literal(tempLong.toString(), 0));
+			ws.setExpr(new Literal(tempLong + "", 0));
 		}
 		if (caseIndex == 1) {
 			ws.setExpr(new Literal(tempBool));

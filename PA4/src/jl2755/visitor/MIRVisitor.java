@@ -19,7 +19,7 @@ public class MIRVisitor implements Visitor{
 	
 	public MIRVisitor(Program p) {
 		labelCount = 0;
-		// TODO: Constructor
+		p.accept(this);
 	}
 	
 	@Override
@@ -206,7 +206,6 @@ public class MIRVisitor implements Visitor{
 	/**
 	 * f(a1,...,an) --IR--> CALL(NAME(f), e1,...,en)
 	 */
-	
 	// TODO: emit symbol names following convention 
 	@Override
 	public void visit(FunctionCall fc) {

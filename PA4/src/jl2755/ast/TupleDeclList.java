@@ -105,10 +105,6 @@ public class TupleDeclList {
 		}
 		return temp;
 	}
-	
-	public void accept(Visitor v) {
-		v.visit(this);
-	}
 
 	public VarDecl getVarDecl() {
 		return varDecl;

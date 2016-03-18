@@ -72,8 +72,5 @@ public class ReturnList {
 		}
 		return tempList;
 	}
-	
-	public void accept(Visitor v) {
-		v.visit(this);
-	}
+
 }

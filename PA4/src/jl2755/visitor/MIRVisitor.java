@@ -71,7 +71,6 @@ public class MIRVisitor implements Visitor{
 	 */
 	@Override
 	public void visit(BlockStmt bs) {
-		// TODO Thomaz
 		int index = bs.getIndex();
 		if (index == 1) {
 			bs.getStmtList().accept(this);	// tempNode is set in here
@@ -83,11 +82,11 @@ public class MIRVisitor implements Visitor{
 			
 			// visit return stmt
 			bs.getReturnStmt().accept(this);
-			IRSeq returnSeq = (IRSeq) tempNode;
-			List<IRStmt> returnStmtList = returnSeq.stmts();
-			
-			// merge stmt seq and return seq
-			irStmtList.addAll(returnStmtList);
+			if (tempNode != null) {	// there is a return value
+				IRSeq returnSeq = (IRSeq) tempNode;
+				List<IRStmt> returnStmtList = returnSeq.stmts();	
+				irStmtList.addAll(returnStmtList);	// merge stmt seq and return seq
+			}
 			tempNode = new IRSeq(irStmtList);
 		} else if (index == 3){
 			bs.getReturnStmt().accept(this);	// tempNode is set in here
@@ -211,8 +210,23 @@ public class MIRVisitor implements Visitor{
 
 	@Override
 	public void visit(ReturnStmt rs) {
-		// TODO Auto-generated method stub
-		// Thomas: "I got it"
+		int index = rs.getIndex();
+		if (index == 0) {
+			tempNode = null;
+		} else {
+			List<Expr> exprList = rs.getListOfExpr();
+			List<IRStmt> stmtList = new ArrayList<IRStmt>(); 
+			
+			// add all return values in _RET temp
+			for (int i = 0; i < exprList.size(); i++) {
+				exprList.get(i).accept(this);
+				IRTemp ret = new IRTemp("_RET"+i);
+				IRMove irMove = new IRMove(ret, (IRExpr) tempNode);
+				stmtList.add(irMove);
+			}
+			
+			tempNode = new IRSeq(stmtList);
+		}
 	}
 
 	@Override

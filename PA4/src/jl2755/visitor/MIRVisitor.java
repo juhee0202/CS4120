@@ -44,16 +44,60 @@ public class MIRVisitor implements Visitor{
 		// TODO: Finish index 1 and 2
 		int index = as.getIndex();
 		if (index == 0) {
+			// x = 0
 			as.getIdentifier().accept(this);
 			IRExpr tempID = (IRExpr) tempNode;
 			as.getExpr().accept(this);
 			IRExpr tempExpr = (IRExpr) tempNode;
 			tempNode = new IRMove(tempID, tempExpr);
 		} else if (index == 1) {
-			IRName arrayIDName = new IRName(as.getIdentifier().toString());
-			
+			as.getIdentifier().accept(this);
+			IRTemp arrayID = (IRTemp) tempNode;
+			IndexedBrackets ib = as.getIndexedBrackets();
+			IRMem base = new IRMem(arrayID);
+			ib.getExpression().accept(this);
+			IRExpr ind = (IRExpr) tempNode;
+			IRConst word = new IRConst(Configuration.WORD_SIZE);
+			IRBinOp offset = new IRBinOp(OpType.MUL,word,ind);
+			IRBinOp addr = new IRBinOp(OpType.ADD,base,offset);
+			if (ib.getIndex() == 0) {
+				// a[i] = 0
+				IRMem mem = new IRMem(addr);
+				as.getExpr().accept(this);
+				IRExpr e = (IRExpr) tempNode;
+				tempNode = new IRMove(mem,e);
+			} else {
+				// a[i][j]...[z] = 0
+				addr = (IRBinOp) createIRExprForBrackets(addr,ib.getIndexedBrackets());
+				IRMem mem = new IRMem(addr);
+				as.getExpr().accept(this);
+				IRExpr e = (IRExpr) tempNode;
+				tempNode = new IRMove(mem,e);
+			}
 		} else {
-			
+			as.getFunctionCall().accept(this);
+			IRCall fCall = (IRCall) tempNode;
+			IndexedBrackets ib = as.getIndexedBrackets();
+			IRMem base = new IRMem(fCall);
+			ib.getExpression().accept(this);
+			IRExpr ind = (IRExpr) tempNode;
+			IRConst word = new IRConst(Configuration.WORD_SIZE);
+			IRBinOp offset = new IRBinOp(OpType.MUL,word,ind);
+			IRBinOp addr = new IRBinOp(OpType.ADD,base,offset);
+			if (ib.getIndex() == 0) {
+				// f()[i] = 0
+				IRMem mem = new IRMem(addr);
+				as.getExpr().accept(this);
+				IRExpr e = (IRExpr) tempNode;
+				tempNode = new IRMove(mem,e);
+			} else {
+				// f()[i][j]...[z] = 0
+				addr = (IRBinOp) createIRExprForBrackets(addr,ib.getIndexedBrackets());
+				IRMem mem = new IRMem(addr);
+				as.getExpr().accept(this);
+				IRExpr e = (IRExpr) tempNode;
+				tempNode = new IRMove(mem,e);
+			}
 		}
 	}
 

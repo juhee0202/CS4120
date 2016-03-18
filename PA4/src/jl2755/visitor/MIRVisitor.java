@@ -24,26 +24,29 @@ public class MIRVisitor implements Visitor{
 	
 	@Override
 	public void visit(ArrayElement ae) {
-		IRExpr identifierIR = new IRTemp(ae.getIdentifier().toString());
+		// a[i][j]..[z]
+		ae.getIdentifier().accept(this);
+		IRExpr identifierIR = (IRExpr) tempNode;
 		tempNode = createIRExprForBrackets(identifierIR, ae.getIndexedBrackets());
 	}
 
 	@Override
 	public void visit(ArrayElementList ael) {
+		// {i,j,...,z}
 		List<Expr> exprList = ael.getAllExprInArray();
 		int length = exprList.size();
 		IRName nameOfAlloc = new IRName("_I_alloc_i");
 		IRCall theIRCall = new IRCall(nameOfAlloc, new IRConst(length + 1));
 		IRTemp tempOfArray = new IRTemp("a");
 		IRMove moveCallIntoTemp = new IRMove(tempOfArray, theIRCall);
-		IRMove moveLengthIntoFirst = new IRMove(nameOfAlloc, new IRConst(length));
+		IRMove moveLengthIntoFirst = new IRMove(nameOfAlloc, new IRConst(length));	// BUG: nameOfAlloc -> mem(tempOfArray)
 		List<IRStmt> IRExprOfExpr = new ArrayList<IRStmt>();
 		IRExprOfExpr.add(moveCallIntoTemp);
 		IRExprOfExpr.add(moveLengthIntoFirst);
 		for (int i = 0; i < exprList.size(); i++) {
 			exprList.get(i).accept(this);
 			IRConst offSet = new IRConst((i+1)*Configuration.WORD_SIZE);
-			IRBinOp offsetBinOp = new IRBinOp(OpType.ADD, offSet, nameOfAlloc);
+			IRBinOp offsetBinOp = new IRBinOp(OpType.ADD, offSet, nameOfAlloc);	// BUG: nameOfAlloc -> tempOfArray
 			IRMem memOfCell = new IRMem(offsetBinOp);
 			IRMove moveElementIntoCell = new IRMove(memOfCell, (IRExpr) tempNode);
 			IRExprOfExpr.add(moveElementIntoCell);
@@ -51,7 +54,7 @@ public class MIRVisitor implements Visitor{
 		
 		IRConst oneOffset = new IRConst(Configuration.WORD_SIZE);
 		IRMem memOfOneOffset = new IRMem(tempOfArray);
-		IRBinOp offSetAndMem = new IRBinOp(OpType.ADD, memOfOneOffset, oneOffset);
+		IRBinOp offSetAndMem = new IRBinOp(OpType.ADD, memOfOneOffset, oneOffset);	// BUG: memOfOneOffset -> tempOfArray
 		IRMove moveOffsetAndMem = new IRMove(tempOfArray, offSetAndMem);
 		IRExprOfExpr.add(moveOffsetAndMem);
 		IRSeq movingElementsIntoArray = new IRSeq(IRExprOfExpr);
@@ -77,53 +80,26 @@ public class MIRVisitor implements Visitor{
 			IRExpr tempExpr = (IRExpr) tempNode;
 			tempNode = new IRMove(tempID, tempExpr);
 		} else if (index == 1) {
+			// a[i][j]...[z] = 0
 			as.getIdentifier().accept(this);
-			IRTemp arrayID = (IRTemp) tempNode;
+			IRTemp base = (IRTemp) tempNode;
 			IndexedBrackets ib = as.getIndexedBrackets();
-			IRMem base = new IRMem(arrayID);
-			ib.getExpression().accept(this);
-			IRExpr ind = (IRExpr) tempNode;
-			IRConst word = new IRConst(Configuration.WORD_SIZE);
-			IRBinOp offset = new IRBinOp(OpType.MUL,word,ind);
-			IRBinOp addr = new IRBinOp(OpType.ADD,base,offset);
-			if (ib.getIndex() == 0) {
-				// a[i] = 0
-				IRMem mem = new IRMem(addr);
-				as.getExpr().accept(this);
-				IRExpr e = (IRExpr) tempNode;
-				tempNode = new IRMove(mem,e);
-			} else {
-				// a[i][j]...[z] = 0
-				addr = (IRBinOp) createIRExprForBrackets(addr,ib.getIndexedBrackets());
-				IRMem mem = new IRMem(addr);
-				as.getExpr().accept(this);
-				IRExpr e = (IRExpr) tempNode;
-				tempNode = new IRMove(mem,e);
-			}
+			IRBinOp addr = (IRBinOp) createIRExprForBrackets(base,ib);
+			IRMem mem = new IRMem(addr);
+			as.getExpr().accept(this);
+			IRExpr e = (IRExpr) tempNode;
+			tempNode = new IRMove(mem,e);
 		} else {
+			// f()[i][j]...[z] = 0
 			as.getFunctionCall().accept(this);
 			IRCall fCall = (IRCall) tempNode;
 			IndexedBrackets ib = as.getIndexedBrackets();
 			IRMem base = new IRMem(fCall);
-			ib.getExpression().accept(this);
-			IRExpr ind = (IRExpr) tempNode;
-			IRConst word = new IRConst(Configuration.WORD_SIZE);
-			IRBinOp offset = new IRBinOp(OpType.MUL,word,ind);
-			IRBinOp addr = new IRBinOp(OpType.ADD,base,offset);
-			if (ib.getIndex() == 0) {
-				// f()[i] = 0
-				IRMem mem = new IRMem(addr);
-				as.getExpr().accept(this);
-				IRExpr e = (IRExpr) tempNode;
-				tempNode = new IRMove(mem,e);
-			} else {
-				// f()[i][j]...[z] = 0
-				addr = (IRBinOp) createIRExprForBrackets(addr,ib.getIndexedBrackets());
-				IRMem mem = new IRMem(addr);
-				as.getExpr().accept(this);
-				IRExpr e = (IRExpr) tempNode;
-				tempNode = new IRMove(mem,e);
-			}
+			IRBinOp addr = (IRBinOp) createIRExprForBrackets(base,ib);
+			IRMem mem = new IRMem(addr);
+			as.getExpr().accept(this);
+			IRExpr e = (IRExpr) tempNode;
+			tempNode = new IRMove(mem,e);
 		}
 	}
 
@@ -534,7 +510,11 @@ public class MIRVisitor implements Visitor{
 	 * 
 	 * @param e	the expression to evaluate, must be boolean
 	 * @param t the IR label to jump to if e evaluates to true
+<<<<<<< HEAD
+	 * @param f the IR label to jump to if e evaluates to false
+=======
 	 * @param f te IR label to jump to if e evaluates to false
+>>>>>>> c616e1d1b0d8ef6428fbaf9663732c58b43e3c64
 	 * @return	an IR statement that gives the execution of the control flow
 	 */
 	private IRStmt controlFlow(Expr e, IRLabel t, IRLabel f) {

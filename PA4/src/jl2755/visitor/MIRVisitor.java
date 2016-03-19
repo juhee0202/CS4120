@@ -201,7 +201,7 @@ public class MIRVisitor implements Visitor{
 		if (index == 0) {									// f()
 			String id = fc.getABIName();
 			IRName lf = new IRName(id);
-			tempNode = new IRCall(lf);
+			tempNode = new IRExp(new IRCall(lf));
 		} else if (index == 1) {							// f(a1,...,an) 
 			// get function label
 			String id = fc.getABIName();
@@ -376,7 +376,11 @@ public class MIRVisitor implements Visitor{
 
 	@Override
 	public void visit(Stmt s) {
-		s.getNakedStmt().accept(this);
+		NakedStmt ns = s.getNakedStmt();
+		ns.accept(this);
+		if (ns instanceof FunctionCall) {
+			tempNode = new IRExp((IRExpr) tempNode);
+		}
 	}
 
 	@Override
@@ -396,13 +400,17 @@ public class MIRVisitor implements Visitor{
 	@Override
 	public void visit(TupleInit ti) {
 		ti.getFunctionCall().accept(this);
-		if (ti.getIndex() != 0) {	// index = 0 -> _ = f()
+		if (ti.getIndex() == 0) {
+			// _ = f()
+			tempNode = new IRExp((IRExpr) tempNode);
+		} else {	
 			// vd, tupleDeclList = f()
 			IRTemp temp;
 			IRExpr result;
 			IRMove move;
 			List<IRStmt> stmts = new ArrayList<IRStmt>();
 			List<VarDecl> vdlist = ti.getVarDecls();
+			boolean allUnderscore = true;
 			for (int i = 0; i < vdlist.size(); i++) {
 				VarDecl vd = vdlist.get(i);
 				if (vd != null) {
@@ -411,9 +419,14 @@ public class MIRVisitor implements Visitor{
 					result = new IRTemp(Configuration.ABSTRACT_ARG_PREFIX+i);
 					move = new IRMove(temp,result);
 					stmts.add(move);
+					allUnderscore = false;
 				}
 			}
-			tempNode = new IRSeq(stmts);
+			if (allUnderscore) {
+				tempNode = new IRExp((IRExpr) tempNode);
+			} else {
+				tempNode = new IRSeq(stmts);
+			}
 		}
 	}
 

@@ -2,6 +2,7 @@ package jl2755.ast;
 
 import edu.cornell.cs.cs4120.util.CodeWriterSExpPrinter;
 import jl2755.GlobalPrettyPrinter;
+import jl2755.type.VType;
 import jl2755.visitor.ASTVisitor;
 
 /**
@@ -13,6 +14,7 @@ public class UnaryExpr implements OpExpr {
 	private UnaryOp op;
 	private int op_col;
 	private int op_line;
+	private VType type;
 
 	public UnaryExpr(Expr e, UnaryOp o, int oleft, int oright) {
 		expr = e;
@@ -57,5 +59,13 @@ public class UnaryExpr implements OpExpr {
 	@Override
 	public int getLineNumber() {
 		return op_line;
+	}
+
+	public VType getType() {
+		return type;
+	}
+
+	public void setType(VType type) {
+		this.type = type;
 	}
 }

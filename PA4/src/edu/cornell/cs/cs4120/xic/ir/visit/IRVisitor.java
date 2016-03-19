@@ -54,10 +54,7 @@ public abstract class IRVisitor {
      * used in the subtree.
      */
     protected IRVisitor enter(IRNode parent, IRNode n) {
-//    	if (n instanceof IRLabel || n instanceof IRReturn) {
-//    		return this;
-//    	}
-        return new LIRVisitor();
+    	return this;
     }
 
     /**
@@ -83,8 +80,6 @@ public abstract class IRVisitor {
 
     protected IRNode leave(IRNode parent, IRNode n, IRNode n_,
             IRVisitor v_) {
-        //v_.visit(n_);
-    	n_.accept(v_);
     	return n_;
     }
 }

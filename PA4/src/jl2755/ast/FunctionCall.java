@@ -2,6 +2,7 @@ package jl2755.ast;
 
 import edu.cornell.cs.cs4120.util.CodeWriterSExpPrinter;
 import jl2755.GlobalPrettyPrinter;
+import jl2755.type.VType;
 import jl2755.visitor.ASTVisitor;
 
 /**
@@ -23,6 +24,7 @@ public class FunctionCall implements Expr,NakedStmt {
 	private int length_col;
 	private int length_line;
     private int index;
+    private VType type;
 
     public FunctionCall(Identifier id){
         identifier = id;
@@ -93,6 +95,14 @@ public class FunctionCall implements Expr,NakedStmt {
 
 	public void setExpr(Expr expr) {
 		this.expr = expr;
+	}
+
+	public VType getType() {
+		return type;
+	}
+
+	public void setType(VType type) {
+		this.type = type;
 	}
 
 	public String getABIName() {

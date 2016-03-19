@@ -3,6 +3,10 @@ package jl2755;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -15,6 +19,12 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
+import edu.cornell.cs.cs4120.util.CodeWriterSExpPrinter;
+import edu.cornell.cs.cs4120.util.SExpPrinter;
+import edu.cornell.cs.cs4120.xic.ir.IRCompUnit;
+import edu.cornell.cs.cs4120.xic.ir.IRNode;
+import edu.cornell.cs.cs4120.xic.ir.interpret.IRSimulator;
+import edu.cornell.cs.cs4120.xic.ir.visit.LIRVisitor;
 import java_cup.runtime.Symbol;
 import jl2755.ast.Identifier;
 import jl2755.ast.Interface;
@@ -25,12 +35,14 @@ import jl2755.exceptions.SemanticError;
 import jl2755.exceptions.SyntaxError;
 import jl2755.type.FunType;
 import jl2755.type.VType;
+import jl2755.visitor.MIRVisitor;
 import jl2755.visitor.TypeCheckVisitor;
 
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 
+@SuppressWarnings("deprecation")
 public class Main {
 
 	public static String destPath;		// example/destPath/
@@ -94,33 +106,46 @@ public class Main {
 		optionsCheck(cmd);
 		
 		// Get files to process
-		String[] lexFiles = cmd.getOptionValues("l");;
-		String[] parseFiles = cmd.getOptionValues("p");
-		String[] typecheckFiles = cmd.getOptionValues("t");
-		String[] leftoverFiles = cmd.getArgs();
-		String[] files;
+		
+		List<String> lexFiles = new ArrayList<String>(Arrays.asList(cmd.getOptionValues("l")));
+		List<String> parseFiles = new ArrayList<String>(Arrays.asList(cmd.getOptionValues("p")));
+		List<String> typecheckFiles = new ArrayList<String>(Arrays.asList(cmd.getOptionValues("t")));
+		List<String> irgenFiles = new ArrayList<String>(Arrays.asList(cmd.getOptionValues("irgen")));
+		List<String> irrunFiles = new ArrayList<String>(Arrays.asList(cmd.getOptionValues("irrun")));
+		List<String> leftoverFiles = new ArrayList<String>(Arrays.asList(cmd.getArgs()));
+		List<String> files;
+		
+		
+		
+//		String[] lexFiles = cmd.getOptionValues("l");
+//		String[] parseFiles = cmd.getOptionValues("p");
+//		String[] typecheckFiles = cmd.getOptionValues("t");
+//		String[] irgenFiles = cmd.getOptionValues("irgen");
+//		String[] irrunFiles = cmd.getOptionValues("irrun");
+//		String[] leftoverFiles = cmd.getArgs();
+//		String[] files;
 		
 		/* LEX */
 		if (cmd.hasOption("-lex")) {
-			if (lexFiles == null) {
-				files = concat(parseFiles, typecheckFiles);
-				files = concat(files, leftoverFiles);
+			if (lexFiles.size() == 0) {
+				files = concat(parseFiles, 
+						   typecheckFiles, 
+						   irgenFiles, 
+						   irrunFiles, 
+						   leftoverFiles);
 			} else {
 				files = lexFiles;
 			}			
-			if (files == null || files.length == 0) {
+			if (files.size() == 0) {
 				System.out.println("Missing argument for option: --lex");
 				return;
 			}
 
-			for (int i = 0; i < files.length; i++) {
+			for (String file: files) {
 				try { 
-					lex(srcPath + files[i]);
+					lex(srcPath + file);
 				} catch (FileNotFoundException e) {
-					System.out.println(srcPath + files[i] + " is not found.");
-				} catch (IOException e) {
-					System.out.println("Failed to write to output file");
-//					e.printStackTrace();
+					System.out.println(srcPath + file + " is not found.");
 				} catch (Exception e) {
 					System.out.println("Missing argument for option: --lex");
 				}
@@ -129,25 +154,25 @@ public class Main {
 		
 		/* PARSE */
 		if (cmd.hasOption("-parse")) {
-			if (parseFiles == null) {
-				files = concat(lexFiles, typecheckFiles);
-				files = concat(files, leftoverFiles);
+			if (parseFiles.size() == 0) {
+				files = concat(lexFiles, 
+						   typecheckFiles, 
+						   irgenFiles, 
+						   irrunFiles, 
+						   leftoverFiles);
 			} else {
 				files = parseFiles;
 			}
-			if (files == null || files.length == 0) {
+			if (files.size() == 0) {
 				System.out.println("Missing argument for option: --parse");
 				return;
 			}
 
-			for (int i = 0; i < files.length; i++) {
+			for (String file: files) {
 				try { 
-					parse(srcPath + files[i]);
+					parse(srcPath + file);
 				} catch (FileNotFoundException e) {
-					System.out.println(srcPath + files[i] + " is not found.");
-				} catch (IOException e) {
-					System.out.println("Failed to write to output file");
-//					e.printStackTrace();
+					System.out.println(srcPath + file + " is not found.");
 				} catch (Exception e) {
 					System.out.println("Missing argument for option: --lex");
 				}
@@ -156,25 +181,25 @@ public class Main {
 
 		/* TYPECHECK */
 		if (cmd.hasOption("-typecheck")) {
-			if (typecheckFiles == null) {
-				files = concat(parseFiles, lexFiles);
-				files = concat(files, leftoverFiles);
+			if (typecheckFiles.size() == 0) {
+				files = concat(lexFiles, 
+						   parseFiles, 
+						   irgenFiles, 
+						   irrunFiles, 
+						   leftoverFiles);
 			} else {
 				files = typecheckFiles;
 			}
-			if (files == null || files.length == 0) {
+			if (files.size() == 0) {
 				System.out.println("Missing argument for option: --typecheck");
 				return;
 			}
 
-			for (int i = 0; i < files.length; i++) {
+			for (String file: files) {
 				try { 
-					typecheck(srcPath + files[i]);
+					typecheck(srcPath + file);
 				} catch (FileNotFoundException e) {
-					System.out.println(srcPath + files[i] + " is not found.");
-				} catch (IOException e) {
-					System.out.println("Failed to write to output file");
-//					e.printStackTrace();
+					System.out.println(srcPath + file + " is not found.");
 				} catch (Exception e) {
 					System.out.println("Missing argument for option: --typecheck");
 				}
@@ -184,15 +209,61 @@ public class Main {
 		/* IR GENERATION */
 		if (cmd.hasOption("-irgen")) {
 			// TODO: Generate intermediate code
+			if (irgenFiles.size() == 0) {
+				files = concat(lexFiles, 
+						   parseFiles, 
+						   typecheckFiles, 
+						   irrunFiles, 
+						   leftoverFiles);
+			} else {
+				files = irgenFiles;
+			}
+			if (files.size() == 0) {
+				System.out.println("Missing argument for option: --typecheck");
+				return;
+			}
+
+			for (String file: files) {
+				try { 
+					irgen(srcPath + file);
+				} catch (FileNotFoundException e) {
+					System.out.println(srcPath + file + " is not found.");
+				} catch (Exception e) {
+					System.out.println("Missing argument for option: --typecheck");
+				}
+			}
 		}
 		
 		/* IR INTERPRET */
 		if (cmd.hasOption("-irrun")) {
 			// TODO: Generate and interpret intermediate code
+			if (irrunFiles.size() == 0) {
+				files = concat(lexFiles, 
+						   parseFiles, 
+						   typecheckFiles, 
+						   irgenFiles, 
+						   leftoverFiles);
+			} else {
+				files = irrunFiles;
+			}
+			if (files.size() == 0) {
+				System.out.println("Missing argument for option: --typecheck");
+				return;
+			}
+
+			for (String file: files) {
+				try { 
+					irrun(srcPath + file);
+				} catch (FileNotFoundException e) {
+					System.out.println(srcPath + file + " is not found.");
+				} catch (Exception e) {
+					System.out.println("Missing argument for option: --typecheck");
+				}
+			}
 		}
 		
 	}
-	
+
 	public static void lex(String filename) throws FileNotFoundException {
 		Scanner lexer = new Scanner(new FileReader(filename));
 		String content = "";
@@ -233,7 +304,7 @@ public class Main {
 				content += error.getMessage();
 				break;
 			} catch (IOException e) {
-				e.printStackTrace();
+				System.out.println("Failed to write to output file");
 			}
 		}
 		
@@ -258,7 +329,6 @@ public class Main {
 			System.out.println("[xic] Lexing completed");
 		} catch (IOException e) {	
 			System.out.println("Failed to write to output file");
-//			e.printStackTrace();
 		}
 	}
 	
@@ -320,8 +390,8 @@ public class Main {
 			parser p = new parser(new Scanner(new FileReader(filename)));
 			Symbol s = p.parse();
 			Program result = (Program) s.value;
-			TypeCheckVisitor visitor = new TypeCheckVisitor(result);
-			visitor.visit(result);
+			TypeCheckVisitor visitor = new TypeCheckVisitor();
+			result.accept(visitor);
 			
 			bw.write("Valid Xi Program");
 			bw.close();
@@ -338,6 +408,82 @@ public class Main {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+	
+	private static IRNode irgen(String filename) throws FileNotFoundException {
+		// TODO Auto-generated method stub
+		try {
+			int index = filename.lastIndexOf('.');
+			if (index == -1) {
+				index = filename.length();
+			}
+			
+			String rmExtension = filename.substring(0,index);
+			File file = new File(rmExtension + ".ir");
+			if (!file.exists()) {
+				file.createNewFile();
+			}
+			FileWriter fw = new FileWriter(file.getAbsoluteFile());
+			bw = new BufferedWriter(fw);
+			
+			System.out.println("[xic] Generating intermediate code");
+			
+			parser p = new parser(new Scanner(new FileReader(filename)));
+			Symbol s = p.parse();
+			Program program = (Program) s.value;
+			TypeCheckVisitor typeCheck = new TypeCheckVisitor();
+			program.accept(typeCheck);
+			
+			/* Translate to MIR */
+			MIRVisitor mir = new MIRVisitor();
+			program.accept(mir);
+			
+			/* Lower to LIR */
+			LIRVisitor lir = new LIRVisitor();
+			mir.program.accept(lir);
+			
+			StringWriter sw = new StringWriter();
+	        try (PrintWriter pw = new PrintWriter(sw);
+	             SExpPrinter sp = new CodeWriterSExpPrinter(pw)) {
+	            lir.program.printSExp(sp);
+	        }
+	        bw.write(sw.toString());
+			bw.close();
+			System.out.println("[xic] Generating intermediate code completed");
+			return lir.program;
+			
+		} catch(LexicalError error) {
+			System.out.println(error.getMessage());
+		} catch(SyntaxError error) {
+			System.out.println(error.getMessage());
+		} catch(SemanticError error) {
+			System.out.println(error.getMessage());
+		} catch(IOException e) {
+			System.out.println("Failed to write to output file " + filename);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	private static void irrun(String filename) throws FileNotFoundException {
+		// TODO Auto-generated method stub
+		// Generate IR code
+		IRNode program = irgen(filename);
+		
+		// Interpret IR code
+		if (program == null) {
+			return;
+		}
+		try {
+			System.out.println("[xic] Interpreting intermediate code");
+			IRSimulator sim = new IRSimulator((IRCompUnit) program);
+	        sim.call("_Imain_paai", 0);
+	        System.out.println("[xic] Interpreting intermediate code Completed");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
 	}
 
 	
@@ -438,23 +584,17 @@ public class Main {
 	/**
 	 * Concatenates strings a and b together and returns the result
 	 * 
-	 * @param a	the first string to be concatenated
+	 * @param files	the array of file ArrayLists to be concatenated
 	 * @param b	the second string to be concatenated
 	 * @return	the result of concatenation
 	 */
-	public static String[] concat(String[] a, String[] b) {
-		if (a == null) {
-			return b;
+	@SafeVarargs
+	public static List<String> concat(List<String>... files) {
+		List<String> all = new ArrayList<String>();
+		for (List<String> file: files) {
+			all.addAll(file);
 		}
-		if (b == null) {
-			return a;
-		}
-		int aLen = a.length;
-		int bLen = b.length;
-	   String[] c= new String[aLen+bLen];
-	   System.arraycopy(a, 0, c, 0, aLen);
-	   System.arraycopy(b, 0, c, aLen, bLen);
-	   return c;
+		return all;
 	}
 	
 	/**

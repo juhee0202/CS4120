@@ -17,10 +17,10 @@ public class MIRVisitor implements ASTVisitor{
 	private static final int TRUE = 1;
 	private static final int FALSE = 0;
 	private int labelCount;
+	public IRNode program;
 	
-	public MIRVisitor(Program p) {
+	public MIRVisitor() {
 		labelCount = 0;
-		p.accept(this);
 	}
 	
 	@Override
@@ -348,7 +348,7 @@ public class MIRVisitor implements ASTVisitor{
 			fd.accept(this);
 			functions.put(fd.getABIName(), (IRFuncDecl) tempNode);
 		}
-		tempNode = new IRCompUnit("Program", functions);
+		program = new IRCompUnit("Program", functions);
 	}
 
 	@Override

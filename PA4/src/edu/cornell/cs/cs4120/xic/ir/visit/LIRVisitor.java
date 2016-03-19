@@ -11,7 +11,12 @@ import polyglot.util.Pair;
 public class LIRVisitor extends IRVisitor implements IRTreeVisitor{
 	
 	private Pair<IRSeq,IRNode> tempSeq;
+	public IRNode program;
 	
+	public LIRVisitor() {
+		// TODO Auto-generated constructor stub
+	}
+
 	@Override
 	protected LIRVisitor enter(IRNode parent, IRNode n) {
         return this;
@@ -96,6 +101,8 @@ public class LIRVisitor extends IRVisitor implements IRTreeVisitor{
 	
 	public void visit(IRCompUnit cu) {
 		
+		// After visiting tree
+		program = cu;
 	}
 	
 	public void visit(IRConst con) {

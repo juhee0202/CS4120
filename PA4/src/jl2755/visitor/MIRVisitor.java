@@ -177,11 +177,8 @@ public class MIRVisitor implements Visitor{
 			
 			// visit return stmt
 			bs.getReturnStmt().accept(this);
-			if (tempNode != null) {	// there is a return value
-				IRSeq returnSeq = (IRSeq) tempNode;
-				List<IRStmt> returnStmtList = returnSeq.stmts();	
-				irStmtList.addAll(returnStmtList);	// merge stmt seq and return seq
-			}
+			IRSeq returnSeq = (IRSeq) tempNode;	
+			irStmtList.addAll(returnSeq.stmts());	// merge stmt seq and return seq
 			tempNode = new IRSeq(irStmtList);
 		} else if (index == 3){
 			// Return stmt
@@ -359,7 +356,7 @@ public class MIRVisitor implements Visitor{
 		int index = rs.getIndex();
 		if (index == 0) {
 			// No return
-			tempNode = null;
+			tempNode = new IRReturn();
 		} else {
 			// At least 1 return
 			List<Expr> exprList = rs.getListOfExpr();
@@ -372,7 +369,7 @@ public class MIRVisitor implements Visitor{
 				IRMove irMove = new IRMove(ret, (IRExpr) tempNode);
 				stmtList.add(irMove);
 			}
-			
+			stmtList.add(new IRReturn());
 			tempNode = new IRSeq(stmtList);
 		}
 	}

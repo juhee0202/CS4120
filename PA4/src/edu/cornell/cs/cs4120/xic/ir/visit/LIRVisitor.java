@@ -1,38 +1,124 @@
 package edu.cornell.cs.cs4120.xic.ir.visit;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import edu.cornell.cs.cs4120.util.InternalCompilerError;
-import edu.cornell.cs.cs4120.xic.ir.IRNode;
+import edu.cornell.cs.cs4120.xic.ir.*;
+import polyglot.util.Pair;
 
-public class LIRVisitor extends IRVisitor {
-    
-	public IRNode visit(IRNode parent, IRNode n) {
-        if (n == null) return null;
-
-        /* Allow the visitor implementation to hijack traversal of n */
-        IRNode overrideValue = override(parent, n);
-        if (overrideValue != null) return overrideValue;
-
-        LIRVisitor v_ = enter(parent, n);
-        if (v_ == null)
-            throw new InternalCompilerError("LIRVisitor.enter() returned null!");
-
-        IRNode n_ = n.lowerChildren(v_);
-        if (n_ == null)
-            throw new InternalCompilerError("LIRVisitor.visitChildren() returned null!");
-
-        n_ = leave(parent, n, n_, v_);
-        if (n_ == null)
-            throw new InternalCompilerError("LIRVisitor.leave() returned null!");
-
-        return n_;
-    }
+public class LIRVisitor extends IRVisitor implements IRTreeVisitor{
 	
+	private Pair<IRStmt,IRExpr> tempSeq;
+	
+	@Override
 	protected LIRVisitor enter(IRNode parent, IRNode n) {
         return this;
     }
 	
+	@Override
 	protected IRNode leave(IRNode parent, IRNode n, IRNode n_,
-            LIRVisitor v_) {
-        return n_;
+            IRVisitor v_) {
+		n_.lower();
+		
+		
+		return n_;
     }
+	
+	public void visit(IRBinOp bo) {
+	}
+	
+	public void visit(IRCall call) {
+		
+	}
+	
+	public void visit(IRCJump cj) {
+		
+	}
+	
+	public void visit(IRCompUnit cu) {
+		
+	}
+	
+	public void visit(IRConst con) {
+		
+	}
+	
+	public void visit(IRESeq eseq) {
+		IRStmt stmtPart = eseq.stmt();
+		stmtPart.accept(this);
+		IRExpr exprPart = eseq.expr();
+		exprPart.accept(this);
+		IRStmt sideEffectOfExpr = tempSeq.part1();
+		
+	}
+	
+	public void visit(IRExp exp) {
+		
+	}
+	
+	public void visit(IRFuncDecl fd) {
+		
+	}
+	
+	public void visit(IRJump j) {
+		
+	}
+	
+	public void visit(IRLabel l) {
+		
+	}
+	
+	public void visit(IRMem mem) {
+		
+	}
+	
+	public void visit(IRMove mov) {
+		
+	}
+	
+	public void visit(IRName name) {
+		
+	}
+	
+	public void visit(IRReturn ret) {
+		
+	}
+	
+	public void visit(IRSeq seq) {
+		
+	}
+	
+	public void visit(IRTemp temp) {
+		
+	}
+	
+	private IRSeq combineTwoStmt(IRStmt left, IRStmt right) {
+		if (left instanceof IRSeq) {
+			List<IRStmt> leftStmt = ((IRSeq) left).stmts();
+			if (right instanceof IRSeq) {
+				List<IRStmt> rightStmt = ((IRSeq) right).stmts();
+				rightStmt.addAll(leftStmt);
+				return new IRSeq(rightStmt);
+			}
+			else {
+				leftStmt.add(right);
+				return new IRSeq(leftStmt);
+			}
+		}
+		else {
+			if (right instanceof IRSeq) {
+				List<IRStmt> rightStmt = ((IRSeq) right).stmts();
+				rightStmt.add(left);
+				return new IRSeq(rightStmt);
+			}
+			else {
+				List<IRStmt> newList = new ArrayList<IRStmt>();
+				newList.add(left);
+				newList.add(right);
+				return new IRSeq(newList);
+			}
+		}
+	}
+	
 }

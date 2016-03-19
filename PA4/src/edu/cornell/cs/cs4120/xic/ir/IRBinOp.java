@@ -3,6 +3,7 @@ package edu.cornell.cs.cs4120.xic.ir;
 import edu.cornell.cs.cs4120.util.InternalCompilerError;
 import edu.cornell.cs.cs4120.util.SExpPrinter;
 import edu.cornell.cs.cs4120.xic.ir.visit.AggregateVisitor;
+import edu.cornell.cs.cs4120.xic.ir.visit.IRTreeVisitor;
 import edu.cornell.cs.cs4120.xic.ir.visit.IRVisitor;
 import edu.cornell.cs.cs4120.xic.ir.visit.LIRVisitor;
 
@@ -116,11 +117,8 @@ public class IRBinOp extends IRExpr {
         right.printSExp(p);
         p.endList();
     }
-
-	@Override
-	public IRNode lowerChildren(LIRVisitor v) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
+    
+    public void accept(IRTreeVisitor irv) {
+    	irv.visit(this);
+    }
 }

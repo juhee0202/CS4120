@@ -2,7 +2,7 @@ package jl2755.ast;
 
 import edu.cornell.cs.cs4120.util.CodeWriterSExpPrinter;
 import jl2755.GlobalPrettyPrinter;
-import jl2755.visitor.Visitor;
+import jl2755.visitor.ASTVisitor;
 
 /**
  * Represents brackets ([ ]) in a recursive manner

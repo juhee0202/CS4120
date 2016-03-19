@@ -17,7 +17,7 @@ import jl2755.type.UnitType;
 import jl2755.type.VType;
 import jl2755.type.VarType;
 
-public class TypeCheckVisitor implements Visitor {
+public class TypeCheckVisitor implements ASTVisitor {
 
 	/** HashMap of all declared variables */
 	private HashMap<String, VType> env;

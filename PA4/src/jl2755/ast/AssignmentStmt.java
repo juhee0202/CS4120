@@ -4,7 +4,7 @@ import java.util.List;
 
 import edu.cornell.cs.cs4120.util.CodeWriterSExpPrinter;
 import jl2755.GlobalPrettyPrinter;
-import jl2755.visitor.Visitor;
+import jl2755.visitor.ASTVisitor;
 
 /**
  * Class that encapsulates an assignment of an expression
@@ -121,7 +121,7 @@ public class AssignmentStmt implements NakedStmt {
 	}
 
 	@Override
-	public void accept(Visitor v) {
+	public void accept(ASTVisitor v) {
 		v.visit(this);
 	}
 }

@@ -3,6 +3,7 @@ package edu.cornell.cs.cs4120.xic.ir;
 import edu.cornell.cs.cs4120.util.SExpPrinter;
 import edu.cornell.cs.cs4120.xic.ir.visit.AggregateVisitor;
 import edu.cornell.cs.cs4120.xic.ir.visit.CheckCanonicalIRVisitor;
+import edu.cornell.cs.cs4120.xic.ir.visit.IRTreeVisitor;
 import edu.cornell.cs.cs4120.xic.ir.visit.IRVisitor;
 
 /**
@@ -87,5 +88,9 @@ public class IRCJump extends IRStmt {
         p.printAtom(trueLabel);
         if (hasFalseLabel()) p.printAtom(falseLabel);
         p.endList();
+    }
+    
+    public void accept(IRTreeVisitor irv) {
+    	irv.visit(this);
     }
 }

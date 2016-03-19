@@ -5,7 +5,7 @@ import java.util.List;
 
 import edu.cornell.cs.cs4120.util.CodeWriterSExpPrinter;
 import jl2755.GlobalPrettyPrinter;
-import jl2755.visitor.Visitor;
+import jl2755.visitor.ASTVisitor;
 
 /**
  * Represents the return types of a function

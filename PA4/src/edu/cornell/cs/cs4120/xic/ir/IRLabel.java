@@ -1,6 +1,7 @@
 package edu.cornell.cs.cs4120.xic.ir;
 
 import edu.cornell.cs.cs4120.util.SExpPrinter;
+import edu.cornell.cs.cs4120.xic.ir.visit.IRTreeVisitor;
 import edu.cornell.cs.cs4120.xic.ir.visit.InsnMapsBuilder;
 
 /**
@@ -38,5 +39,9 @@ public class IRLabel extends IRStmt {
         p.printAtom("LABEL");
         p.printAtom(name);
         p.endList();
+    }
+    
+    public void accept(IRTreeVisitor irv) {
+    	irv.visit(this);
     }
 }

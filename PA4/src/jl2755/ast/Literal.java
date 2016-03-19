@@ -2,7 +2,7 @@ package jl2755.ast;
 
 import edu.cornell.cs.cs4120.util.CodeWriterSExpPrinter;
 import jl2755.GlobalPrettyPrinter;
-import jl2755.visitor.Visitor;
+import jl2755.visitor.ASTVisitor;
 
 /**
  * Class that encapsulates raw literals strings, characters,
@@ -128,7 +128,7 @@ public class Literal implements Constant {
 		return ret;
 	}
 	
-	public void accept(Visitor v){
+	public void accept(ASTVisitor v){
 		v.visit(this);
 	}
 

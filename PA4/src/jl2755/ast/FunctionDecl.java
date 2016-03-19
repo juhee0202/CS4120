@@ -10,7 +10,7 @@ import jl2755.type.TupleType;
 import jl2755.type.UnitType;
 import jl2755.type.VType;
 import jl2755.type.VarType;
-import jl2755.visitor.Visitor;
+import jl2755.visitor.ASTVisitor;
 
 /**
  *	Represents function declaration which has the following grammar:
@@ -117,7 +117,7 @@ public class FunctionDecl {
 		ABIName = aBIName;
 	}
 
-	public void accept(Visitor v){
+	public void accept(ASTVisitor v){
 		v.visit(this);
 	}
 }

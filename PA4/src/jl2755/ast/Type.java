@@ -1,8 +1,8 @@
 package jl2755.ast;
 
-import jl2755.visitor.Visitor;
+import jl2755.visitor.ASTVisitor;
 
 public interface Type {
 	public void prettyPrintNode();
-	void accept(Visitor v);
+	void accept(ASTVisitor v);
 }

@@ -1,6 +1,6 @@
 package jl2755.ast;
 
-import jl2755.visitor.Visitor;
+import jl2755.visitor.ASTVisitor;
 
 /**
  * Class that holds a nakedStmt but also keeps
@@ -41,7 +41,7 @@ public class Stmt {
 		this.nakedStmt = nakedStmt;
 	}
 	
-	public void accept(Visitor v){
+	public void accept(ASTVisitor v){
 		v.visit(this);
 	}
 }

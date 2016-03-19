@@ -7,6 +7,7 @@ import edu.cornell.cs.cs4120.util.CodeWriterSExpPrinter;
 import edu.cornell.cs.cs4120.util.SExpPrinter;
 import edu.cornell.cs.cs4120.xic.ir.visit.AggregateVisitor;
 import edu.cornell.cs.cs4120.xic.ir.visit.CheckCanonicalIRVisitor;
+import edu.cornell.cs.cs4120.xic.ir.visit.IRTreeVisitor;
 import edu.cornell.cs.cs4120.xic.ir.visit.IRVisitor;
 import edu.cornell.cs.cs4120.xic.ir.visit.InsnMapsBuilder;
 import edu.cornell.cs.cs4120.xic.ir.visit.LIRVisitor;
@@ -24,11 +25,6 @@ public abstract class IRNode {
     public IRNode visitChildren(IRVisitor v) {
         return this;
     }
-
-    public IRNode lowerChildren(LIRVisitor v) {
-    	return this;
-    }
-
     
     public <T> T aggregateChildren(AggregateVisitor<T> v) {
         return v.unit();
@@ -69,4 +65,11 @@ public abstract class IRNode {
         }
         return sw.toString();
     }
+
+	public void lower() {
+		// TODO Auto-generated method stub
+		
+	}
+	
+    public abstract void accept(IRTreeVisitor irv);
 }

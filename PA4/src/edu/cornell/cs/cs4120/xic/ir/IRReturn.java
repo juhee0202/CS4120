@@ -1,6 +1,7 @@
 package edu.cornell.cs.cs4120.xic.ir;
 
 import edu.cornell.cs.cs4120.util.SExpPrinter;
+import edu.cornell.cs.cs4120.xic.ir.visit.IRTreeVisitor;
 
 /** RETURN statement */
 public class IRReturn extends IRStmt {
@@ -15,5 +16,9 @@ public class IRReturn extends IRStmt {
         p.startList();
         p.printAtom("RETURN");
         p.endList();
+    }
+    
+    public void accept(IRTreeVisitor irv) {
+    	irv.visit(this);
     }
 }

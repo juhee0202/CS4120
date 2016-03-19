@@ -3,6 +3,7 @@ package edu.cornell.cs.cs4120.xic.ir;
 import edu.cornell.cs.cs4120.util.InternalCompilerError;
 import edu.cornell.cs.cs4120.util.SExpPrinter;
 import edu.cornell.cs.cs4120.xic.ir.visit.AggregateVisitor;
+import edu.cornell.cs.cs4120.xic.ir.visit.IRTreeVisitor;
 import edu.cornell.cs.cs4120.xic.ir.visit.IRVisitor;
 
 /**
@@ -76,5 +77,9 @@ public class IRMem extends IRExpr {
         p.printAtom(memType.toString());
         expr.printSExp(p);
         p.endList();
+    }
+    
+    public void accept(IRTreeVisitor irv) {
+    	irv.visit(this);
     }
 }

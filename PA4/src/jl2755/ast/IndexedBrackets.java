@@ -3,7 +3,7 @@ package jl2755.ast;
 import java.util.ArrayList;
 import java.util.List;
 
-import jl2755.visitor.Visitor;
+import jl2755.visitor.ASTVisitor;
 
 /**
  * Represents brackets with contents.
@@ -60,7 +60,7 @@ public class IndexedBrackets {
 		return tempListExpr;
 	}
 	
-	public void accept(Visitor v) {
+	public void accept(ASTVisitor v) {
 		v.visit(this);
 	}
 

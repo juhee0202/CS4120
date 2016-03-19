@@ -5,6 +5,7 @@ import java.util.Map;
 
 import edu.cornell.cs.cs4120.util.SExpPrinter;
 import edu.cornell.cs.cs4120.xic.ir.visit.AggregateVisitor;
+import edu.cornell.cs.cs4120.xic.ir.visit.IRTreeVisitor;
 import edu.cornell.cs.cs4120.xic.ir.visit.IRVisitor;
 
 /**
@@ -77,5 +78,9 @@ public class IRCompUnit extends IRNode {
         for (IRFuncDecl func : functions.values())
             func.printSExp(p);
         p.endList();
+    }
+    
+    public void accept(IRTreeVisitor irv) {
+    	irv.visit(this);
     }
 }

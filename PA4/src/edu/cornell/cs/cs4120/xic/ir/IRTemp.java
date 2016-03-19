@@ -1,6 +1,7 @@
 package edu.cornell.cs.cs4120.xic.ir;
 
 import edu.cornell.cs.cs4120.util.SExpPrinter;
+import edu.cornell.cs.cs4120.xic.ir.visit.IRTreeVisitor;
 
 /**
  * An intermediate representation for a temporary register
@@ -32,5 +33,9 @@ public class IRTemp extends IRExpr {
         p.printAtom("TEMP");
         p.printAtom(name);
         p.endList();
+    }
+    
+    public void accept(IRTreeVisitor irv) {
+    	irv.visit(this);
     }
 }

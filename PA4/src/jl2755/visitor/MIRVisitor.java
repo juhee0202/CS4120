@@ -11,7 +11,7 @@ import edu.cornell.cs.cs4120.xic.ir.interpret.Configuration;
 import jl2755.ast.*;
 import edu.cornell.cs.cs4120.xic.ir.interpret.Configuration;
 
-public class MIRVisitor implements Visitor{
+public class MIRVisitor implements ASTVisitor{
 	
 	private IRNode tempNode;
 	private static final int TRUE = 1;

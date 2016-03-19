@@ -38,7 +38,7 @@ import jl2755.ast.WhileStmt;
  * that may be literals. If a unary or binary expression contains
  * only literals, then it can be reduced to one constant.
  */
-public class ConstantFolderVisitor implements Visitor{
+public class ConstantFolderVisitor implements ASTVisitor{
 
 	/**
 	 * 0 if int,

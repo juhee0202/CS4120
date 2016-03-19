@@ -2,7 +2,7 @@ package jl2755.ast;
 
 import edu.cornell.cs.cs4120.util.CodeWriterSExpPrinter;
 import jl2755.GlobalPrettyPrinter;
-import jl2755.visitor.Visitor;
+import jl2755.visitor.ASTVisitor;
 
 /**
  * Represents a variable declaration in which the type of the variable can be
@@ -76,7 +76,7 @@ public class VarDecl implements NakedStmt {
 	}
 	
 	@Override
-	public void accept(Visitor v){
+	public void accept(ASTVisitor v){
 		v.visit(this);
 	}
 }

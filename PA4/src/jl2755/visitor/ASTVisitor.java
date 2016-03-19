@@ -2,7 +2,7 @@ package jl2755.visitor;
 
 import jl2755.ast.*;
 
-public interface Visitor {
+public interface ASTVisitor {
 	public void visit(ArrayElement ae);
 	public void visit(ArrayElementList ael);
 	public void visit(ArrayLiteral al);

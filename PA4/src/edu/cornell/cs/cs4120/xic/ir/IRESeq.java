@@ -3,6 +3,7 @@ package edu.cornell.cs.cs4120.xic.ir;
 import edu.cornell.cs.cs4120.util.SExpPrinter;
 import edu.cornell.cs.cs4120.xic.ir.visit.AggregateVisitor;
 import edu.cornell.cs.cs4120.xic.ir.visit.CheckCanonicalIRVisitor;
+import edu.cornell.cs.cs4120.xic.ir.visit.IRTreeVisitor;
 import edu.cornell.cs.cs4120.xic.ir.visit.IRVisitor;
 import edu.cornell.cs.cs4120.xic.ir.visit.LIRVisitor;
 
@@ -38,14 +39,6 @@ public class IRESeq extends IRExpr {
     }
     
     @Override
-    public IRNode lowerChildren(LIRVisitor v) {
-    	// TODO: comeback
-    	IRStmt stmt = (IRStmt) v.visit(this, this.stmt);
-    	
-    	return this;
-    }
-
-    @Override
     public IRNode visitChildren(IRVisitor v) {
         IRStmt stmt = (IRStmt) v.visit(this, this.stmt);
         IRExpr expr = (IRExpr) v.visit(this, this.expr);
@@ -76,5 +69,9 @@ public class IRESeq extends IRExpr {
         stmt.printSExp(p);
         expr.printSExp(p);
         p.endList();
+    }
+    
+    public void accept(IRTreeVisitor irv) {
+    	irv.visit(this);
     }
 }

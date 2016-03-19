@@ -6,7 +6,7 @@ import java.util.List;
 
 import edu.cornell.cs.cs4120.util.CodeWriterSExpPrinter;
 import jl2755.GlobalPrettyPrinter;
-import jl2755.visitor.Visitor;
+import jl2755.visitor.ASTVisitor;
 
 /**
  * Class that encapsulates the return statement of a block
@@ -81,7 +81,7 @@ public class ReturnStmt {
 		this.return_line = return_line;
 	}
 
-	public void accept(Visitor v){
+	public void accept(ASTVisitor v){
 		v.visit(this);
 	}
 	

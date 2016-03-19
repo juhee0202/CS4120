@@ -9,7 +9,7 @@ import java.util.List;
  *	- 0: 1 argument
  *	- 1: 1< arguments
  */
-import jl2755.visitor.Visitor;
+import jl2755.visitor.ASTVisitor;
 
 /**
  * Represents function arguments in a recursive manner.
@@ -73,7 +73,7 @@ public class FunctionArg {
 		this.index = index;
 	}
 	
-	public void accept(Visitor v){
+	public void accept(ASTVisitor v){
 		v.visit(this);
 	}
 }

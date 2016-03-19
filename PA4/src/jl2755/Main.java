@@ -35,6 +35,7 @@ import jl2755.exceptions.SemanticError;
 import jl2755.exceptions.SyntaxError;
 import jl2755.type.FunType;
 import jl2755.type.VType;
+import jl2755.visitor.ConstantFolderVisitor;
 import jl2755.visitor.MIRVisitor;
 import jl2755.visitor.TypeCheckVisitor;
 
@@ -431,6 +432,12 @@ public class Main {
 			TypeCheckVisitor typeCheck = new TypeCheckVisitor();
 			program.accept(typeCheck);
 			
+			/* Constant Folding */
+			if (optimize) {
+				ConstantFolderVisitor constantFold = new ConstantFolderVisitor();
+				program.accept(constantFold);
+			}
+			
 			/* Translate to MIR */
 			MIRVisitor mir = new MIRVisitor();
 			program.accept(mir);
@@ -475,7 +482,7 @@ public class Main {
 			System.out.println("[xic] Interpreting intermediate code");
 			IRSimulator sim = new IRSimulator((IRCompUnit) program);
 	        sim.call("_Imain_paai", 0);
-	        System.out.println("[xic] Interpreting intermediate code Completed");
+	        System.out.println("[xic] Interpreting intermediate code completed");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

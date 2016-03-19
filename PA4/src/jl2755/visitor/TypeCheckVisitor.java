@@ -26,7 +26,7 @@ public class TypeCheckVisitor implements ASTVisitor {
 	private VType tempType;
 	private boolean negativeNumber; // needed for UnaryExpr, Literal
 	
-	public TypeCheckVisitor(Program p){
+	public TypeCheckVisitor(){
 		env = new HashMap<String, VType>();
 		if_env = new HashMap<String, VType>();
 		stack = new Stack<String>();

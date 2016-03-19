@@ -208,7 +208,6 @@ public class Main {
 		
 		/* IR GENERATION */
 		if (cmd.hasOption("-irgen")) {
-			// TODO: Generate intermediate code
 			if (irgenFiles.size() == 0) {
 				files = concat(lexFiles, 
 						   parseFiles, 
@@ -236,7 +235,6 @@ public class Main {
 		
 		/* IR INTERPRET */
 		if (cmd.hasOption("-irrun")) {
-			// TODO: Generate and interpret intermediate code
 			if (irrunFiles.size() == 0) {
 				files = concat(lexFiles, 
 						   parseFiles, 
@@ -410,8 +408,7 @@ public class Main {
 		}
 	}
 	
-	private static IRNode irgen(String filename) throws FileNotFoundException {
-		// TODO Auto-generated method stub
+	public static IRNode irgen(String filename) throws FileNotFoundException {
 		try {
 			int index = filename.lastIndexOf('.');
 			if (index == -1) {
@@ -466,8 +463,7 @@ public class Main {
 		return null;
 	}
 
-	private static void irrun(String filename) throws FileNotFoundException {
-		// TODO Auto-generated method stub
+	public static void irrun(String filename) throws FileNotFoundException {
 		// Generate IR code
 		IRNode program = irgen(filename);
 		
@@ -553,8 +549,6 @@ public class Main {
 
 		// if the interface file is syntactically invalid
 		if (s.value instanceof Program) {
-//				String errorMsg = "(" + interfaceName + ".ixi"+ ")" + 
-//						" Syntax error beginning at 1:1: Interface file is invalid";
 			try {
 				bw.write("1:1 error: Interface file is invalid");
 				bw.close();

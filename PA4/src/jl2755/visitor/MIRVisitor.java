@@ -16,12 +16,9 @@ public class MIRVisitor implements ASTVisitor{
 	private IRNode tempNode;
 	private static final int TRUE = 1;
 	private static final int FALSE = 0;
-	private int labelCount;
+	private int labelCount = 0;
+	private int tempCount = 0;
 	public IRNode program;
-	
-	public MIRVisitor() {
-		labelCount = 0;
-	}
 	
 	@Override
 	public void visit(ArrayElement ae) {
@@ -39,7 +36,7 @@ public class MIRVisitor implements ASTVisitor{
 		// Allocate memory for array and length "field"
 		IRName addrOfAllocFunc = new IRName("_I_alloc_i");
 		IRCall theIRCall = new IRCall(addrOfAllocFunc, new IRConst((length + 1)*Configuration.WORD_SIZE));
-		IRTemp tempOfArray = new IRTemp("array");
+		IRTemp tempOfArray = new IRTemp("t"+tempCount++);
 		
 		// Move allocated space pointer into tempOfArray
 		IRMove moveCallIntoTemp = new IRMove(tempOfArray, theIRCall);

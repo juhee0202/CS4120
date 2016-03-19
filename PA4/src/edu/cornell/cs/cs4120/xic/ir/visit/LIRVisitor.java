@@ -11,10 +11,10 @@ import polyglot.util.Pair;
 public class LIRVisitor extends IRVisitor implements IRTreeVisitor{
 	
 	private Pair<IRSeq,IRNode> tempSeq;
+	private int globalTempCount = 0;
 	public IRNode program;
 	
 	public LIRVisitor() {
-		// TODO Auto-generated constructor stub
 	}
 
 	@Override
@@ -38,14 +38,13 @@ public class LIRVisitor extends IRVisitor implements IRTreeVisitor{
 		IRSeq s2 = tempSeq.part1();
 		IRExpr e2 = (IRExpr) tempSeq.part2();
 		
-		// TODO: Fill in arguments
 		if (checkCommute(s2, e1)) {
 			IRSeq combinedSeq = combineTwoStmt(s1, s2);
 			IRBinOp holyBinOp = new IRBinOp(bo.opType(), e1, e2);
 			tempSeq = new Pair<IRSeq, IRNode>(combinedSeq, holyBinOp);
 		}
 		else {			
-			IRTemp holyTemp = new IRTemp("t");
+			IRTemp holyTemp = new IRTemp("temp" + globalTempCount++);
 			IRMove storeExpr = new IRMove(holyTemp, (IRExpr) e1);
 			IRSeq combinedSeq = combineTwoStmt(s1, storeExpr);
 			combinedSeq = combineTwoStmt(combinedSeq, s2);
@@ -56,13 +55,12 @@ public class LIRVisitor extends IRVisitor implements IRTreeVisitor{
 	
 	public void visit(IRCall call) {
 		// Index temps to keep track of registers
-		int tempIndex = 0;
 		call.target().accept(this);
 		
 		// Get side effects and pure expressions of target
 		IRSeq holySideEffects = tempSeq.part1();
 		IRExpr holyTarget = (IRExpr) tempSeq.part2();
-		IRTemp targetTemp = new IRTemp("temp" + tempIndex++);
+		IRTemp targetTemp = new IRTemp("temp" + globalTempCount++);
 		
 		// Keep track of temps to put in CALL at the end
 		List<IRExpr> holyTemps = new ArrayList<IRExpr>();
@@ -78,13 +76,13 @@ public class LIRVisitor extends IRVisitor implements IRTreeVisitor{
 			dirtyExprList.get(i).accept(this);
 			holySideEffects = combineTwoStmt(holySideEffects,tempSeq.part1());
 			IRExpr holyExpr = (IRExpr) tempSeq.part2();
-			IRTemp holyTemp = new IRTemp("temp" + tempIndex++);
+			IRTemp holyTemp = new IRTemp("temp" + globalTempCount++);
 			holyTemps.add(holyTemp);
 			IRMove holyArgMove = new IRMove(holyTemp, holyExpr);
 			holySideEffects = combineTwoStmt(holySideEffects, holyArgMove);
 		}
 		
-		IRTemp returnRegister = new IRTemp(Configuration.ABSTRACT_RET_PREFIX + "0");
+		IRTemp returnRegister = new IRTemp("temp" + globalTempCount++);
 		IRCall holyCall = new IRCall(holyTarget, holyTemps);
 		IRMove lastHolyMove = new IRMove(returnRegister, holyCall);
 		holySideEffects = combineTwoStmt(holySideEffects, lastHolyMove);
@@ -100,6 +98,17 @@ public class LIRVisitor extends IRVisitor implements IRTreeVisitor{
 	}
 	
 	public void visit(IRCompUnit cu) {
+		List<IRFuncDecl> allFuncDecls = new ArrayList<IRFuncDecl>(cu.functions().values());
+		IRSeq allHolySeqs = new IRSeq(new ArrayList<IRStmt>());
+		
+		for (int i = 0; i < allFuncDecls.size(); i++) {
+			allFuncDecls.get(i).accept(this);
+			allHolySeqs = combineTwoStmt(allHolySeqs, tempSeq.part1());
+		}
+		tempSeq = new Pair<IRSeq, IRNode>(allHolySeqs, null);
+
+		List<BasicBlock> basicBlockList = createBasicBlocks(allHolySeqs);
+		// TODO run the alg
 		
 		// After visiting tree
 		program = cu;
@@ -137,7 +146,11 @@ public class LIRVisitor extends IRVisitor implements IRTreeVisitor{
 	}
 	
 	public void visit(IRFuncDecl fd) {
-		
+		fd.body().accept(this);
+		IRSeq functionBody = tempSeq.part1();
+		IRLabel functionLabel = new IRLabel(fd.label());
+		IRSeq function = combineTwoStmt(functionLabel, functionBody);
+		tempSeq = new Pair<IRSeq, IRNode>(function, null);
 	}
 	
 	public void visit(IRJump j) {
@@ -161,7 +174,27 @@ public class LIRVisitor extends IRVisitor implements IRTreeVisitor{
 	}
 	
 	public void visit(IRMove mov) {
+		// assuming no commute (side effect dirties exp)
+		mov.target().accept(this);
+		IRSeq s1 = tempSeq.part1();
+		IRExpr e1 = (IRExpr) tempSeq.part2();
+		mov.expr().accept(this);
+		IRSeq s2 = tempSeq.part1();
+		IRExpr e2 = (IRExpr) tempSeq.part2();
 		
+		if (checkCommute(s2, e1)) {
+			IRSeq combinedSeq = combineTwoStmt(s1, s2);
+			IRMove holyMove = new IRMove(e1, e2);
+			tempSeq = new Pair<IRSeq, IRNode>(combinedSeq, holyMove);
+		}
+		else {
+			IRTemp holyTemp = new IRTemp("temp" + globalTempCount++);
+			IRMove storeExpr = new IRMove(holyTemp, (IRExpr) e1);
+			IRSeq combinedSeq = combineTwoStmt(s1, storeExpr);
+			combinedSeq = combineTwoStmt(combinedSeq, s2);
+			IRNode holyMove = new IRMove(holyTemp, e2);
+			tempSeq = new Pair<IRSeq, IRNode>(combinedSeq, holyMove);
+		}
 	}
 	
 	public void visit(IRName name) {
@@ -171,7 +204,9 @@ public class LIRVisitor extends IRVisitor implements IRTreeVisitor{
 	}
 	
 	public void visit(IRReturn ret) {
-		
+		List<IRStmt> justRet = new ArrayList<IRStmt>();
+		justRet.add(ret);
+		tempSeq = new Pair<IRSeq, IRNode>(new IRSeq(justRet), null);
 	}
 	
 	public void visit(IRSeq seq) {
@@ -228,5 +263,68 @@ public class LIRVisitor extends IRVisitor implements IRTreeVisitor{
 		// TODO: Do dis
 		
 		return false;
+		
+	}
+	
+	/**
+	 * A basic block is a sequence of statements with the following qualities:
+	 * -	the first statement is a LABEL
+	 * -	the last statement is a JUMP or CJUMP
+	 * -	There are no other LABELs, JUMPs, or CJUMPs
+	 * @param Sequence of Statements
+	 * @return a List of basic blocks (IRSeq)
+	 */
+	private static List<BasicBlock> createBasicBlocks(IRSeq stmts) {
+		int labelCount = 0;
+		List<BasicBlock> basicBlocks = new ArrayList<BasicBlock>();
+		List<IRStmt> basicBlock = new ArrayList<IRStmt>();
+		List<IRStmt> stmtList = stmts.stmts();
+		
+		boolean finishedBlock = false;
+		int index = 0;
+		for (int i = 0; i < stmtList.size(); i++) {
+			IRStmt currStmt = stmtList.get(i);
+			
+			if ((finishedBlock || currStmt instanceof IRLabel) 
+					&& !basicBlock.isEmpty()) {
+				basicBlocks.add(new BasicBlock(basicBlock, index));
+				basicBlock.clear();
+				finishedBlock = false;
+				index = 0;
+				if (!(currStmt instanceof IRLabel)) {
+					basicBlock.add(new IRLabel("bb" + labelCount++));
+				}
+			}
+			
+			if (currStmt instanceof IRJump 
+					|| currStmt instanceof IRCJump 
+					|| currStmt instanceof IRReturn) {
+				basicBlock.add(currStmt);
+				finishedBlock = true;
+				if (currStmt instanceof IRJump) {
+					index = 1;
+				} else if (currStmt instanceof IRJump) {
+					index = 2;
+				} else {
+					index = 3;
+				}
+			} else {
+				basicBlock.add(currStmt);
+			}	
+		}
+		
+		if (!basicBlock.isEmpty()) {
+			basicBlocks.add(new BasicBlock(basicBlock, index));
+		}
+		
+		return basicBlocks;
+	}
+	
+	private List<IRSeq> constructCFG(List<BasicBlock> program) {
+		return null;
+	}
+	
+	private List<IRSeq> reorderBasicBlocks(List<IRSeq> basicBlockList) {
+		return null;
 	}
 }

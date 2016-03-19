@@ -313,7 +313,7 @@ public class LIRVisitor extends IRVisitor implements IRTreeVisitor{
 				finishedBlock = true;
 				if (currStmt instanceof IRJump) {
 					index = 1;
-				} else if (currStmt instanceof IRJump) {
+				} else if (currStmt instanceof IRCJump) {
 					index = 2;
 				} else {
 					index = 3;

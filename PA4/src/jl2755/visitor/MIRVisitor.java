@@ -1,6 +1,7 @@
 package jl2755.visitor;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -237,17 +238,20 @@ public class MIRVisitor implements Visitor{
 		IRLabel irLabel = new IRLabel(label);
 		
 		// get statement sequence
+		IRSeq seq;
 		BlockStmt blockStmt = fd.getBlockStmt();
 		blockStmt.accept(this);
 		if (tempNode != null) {
 			IRSeq irSeq = (IRSeq) tempNode;
 			List<IRStmt> stmts = irSeq.stmts();
 			stmts.add(0,irLabel);
-			tempNode = new IRSeq(stmts);
+			seq = new IRSeq(stmts);
 		} else {
-			tempNode = new IRSeq(irLabel);
+			seq = new IRSeq(irLabel);
 		}
 		
+		// create IRFuncDecl
+		tempNode = new IRFuncDecl(label, seq);	
 	}
 
 	@Override
@@ -341,13 +345,13 @@ public class MIRVisitor implements Visitor{
 
 	@Override
 	public void visit(Program p) {
+		Map<String, IRFuncDecl> functions = new HashMap<String, IRFuncDecl>();
 		List<FunctionDecl> funcs = p.getFunctionDecls();
-		List<IRStmt> list = new ArrayList<IRStmt>();
 		for (FunctionDecl fd: funcs) {
 			fd.accept(this);
-			list.add((IRStmt) tempNode);
+			functions.put(fd.getABIName(), (IRFuncDecl) tempNode);
 		}
-		tempNode = new IRSeq(list);
+		tempNode = new IRCompUnit("Program", functions);
 	}
 
 	@Override

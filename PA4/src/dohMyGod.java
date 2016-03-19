@@ -18,6 +18,10 @@ public class dohMyGod {
 		long c = b + 1;
 //		System.out.println((long)Double.MAX_VALUE);
 //		System.out.println(c);
+		
+		int z = 5;
+		System.out.println(z++);
+		System.out.println(z);
 	}
 
 }

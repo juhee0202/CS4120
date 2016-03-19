@@ -2,12 +2,14 @@ package jl2755.ast;
 
 import edu.cornell.cs.cs4120.util.CodeWriterSExpPrinter;
 import jl2755.GlobalPrettyPrinter;
+import jl2755.type.VType;
 import jl2755.visitor.ASTVisitor;
 
 public class Identifier implements Expr{
 	private String theValue;
 	private int theValue_col;
 	private int theValue_line;
+	private VType type;
 	
 	public Identifier(String argValue, int idleft, int idright){
 		theValue = argValue;
@@ -62,5 +64,13 @@ public class Identifier implements Expr{
 	@Override
 	public int getLineNumber() {
 		return theValue_line;
+	}
+
+	public VType getType() {
+		return type;
+	}
+
+	public void setType(VType type) {
+		this.type = type;
 	}
 }

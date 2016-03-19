@@ -366,9 +366,11 @@ public class TypeCheckVisitor implements ASTVisitor {
 		if (op.toString().equals("+")) {
 			if (leftType.isInt()) {
 				tempType = new VarType(false, 0);
+				be.setType(tempType);
 			} else if (leftType.isArray()) {
 				tempType = new VarType(leftType.getIsBool(), 
 						leftType.getNumBrackets());
+				be.setType(tempType);
 			} else {
 				String s = "Invalid expression types for + operation.";
 				SemanticErrorObject seo = new SemanticErrorObject(
@@ -386,6 +388,7 @@ public class TypeCheckVisitor implements ASTVisitor {
 		else if (op.toString().equals("!=") || op.toString().equals("==")) {
 			if (leftType.isBool() ||leftType.isInt() || leftType.isArray()) {	
 				tempType = new VarType(true, 0);
+				be.setType(tempType);
 			} else {
 				String s = "Invalid types for " + op.toString() + " operation.";
 				SemanticErrorObject seo = new SemanticErrorObject(
@@ -417,6 +420,7 @@ public class TypeCheckVisitor implements ASTVisitor {
 				Main.handleSemanticError(seo);
 			}
 			tempType = new VarType(true,0);
+			be.setType(tempType);
 		}
 		/*
 		 * &, | operator
@@ -437,6 +441,7 @@ public class TypeCheckVisitor implements ASTVisitor {
 				Main.handleSemanticError(seo);
 			}
 			tempType = new VarType(true,0);
+			be.setType(tempType);
 		}
 		/*
 		 * -, *, *<<, /, %
@@ -455,6 +460,7 @@ public class TypeCheckVisitor implements ASTVisitor {
 				Main.handleSemanticError(seo);
 			}
 			tempType = new VarType(false,0);
+			be.setType(tempType);
 		}
 
 	}
@@ -532,6 +538,7 @@ public class TypeCheckVisitor implements ASTVisitor {
 				Main.handleSemanticError(seo);
 			}
 			tempType = arrayType.getPrimitiveType();
+			fc.setType(tempType);
 			return;
 		}
 		
@@ -581,6 +588,7 @@ public class TypeCheckVisitor implements ASTVisitor {
 		}
 		
 		tempType = funType.getReturnTypes();
+		fc.setType(tempType);
 	}
 
 	/**
@@ -656,6 +664,7 @@ public class TypeCheckVisitor implements ASTVisitor {
 			Main.handleSemanticError(seo);
 		}
 		tempType = env.get(id.toString());
+		id.setType(tempType);
 	}
 	
 	/**
@@ -720,7 +729,7 @@ public class TypeCheckVisitor implements ASTVisitor {
 	
 	@Override
 	public void visit(IndexedBrackets ib) {
-		// Nothing should be done here
+		return;
 	}
 
 	/** 
@@ -990,6 +999,7 @@ public class TypeCheckVisitor implements ASTVisitor {
 				Main.handleSemanticError(seo);
 			}
 			tempType = new VarType(true, 0);
+			ue.setType(tempType);
 		}
 		else if (op.toString().equals("-")) {
 			if (!exprType.isInt()) {
@@ -1003,6 +1013,7 @@ public class TypeCheckVisitor implements ASTVisitor {
 				Main.handleSemanticError(seo);
 			}
 			tempType = new VarType(false, 0);
+			ue.setType(tempType);
 		}
 		
 		if (ue.getExpr() instanceof Literal) {

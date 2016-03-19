@@ -9,6 +9,7 @@ import edu.cornell.cs.cs4120.xic.ir.visit.AggregateVisitor;
 import edu.cornell.cs.cs4120.xic.ir.visit.CheckCanonicalIRVisitor;
 import edu.cornell.cs.cs4120.xic.ir.visit.IRVisitor;
 import edu.cornell.cs.cs4120.xic.ir.visit.InsnMapsBuilder;
+import edu.cornell.cs.cs4120.xic.ir.visit.LIRVisitor;
 
 /**
  * A node in an intermediate-representation abstract syntax tree.
@@ -24,6 +25,11 @@ public abstract class IRNode {
         return this;
     }
 
+    public IRNode lowerChildren(LIRVisitor v) {
+    	return this;
+    }
+
+    
     public <T> T aggregateChildren(AggregateVisitor<T> v) {
         return v.unit();
     }

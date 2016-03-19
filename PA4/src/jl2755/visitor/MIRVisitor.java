@@ -244,7 +244,7 @@ public class MIRVisitor implements Visitor{
 			stmts.add(0,irLabel);
 			seq = new IRSeq(stmts);
 		} else {
-			seq = new IRSeq(irLabel);
+			seq = new IRSeq(irLabel, new IRReturn());
 		}
 		
 		// create IRFuncDecl
@@ -544,5 +544,12 @@ public class MIRVisitor implements Visitor{
 			IRExpr e2 = (IRExpr) tempNode;
 			return new IRCJump(e2,t.name(),f.name());
 		}		
+	}
+	
+	/**
+	 * @return (IRCompUnit) tempNode
+	 */
+	public IRNode getRoot() {
+		return tempNode;
 	}
 }

@@ -4,6 +4,7 @@ import edu.cornell.cs.cs4120.util.InternalCompilerError;
 import edu.cornell.cs.cs4120.util.SExpPrinter;
 import edu.cornell.cs.cs4120.xic.ir.visit.AggregateVisitor;
 import edu.cornell.cs.cs4120.xic.ir.visit.IRVisitor;
+import edu.cornell.cs.cs4120.xic.ir.visit.LIRVisitor;
 
 /**
  * An intermediate representation for a binary operation
@@ -87,7 +88,7 @@ public class IRBinOp extends IRExpr {
     public String label() {
         return type.toString();
     }
-
+    
     @Override
     public IRNode visitChildren(IRVisitor v) {
         IRExpr left = (IRExpr) v.visit(this, this.left);
@@ -115,5 +116,11 @@ public class IRBinOp extends IRExpr {
         right.printSExp(p);
         p.endList();
     }
+
+	@Override
+	public IRNode lowerChildren(LIRVisitor v) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
 }

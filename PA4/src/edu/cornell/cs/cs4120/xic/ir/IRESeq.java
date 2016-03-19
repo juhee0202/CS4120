@@ -4,6 +4,7 @@ import edu.cornell.cs.cs4120.util.SExpPrinter;
 import edu.cornell.cs.cs4120.xic.ir.visit.AggregateVisitor;
 import edu.cornell.cs.cs4120.xic.ir.visit.CheckCanonicalIRVisitor;
 import edu.cornell.cs.cs4120.xic.ir.visit.IRVisitor;
+import edu.cornell.cs.cs4120.xic.ir.visit.LIRVisitor;
 
 /**
  * An intermediate representation for an expression evaluated under side effects
@@ -34,6 +35,14 @@ public class IRESeq extends IRExpr {
     @Override
     public String label() {
         return "ESEQ";
+    }
+    
+    @Override
+    public IRNode lowerChildren(LIRVisitor v) {
+    	// TODO: comeback
+    	IRStmt stmt = (IRStmt) v.visit(this, this.stmt);
+    	
+    	return this;
     }
 
     @Override

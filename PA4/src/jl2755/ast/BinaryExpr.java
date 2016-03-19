@@ -2,6 +2,7 @@ package jl2755.ast;
 
 import edu.cornell.cs.cs4120.util.CodeWriterSExpPrinter;
 import jl2755.GlobalPrettyPrinter;
+import jl2755.type.VType;
 import jl2755.visitor.ASTVisitor;
 
 /**
@@ -14,6 +15,7 @@ public class BinaryExpr implements OpExpr {
 	private int leftExpr_line;
 	private Expr rightExpr;
 	private BinaryOp op;
+	private VType type;
 
 	public BinaryExpr(Expr leftE, Expr rightE, BinaryOp o) {
 		leftExpr = leftE;
@@ -45,6 +47,22 @@ public class BinaryExpr implements OpExpr {
 	
 	public void setRightExpr(Expr e) {
 		rightExpr = e;
+	}
+
+	public BinaryOp getOp() {
+		return op;
+	}
+
+	public void setOp(BinaryOp op) {
+		this.op = op;
+	}
+
+	public VType getType() {
+		return type;
+	}
+
+	public void setType(VType type) {
+		this.type = type;
 	}
 
 	public int getLeftExpr_col() {

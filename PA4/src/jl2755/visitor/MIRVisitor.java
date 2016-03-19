@@ -35,32 +35,43 @@ public class MIRVisitor implements Visitor{
 		// {i,j,...,z}
 		List<Expr> exprList = ael.getAllExprInArray();
 		int length = exprList.size();
-		IRName nameOfAlloc = new IRName("_I_alloc_i");
-		IRCall theIRCall = new IRCall(nameOfAlloc, new IRConst(length + 1));
-		IRTemp tempOfArray = new IRTemp("a");
+		// Allocate memory for array and length "field"
+		IRName addrOfAllocFunc = new IRName("_I_alloc_i");
+		IRCall theIRCall = new IRCall(addrOfAllocFunc, new IRConst((length + 1)*Configuration.WORD_SIZE));
+		IRTemp tempOfArray = new IRTemp("array");
+		
+		// Move allocated space pointer into tempOfArray
 		IRMove moveCallIntoTemp = new IRMove(tempOfArray, theIRCall);
-		IRMove moveLengthIntoFirst = new IRMove(nameOfAlloc, new IRConst(length));	// BUG: nameOfAlloc -> mem(tempOfArray)
-		List<IRStmt> IRExprOfExpr = new ArrayList<IRStmt>();
-		IRExprOfExpr.add(moveCallIntoTemp);
-		IRExprOfExpr.add(moveLengthIntoFirst);
+		
+		// Move length into first cell
+		IRMem memOfArray = new IRMem(tempOfArray);
+		IRMove moveLengthIntoFirst = new IRMove(memOfArray, new IRConst(length));
+		
+		// Initialize sequence of statements with moving allocated space into IRTemp and adding length
+		List<IRStmt> stmtList = new ArrayList<IRStmt>();
+		stmtList.add(moveCallIntoTemp);
+		stmtList.add(moveLengthIntoFirst);
+		
+		// For each expression in the array literal, get the IRNode for it, and make a IRMove
+		// node for the IRExpr into each cell
 		for (int i = 0; i < exprList.size(); i++) {
 			exprList.get(i).accept(this);
 			IRConst offSet = new IRConst((i+1)*Configuration.WORD_SIZE);
-			IRBinOp offsetBinOp = new IRBinOp(OpType.ADD, offSet, nameOfAlloc);	// BUG: nameOfAlloc -> tempOfArray
+			IRBinOp offsetBinOp = new IRBinOp(OpType.ADD, offSet, tempOfArray);
 			IRMem memOfCell = new IRMem(offsetBinOp);
 			IRMove moveElementIntoCell = new IRMove(memOfCell, (IRExpr) tempNode);
-			IRExprOfExpr.add(moveElementIntoCell);
+			stmtList.add(moveElementIntoCell);
 		}
 		
+		// Make array point to one cell after (since cell -1 should be length)
 		IRConst oneOffset = new IRConst(Configuration.WORD_SIZE);
-		IRMem memOfOneOffset = new IRMem(tempOfArray);
-		IRBinOp offSetAndMem = new IRBinOp(OpType.ADD, memOfOneOffset, oneOffset);	// BUG: memOfOneOffset -> tempOfArray
+		IRBinOp offSetAndMem = new IRBinOp(OpType.ADD, tempOfArray, oneOffset);
 		IRMove moveOffsetAndMem = new IRMove(tempOfArray, offSetAndMem);
-		IRExprOfExpr.add(moveOffsetAndMem);
-		IRSeq movingElementsIntoArray = new IRSeq(IRExprOfExpr);
+		stmtList.add(moveOffsetAndMem);
+		IRSeq movingElementsIntoArray = new IRSeq(stmtList);
 		// temp(a)
-		IRESeq pleaseFreeMe = new IRESeq(movingElementsIntoArray, tempOfArray);
-		tempNode = pleaseFreeMe;
+		IRESeq createArrayLit = new IRESeq(movingElementsIntoArray, tempOfArray);
+		tempNode = createArrayLit;
 	}
 
 	@Override
@@ -70,7 +81,6 @@ public class MIRVisitor implements Visitor{
 
 	@Override
 	public void visit(AssignmentStmt as) {
-		// TODO: Finish index 1 and 2
 		int index = as.getIndex();
 		if (index == 0) {
 			// x = 0
@@ -141,8 +151,6 @@ public class MIRVisitor implements Visitor{
 			tempOp = OpType.EQ;		break;
 		case NOT_EQUAL:
 			tempOp = OpType.NEQ;	break;
-		default:
-			// TODO: error handling
 		}
 		tempNode = new IRBinOp(tempOp, leftNode, rightNode);
 	}
@@ -153,9 +161,14 @@ public class MIRVisitor implements Visitor{
 	@Override
 	public void visit(BlockStmt bs) {
 		int index = bs.getIndex();
-		if (index == 1) {
+		if (index == 0) {
+			// Nothing
+			tempNode = null;
+		} else if (index == 1) {
+			// List of stmts
 			bs.getStmtList().accept(this);	// tempNode is set in here
 		} else if (index == 2) {
+			// List of stmts and return stmt
 			// visit stmt list
 			bs.getStmtList().accept(this);	// tempNode is set in here
 			IRSeq stmtSeq = (IRSeq) tempNode;
@@ -170,13 +183,14 @@ public class MIRVisitor implements Visitor{
 			}
 			tempNode = new IRSeq(irStmtList);
 		} else if (index == 3){
+			// Return stmt
 			bs.getReturnStmt().accept(this);	// tempNode is set in here
 		}
 	}
 
 	@Override
 	public void visit(FunctionArg fa) {
-		// TODO Mebbe delete this shiet
+		return;
 	}
 
 	/**
@@ -216,7 +230,6 @@ public class MIRVisitor implements Visitor{
 	/**
 	 * f(x1:t1,...,xn:tn):t' {s} --IR--> SEQ(LABEL(f), S[s])
 	 */
-	// TODO: function name convention
 	@Override
 	public void visit(FunctionDecl fd) {
 		 // get function label
@@ -226,10 +239,15 @@ public class MIRVisitor implements Visitor{
 		// get statement sequence
 		BlockStmt blockStmt = fd.getBlockStmt();
 		blockStmt.accept(this);
-		IRSeq irSeq = (IRSeq) tempNode;
-		List<IRStmt> stmts = irSeq.stmts();
-		stmts.add(0,irLabel);
-		tempNode = new IRSeq(stmts);
+		if (tempNode != null) {
+			IRSeq irSeq = (IRSeq) tempNode;
+			List<IRStmt> stmts = irSeq.stmts();
+			stmts.add(0,irLabel);
+			tempNode = new IRSeq(stmts);
+		} else {
+			tempNode = new IRSeq(irLabel);
+		}
+		
 	}
 
 	@Override
@@ -243,10 +261,12 @@ public class MIRVisitor implements Visitor{
 		IRLabel falseLabel = new IRLabel("l"+labelCount++);
 		IRStmt ifJump = controlFlow(is.getExpr(),trueLabel,falseLabel);
 		if (is.getIndex() == 0) {
+			// Only if
 			is.getStmt1().accept(this);
 			IRStmt stmt = (IRStmt) tempNode;
 			tempNode = new IRSeq(ifJump,trueLabel,stmt,falseLabel);
 		} else {
+			// If, else
 			String end = "l"+labelCount++;
 			IRLabel endLabel = new IRLabel(end);
 			IRJump endJump = new IRJump(new IRName(end));
@@ -264,13 +284,11 @@ public class MIRVisitor implements Visitor{
 	 */
 	@Override
 	public void visit(IndexedBrackets ib) {
-		// Should not be visited
+		return;
 	}
 
 	@Override
 	public void visit(Literal l) {
-		// TODO Auto-generated method stub
-
 		int index = l.getIndex();
 		/*
 		 * 0 for int literal,
@@ -283,40 +301,42 @@ public class MIRVisitor implements Visitor{
 			tempNode = new IRConst(Long.parseLong(l.getIntLit()));
 			break;
 		case 1:
-			String stringLit = l.getStringLit();
-			IRExpr addr = new IRName("_I_alloc_i");
-			IRCall alloc = new IRCall(addr, new IRConst(stringLit.length()+1));
-			String t = "wat";
-			IRTemp reg = new IRTemp(t);
-			IRMove memAddr = new IRMove(reg, alloc);
-			
-			// fill up the allocated memory with stringLit
-			for (int i=-1; i <stringLit.length(); i++) {
-				IRConst val;
-				if (i == -1) {
-					val = new IRConst(stringLit.length());
-				}
-				else {
-					val = new IRConst(stringLit.charAt(i));
-				}
-				IRMove move = new IRMove(new IRMem(new IRBinOp(OpType.ADD, addr, new IRConst(i*8))), val);
-			}
-			tempNode = reg;
+//			String stringLit = l.getStringLit();
+//			IRExpr addr = new IRName("_I_alloc_i");
+//			IRCall alloc = new IRCall(addr, new IRConst(stringLit.length()+1));
+//			String t = "wat";
+//			IRTemp reg = new IRTemp(t);
+//			IRMove memAddr = new IRMove(reg, alloc);
+//			
+//			// fill up the allocated memory with stringLit
+//			for (int i=-1; i <stringLit.length(); i++) {
+//				IRConst val;
+//				if (i == -1) {
+//					val = new IRConst(stringLit.length());
+//				}
+//				else {
+//					val = new IRConst(stringLit.charAt(i));
+//				}
+//				IRMove move = new IRMove(new IRMem(new IRBinOp(OpType.ADD, addr, new IRConst(i*8))), val);
+//			}
+//			tempNode = reg;
+			System.out.println("YOU DUN FUCKED UP");
+			break;
 		case 2:
-			int character=-1;
-			try {
-				character = l.getCharLit().charAt(0);
-			} catch (Exception e) {
-				// TODO
-				System.out.println("Expected a character stored in string");
-			}
-			tempNode = new IRConst(character);
+//			int character=-1;
+//			try {
+//				character = l.getCharLit().charAt(0);
+//			} catch (Exception e) {
+//				// TODO
+//				System.out.println("Expected a character stored in string");
+//			}
+//			tempNode = new IRConst(character);
+			System.out.println("character literal");
+			break;
 		case 3:
 			tempNode = l.getBoolLit()? new IRConst(TRUE) : new IRConst(FALSE);
+			break;
 		}
-
-		// Ask about how to represent booleans
-
 	}
 
 	@Override
@@ -334,8 +354,10 @@ public class MIRVisitor implements Visitor{
 	public void visit(ReturnStmt rs) {
 		int index = rs.getIndex();
 		if (index == 0) {
+			// No return
 			tempNode = null;
 		} else {
+			// At least 1 return
 			List<Expr> exprList = rs.getListOfExpr();
 			List<IRStmt> stmtList = new ArrayList<IRStmt>(); 
 			
@@ -373,9 +395,8 @@ public class MIRVisitor implements Visitor{
 	@Override
 	public void visit(TupleInit ti) {
 		ti.getFunctionCall().accept(this);
-		if (ti.getIndex() != 0) {
+		if (ti.getIndex() != 0) {	// index = 0 -> _ = f()
 			// vd, tupleDeclList = f()
-//			int count = 0;
 			IRTemp temp;
 			IRExpr result;
 			IRMove move;
@@ -384,6 +405,7 @@ public class MIRVisitor implements Visitor{
 			for (int i = 0; i < vdlist.size(); i++) {
 				VarDecl vd = vdlist.get(i);
 				if (vd != null) {
+					// Assign result of function call
 					temp = new IRTemp(vd.getIdentifier().toString());
 					result = new IRTemp(Configuration.ABSTRACT_ARG_PREFIX+i);
 					move = new IRMove(temp,result);
@@ -391,16 +413,6 @@ public class MIRVisitor implements Visitor{
 				}
 			}
 			tempNode = new IRSeq(stmts);
-//			for (VarDecl vd : vdlist) {
-//				if (vd != null) {
-//					// Assign result of function call
-//					temp = new IRTemp(id);
-//					result = new IRTemp(Configuration.ABSTRACT_RET_PREFIX+count);
-//					move = new IRMove(temp,result);
-//					stmts.add(move);
-//				}
-//				count++;
-//			}
 		}
 	}
 
@@ -418,14 +430,12 @@ public class MIRVisitor implements Visitor{
 		case LOG_NEG: 
 			tempNode = new IRBinOp(OpType.XOR, expr, new IRConst(TRUE));
 			break;
-		default:
-			// TODO: error handling
 		}
 	}
 
 	@Override
 	public void visit(UseId ui) {
-		// Din dew nuffin
+		return;
 	}
 
 	@Override
@@ -448,24 +458,6 @@ public class MIRVisitor implements Visitor{
 		IRExpr e = (IRExpr) tempNode;
 		
 		tempNode = new IRMove(dest,e);
-		
-//		int index = vd.getIndex();
-//		if (index == 0) {
-//			// x: t[] = e
-//			// move(temp(x),mem(e))
-//			vi.getExpr().accept(this);
-//			IRExpr array = (IRExpr) tempNode;
-//			IRExpr temp = new IRTemp(id.toString());
-//			tempNode = new IRMove(temp,array);
-//		} else if (index == 1) {
-//			// x: int = e or x: bool = e
-//			// move(temp(x),E(e))
-//			id.accept(this);
-//			IRExpr temp = (IRExpr) tempNode;
-//			vi.getExpr().accept(this);
-//			IRExpr e = (IRExpr) tempNode;
-//			tempNode = new IRMove(temp,e);
-//		}
 	}
 
 	@Override
@@ -509,11 +501,7 @@ public class MIRVisitor implements Visitor{
 	 * 
 	 * @param e	the expression to evaluate, must be boolean
 	 * @param t the IR label to jump to if e evaluates to true
-<<<<<<< HEAD
 	 * @param f the IR label to jump to if e evaluates to false
-=======
-	 * @param f te IR label to jump to if e evaluates to false
->>>>>>> c616e1d1b0d8ef6428fbaf9663732c58b43e3c64
 	 * @return	an IR statement that gives the execution of the control flow
 	 */
 	private IRStmt controlFlow(Expr e, IRLabel t, IRLabel f) {

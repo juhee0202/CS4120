@@ -310,7 +310,8 @@ public class ConstantFolderVisitor implements Visitor{
 			caseIndex = 2;
 		}
 		if (l.getIndex() == 2) {
-			caseIndex = 3;
+			tempLong = Long.parseLong(l.getCharLit());
+			caseIndex = 0;
 		}
 		if (l.getIndex() == 3) {
 			tempBool = l.getBoolLit();

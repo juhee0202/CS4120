@@ -109,7 +109,17 @@ public class LIRVisitor extends IRVisitor implements IRTreeVisitor{
 
 		List<BasicBlock> basicBlockList = createBasicBlocks(allHolySeqs);
 		// TODO run the alg
-		
+			/* 	1. Find the next unmarked CJump
+				2. Find the blocks whose labels correspond to the CJump labels
+				3. Construct trace from true label (need to know what blocks 
+				must follow in reordering)
+				3. Reorder blocks such that false label block is immediately 
+				after and add Jump from after false block to block after true 
+				block
+				4. Change MIR CJump to LIR CJump (2 labels to true label only)
+				5. Mark CJump block
+				6. Repeat until no more unmarked CJumps
+			*/
 		// After visiting tree
 		program = cu;
 	}

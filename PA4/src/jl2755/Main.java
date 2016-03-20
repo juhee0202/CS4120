@@ -315,7 +315,8 @@ public class Main {
 			try {
 				symbol = lexer.next_token();
 			} catch (LexicalError error) {
-				content += error.getMessage();
+//				content += error.getMessage();
+				content += error.getLine() + ":" + error.getColumn() + " error:" + error.getDescription();
 				break;
 			} catch (IOException e) {
 				System.out.println("Failed to write to output file");

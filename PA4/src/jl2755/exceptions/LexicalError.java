@@ -34,4 +34,32 @@ public class LexicalError extends RuntimeException {
     public String getMessage() {
         return message();
     }
+
+	public int getLine() {
+		return line;
+	}
+
+	public void setLine(int line) {
+		this.line = line;
+	}
+
+	public int getColumn() {
+		return column;
+	}
+
+	public void setColumn(int column) {
+		this.column = column;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	public String getFilename() {
+		return filename;
+	}
 }

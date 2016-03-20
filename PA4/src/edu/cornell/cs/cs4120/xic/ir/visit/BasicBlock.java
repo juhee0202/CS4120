@@ -29,9 +29,10 @@ public class BasicBlock {
 	/** The predecessors of this basic block. */
 	public List<BasicBlock> preds;
 	
-	public BasicBlock(String argLabel) {
-		label = argLabel;
+	public BasicBlock(IRLabel argLabel) {
+		label = argLabel.name();
 		stmtList = new ArrayList<IRStmt>();
+		stmtList.add(argLabel);
 		index = -1;
 		nextBlock1 = null;
 		nextBlock2 = null;

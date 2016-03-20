@@ -65,11 +65,6 @@ public abstract class IRNode {
         }
         return sw.toString();
     }
-
-	public void lower() {
-		// TODO Auto-generated method stub
-		
-	}
 	
     public abstract void accept(IRTreeVisitor irv);
 }

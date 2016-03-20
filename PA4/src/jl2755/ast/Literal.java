@@ -33,7 +33,7 @@ public class Literal implements Constant {
 		if (index == 0) {
 			intLit = s;
 		} else if (index == 1) {
-			stringLit = s;
+			stringLit = collapseEscapes(s);
 		} else {
 			charLit = s;
 		}
@@ -57,7 +57,7 @@ public class Literal implements Constant {
 			intLit = s;
 		}
 		else if (index == 1) {
-			stringLit = s;
+			stringLit = collapseEscapes(s);
 		}
 		else {
 			charLit = s;
@@ -140,5 +140,33 @@ public class Literal implements Constant {
 	@Override
 	public int getLineNumber() {
 		return line;
+	}
+	
+	private String collapseEscapes(String arg) {
+		String newString = "";
+		for (int i = 0; i < arg.length(); i++) {
+			
+			if (!(arg.charAt(i) == '\\')) {
+				newString += arg.charAt(i);
+			}
+			else {
+				char nextChar = arg.charAt(i+1);
+				if (nextChar == 'n') {
+					newString += '\n';
+				}
+				else if (nextChar == '\'') {
+					newString += '\'';
+				}
+				else if (nextChar == '\\') {
+					newString += '\\';
+				}
+				else if (nextChar == '\"') {
+					newString += '\"';
+				}
+				i++;
+			}
+		}
+		
+		return newString;
 	}
 }

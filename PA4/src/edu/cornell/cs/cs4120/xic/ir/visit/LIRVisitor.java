@@ -23,18 +23,6 @@ public class LIRVisitor extends IRVisitor implements IRTreeVisitor{
 	public LIRVisitor() {
 		labelToBasicBlock = new HashMap<String, BasicBlock>();
 	}
-
-	@Override
-	protected LIRVisitor enter(IRNode parent, IRNode n) {
-        return this;
-    }
-	
-	@Override
-	protected IRNode leave(IRNode parent, IRNode n, IRNode n_,
-            IRVisitor v_) {
-		n_.lower();
-		return n_;
-    }
 	
 	public void visit(IRBinOp bo) {
 		// assuming no commute (side effect dirties exp)
@@ -55,7 +43,8 @@ public class LIRVisitor extends IRVisitor implements IRTreeVisitor{
 			IRMove storeExpr = new IRMove(holyTemp, (IRExpr) e1);
 			IRSeq combinedSeq = combineTwoStmt(s1, storeExpr);
 			combinedSeq = combineTwoStmt(combinedSeq, s2);
-			IRNode holyBinOp = new IRBinOp(bo.opType(), holyTemp, (IRExpr) e2);
+			IRTemp holyTemp2 = new IRTemp(holyTemp.name());
+			IRNode holyBinOp = new IRBinOp(bo.opType(), holyTemp2, (IRExpr) e2);
 			tempSeq = new Pair<IRSeq, IRNode>(combinedSeq, holyBinOp);
 		}
 	}
@@ -67,15 +56,14 @@ public class LIRVisitor extends IRVisitor implements IRTreeVisitor{
 		// Get side effects and pure expressions of target
 		IRSeq holySideEffects = tempSeq.part1();
 		IRExpr holyTarget = (IRExpr) tempSeq.part2();
-		//IRTemp targetTemp = new IRTemp("temp" + globalTempCount++);
+		IRTemp targetTemp = new IRTemp("temp" + globalTempCount++);
 		
 		// Keep track of temps to put in CALL at the end
 		List<IRExpr> holyTemps = new ArrayList<IRExpr>();
-		//holyTemps.add(targetTemp);
-		//IRMove holyTargetMove = new IRMove(targetTemp, holyTarget);
+//		IRMove holyTargetMove = new IRMove(targetTemp, holyTarget);
 		
 		// Adds target's statement and move to SEQ
-		//holySideEffects = combineTwoStmt(holySideEffects, holyTargetMove);
+//		holySideEffects = combineTwoStmt(holySideEffects, holyTargetMove);
 		
 		// Loop over, add side effects and move to SEQ, keep TEMPs
 		List<IRExpr> dirtyExprList = call.args();
@@ -90,19 +78,27 @@ public class LIRVisitor extends IRVisitor implements IRTreeVisitor{
 			holySideEffects = combineTwoStmt(holySideEffects, holyArgMove);
 		}
 		
+		// create fresh temp objects
+		for (int i = 0; i < holyTemps.size(); i++) {
+			IRTemp temp = new IRTemp(((IRTemp)holyTemps.get(i)).name());
+			holyTemps.set(i, temp);
+		}
+		
 		IRTemp returnRegister = new IRTemp("temp" + globalTempCount++);
 		IRCall holyCall = new IRCall(holyTarget, holyTemps);
 		IRMove lastHolyMove = new IRMove(returnRegister, holyCall);
 		holySideEffects = combineTwoStmt(holySideEffects, lastHolyMove);
-		tempSeq = new Pair<IRSeq, IRNode>(holySideEffects, returnRegister);
+		IRTemp returnRegister2 = new IRTemp(returnRegister.name());
+		tempSeq = new Pair<IRSeq, IRNode>(holySideEffects, returnRegister2);
 	}
 	
 	public void visit(IRCJump cj) {
 		cj.expr().accept(this);
 		IRSeq holySeq = tempSeq.part1();
 		IRExpr holyExpr = (IRExpr) tempSeq.part2();
-		IRNode holyJump = new IRCJump(holyExpr, cj.trueLabel(), cj.falseLabel());
-		tempSeq = new Pair<IRSeq, IRNode>(holySeq, holyJump);
+		IRCJump holyJump = new IRCJump(holyExpr, cj.trueLabel(), cj.falseLabel());
+		IRSeq combined = combineTwoStmt(holySeq, holyJump);
+		tempSeq = new Pair<IRSeq, IRNode>(combined, null);
 	}
 	
 	public void visit(IRCompUnit cu) {
@@ -181,8 +177,9 @@ public class LIRVisitor extends IRVisitor implements IRTreeVisitor{
 		j.target().accept(this);
 		IRSeq holySeq = tempSeq.part1();
 		IRExpr holyExpr = (IRExpr) tempSeq.part2();
-		IRNode holyJump = new IRJump(holyExpr);
-		tempSeq = new Pair<IRSeq, IRNode>(holySeq, holyJump);
+		IRJump holyJump = new IRJump(holyExpr);
+		holySeq = combineTwoStmt(holySeq, holyJump);
+		tempSeq = new Pair<IRSeq, IRNode>(holySeq, null);
 	}
 	
 	public void visit(IRLabel l) {
@@ -253,7 +250,7 @@ public class LIRVisitor extends IRVisitor implements IRTreeVisitor{
 		tempSeq = new Pair<IRSeq, IRNode>(emptySeq, temp);
 	}
 	
-	private static IRSeq combineTwoStmt(IRStmt left, IRStmt right) {
+	public static IRSeq combineTwoStmt(IRStmt left, IRStmt right) {
 		if (left instanceof IRSeq) {
 			List<IRStmt> leftStmt = ((IRSeq) left).stmts();
 			if (right instanceof IRSeq) {
@@ -282,8 +279,6 @@ public class LIRVisitor extends IRVisitor implements IRTreeVisitor{
 	}
 	
 	private static boolean checkCommute(IRStmt stmt, IRExpr expr) {
-		System.out.println(stmt);
-		System.out.println(expr);
 		if (expr instanceof IRConst || expr instanceof IRName) {
 			return true;
 		}
@@ -311,7 +306,7 @@ public class LIRVisitor extends IRVisitor implements IRTreeVisitor{
 	 * @param Sequence of Statements
 	 * @return a List of basic blocks (IRSeq)
 	 */
-	private List<BasicBlock> createBasicBlocks(IRSeq stmts) {
+	private List<BasicBlock> createBasicBlocks(IRSeq stmts) {	
 		// return this at the end
 		List<BasicBlock> basicBlockList = new ArrayList<BasicBlock>();
 		
@@ -332,7 +327,7 @@ public class LIRVisitor extends IRVisitor implements IRTreeVisitor{
 					basicBlockList.add(basicBlock);
 				}
 				// creates a new basic block
-				basicBlock = new BasicBlock(((IRLabel) stmt).name());
+				basicBlock = new BasicBlock(((IRLabel) stmt));
 				labelToBasicBlock.put(((IRLabel)stmt).name(), basicBlock);
 			} else if (stmt instanceof IRJump) {
 				basicBlock.addIRStmt(stmt);
@@ -426,7 +421,15 @@ public class LIRVisitor extends IRVisitor implements IRTreeVisitor{
 			}
 			traceList.add(lowerJumps(trace));
 		}
-		
+//		for (List<BasicBlock> bbList : traceList) {
+//			System.out.println("*****Start*****");
+//			for (BasicBlock bb : bbList) {
+//				for (IRStmt s : bb.stmtList) {
+//					System.out.println(s);
+//				}
+//			}
+//			System.out.println("******End******");
+//		}
 		return traceList;
 	}
 	
@@ -479,7 +482,8 @@ public class LIRVisitor extends IRVisitor implements IRTreeVisitor{
 			} else if (currBlock.index == 1 && i != trace.size()-1) {
 				// currBlock is a JUMP
 				BasicBlock nextBlock = trace.get(i+1);
-				if (nextBlock.label == currBlock.nextBlock1.label) {
+				if (nextBlock.label == currBlock.nextBlock1.label &&
+					trace.contains(nextBlock)) {
 					currBlock.removeLastStmt();
 				}
 			}

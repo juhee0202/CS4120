@@ -75,25 +75,8 @@ public class Main {
 			
 		if (cmd.hasOption("-help") ||
 				(cmd.getOptions().length == 0 && cmd.getArgs().length == 0)) {
-			
 			HelpFormatter format = new HelpFormatter();
 			format.printHelp("xic", options);
-			
-//			System.out.println("Usage: xic [options] <source files>\n" +
-//					"where possible options include");
-//			System.out.println("  --help: Print a synopsis of options.");
-//			System.out.println("  --lex: Generate output from lexical analysis.");
-//			System.out.println("  --parse: Generate output from syntactic analysis.");
-//			System.out.println("  -sourcepath: " +
-//					"Specify where to find input source files.");
-//			System.out.`println("  -libpath: " +
-//					"Specify where to find library interface files. " +
-//					"The default is the current directory in which xic is run. ");
-//			System.out.println("  -D: " +
-//					"Specify where to place generated diagnostic files.");
-//			System.out.println("  -O: " +
-//					"If specified, optimizations such as constant" +
-//					" folding will not be performed.");
 			return;
 		}
 		
@@ -475,6 +458,15 @@ public class Main {
 	        }
 	        bw.write(sw.toString());
 			bw.close();
+//			StringWriter sw2 = new StringWriter();
+//			try (PrintWriter pw2 = new PrintWriter(sw2);
+//					SExpPrinter sp2 = new CodeWriterSExpPrinter(pw2)){
+//				lir.program.printSExp(sp2);
+//			}
+//			FileWriter fw2 = new FileWriter("C:/Users/Jonathan/Desktop/Files/CS4120/vmstuff/shared/CS4120/PA4/IROutput.txt");
+//			BufferedWriter bw2 = new BufferedWriter(fw2);
+//			bw2.write(sw2.toString());
+//			bw2.close();
 			System.out.println("[xic] Generating intermediate code completed");
 			return lir.program;
 			
@@ -505,7 +497,7 @@ public class Main {
 			System.out.println("[xic] Interpreting intermediate code");
 			IRSimulator sim = new IRSimulator((IRCompUnit) program);
 	        sim.call("_Imain_paai", 0);
-	        System.out.println("[xic] Interpreting intermediate code completed");
+	        System.out.println("\n[xic] Interpreting intermediate code completed");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

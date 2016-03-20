@@ -28,6 +28,16 @@ public class IndexedBrackets {
 		index = 1;
 	}
 	
+	public IndexedBrackets(List<Expr> exprs) {
+		if (exprs.size() == 1) {
+			expression = exprs.get(0);
+			index = 0;
+		} else {
+			expression = exprs.get(0);
+			indexedBrackets = new IndexedBrackets(exprs.subList(1, exprs.size()));
+		}
+	}
+	
 	/**
 	 * @return a List of expression inside each bracket pair
 	 */

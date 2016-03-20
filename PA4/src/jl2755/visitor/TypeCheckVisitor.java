@@ -25,6 +25,7 @@ public class TypeCheckVisitor implements ASTVisitor {
 	private Stack<String> stack;	// "_": special marker
 	private VType tempType;
 	private boolean negativeNumber; // needed for UnaryExpr, Literal
+	private boolean returnIsLast; // True iff last statement is RETURNNN
 	
 	public TypeCheckVisitor(){
 		env = new HashMap<String, VType>();
@@ -473,6 +474,9 @@ public class TypeCheckVisitor implements ASTVisitor {
 		if (bs.getIndex() != 0 && bs.getIndex() != 3) { 
 			// Check stmt list
 			(bs.getStmtList()).accept(this);
+			
+			
+			
 		}
 		
 		// Check return stmt
@@ -480,7 +484,11 @@ public class TypeCheckVisitor implements ASTVisitor {
 			(bs.getReturnStmt()).accept(this);
 		} else {
 		// Set tempType to unit
-			tempType = new UnitType();
+			if (!returnIsLast) {
+				tempType = new UnitType();
+			}
+			// TODO: Check StmtList and propagate up return statement
+			returnIsLast = false;
 		}
 		
 		// Pop out of scope
@@ -723,7 +731,7 @@ public class TypeCheckVisitor implements ASTVisitor {
 					id = stack.pop();
 				}
 			}
-
+			returnIsLast = true;
 		}
 	}
 	

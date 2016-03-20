@@ -26,9 +26,7 @@ Test script: xthScript
     [xic] Lexing
 [xic] Lexing completed
 ]
-    ex2.xi: Mismatch detected at line 9 of file ex2.lexed.nml
-expected: 2:5 error:
-found   : Lexical error beginning at 2:5:: Illegal input "'"
+    ex2.xi: OK
     [Compiler's standard output:
     [xic] Lexing
 [xic] Lexing completed
@@ -93,9 +91,11 @@ found   : Lexical error beginning at 2:5:: Illegal input "'"
     [xic] Lexing
 [xic] Lexing completed
 ]
-  xic (Test --lex): 13 out of 14 tests succeeded.
+  xic (Test --lex): 14 out of 14 tests succeeded.
   Test collection: xic (Test --parse)
-    ex1.xi: OK
+    ex1.xi: Mismatch detected at line 3 of file ex1.parsed.nml
+expected:    ((print "Hello, World!\n") (= (c3po int) (+ 'x' 47)) (= (r2d2 int) c3po)))))
+found   :    ((print "Hello, World! ") (= (c3po int) (+ 'x' 47)) (= (r2d2 int) c3po)))))
     [Compiler's standard output:
     [xic] Parsing
 [xic] Parsing completed
@@ -173,7 +173,7 @@ Syntax error beginning at 1:1:Unexpected token
 instead expected token classes are [EOF, IDENTIFIER, USE]
 Syntax error beginning at 1:1:Unexpected token 
 ]
-  xic (Test --parse): 15 out of 15 tests succeeded.
+  xic (Test --parse): 14 out of 15 tests succeeded.
   Test collection: xic (Test --typecheck)
     ex01.xi: OK
     [Compiler's standard output:
@@ -308,263 +308,22 @@ Semantic error beginning at 2:14:: Name gcd cannot be resolved
 ]
   xic (Test --typecheck): 26 out of 26 tests succeeded.
   Test collection: xic (Test --irgen)
-    ex01.xi: instead expected token classes are [EOF]
-IR syntax error: Can't recover from previous error(s)
+    ex01.xi: OK
     [Compiler's standard output:
     [xic] Generating intermediate code
-(SEQ)
-
-(TEMP temp1)
-
-(SEQ)
-
-(CONST 15)
-
-(SEQ)
-
-(CONST 8)
-
-(SEQ)
-
-(CONST 72)
-
-(SEQ)
-
-(CONST 16)
-
-(SEQ)
-
-(CONST 101)
-
-(SEQ)
-
-(CONST 24)
-
-(SEQ)
-
-(CONST 108)
-
-(SEQ)
-
-(CONST 32)
-
-(SEQ)
-
-(CONST 108)
-
-(SEQ)
-
-(CONST 40)
-
-(SEQ)
-
-(CONST 111)
-
-(SEQ)
-
-(CONST 48)
-
-(SEQ)
-
-(CONST 44)
-
-(SEQ)
-
-(CONST 56)
-
-(SEQ)
-
-(CONST 32)
-
-(SEQ)
-
-(CONST 64)
-
-(SEQ)
-
-(CONST 87)
-
-(SEQ)
-
-(CONST 72)
-
-(SEQ)
-
-(CONST 111)
-
-(SEQ)
-
-(CONST 80)
-
-(SEQ)
-
-(CONST 114)
-
-(SEQ)
-
-(CONST 88)
-
-(SEQ)
-
-(CONST 108)
-
-(SEQ)
-
-(CONST 96)
-
-(SEQ)
-
-(CONST 100)
-
-(SEQ)
-
-(CONST 104)
-
-(SEQ)
-
-(CONST 33)
-
-(SEQ)
-
-(CONST 112)
-
-(SEQ)
-
-(CONST 92)
-
-(SEQ)
-
-(CONST 120)
-
-(SEQ)
-
-(CONST 110)
-
-(SEQ)
-
-(TEMP t0)
-
-(SEQ)
-
-(ADD (TEMP t0) (CONST 8))
-
-(SEQ)
-
-(CONST 167)
-
-(SEQ)
-
-(TEMP c3po)
-
 [xic] Generating intermediate code completed
 ]
-    ack.xi: instead expected token classes are []
-IR syntax error: Can't recover from previous error(s)
+    ack.xi: OK
     [Compiler's standard output:
     [xic] Generating intermediate code
-Semantic error beginning at 19:1:: Expected int, but found unit
-]
-    primes.xi: instead expected token classes are [EOF]
-IR syntax error: Can't recover from previous error(s)
-    [Compiler's standard output:
-    [xic] Generating intermediate code
-(SEQ)
-
-(TEMP a)
-
-(SEQ)
-
-(TEMP a)
-
-(SEQ)
-
-(TEMP b)
-
-(SEQ)
-
-(SUB (TEMP b) (TEMP a))
-
-(SEQ)
-
-(TEMP a)
-
-(SEQ)
-
-(SUB (TEMP a) (TEMP b))
-
-(SEQ)
-
-(TEMP b)
-
-(SEQ
- (MOVE (TEMP temp0) (CONST 1000))
- (MOVE (TEMP temp1) (CALL (NAME _Ilargestprime_ii) (TEMP temp0)))
- (MOVE (TEMP temp2) (TEMP temp1))
- (MOVE (TEMP temp3) (CALL (NAME _IunparseInt_aii) (TEMP temp2))))
-
-(TEMP wat)
-
-(SEQ)
-
-(CONST 2)
-
-(SEQ)
-
-(TEMP i)
-
-(SEQ)
-
-(MUL (TEMP i) (TEMP i))
-
-(SEQ)
-
-(TEMP temp9)
-
-(SEQ)
-
-(CONST 0)
-
-(SEQ)
-
-(TEMP i)
-
-(SEQ)
-
-(ADD (TEMP i) (CONST 1))
-
-(SEQ)
-
-(CONST 1)
-
-(SEQ)
-
-(CONST 1)
-
-(SEQ)
-
-(CONST 1)
-
-(SEQ)
-
-(TEMP a)
-
-(SEQ)
-
-(TEMP a)
-
-(SEQ)
-
-(TEMP a)
-
-(SEQ)
-
-(ADD (TEMP a) (CONST 1))
-
-(SEQ)
-
-(TEMP largest)
-
 [xic] Generating intermediate code completed
 ]
-  xic (Test --irgen): 0 out of 3 tests succeeded.
-xthScript: 55 out of 60 tests succeeded.
+    primes.xi: Mismatch detected at line 1 of file primes.ir.nml
+expected: Largest prime less than 1,000 is 997
+found   : 晹镪岼鈙젌ゅꬽ?଻?嗎뱑ꌜ恼쵄å淇ɋ촣ꟙꣀ▪힏ꀏ录뎯瀤呲䆢變?챃崚㘷喬ἶ번쒣ಉ踑֥嘪穱?
+    [Compiler's standard output:
+    [xic] Generating intermediate code
+[xic] Generating intermediate code completed
+]
+  xic (Test --irgen): 2 out of 3 tests succeeded.
+xthScript: 57 out of 60 tests succeeded.

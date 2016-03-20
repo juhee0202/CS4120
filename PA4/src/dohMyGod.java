@@ -22,6 +22,48 @@ public class dohMyGod {
 		int z = 5;
 		System.out.println(z++);
 		System.out.println(z);
+		System.out.println("\n");
+		
+		char ff = 92;
+		String gg = ff + "n";
+		System.out.println("Break");
+		System.out.println(gg);
+		System.out.println();
+		System.out.println("unbreak");
+		
+		
+		
 	}
+	
+	@Test
+	public void test2() {
+		String arg = "Hello World!\\n";
+		String newString = "";
+		System.out.println(arg);
+		for (int i = 0; i < arg.length(); i++) {
+			if (!(arg.charAt(i) == '\\')) {
+				newString += arg.charAt(i);
+			}
+			else {
+				char nextChar = arg.charAt(i+1);
+				if (nextChar == 'n') {
+					newString += "\n";
+				}
+				else if (nextChar == '\'') {
+					newString += "\'";
+				}
+				else if (nextChar == '\\') {
+					newString += '\\';
+				}
+				else if (nextChar == '\"') {
+					newString += '\"';
+				}
+				i++;
+			}
+
+		}
+		System.out.println(newString);
+	}
+	
 
 }

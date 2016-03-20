@@ -12,19 +12,54 @@ import jl2755.visitor.ASTVisitor;
 public class VarInit implements NakedStmt {
 	private VarDecl varDecl;
 	private Expr expr;
+	private Identifier id;
+	private Type type;
 	
-	public VarInit(VarDecl vd, Expr e) {
-		varDecl = vd;
+	public VarInit(Identifier identifier, Type t, Expr e) {
+		id = identifier;
+		type = t;
 		expr = e;
 	}
+	
+//	public void prettyPrintNode(){
+//		CodeWriterSExpPrinter tempPrinter = GlobalPrettyPrinter.getInstance();
+//		tempPrinter.startList();
+//		tempPrinter.printAtom("=");
+//		varDecl.prettyPrintNode();
+//		expr.prettyPrintNode();
+//		tempPrinter.endList();
+//	}
 	
 	public void prettyPrintNode(){
 		CodeWriterSExpPrinter tempPrinter = GlobalPrettyPrinter.getInstance();
 		tempPrinter.startList();
 		tempPrinter.printAtom("=");
-		varDecl.prettyPrintNode();
+		
+		//"var decl"
+		tempPrinter.startList();
+		tempPrinter.printAtom(id.toString());
+		type.prettyPrintNode();
+		tempPrinter.endList();
+		
+		//expr
 		expr.prettyPrintNode();
 		tempPrinter.endList();
+	}
+
+	public Identifier getId() {
+		return id;
+	}
+
+	public void setId(Identifier id) {
+		this.id = id;
+	}
+
+	public Type getType() {
+		return type;
+	}
+
+	public void setType(Type type) {
+		this.type = type;
 	}
 
 	public VarDecl getVarDecl() {

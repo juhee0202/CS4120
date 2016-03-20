@@ -310,7 +310,7 @@ public class ConstantFolderVisitor implements ASTVisitor{
 			caseIndex = 2;
 		}
 		if (l.getIndex() == 2) {
-			tempLong = Long.parseLong(l.getCharLit());
+			tempLong = l.getCharLit().charAt(0);
 			caseIndex = 0;
 		}
 		if (l.getIndex() == 3) {

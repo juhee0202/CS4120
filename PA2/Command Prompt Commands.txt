@@ -1,3 +1,3 @@
-./xth /home/vagrant/xth/tests/pa2/xthScript -compilerpath /home/vagrant/shared/cs4120/pa2 -testpath /home/vagrant/xth/tests/pa2 > /home/vagrant/shared/cs4120/pa2/testOutput.txt
+./xth /home/vagrant/xth/tests/pa4/xthScript -compilerpath /home/vagrant/shared/cs4120/pa4 -testpath /home/vagrant/xth/tests/pa4 > /home/vagrant/shared/cs4120/pa4/testOutput.txt
 
 java -cp java_cup.jar java_cup.Main -interface /home/vagrant/shared/cs4120/pa2/cup/xi.cup> /home/vagrant/shared/cs4120/pa2/cupOutput.txt

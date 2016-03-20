@@ -238,7 +238,7 @@ public class MIRVisitor implements ASTVisitor{
 		if (tempNode != null) {
 			IRSeq irSeq = (IRSeq) tempNode;
 			List<IRStmt> stmts = irSeq.stmts();
-			stmts.add(0,irLabel);
+			// TODO: refactor HUMMUS
 			seq = new IRSeq(stmts);
 		} else {
 			seq = new IRSeq(irLabel, new IRReturn());
@@ -299,37 +299,35 @@ public class MIRVisitor implements ASTVisitor{
 			tempNode = new IRConst(Long.parseLong(l.getIntLit()));
 			break;
 		case 1:
-//			String stringLit = l.getStringLit();
-//			IRExpr addr = new IRName("_I_alloc_i");
-//			IRCall alloc = new IRCall(addr, new IRConst(stringLit.length()+1));
-//			String t = "wat";
-//			IRTemp reg = new IRTemp(t);
-//			IRMove memAddr = new IRMove(reg, alloc);
-//			
-//			// fill up the allocated memory with stringLit
-//			for (int i=-1; i <stringLit.length(); i++) {
-//				IRConst val;
-//				if (i == -1) {
-//					val = new IRConst(stringLit.length());
-//				}
-//				else {
-//					val = new IRConst(stringLit.charAt(i));
-//				}
-//				IRMove move = new IRMove(new IRMem(new IRBinOp(OpType.ADD, addr, new IRConst(i*8))), val);
-//			}
-//			tempNode = reg;
-			System.out.println("YOU DUN FUCKED UP");
+			String stringLit = l.getStringLit();
+			IRExpr addr = new IRName("_I_alloc_i");
+			IRCall alloc = new IRCall(addr, new IRConst(stringLit.length()+1));
+			String t = "wat";
+			IRTemp reg = new IRTemp(t);
+			IRMove memAddr = new IRMove(reg, alloc);
+			
+			// fill up the allocated memory with stringLit
+			for (int i=-1; i <stringLit.length(); i++) {
+				IRConst val;
+				if (i == -1) {
+					val = new IRConst(stringLit.length());
+				}
+				else {
+					val = new IRConst(stringLit.charAt(i));
+				}
+				IRMove move = new IRMove(new IRMem(new IRBinOp(OpType.ADD, addr, new IRConst(i*8))), val);
+			}
+			tempNode = reg;
 			break;
 		case 2:
-//			int character=-1;
-//			try {
-//				character = l.getCharLit().charAt(0);
-//			} catch (Exception e) {
-//				// TODO
-//				System.out.println("Expected a character stored in string");
-//			}
-//			tempNode = new IRConst(character);
-			System.out.println("character literal");
+			int character=-1;
+			try {
+				character = l.getCharLit().charAt(0);
+			} catch (Exception e) {
+				// TODO
+				System.out.println("Expected a character stored in string");
+			}
+			tempNode = new IRConst(character);
 			break;
 		case 3:
 			tempNode = l.getBoolLit()? new IRConst(TRUE) : new IRConst(FALSE);
@@ -353,7 +351,7 @@ public class MIRVisitor implements ASTVisitor{
 		int index = rs.getIndex();
 		if (index == 0) {
 			// No return
-			tempNode = new IRReturn();
+			tempNode = new IRSeq(new IRReturn());
 		} else {
 			// At least 1 return
 			List<Expr> exprList = rs.getListOfExpr();

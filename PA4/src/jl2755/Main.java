@@ -86,7 +86,7 @@ public class Main {
 //			System.out.println("  --parse: Generate output from syntactic analysis.");
 //			System.out.println("  -sourcepath: " +
 //					"Specify where to find input source files.");
-//			System.out.println("  -libpath: " +
+//			System.out.`println("  -libpath: " +
 //					"Specify where to find library interface files. " +
 //					"The default is the current directory in which xic is run. ");
 //			System.out.println("  -D: " +
@@ -107,24 +107,39 @@ public class Main {
 		optionsCheck(cmd);
 		
 		// Get files to process
+		String[] lexArgs = cmd.getOptionValues("l");
+		String[] parseArgs = cmd.getOptionValues("p");
+		String[] typecheckArgs = cmd.getOptionValues("t");
+		String[] irgenArgs = cmd.getOptionValues("irgen");
+		String[] irrunArgs = cmd.getOptionValues("irrun");
+		String[] leftoverArgs = cmd.getArgs();
 		
-		List<String> lexFiles = new ArrayList<String>(Arrays.asList(cmd.getOptionValues("l")));
-		List<String> parseFiles = new ArrayList<String>(Arrays.asList(cmd.getOptionValues("p")));
-		List<String> typecheckFiles = new ArrayList<String>(Arrays.asList(cmd.getOptionValues("t")));
-		List<String> irgenFiles = new ArrayList<String>(Arrays.asList(cmd.getOptionValues("irgen")));
-		List<String> irrunFiles = new ArrayList<String>(Arrays.asList(cmd.getOptionValues("irrun")));
-		List<String> leftoverFiles = new ArrayList<String>(Arrays.asList(cmd.getArgs()));
+		if (lexArgs == null) {
+			lexArgs = new String[0];
+		} 
+		if (parseArgs == null) {
+			parseArgs = new String[0];
+		} 
+		if (typecheckArgs == null) {
+			typecheckArgs = new String[0];
+		} 
+		if (irgenArgs == null) {
+			irgenArgs = new String[0];
+		} 
+		if (irrunArgs == null) {
+			irrunArgs = new String[0];
+		} 
+		if (leftoverArgs == null) {
+			leftoverArgs = new String[0];
+		} 
+		
+		List<String> lexFiles = new ArrayList<String>(Arrays.asList(lexArgs));; 
+		List<String> parseFiles = new ArrayList<String>(Arrays.asList(parseArgs));
+		List<String> typecheckFiles = new ArrayList<String>(Arrays.asList(typecheckArgs));
+		List<String> irgenFiles = new ArrayList<String>(Arrays.asList(irgenArgs));
+		List<String> irrunFiles = new ArrayList<String>(Arrays.asList(irrunArgs));
+		List<String> leftoverFiles = new ArrayList<String>(Arrays.asList(leftoverArgs));
 		List<String> files;
-		
-		
-		
-//		String[] lexFiles = cmd.getOptionValues("l");
-//		String[] parseFiles = cmd.getOptionValues("p");
-//		String[] typecheckFiles = cmd.getOptionValues("t");
-//		String[] irgenFiles = cmd.getOptionValues("irgen");
-//		String[] irrunFiles = cmd.getOptionValues("irrun");
-//		String[] leftoverFiles = cmd.getArgs();
-//		String[] files;
 		
 		/* LEX */
 		if (cmd.hasOption("-lex")) {
@@ -441,7 +456,13 @@ public class Main {
 			/* Translate to MIR */
 			MIRVisitor mir = new MIRVisitor();
 			program.accept(mir);
-			
+			StringWriter sww = new StringWriter();
+	        try (PrintWriter pw = new PrintWriter(sww);
+		             SExpPrinter sp = new CodeWriterSExpPrinter(pw)) {
+				mir.program.printSExp(sp);
+		        }
+	        bw.write(sww.toString());
+	       
 			/* Lower to LIR */
 			LIRVisitor lir = new LIRVisitor();
 			mir.program.accept(lir);
@@ -464,6 +485,7 @@ public class Main {
 			System.out.println(error.getMessage());
 		} catch(IOException e) {
 			System.out.println("Failed to write to output file " + filename);
+			e.printStackTrace();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

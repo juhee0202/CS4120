@@ -1,0 +1,570 @@
+Testpath "/home/vagrant/xth/tests/pa4/" specified.
+Test script: xthScript
+  xic-build: Cannot run program "/home/vagrant/shared/cs4120/pa4/xic-build" (in directory "/home/vagrant/shared/cs4120/pa4"): error=2, No such file or directory
+  Test collection: xic (Test --help)
+    []: OK
+    [Compiler's standard output:
+    usage: xic
+ -D <arg>               Specify where to place generated diagnostic files.
+ -h,--help              Print a synopsis of options.
+ -irgen <arg>           Generate intermediate code.
+ -irrun <arg>           Generate and interpret intermediate code.
+ -l,--lex <arg>         Generate output from lexical analysis.
+ -libpath <arg>         Specify where to find library interface files. The
+                        default is the current directory in which xic is
+                        run.
+ -O                     If specified, optimizations such as constant
+                        folding will not be performed.
+ -p,--parse <arg>       Generate output from syntactic analysis.
+ -sourcepath <arg>      Specify where to find input source files.
+ -t,--typecheck <arg>   Generate output from semantic analysis.
+]
+  xic (Test --help): 1 out of 1 tests succeeded.
+  Test collection: xic (Test --lex)
+    ex1.xi: OK
+    [Compiler's standard output:
+    [xic] Lexing
+[xic] Lexing completed
+]
+    ex2.xi: Mismatch detected at line 9 of file ex2.lexed.nml
+expected: 2:5 error:
+found   : Lexical error beginning at 2:5:: Illegal input "'"
+    [Compiler's standard output:
+    [xic] Lexing
+[xic] Lexing completed
+]
+    spec1.xi: OK
+    [Compiler's standard output:
+    [xic] Lexing
+[xic] Lexing completed
+]
+    spec2.xi: OK
+    [Compiler's standard output:
+    [xic] Lexing
+[xic] Lexing completed
+]
+    spec3.xi: OK
+    [Compiler's standard output:
+    [xic] Lexing
+[xic] Lexing completed
+]
+    gcd.xi: OK
+    [Compiler's standard output:
+    [xic] Lexing
+[xic] Lexing completed
+]
+    ratadd.xi: OK
+    [Compiler's standard output:
+    [xic] Lexing
+[xic] Lexing completed
+]
+    ratadduse.xi: OK
+    [Compiler's standard output:
+    [xic] Lexing
+[xic] Lexing completed
+]
+    insertionsort.xi: OK
+    [Compiler's standard output:
+    [xic] Lexing
+[xic] Lexing completed
+]
+    arrayinit.xi: OK
+    [Compiler's standard output:
+    [xic] Lexing
+[xic] Lexing completed
+]
+    arrayinit2.xi: OK
+    [Compiler's standard output:
+    [xic] Lexing
+[xic] Lexing completed
+]
+    mdarrays.xi: OK
+    [Compiler's standard output:
+    [xic] Lexing
+[xic] Lexing completed
+]
+    add.xi: OK
+    [Compiler's standard output:
+    [xic] Lexing
+[xic] Lexing completed
+]
+    beauty.xi: OK
+    [Compiler's standard output:
+    [xic] Lexing
+[xic] Lexing completed
+]
+  xic (Test --lex): 13 out of 14 tests succeeded.
+  Test collection: xic (Test --parse)
+    ex1.xi: OK
+    [Compiler's standard output:
+    [xic] Parsing
+[xic] Parsing completed
+]
+    ex2.xi: OK
+    [Compiler's standard output:
+    [xic] Parsing
+[xic] Parsing completed
+]
+    ex3.xi: OK
+    [Compiler's standard output:
+    [xic] Parsing
+instead expected token classes are [EOF, IDENTIFIER, USE]
+Syntax error beginning at 1:1:Unexpected token 
+]
+    spec1.xi: OK
+    [Compiler's standard output:
+    [xic] Parsing
+[xic] Parsing completed
+]
+    spec2.xi: OK
+    [Compiler's standard output:
+    [xic] Parsing
+[xic] Parsing completed
+]
+    spec3.xi: OK
+    [Compiler's standard output:
+    [xic] Parsing
+[xic] Parsing completed
+]
+    gcd.xi: OK
+    [Compiler's standard output:
+    [xic] Parsing
+[xic] Parsing completed
+]
+    ratadd.xi: OK
+    [Compiler's standard output:
+    [xic] Parsing
+[xic] Parsing completed
+]
+    ratadduse.xi: OK
+    [Compiler's standard output:
+    [xic] Parsing
+[xic] Parsing completed
+]
+    insertionsort.xi: OK
+    [Compiler's standard output:
+    [xic] Parsing
+[xic] Parsing completed
+]
+    arrayinit.xi: OK
+    [Compiler's standard output:
+    [xic] Parsing
+[xic] Parsing completed
+]
+    arrayinit2.xi: OK
+    [Compiler's standard output:
+    [xic] Parsing
+[xic] Parsing completed
+]
+    mdarrays.xi: OK
+    [Compiler's standard output:
+    [xic] Parsing
+[xic] Parsing completed
+]
+    add.xi: OK
+    [Compiler's standard output:
+    [xic] Parsing
+instead expected token classes are [EOF, IDENTIFIER, USE]
+Syntax error beginning at 1:1:Unexpected token 
+]
+    beauty.xi: OK
+    [Compiler's standard output:
+    [xic] Parsing
+instead expected token classes are [EOF, IDENTIFIER, USE]
+Syntax error beginning at 1:1:Unexpected token 
+]
+  xic (Test --parse): 15 out of 15 tests succeeded.
+  Test collection: xic (Test --typecheck)
+    ex01.xi: OK
+    [Compiler's standard output:
+    [xic] Typechecking
+[xic] Typechecking completed
+]
+    ex02.xi: OK
+    [Compiler's standard output:
+    [xic] Typechecking
+[xic] Typechecking completed
+]
+    ex03.xi: OK
+    [Compiler's standard output:
+    [xic] Typechecking
+[xic] Typechecking completed
+]
+    ex04.xi: OK
+    [Compiler's standard output:
+    [xic] Typechecking
+Semantic error beginning at 2:12:: Expected bool, but found int
+]
+    ex05.xi: OK
+    [Compiler's standard output:
+    [xic] Typechecking
+Semantic error beginning at 2:18:: Mismatched types for binary operation &
+]
+    ex06.xi: OK
+    [Compiler's standard output:
+    [xic] Typechecking
+Semantic error beginning at 1:22:: Name baz cannot be resolved
+]
+    ex07.xi: OK
+    [Compiler's standard output:
+    [xic] Typechecking
+Semantic error beginning at 4:3:: Expected bool[], but found int[]
+]
+    ex08.xi: OK
+    [Compiler's standard output:
+    [xic] Typechecking
+Semantic error beginning at 1:1:: Expected bool, but found unit
+]
+    ex09.xi: OK
+    [Compiler's standard output:
+    [xic] Typechecking
+instead expected token classes are []
+Syntax error beginning at 1:13:Invalid assignment operator.
+]
+    ex10.xi: OK
+    [Compiler's standard output:
+    [xic] Typechecking
+Semantic error beginning at 2:9:: Mismatched number of values
+]
+    ex11.xi: OK
+    [Compiler's standard output:
+    [xic] Typechecking
+Semantic error beginning at 2:9:: Mismatched number of values
+]
+    ex12.xi: OK
+    [Compiler's standard output:
+    [xic] Typechecking
+Semantic error beginning at 2:17:: Expected int, but found unit
+]
+    spec1-full.xi: OK
+    [Compiler's standard output:
+    [xic] Typechecking
+[xic] Typechecking completed
+]
+    spec1.xi: OK
+    [Compiler's standard output:
+    [xic] Typechecking
+Semantic error beginning at 4:22:: Name f cannot be resolved
+]
+    spec2.xi: OK
+    [Compiler's standard output:
+    [xic] Typechecking
+Semantic error beginning at 2:3:: Name x cannot be resolved
+]
+    spec3.xi: OK
+    [Compiler's standard output:
+    [xic] Typechecking
+[xic] Typechecking completed
+]
+    gcd.xi: OK
+    [Compiler's standard output:
+    [xic] Typechecking
+[xic] Typechecking completed
+]
+    ratadd-full.xi: OK
+    [Compiler's standard output:
+    [xic] Typechecking
+[xic] Typechecking completed
+]
+    ratadd.xi: OK
+    [Compiler's standard output:
+    [xic] Typechecking
+Semantic error beginning at 4:13:: Name gcd cannot be resolved
+]
+    ratadduse-full.xi: OK
+    [Compiler's standard output:
+    [xic] Typechecking
+[xic] Typechecking completed
+]
+    ratadduse.xi: OK
+    [Compiler's standard output:
+    [xic] Typechecking
+Semantic error beginning at 2:20:: Name ratadd cannot be resolved
+]
+    insertionsort.xi: OK
+    [Compiler's standard output:
+    [xic] Typechecking
+[xic] Typechecking completed
+]
+    arrayinit.xi: OK
+    [Compiler's standard output:
+    [xic] Typechecking
+Semantic error beginning at 3:5:: a is already declared
+]
+    arrayinit2-full.xi: OK
+    [Compiler's standard output:
+    [xic] Typechecking
+[xic] Typechecking completed
+]
+    arrayinit2.xi: OK
+    [Compiler's standard output:
+    [xic] Typechecking
+Semantic error beginning at 2:14:: Name gcd cannot be resolved
+]
+    mdarrays.xi: OK
+    [Compiler's standard output:
+    [xic] Typechecking
+[xic] Typechecking completed
+]
+  xic (Test --typecheck): 26 out of 26 tests succeeded.
+  Test collection: xic (Test --irgen)
+    ex01.xi: instead expected token classes are [EOF]
+IR syntax error: Can't recover from previous error(s)
+    [Compiler's standard output:
+    [xic] Generating intermediate code
+(SEQ)
+
+(TEMP temp1)
+
+(SEQ)
+
+(CONST 15)
+
+(SEQ)
+
+(CONST 8)
+
+(SEQ)
+
+(CONST 72)
+
+(SEQ)
+
+(CONST 16)
+
+(SEQ)
+
+(CONST 101)
+
+(SEQ)
+
+(CONST 24)
+
+(SEQ)
+
+(CONST 108)
+
+(SEQ)
+
+(CONST 32)
+
+(SEQ)
+
+(CONST 108)
+
+(SEQ)
+
+(CONST 40)
+
+(SEQ)
+
+(CONST 111)
+
+(SEQ)
+
+(CONST 48)
+
+(SEQ)
+
+(CONST 44)
+
+(SEQ)
+
+(CONST 56)
+
+(SEQ)
+
+(CONST 32)
+
+(SEQ)
+
+(CONST 64)
+
+(SEQ)
+
+(CONST 87)
+
+(SEQ)
+
+(CONST 72)
+
+(SEQ)
+
+(CONST 111)
+
+(SEQ)
+
+(CONST 80)
+
+(SEQ)
+
+(CONST 114)
+
+(SEQ)
+
+(CONST 88)
+
+(SEQ)
+
+(CONST 108)
+
+(SEQ)
+
+(CONST 96)
+
+(SEQ)
+
+(CONST 100)
+
+(SEQ)
+
+(CONST 104)
+
+(SEQ)
+
+(CONST 33)
+
+(SEQ)
+
+(CONST 112)
+
+(SEQ)
+
+(CONST 92)
+
+(SEQ)
+
+(CONST 120)
+
+(SEQ)
+
+(CONST 110)
+
+(SEQ)
+
+(TEMP t0)
+
+(SEQ)
+
+(ADD (TEMP t0) (CONST 8))
+
+(SEQ)
+
+(CONST 167)
+
+(SEQ)
+
+(TEMP c3po)
+
+[xic] Generating intermediate code completed
+]
+    ack.xi: instead expected token classes are []
+IR syntax error: Can't recover from previous error(s)
+    [Compiler's standard output:
+    [xic] Generating intermediate code
+Semantic error beginning at 19:1:: Expected int, but found unit
+]
+    primes.xi: instead expected token classes are [EOF]
+IR syntax error: Can't recover from previous error(s)
+    [Compiler's standard output:
+    [xic] Generating intermediate code
+(SEQ)
+
+(TEMP a)
+
+(SEQ)
+
+(TEMP a)
+
+(SEQ)
+
+(TEMP b)
+
+(SEQ)
+
+(SUB (TEMP b) (TEMP a))
+
+(SEQ)
+
+(TEMP a)
+
+(SEQ)
+
+(SUB (TEMP a) (TEMP b))
+
+(SEQ)
+
+(TEMP b)
+
+(SEQ
+ (MOVE (TEMP temp0) (CONST 1000))
+ (MOVE (TEMP temp1) (CALL (NAME _Ilargestprime_ii) (TEMP temp0)))
+ (MOVE (TEMP temp2) (TEMP temp1))
+ (MOVE (TEMP temp3) (CALL (NAME _IunparseInt_aii) (TEMP temp2))))
+
+(TEMP wat)
+
+(SEQ)
+
+(CONST 2)
+
+(SEQ)
+
+(TEMP i)
+
+(SEQ)
+
+(MUL (TEMP i) (TEMP i))
+
+(SEQ)
+
+(TEMP temp9)
+
+(SEQ)
+
+(CONST 0)
+
+(SEQ)
+
+(TEMP i)
+
+(SEQ)
+
+(ADD (TEMP i) (CONST 1))
+
+(SEQ)
+
+(CONST 1)
+
+(SEQ)
+
+(CONST 1)
+
+(SEQ)
+
+(CONST 1)
+
+(SEQ)
+
+(TEMP a)
+
+(SEQ)
+
+(TEMP a)
+
+(SEQ)
+
+(TEMP a)
+
+(SEQ)
+
+(ADD (TEMP a) (CONST 1))
+
+(SEQ)
+
+(TEMP largest)
+
+[xic] Generating intermediate code completed
+]
+  xic (Test --irgen): 0 out of 3 tests succeeded.
+xthScript: 55 out of 60 tests succeeded.

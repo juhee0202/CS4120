@@ -9,15 +9,25 @@ main(args:int[][]) {
     i: int[] = "hello";
     // e: int = c[i];           //fixed, should not typecheck cuz i is not declared
     f: int = {97,2,3}[0]
-    print({f});
-    print({foo()[0]})
-    print({c[0]})
+    // print({f});
+    // print({foo({1,2,3})})
+    // print({c[0]})
     // g: int = c[0]
     // j: int = '3'
     // h: int[3][j];
+    t1: int[] = {'a'}+{'b'};
+    test: int[2][]
+    test = {1}
+    print(t1)
+
 }
 
 
-foo():int[] {
-    return {98,2,3}
+foo(bar:int[]):int {
+    if (!true) {
+        return 97;
+    } else {
+        return 98;
+    }
+    return -------5;
 }

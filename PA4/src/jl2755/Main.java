@@ -497,7 +497,7 @@ public class Main {
 			System.out.println("[xic] Interpreting intermediate code");
 			IRSimulator sim = new IRSimulator((IRCompUnit) program);
 	        sim.call("_Imain_paai", 0);
-	        System.out.println("\n[xic] Interpreting intermediate code completed");
+	        System.out.println("[xic] Interpreting intermediate code completed");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

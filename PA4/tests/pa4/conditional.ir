@@ -4,6 +4,7 @@
   _Imain_paai
   (SEQ
    (LABEL tempLabel0)
+   (MOVE (TEMP args) (TEMP _ARG0))
    (MOVE (TEMP x) (CONST 1))
    (CJUMP (TEMP x) l0)
    (LABEL l1)

@@ -377,7 +377,7 @@ public class MIRVisitor implements ASTVisitor{
 		if (index == 0) {									// f()
 			String id = fc.getABIName();
 			IRName lf = new IRName(id);
-			tempNode = new IRExp(new IRCall(lf));
+			tempNode = new IRCall(lf);
 		} else if (index == 1) {							// f(a1,...,an) 
 			// get function label
 			String id = fc.getABIName();

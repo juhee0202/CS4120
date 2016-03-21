@@ -105,9 +105,6 @@ array_element_list ::= expr:e                                       {: RESULT = 
                        ;
 
 array_literal ::= OPEN_BRACE:ob array_element_list:ael CLOSE_BRACE  {: RESULT = new ArrayLiteral(ael, obleft, obright); :}
-                  |
-                  OPEN_BRACE:ob array_element_list:ael COMMA
-                  CLOSE_BRACE                                       {: RESULT = new ArrayLiteral(ael, obleft, obright); :}
                   ;
 
 assignment_stmt ::= identifier:id GETS expr:expression              {: RESULT = new AssignmentStmt(id, expression); :}
@@ -366,9 +363,9 @@ var_decl ::= identifier:id COLON mixed_array_type:mat               {: RESULT = 
              identifier:id COLON primitive_type:pt                  {: RESULT = new VarDecl(id, pt); :}
              ;
 
-var_init ::= var_decl:vd GETS expr:expression                       {: RESULT = new VarInit(vd, expression); :}
+var_init ::= identifier:id COLON type:t GETS expr:e                 {: RESULT = new VarInit(id, t, e); :}
              |
-             error:e                                                {: Main.handleSyntaxError("Invalid assignment operator."); :}  
+             error:e                                                {: Main.handleSyntaxError("Invalid assignment operator."); :}
              ;
 
 while_stmt ::= WHILE OPEN_PAREN expr:expression CLOSE_PAREN stmt:s  {: RESULT = new WhileStmt(expression, s); :}

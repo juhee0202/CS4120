@@ -689,8 +689,8 @@ public class MIRVisitor implements ASTVisitor{
 	 */
 	@Override
 	public void visit(VarInit vi) {
-		VarDecl vd = vi.getVarDecl();
-		Identifier id = vd.getIdentifier();
+//		VarDecl vd = vi.getVarDecl();
+		Identifier id = vi.getId();
 		
 		id.accept(this);
 		IRExpr dest = (IRExpr) tempNode;

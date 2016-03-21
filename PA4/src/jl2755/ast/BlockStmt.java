@@ -44,12 +44,20 @@ public class BlockStmt implements NakedStmt {
 	}
 	
 	public void prettyPrintNode() {
+		// TODO fix mistake
+		/*
+		 * 0 for no stmtList,
+		 * 1 for only stmtList,
+		 * 2 for both,
+		 * 3 for only returnStmt.
+		 */
+		
 		CodeWriterSExpPrinter tempPrinter = GlobalPrettyPrinter.getInstance();
 		tempPrinter.startList();
-		if (index > 0) {
+		if (index ==1 || index == 2) {
 			stmtList.prettyPrintNode();
 		}
-		if (index == 2) {
+		if (index == 2 || index == 3) {
 			returnStmt.prettyPrintNode();
 		}
 		tempPrinter.endList();

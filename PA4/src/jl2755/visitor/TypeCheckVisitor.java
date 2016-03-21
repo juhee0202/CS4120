@@ -38,6 +38,23 @@ public class TypeCheckVisitor implements ASTVisitor {
 	 */
 	@Override
 	public void visit(ArrayElement ae) {
+		// check if the variables inside indexed brackets have been declared
+				IndexedBrackets ib= ae.getIndexedBrackets();
+				for (Expr exp: ib.getContent()) {
+					exp.accept(this);
+					
+					// check that the index in [index] is an int
+					if (!(tempType instanceof VarType && 
+							((VarType) tempType).isInt())) {
+						String s = "Expected int, but found " + tempType.toString();
+						SemanticErrorObject seo = new SemanticErrorObject(
+													exp.getLineNumber(),
+													exp.getColumnNumber(),
+													s
+													);
+						Main.handleSemanticError(seo);
+					}
+				}
 		int index = ae.getIndex();
 		if (index == 0){
 			if (!(env.containsKey(ae.getIdentifier().toString()))){
@@ -73,6 +90,7 @@ public class TypeCheckVisitor implements ASTVisitor {
 				Main.handleSemanticError(seo);
 			}
 			tempType = new VarType(varTypeView.getIsBool(), varTypeView.getNumBrackets() - numberOfBrackets);
+			System.out.println(tempType);
 		}
 		else if (index == 1){
 			ae.getFunctionCall().accept(this);
@@ -264,7 +282,7 @@ public class TypeCheckVisitor implements ASTVisitor {
 			as.getExpr().accept(this);
 			VType exprType = tempType;
 			
-			if (!elementType.equals(exprType)) {				
+			if (!elementType.equals(exprType)) {
 				String s = "Expected " + elementType.toString() 
 				+ ", but found " + exprType.toString();
 				SemanticErrorObject seo = new SemanticErrorObject(
@@ -1064,8 +1082,8 @@ public class TypeCheckVisitor implements ASTVisitor {
 	 */
 	@Override
 	public void visit(VarDecl vd) {
-		// Check if predeclared
-		if (env.containsKey(vd.getIdentifier().toString())){
+		// Check if identifier is predeclared
+		if (env.containsKey(vd.getIdentifier().toString())) {
 			String s = vd.getIdentifier().toString() + " is already declared";
 			SemanticErrorObject seo = new SemanticErrorObject(
 										vd.getIdentifier().getLineNumber(), 
@@ -1074,18 +1092,62 @@ public class TypeCheckVisitor implements ASTVisitor {
 										);
 			Main.handleSemanticError(seo);
 		}
-		else{
+		else {
 			String id = vd.getIdentifier().toString();
 			env.put(id, new VarType(vd));
 			tempType = env.get(id);
 			stack.push(id);
 		}
+		
+		// 0: MixedArrayType
+		// must check that all the indices have been declared
+		if (vd.getIndex() == 0) {
+			MixedBrackets mb= vd.getMixedArrayType().getMixedBrackets();
+			if (vd.getMixedArrayType().getIndex() == 1) {
+				for (Expr idx: mb.getContent()) {
+					idx.accept(this);
+					
+					// check that the index in [index] is an int
+					if (!(tempType instanceof VarType && 
+							((VarType) tempType).isInt())) {
+						String s = "Expected int, but found " + tempType.toString();
+						SemanticErrorObject seo = new SemanticErrorObject(
+													vd.getIdentifier().getLineNumber(), 
+													vd.getIdentifier().getColumnNumber(),
+													s
+													);
+						Main.handleSemanticError(seo);
+					}
+				}
+			}
+		}
+		// 1: PrimitiveArrayType
+		if (vd.getIndex() == 1) {
+			vd.getPrimitiveType().accept(this);
+			env.put(vd.getIdentifier().toString(), tempType);
+		}
 	}
-
+	
 	@Override
 	public void visit(VarInit vi) {
-		// Check if predeclared
-		vi.getVarDecl().accept(this);
+		// Check if identifier is predeclared
+		if (env.containsKey(vi.getId().toString())){
+			String s = vi.getId().toString() + " is already declared";
+			SemanticErrorObject seo = new SemanticErrorObject(
+										vi.getId().getLineNumber(), 
+										vi.getId().getColumnNumber(),
+										s
+										);
+			Main.handleSemanticError(seo);
+		}
+		else {
+			String id = vi.getId().toString();
+			env.put(id, new VarType(vi.getType()));
+			tempType = env.get(id);
+			stack.push(id);
+		}
+		
+		vi.getType().accept(this);
 		VType tempLeftType = tempType;
 		vi.getExpr().accept(this);
 		VType tempRightType = tempType;
@@ -1098,10 +1160,28 @@ public class TypeCheckVisitor implements ASTVisitor {
 										s
 										);
 			Main.handleSemanticError(seo);
-		}
-		
-		
+		}	
 	}
+
+//	@Override
+//	public void visit(VarInit vi) {
+//		// Check if predeclared
+//		vi.getVarDecl().accept(this);
+//		VType tempLeftType = tempType;
+//		vi.getExpr().accept(this);
+//		VType tempRightType = tempType;
+//		if (!(tempLeftType.equals(tempRightType))){
+//			String s = "Expected " + tempLeftType.toString() 
+//						+ ", but found " + tempRightType.toString();
+//			SemanticErrorObject seo = new SemanticErrorObject(
+//										vi.getExpr().getLineNumber(), 
+//										vi.getExpr().getColumnNumber(),
+//										s
+//										);
+//			Main.handleSemanticError(seo);
+//		}	
+//	}
+	
 
 	/**
 	 * Dirties tempType

@@ -42,8 +42,9 @@ public class UnaryExpr implements OpExpr {
 	public void prettyPrintNode() {
 		CodeWriterSExpPrinter tempPrinter = GlobalPrettyPrinter.getInstance();
 		tempPrinter.startList();
-		tempPrinter.printAtom(op.toString());
-		tempPrinter.printAtom(expr.toString());
+		tempPrinter.printAtom(op.toString());	
+		expr.prettyPrintNode();
+//		tempPrinter.printAtom(expr.toString());	TODO PA2 MISTAKE
 		tempPrinter.endList();
 	}
 	

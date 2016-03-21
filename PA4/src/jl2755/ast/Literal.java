@@ -33,7 +33,7 @@ public class Literal implements Constant {
 		if (index == 0) {
 			intLit = s;
 		} else if (index == 1) {
-			stringLit = collapseEscapes(s);
+			stringLit = s;
 		} else {
 			charLit = s;
 		}
@@ -57,7 +57,7 @@ public class Literal implements Constant {
 			intLit = s;
 		}
 		else if (index == 1) {
-			stringLit = collapseEscapes(s);
+			stringLit = s;
 		}
 		else {
 			charLit = s;
@@ -78,7 +78,7 @@ public class Literal implements Constant {
 	}
 
 	public String getStringLit() {
-		return stringLit;
+		return collapseEscapes(stringLit);
 	}
 
 	public void setStringLit(String stringLit) {

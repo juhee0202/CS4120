@@ -10,6 +10,7 @@ public class Identifier implements Expr{
 	private int theValue_col;
 	private int theValue_line;
 	private VType type;
+	private boolean isSurroundedByParentheses = false;
 	
 	public Identifier(String argValue, int idleft, int idright){
 		theValue = argValue;
@@ -72,5 +73,15 @@ public class Identifier implements Expr{
 
 	public void setType(VType type) {
 		this.type = type;
+	}
+
+	@Override
+	public void setSurroundedParentheses() {
+		isSurroundedByParentheses = true;
+	}
+
+	@Override
+	public boolean isSurroundedParentheses() {
+		return isSurroundedByParentheses;
 	}
 }

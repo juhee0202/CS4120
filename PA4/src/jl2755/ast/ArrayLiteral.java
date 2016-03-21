@@ -13,6 +13,7 @@ public class ArrayLiteral implements Constant {
 	private ArrayElementList arrElemList;
 	private int openBracket_col;
 	private int openBracket_line;
+	private boolean isSurroundedByParentheses = false;
 	
 	public ArrayLiteral(ArrayElementList l, int obleft, int obright) {
 		arrElemList = l;
@@ -76,5 +77,15 @@ public class ArrayLiteral implements Constant {
 	@Override
 	public int getLineNumber() {
 		return openBracket_line;
+	}
+
+	@Override
+	public void setSurroundedParentheses() {
+		isSurroundedByParentheses = true;
+	}
+
+	@Override
+	public boolean isSurroundedParentheses() {
+		return isSurroundedByParentheses;
 	}
 }

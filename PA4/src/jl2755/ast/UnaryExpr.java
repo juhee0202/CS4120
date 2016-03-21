@@ -15,6 +15,7 @@ public class UnaryExpr implements OpExpr {
 	private int op_col;
 	private int op_line;
 	private VType type;
+	private boolean isSurroundedByParentheses = false;
 
 	public UnaryExpr(Expr e, UnaryOp o, int oleft, int oright) {
 		expr = e;
@@ -68,5 +69,15 @@ public class UnaryExpr implements OpExpr {
 
 	public void setType(VType type) {
 		this.type = type;
+	}
+
+	@Override
+	public void setSurroundedParentheses() {
+		isSurroundedByParentheses = true;
+	}
+
+	@Override
+	public boolean isSurroundedParentheses() {
+		return isSurroundedByParentheses;
 	}
 }

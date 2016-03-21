@@ -24,6 +24,7 @@ public class MIRVisitor implements ASTVisitor{
 	private int labelCount = 0;
 	private int tempCount = 0;
 	public IRNode program;
+	private boolean negativeNumber;
 	
 	@Override
 	public void visit(ArrayElement ae) {
@@ -497,7 +498,11 @@ public class MIRVisitor implements ASTVisitor{
 		 */
 		switch (index) {
 		case 0:
-			tempNode = new IRConst(Long.parseLong(l.getIntLit()));
+			try {
+				tempNode = new IRConst(Long.parseLong(l.getIntLit()));
+			} catch (NumberFormatException e) {
+				tempNode = new IRBinOp(OpType.ADD, new IRConst(Long.MAX_VALUE), new IRConst(1));
+			}
 			break;
 		case 1:
 			String stringLit = l.getStringLit();

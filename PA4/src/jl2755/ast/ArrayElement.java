@@ -22,6 +22,7 @@ public class ArrayElement implements Expr {
 	private ArrayLiteral arrayLiteral;
 	private int arrayLiteral_col;
 	private int arrayLiteral_line;
+	private boolean isSurroundedByParentheses = false;
 	/**
 	 * 0 if identifier with indexedBrackets,
 	 * 1 if functionCall with indexedBrackets,
@@ -209,5 +210,15 @@ public class ArrayElement implements Expr {
 		else {
 			return arrayLiteral_line;
 		}
+	}
+
+	@Override
+	public void setSurroundedParentheses() {
+		isSurroundedByParentheses = true;
+	}
+
+	@Override
+	public boolean isSurroundedParentheses() {
+		return isSurroundedByParentheses;
 	}
 }

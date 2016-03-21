@@ -25,6 +25,7 @@ public class FunctionCall implements Expr,NakedStmt {
 	private int length_line;
     private int index;
     private VType type;
+    private boolean isSurroundedByParentheses = false;
 
     public FunctionCall(Identifier id){
         identifier = id;
@@ -180,5 +181,15 @@ public class FunctionCall implements Expr,NakedStmt {
 			return identifier_line;
 		}
 		return length_line;
+	}
+
+	@Override
+	public void setSurroundedParentheses() {
+		isSurroundedByParentheses = true;
+	}
+
+	@Override
+	public boolean isSurroundedParentheses() {
+		return isSurroundedByParentheses;
 	}
 }

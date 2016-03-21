@@ -15,6 +15,7 @@ public class Literal implements Constant {
 	private String stringLit;
 	private String charLit;
 	private Boolean boolLit;
+	private boolean isSurroundedByParentheses = false;
 	/**
 	 * 0 for int literal,
 	 * 1 for string literal,
@@ -168,5 +169,15 @@ public class Literal implements Constant {
 		}
 		
 		return newString;
+	}
+
+	@Override
+	public void setSurroundedParentheses() {
+		isSurroundedByParentheses = true;
+	}
+
+	@Override
+	public boolean isSurroundedParentheses() {
+		return isSurroundedByParentheses;
 	}
 }

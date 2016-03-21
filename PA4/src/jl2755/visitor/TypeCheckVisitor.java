@@ -24,7 +24,7 @@ public class TypeCheckVisitor implements ASTVisitor {
 	private HashMap<String, VType> if_env;
 	private Stack<String> stack;	// "_": special marker
 	private VType tempType;
-	private boolean negativeNumber; // needed for UnaryExpr, Literal
+	private boolean negativeNumber = false; // needed for UnaryExpr, Literal
 	private boolean returnIsLast; // True iff last statement is RETURNNN
 	
 	public TypeCheckVisitor(){
@@ -768,7 +768,7 @@ public class TypeCheckVisitor implements ASTVisitor {
 			case 0: 												// int
 				String intLiteral = l.getIntLit();
 				try {
-					if (negativeNumber) {
+					if (negativeNumber && !l.isSurroundedParentheses()) {
 						Long.parseLong("-" + intLiteral);
 					} else {
 						Long.parseLong(intLiteral);
@@ -990,13 +990,13 @@ public class TypeCheckVisitor implements ASTVisitor {
 
 	@Override
 	public void visit(UnaryExpr ue) {
-		if (ue.getExpr() instanceof Literal 
-			|| ue.getExpr() instanceof UnaryExpr) {
-			negativeNumber = (!negativeNumber);
-		} else {
-			negativeNumber = false;
-		}
-		
+		if ((ue.getExpr() instanceof Literal 
+				|| ue.getExpr() instanceof UnaryExpr)
+				&& !ue.isSurroundedParentheses()) {
+				negativeNumber = (!negativeNumber);
+			} else {
+				negativeNumber = false;
+			}
 		ue.getExpr().accept(this);
 		
 		if (!(tempType instanceof VarType)) {

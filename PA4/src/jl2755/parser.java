@@ -1050,7 +1050,7 @@ class CUP$parser$actions {
                 int expressionleft = CUP$parser$stack.elementAt(CUP$parser$top-1).left;
                 int expressionright = CUP$parser$stack.elementAt(CUP$parser$top-1).right;
                 Expr expression = CUP$parser$stack.elementAt(CUP$parser$top-1).<Expr> value();
-                 RESULT = expression; 
+                 expression.setSurroundedParentheses(); RESULT = expression; 
                 CUP$parser$result = parser.getSymbolFactory().newSymbol("expr",8, CUP$parser$stack.elementAt(CUP$parser$top-2), CUP$parser$stack.peek(), RESULT);
             }
             return CUP$parser$result;

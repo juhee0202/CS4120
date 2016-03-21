@@ -28,10 +28,24 @@ public class MIRVisitor implements ASTVisitor{
 	
 	@Override
 	public void visit(ArrayElement ae) {
-		// a[i][j]..[z]
-		ae.getIdentifier().accept(this);
-		IRExpr identifierIR = (IRExpr) tempNode;
-		tempNode = new IRMem(createIRExprForBrackets(identifierIR, ae.getIndexedBrackets()));
+		int index = ae.getIndex();
+
+		// 0: identifier with indexedBrackets
+		if (index == 0) {
+			ae.getIdentifier().accept(this);
+			IRExpr identifierIR = (IRExpr) tempNode;
+			tempNode = new IRMem(createIRExprForBrackets(identifierIR, ae.getIndexedBrackets()));
+		}
+		// 1: functionCall with indexedBrackets
+		else if (index == 1) {
+			ae.getFunctionCall().accept(this);
+			tempNode = new IRMem(createIRExprForBrackets((IRExpr) tempNode, ae.getIndexedBrackets()));
+		}
+		// 2: arrayLiteral with IndexedBrackets
+		else {
+			ae.getArrayLiteral().accept(this);
+			tempNode = new IRMem(createIRExprForBrackets((IRExpr) tempNode, ae.getIndexedBrackets()));
+		}
 	}
 
 	@Override
@@ -610,6 +624,7 @@ public class MIRVisitor implements ASTVisitor{
 	@Override
 	public void visit(TupleInit ti) {
 		ti.getFunctionCall().accept(this);
+		IRCall fCall = (IRCall) tempNode;
 		if (ti.getIndex() == 0) {
 			// _ = f()
 			tempNode = new IRExp((IRExpr) tempNode);
@@ -625,7 +640,8 @@ public class MIRVisitor implements ASTVisitor{
 				VarDecl vd = vdlist.get(i);
 				if (vd != null) {
 					// Assign result of function call
-					temp = new IRTemp(vd.getIdentifier().toString());
+					vd.getIdentifier().accept(this);
+					temp = (IRTemp) tempNode;
 					result = new IRTemp(Configuration.ABSTRACT_RET_PREFIX+i);
 					move = new IRMove(temp,result);
 					stmts.add(move);
@@ -633,8 +649,10 @@ public class MIRVisitor implements ASTVisitor{
 				}
 			}
 			if (allUnderscore) {
-				tempNode = new IRExp((IRExpr) tempNode);
+				tempNode = new IRExp(fCall);
 			} else {
+				IRExp throwAway = new IRExp(fCall);
+				stmts.add(0,throwAway);
 				tempNode = new IRSeq(stmts);
 			}
 		}

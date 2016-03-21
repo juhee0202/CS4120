@@ -26,7 +26,6 @@ public class LIRVisitor extends IRVisitor implements IRTreeVisitor{
 	}
 	
 	public void visit(IRBinOp bo) {
-		// assuming no commute (side effect dirties exp)
 		bo.left().accept(this);
 		IRSeq s1 = tempSeq.part1();
 		IRExpr e1 = (IRExpr) tempSeq.part2();
@@ -61,15 +60,10 @@ public class LIRVisitor extends IRVisitor implements IRTreeVisitor{
 		
 		// Keep track of temps to put in CALL at the end
 		List<IRExpr> holyTemps = new ArrayList<IRExpr>();
-//		IRMove holyTargetMove = new IRMove(targetTemp, holyTarget);
-		
-		// Adds target's statement and move to SEQ
-//		holySideEffects = combineTwoStmt(holySideEffects, holyTargetMove);
-		
+
 		// Loop over, add side effects and move to SEQ, keep TEMPs
 		List<IRExpr> dirtyExprList = call.args();
 		for (int i = 0; i < dirtyExprList.size(); i++) {
-			// TODO: check commutability...
 			dirtyExprList.get(i).accept(this);
 			holySideEffects = combineTwoStmt(holySideEffects,tempSeq.part1());
 			IRExpr holyExpr = (IRExpr) tempSeq.part2();
@@ -109,16 +103,12 @@ public class LIRVisitor extends IRVisitor implements IRTreeVisitor{
 		for (int i = 0; i < allFuncDecls.size(); i++) {
 			IRFuncDecl funcDecl = allFuncDecls.get(i);
 			funcDecl.accept(this);
-			List<IRStmt> shitler = new ArrayList<IRStmt>();
+			List<IRStmt> stmts = new ArrayList<IRStmt>();
 			IRLabel labelle = new IRLabel("tempLabel"+i);
-			shitler.add(labelle);
-			shitler.addAll(tempSeq.part1().stmts());
-			
-//			for (int j = 0; j < shitler.size(); j++) {
-//				System.out.println(shitler.get(j).toString());
-//			}
-			
-			IRSeq body = new IRSeq(shitler);
+			stmts.add(labelle);
+			stmts.addAll(tempSeq.part1().stmts());
+
+			IRSeq body = new IRSeq(stmts);
 			List<BasicBlock> basicBlockList = createBasicBlocks(body);
 			// Construct trace list
 			List< List<BasicBlock> > traceList = constructTraces(basicBlockList);
@@ -149,14 +139,15 @@ public class LIRVisitor extends IRVisitor implements IRTreeVisitor{
 	public void visit(IRESeq eseq) {
 		IRStmt stmtPart = eseq.stmt();
 		stmtPart.accept(this);
-		IRStmt sideEffectOfStmt = tempSeq.part1();
+		IRStmt holyStmts = tempSeq.part1();
+		
 		IRExpr exprPart = eseq.expr();
 		exprPart.accept(this);
-		IRStmt sideEffectOfExpr = tempSeq.part1();
-		IRExpr purifiedExpr = (IRExpr) tempSeq.part2();
-		IRSeq combinedSideEffects = combineTwoStmt(sideEffectOfStmt,
-				sideEffectOfExpr);
-		tempSeq = new Pair<IRSeq, IRNode>(combinedSideEffects, purifiedExpr);
+		IRStmt holyStmtsOfExpr = tempSeq.part1();
+		IRExpr holyExpr = (IRExpr) tempSeq.part2();
+		IRSeq combinedSideEffects = combineTwoStmt(holyStmts,
+				holyStmtsOfExpr);
+		tempSeq = new Pair<IRSeq, IRNode>(combinedSideEffects, holyExpr);
 	}
 	
 	public void visit(IRExp exp) {

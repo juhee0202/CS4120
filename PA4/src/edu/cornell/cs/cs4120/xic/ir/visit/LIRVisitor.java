@@ -16,6 +16,7 @@ public class LIRVisitor extends IRVisitor implements IRTreeVisitor{
 	
 	private Pair<IRSeq,IRNode> tempSeq;
 	private int globalTempCount = 0;
+	private int globalLabelCount = 0;
 	private Map<String, BasicBlock> labelToBasicBlock;
 	public IRNode program;
 	private static final IRConst TRUE = new IRConst(1);
@@ -113,9 +114,9 @@ public class LIRVisitor extends IRVisitor implements IRTreeVisitor{
 			shitler.add(labelle);
 			shitler.addAll(tempSeq.part1().stmts());
 			
-			for (int j = 0; j < shitler.size(); j++) {
-				System.out.println(shitler.get(j).toString());
-			}
+//			for (int j = 0; j < shitler.size(); j++) {
+//				System.out.println(shitler.get(j).toString());
+//			}
 			
 			IRSeq body = new IRSeq(shitler);
 			List<BasicBlock> basicBlockList = createBasicBlocks(body);
@@ -312,6 +313,12 @@ public class LIRVisitor extends IRVisitor implements IRTreeVisitor{
 	 * @return a List of basic blocks (IRSeq)
 	 */
 	private List<BasicBlock> createBasicBlocks(IRSeq stmts) {	
+//		System.out.println("*****Start*****");
+//		for (IRStmt s : stmts.stmts()) {
+//			System.out.println(s);
+//		}
+//		System.out.println("******End******");
+		
 		// return this at the end
 		List<BasicBlock> basicBlockList = new ArrayList<BasicBlock>();
 		
@@ -335,21 +342,42 @@ public class LIRVisitor extends IRVisitor implements IRTreeVisitor{
 				basicBlock = new BasicBlock(((IRLabel) stmt));
 				labelToBasicBlock.put(((IRLabel)stmt).name(), basicBlock);
 			} else if (stmt instanceof IRJump) {
+				// make sure that a basic block starts with a label
+				if (basicBlock == null) {
+					IRLabel startLabel = new IRLabel("label" + globalLabelCount++);
+					basicBlock = new BasicBlock(startLabel);
+				}
+				
 				basicBlock.addIRStmt(stmt);
 				basicBlock.index = 1;
 				basicBlockList.add(basicBlock);
 				basicBlock = null;
 			} else if (stmt instanceof IRCJump) {
+				// make sure that a basic block starts with a label
+				if (basicBlock == null) {
+					IRLabel startLabel = new IRLabel("label" + globalLabelCount++);
+					basicBlock = new BasicBlock(startLabel);
+				}
 				basicBlock.addIRStmt(stmt);
 				basicBlock.index = 2;
 				basicBlockList.add(basicBlock);
 				basicBlock = null;			
 			} else if (stmt instanceof IRReturn) {
+				// make sure that a basic block starts with a label
+				if (basicBlock == null) {
+					IRLabel startLabel = new IRLabel("label" + globalLabelCount++);
+					basicBlock = new BasicBlock(startLabel);
+				}
 				basicBlock.addIRStmt(stmt);
 				basicBlock.index = 3;
 				basicBlockList.add(basicBlock);
 				basicBlock = null;
 			} else {
+				// make sure that a basic block starts with a label
+				if (basicBlock == null) {
+					IRLabel startLabel = new IRLabel("label" + globalLabelCount++);
+					basicBlock = new BasicBlock(startLabel);
+				}
 				basicBlock.addIRStmt(stmt);
 			}
 		}

@@ -27,10 +27,24 @@ public class MIRVisitor implements ASTVisitor{
 	
 	@Override
 	public void visit(ArrayElement ae) {
-		// a[i][j]..[z]
-		ae.getIdentifier().accept(this);
-		IRExpr identifierIR = (IRExpr) tempNode;
-		tempNode = new IRMem(createIRExprForBrackets(identifierIR, ae.getIndexedBrackets()));
+		int index = ae.getIndex();
+
+		// 0: identifier with indexedBrackets
+		if (index == 0) {
+			ae.getIdentifier().accept(this);
+			IRExpr identifierIR = (IRExpr) tempNode;
+			tempNode = new IRMem(createIRExprForBrackets(identifierIR, ae.getIndexedBrackets()));
+		}
+		// 1: functionCall with indexedBrackets
+		else if (index == 1) {
+			ae.getFunctionCall().accept(this);
+			tempNode = new IRMem(createIRExprForBrackets((IRExpr) tempNode, ae.getIndexedBrackets()));
+		}
+		// 2: arrayLiteral with IndexedBrackets
+		else {
+			ae.getArrayLiteral().accept(this);
+			tempNode = new IRMem(createIRExprForBrackets((IRExpr) tempNode, ae.getIndexedBrackets()));
+		}
 	}
 
 	@Override

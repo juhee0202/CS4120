@@ -1,10 +1,10 @@
 use io
 
 main(args:int[][]) {
-    x: int[] = "a"
+    x: int[] = "a";
+    y: int[] = "b";
+    z: int[] = x+y; // z = "ab"
     print(x);
-    y: int[] = "b"
     print(y);
-    z: int[] = x+y;
     print(z);
 }

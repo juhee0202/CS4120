@@ -23,7 +23,7 @@
       (MOVE (TEMP t1) (ADD (TEMP t1) (CONST 8))))
      (TEMP t1)))
    (MOVE
-    (TEMP z)
+    (TEMP result)
     (ESEQ
      (SEQ
       (MOVE
@@ -58,9 +58,7 @@
       (JUMP (NAME l3))
       (LABEL l5))
      (TEMP t2)))
-   (EXP (CALL (NAME _Iprint_pai) (TEMP x)))
-   (EXP (CALL (NAME _Iprint_pai) (TEMP y)))
-   (EXP (CALL (NAME _Iprint_pai) (TEMP z))))))
+   (EXP (CALL (NAME _Iprint_pai) (TEMP result))))))
 (COMPUNIT
  Program
  (FUNC
@@ -102,13 +100,9 @@
    (LABEL l3)
    (CJUMP (LT (TEMP t4) (MEM (SUB (TEMP y) (CONST 8)))) l4)
    (LABEL l5)
-   (MOVE (TEMP z) (TEMP t2))
-   (MOVE (TEMP temp10) (TEMP x))
+   (MOVE (TEMP result) (TEMP t2))
+   (MOVE (TEMP temp10) (TEMP result))
    (EXP (CALL (NAME _Iprint_pai) (TEMP temp10)))
-   (MOVE (TEMP temp13) (TEMP y))
-   (EXP (CALL (NAME _Iprint_pai) (TEMP temp13)))
-   (MOVE (TEMP temp16) (TEMP z))
-   (EXP (CALL (NAME _Iprint_pai) (TEMP temp16)))
    (RETURN)
    (LABEL l1)
    (MOVE (MEM (ADD (TEMP t2) (MUL (TEMP t3) (CONST 8))))

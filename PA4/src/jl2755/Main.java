@@ -440,12 +440,12 @@ public class Main {
 			/* Translate to MIR */
 			MIRVisitor mir = new MIRVisitor();
 			program.accept(mir);
-			StringWriter sww = new StringWriter();
-	        try (PrintWriter pw = new PrintWriter(sww);
-		             SExpPrinter sp = new CodeWriterSExpPrinter(pw)) {
-				mir.program.printSExp(sp);
-		        }
-	        bw.write(sww.toString());
+//			StringWriter sww = new StringWriter();
+//	        try (PrintWriter pw = new PrintWriter(sww);
+//		             SExpPrinter sp = new CodeWriterSExpPrinter(pw)) {
+//				mir.program.printSExp(sp);
+//		        }
+//	        bw.write(sww.toString());
 	       
 			/* Lower to LIR */
 			LIRVisitor lir = new LIRVisitor();
@@ -497,7 +497,7 @@ public class Main {
 			System.out.println("[xic] Interpreting intermediate code");
 			IRSimulator sim = new IRSimulator((IRCompUnit) program);
 	        sim.call("_Imain_paai", 0);
-	        System.out.println("\n[xic] Interpreting intermediate code completed");
+	        System.out.println("[xic] Interpreting intermediate code completed");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

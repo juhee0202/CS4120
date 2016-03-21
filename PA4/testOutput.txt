@@ -93,9 +93,7 @@ Test script: xthScript
 ]
   xic (Test --lex): 14 out of 14 tests succeeded.
   Test collection: xic (Test --parse)
-    ex1.xi: Mismatch detected at line 3 of file ex1.parsed.nml
-expected:    ((print "Hello, World!\n") (= (c3po int) (+ 'x' 47)) (= (r2d2 int) c3po)))))
-found   :    ((print "Hello, World! ") (= (c3po int) (+ 'x' 47)) (= (r2d2 int) c3po)))))
+    ex1.xi: OK
     [Compiler's standard output:
     [xic] Parsing
 [xic] Parsing completed
@@ -173,7 +171,7 @@ Syntax error beginning at 1:1:Unexpected token
 instead expected token classes are [EOF, IDENTIFIER, USE]
 Syntax error beginning at 1:1:Unexpected token 
 ]
-  xic (Test --parse): 14 out of 15 tests succeeded.
+  xic (Test --parse): 15 out of 15 tests succeeded.
   Test collection: xic (Test --typecheck)
     ex01.xi: OK
     [Compiler's standard output:
@@ -311,19 +309,580 @@ Semantic error beginning at 2:14:: Name gcd cannot be resolved
     ex01.xi: OK
     [Compiler's standard output:
     [xic] Generating intermediate code
+(LABEL tempLabel0)
+
+(MOVE (TEMP args) (TEMP _ARG0))
+
+(MOVE (TEMP temp2) (CONST 120))
+
+(MOVE (TEMP temp3) (CALL (NAME _I_alloc_i) (TEMP temp2)))
+
+(MOVE (TEMP t0) (TEMP temp3))
+
+(MOVE (MEM (TEMP t0)) (CONST 14))
+
+(MOVE (MEM (ADD (CONST 8) (TEMP t0))) (CONST 72))
+
+(MOVE (MEM (ADD (CONST 16) (TEMP t0))) (CONST 101))
+
+(MOVE (MEM (ADD (CONST 24) (TEMP t0))) (CONST 108))
+
+(MOVE (MEM (ADD (CONST 32) (TEMP t0))) (CONST 108))
+
+(MOVE (MEM (ADD (CONST 40) (TEMP t0))) (CONST 111))
+
+(MOVE (MEM (ADD (CONST 48) (TEMP t0))) (CONST 44))
+
+(MOVE (MEM (ADD (CONST 56) (TEMP t0))) (CONST 32))
+
+(MOVE (MEM (ADD (CONST 64) (TEMP t0))) (CONST 87))
+
+(MOVE (MEM (ADD (CONST 72) (TEMP t0))) (CONST 111))
+
+(MOVE (MEM (ADD (CONST 80) (TEMP t0))) (CONST 114))
+
+(MOVE (MEM (ADD (CONST 88) (TEMP t0))) (CONST 108))
+
+(MOVE (MEM (ADD (CONST 96) (TEMP t0))) (CONST 100))
+
+(MOVE (MEM (ADD (CONST 104) (TEMP t0))) (CONST 33))
+
+(MOVE (MEM (ADD (CONST 112) (TEMP t0))) (CONST 10))
+
+(MOVE (TEMP t0) (ADD (TEMP t0) (CONST 8)))
+
+(MOVE (TEMP temp4) (TEMP t0))
+
+(EXP (CALL (NAME _Iprint_pai) (TEMP temp4)))
+
+(MOVE (TEMP c3po) (CONST 167))
+
+(MOVE (TEMP r2d2) (TEMP c3po))
+
 [xic] Generating intermediate code completed
 ]
-    ack.xi: OK
+    ack.xi: instead expected token classes are []
+IR syntax error: Can't recover from previous error(s)
     [Compiler's standard output:
     [xic] Generating intermediate code
-[xic] Generating intermediate code completed
+(LABEL tempLabel0)
+
+(MOVE (TEMP temp2) (CONST 240))
+
+(MOVE (TEMP temp3) (CALL (NAME _I_alloc_i) (TEMP temp2)))
+
+(MOVE (TEMP t0) (TEMP temp3))
+
+(MOVE (MEM (TEMP t0)) (CONST 29))
+
+(MOVE (MEM (ADD (CONST 8) (TEMP t0))) (CONST 80))
+
+(MOVE (MEM (ADD (CONST 16) (TEMP t0))) (CONST 108))
+
+(MOVE (MEM (ADD (CONST 24) (TEMP t0))) (CONST 101))
+
+(MOVE (MEM (ADD (CONST 32) (TEMP t0))) (CONST 97))
+
+(MOVE (MEM (ADD (CONST 40) (TEMP t0))) (CONST 115))
+
+(MOVE (MEM (ADD (CONST 48) (TEMP t0))) (CONST 101))
+
+(MOVE (MEM (ADD (CONST 56) (TEMP t0))) (CONST 32))
+
+(MOVE (MEM (ADD (CONST 64) (TEMP t0))) (CONST 115))
+
+(MOVE (MEM (ADD (CONST 72) (TEMP t0))) (CONST 112))
+
+(MOVE (MEM (ADD (CONST 80) (TEMP t0))) (CONST 101))
+
+(MOVE (MEM (ADD (CONST 88) (TEMP t0))) (CONST 99))
+
+(MOVE (MEM (ADD (CONST 96) (TEMP t0))) (CONST 105))
+
+(MOVE (MEM (ADD (CONST 104) (TEMP t0))) (CONST 102))
+
+(MOVE (MEM (ADD (CONST 112) (TEMP t0))) (CONST 121))
+
+(MOVE (MEM (ADD (CONST 120) (TEMP t0))) (CONST 32))
+
+(MOVE (MEM (ADD (CONST 128) (TEMP t0))) (CONST 116))
+
+(MOVE (MEM (ADD (CONST 136) (TEMP t0))) (CONST 104))
+
+(MOVE (MEM (ADD (CONST 144) (TEMP t0))) (CONST 101))
+
+(MOVE (MEM (ADD (CONST 152) (TEMP t0))) (CONST 32))
+
+(MOVE (MEM (ADD (CONST 160) (TEMP t0))) (CONST 105))
+
+(MOVE (MEM (ADD (CONST 168) (TEMP t0))) (CONST 110))
+
+(MOVE (MEM (ADD (CONST 176) (TEMP t0))) (CONST 112))
+
+(MOVE (MEM (ADD (CONST 184) (TEMP t0))) (CONST 117))
+
+(MOVE (MEM (ADD (CONST 192) (TEMP t0))) (CONST 116))
+
+(MOVE (MEM (ADD (CONST 200) (TEMP t0))) (CONST 32))
+
+(MOVE (MEM (ADD (CONST 208) (TEMP t0))) (CONST 115))
+
+(MOVE (MEM (ADD (CONST 216) (TEMP t0))) (CONST 105))
+
+(MOVE (MEM (ADD (CONST 224) (TEMP t0))) (CONST 122))
+
+(MOVE (MEM (ADD (CONST 232) (TEMP t0))) (CONST 101))
+
+(MOVE (TEMP t0) (ADD (TEMP t0) (CONST 8)))
+
+(MOVE (TEMP temp4) (TEMP t0))
+
+(EXP (CALL (NAME _Iprintln_pai) (TEMP temp4)))
+
+(LABEL tempLabel1)
+
+(MOVE (TEMP args) (TEMP _ARG0))
+
+(MOVE (TEMP n) (CONST 11))
+
+(MOVE (TEMP temp7) (CONST 2))
+
+(MOVE (TEMP temp8) (TEMP n))
+
+(MOVE (TEMP temp9) (CALL (NAME _IAck_iii) (TEMP temp7) (TEMP temp8)))
+
+(MOVE (TEMP r) (TEMP temp9))
+
+(MOVE (TEMP temp12) (CONST 56))
+
+(MOVE (TEMP temp13) (CALL (NAME _I_alloc_i) (TEMP temp12)))
+
+(MOVE (TEMP t1) (TEMP temp13))
+
+(MOVE (MEM (TEMP t1)) (CONST 6))
+
+(MOVE (MEM (ADD (CONST 8) (TEMP t1))) (CONST 65))
+
+(MOVE (MEM (ADD (CONST 16) (TEMP t1))) (CONST 99))
+
+(MOVE (MEM (ADD (CONST 24) (TEMP t1))) (CONST 107))
+
+(MOVE (MEM (ADD (CONST 32) (TEMP t1))) (CONST 40))
+
+(MOVE (MEM (ADD (CONST 40) (TEMP t1))) (CONST 50))
+
+(MOVE (MEM (ADD (CONST 48) (TEMP t1))) (CONST 44))
+
+(MOVE (TEMP t1) (ADD (TEMP t1) (CONST 8)))
+
+(MOVE (TEMP temp14) (TEMP t1))
+
+(EXP (CALL (NAME _Iprint_pai) (TEMP temp14)))
+
+(MOVE (TEMP temp18) (TEMP n))
+
+(MOVE (TEMP temp19) (CALL (NAME _IunparseInt_aii) (TEMP temp18)))
+
+(MOVE (TEMP temp20) (TEMP temp19))
+
+(EXP (CALL (NAME _Iprint_pai) (TEMP temp20)))
+
+(MOVE (TEMP temp24) (CONST 32))
+
+(MOVE (TEMP temp25) (CALL (NAME _I_alloc_i) (TEMP temp24)))
+
+(MOVE (TEMP t2) (TEMP temp25))
+
+(MOVE (MEM (TEMP t2)) (CONST 3))
+
+(MOVE (MEM (ADD (CONST 8) (TEMP t2))) (CONST 41))
+
+(MOVE (MEM (ADD (CONST 16) (TEMP t2))) (CONST 58))
+
+(MOVE (MEM (ADD (CONST 24) (TEMP t2))) (CONST 32))
+
+(MOVE (TEMP t2) (ADD (TEMP t2) (CONST 8)))
+
+(MOVE (TEMP temp26) (TEMP t2))
+
+(EXP (CALL (NAME _Iprint_pai) (TEMP temp26)))
+
+(MOVE (TEMP temp30) (TEMP r))
+
+(MOVE (TEMP temp31) (CALL (NAME _IunparseInt_aii) (TEMP temp30)))
+
+(MOVE (TEMP temp32) (TEMP temp31))
+
+(EXP (CALL (NAME _Iprint_pai) (TEMP temp32)))
+
+(MOVE (TEMP temp36) (CONST 8))
+
+(MOVE (TEMP temp37) (CALL (NAME _I_alloc_i) (TEMP temp36)))
+
+(MOVE (TEMP t3) (TEMP temp37))
+
+(MOVE (MEM (TEMP t3)) (CONST 0))
+
+(MOVE (TEMP t3) (ADD (TEMP t3) (CONST 8)))
+
+(MOVE (TEMP temp38) (TEMP t3))
+
+(EXP (CALL (NAME _Iprintln_pai) (TEMP temp38)))
+
+(LABEL tempLabel2)
+
+(MOVE (TEMP m) (TEMP _ARG0))
+
+(MOVE (TEMP n) (TEMP _ARG1))
+
+(CJUMP (EQ (TEMP m) (CONST 0)) l0 l1)
+
+(LABEL l0)
+
+(MOVE (TEMP _RET0) (ADD (TEMP n) (CONST 1)))
+
+(RETURN)
+
+(JUMP (NAME l2))
+
+(LABEL l1)
+
+(CJUMP (EQ (TEMP n) (CONST 0)) l3 l4)
+
+(LABEL l3)
+
+(MOVE (TEMP temp41) (SUB (TEMP m) (CONST 1)))
+
+(MOVE (TEMP temp42) (CONST 1))
+
+(MOVE (TEMP temp43) (CALL (NAME _IAck_iii) (TEMP temp41) (TEMP temp42)))
+
+(MOVE (TEMP _RET0) (TEMP temp43))
+
+(RETURN)
+
+(JUMP (NAME l5))
+
+(LABEL l4)
+
+(MOVE (TEMP temp45) (SUB (TEMP m) (CONST 1)))
+
+(MOVE (TEMP temp47) (TEMP m))
+
+(MOVE (TEMP temp48) (SUB (TEMP n) (CONST 1)))
+
+(MOVE (TEMP temp49) (CALL (NAME _IAck_iii) (TEMP temp47) (TEMP temp48)))
+
+(MOVE (TEMP temp50) (TEMP temp49))
+
+(MOVE (TEMP temp51) (CALL (NAME _IAck_iii) (TEMP temp45) (TEMP temp50)))
+
+(MOVE (TEMP _RET0) (TEMP temp51))
+
+(RETURN)
+
+(LABEL l5)
+
+(LABEL l2)
+
 ]
-    primes.xi: Mismatch detected at line 1 of file primes.ir.nml
-expected: Largest prime less than 1,000 is 997
-found   : 晹镪岼鈙젌ゅꬽ?଻?嗎뱑ꌜ恼쵄å淇ɋ촣ꟙꣀ▪힏ꀏ录뎯瀤呲䆢變?챃崚㘷喬ἶ번쒣ಉ踑֥嘪穱?
+    [Compiler's standard error:
+    java.lang.NullPointerException
+	at edu.cornell.cs.cs4120.xic.ir.visit.LIRVisitor.createBasicBlocks(LIRVisitor.java:338)
+	at edu.cornell.cs.cs4120.xic.ir.visit.LIRVisitor.visit(LIRVisitor.java:121)
+	at edu.cornell.cs.cs4120.xic.ir.IRCompUnit.accept(IRCompUnit.java:84)
+	at jl2755.Main.irgen(Main.java:452)
+	at jl2755.Main.main(Main.java:226)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:498)
+	at org.eclipse.jdt.internal.jarinjarloader.JarRsrcLoader.main(JarRsrcLoader.java:58)
+]
+    primes.xi: OK
     [Compiler's standard output:
     [xic] Generating intermediate code
+(LABEL tempLabel0)
+
+(MOVE (TEMP a) (TEMP _ARG0))
+
+(MOVE (TEMP b) (TEMP _ARG1))
+
+(LABEL l0)
+
+(CJUMP (NEQ (TEMP a) (CONST 0)) l1 l2)
+
+(LABEL l1)
+
+(CJUMP (LT (TEMP a) (TEMP b)) l3 l4)
+
+(LABEL l3)
+
+(MOVE (TEMP b) (SUB (TEMP b) (TEMP a)))
+
+(JUMP (NAME l5))
+
+(LABEL l4)
+
+(MOVE (TEMP a) (SUB (TEMP a) (TEMP b)))
+
+(LABEL l5)
+
+(JUMP (NAME l0))
+
+(LABEL l2)
+
+(MOVE (TEMP _RET0) (TEMP b))
+
+(RETURN)
+
+(LABEL tempLabel1)
+
+(MOVE (TEMP args) (TEMP _ARG0))
+
+(MOVE (TEMP temp2) (CONST 272))
+
+(MOVE (TEMP temp3) (CALL (NAME _I_alloc_i) (TEMP temp2)))
+
+(MOVE (TEMP t0) (TEMP temp3))
+
+(MOVE (MEM (TEMP t0)) (CONST 33))
+
+(MOVE (MEM (ADD (CONST 8) (TEMP t0))) (CONST 76))
+
+(MOVE (MEM (ADD (CONST 16) (TEMP t0))) (CONST 97))
+
+(MOVE (MEM (ADD (CONST 24) (TEMP t0))) (CONST 114))
+
+(MOVE (MEM (ADD (CONST 32) (TEMP t0))) (CONST 103))
+
+(MOVE (MEM (ADD (CONST 40) (TEMP t0))) (CONST 101))
+
+(MOVE (MEM (ADD (CONST 48) (TEMP t0))) (CONST 115))
+
+(MOVE (MEM (ADD (CONST 56) (TEMP t0))) (CONST 116))
+
+(MOVE (MEM (ADD (CONST 64) (TEMP t0))) (CONST 32))
+
+(MOVE (MEM (ADD (CONST 72) (TEMP t0))) (CONST 112))
+
+(MOVE (MEM (ADD (CONST 80) (TEMP t0))) (CONST 114))
+
+(MOVE (MEM (ADD (CONST 88) (TEMP t0))) (CONST 105))
+
+(MOVE (MEM (ADD (CONST 96) (TEMP t0))) (CONST 109))
+
+(MOVE (MEM (ADD (CONST 104) (TEMP t0))) (CONST 101))
+
+(MOVE (MEM (ADD (CONST 112) (TEMP t0))) (CONST 32))
+
+(MOVE (MEM (ADD (CONST 120) (TEMP t0))) (CONST 108))
+
+(MOVE (MEM (ADD (CONST 128) (TEMP t0))) (CONST 101))
+
+(MOVE (MEM (ADD (CONST 136) (TEMP t0))) (CONST 115))
+
+(MOVE (MEM (ADD (CONST 144) (TEMP t0))) (CONST 115))
+
+(MOVE (MEM (ADD (CONST 152) (TEMP t0))) (CONST 32))
+
+(MOVE (MEM (ADD (CONST 160) (TEMP t0))) (CONST 116))
+
+(MOVE (MEM (ADD (CONST 168) (TEMP t0))) (CONST 104))
+
+(MOVE (MEM (ADD (CONST 176) (TEMP t0))) (CONST 97))
+
+(MOVE (MEM (ADD (CONST 184) (TEMP t0))) (CONST 110))
+
+(MOVE (MEM (ADD (CONST 192) (TEMP t0))) (CONST 32))
+
+(MOVE (MEM (ADD (CONST 200) (TEMP t0))) (CONST 49))
+
+(MOVE (MEM (ADD (CONST 208) (TEMP t0))) (CONST 44))
+
+(MOVE (MEM (ADD (CONST 216) (TEMP t0))) (CONST 48))
+
+(MOVE (MEM (ADD (CONST 224) (TEMP t0))) (CONST 48))
+
+(MOVE (MEM (ADD (CONST 232) (TEMP t0))) (CONST 48))
+
+(MOVE (MEM (ADD (CONST 240) (TEMP t0))) (CONST 32))
+
+(MOVE (MEM (ADD (CONST 248) (TEMP t0))) (CONST 105))
+
+(MOVE (MEM (ADD (CONST 256) (TEMP t0))) (CONST 115))
+
+(MOVE (MEM (ADD (CONST 264) (TEMP t0))) (CONST 32))
+
+(MOVE (TEMP t0) (ADD (TEMP t0) (CONST 8)))
+
+(MOVE (TEMP temp11) (MEM (SUB (TEMP t0) (CONST 8))))
+
+(MOVE (TEMP temp7) (CONST 1000))
+
+(MOVE (TEMP temp8) (CALL (NAME _Ilargestprime_ii) (TEMP temp7)))
+
+(MOVE (TEMP temp9) (TEMP temp8))
+
+(MOVE (TEMP temp10) (CALL (NAME _IunparseInt_aii) (TEMP temp9)))
+
+(MOVE
+ (TEMP temp12)
+ (MUL
+  (ADD (ADD (TEMP temp11) (MEM (SUB (TEMP temp10) (CONST 8)))) (CONST 1))
+  (CONST 8)))
+
+(MOVE (TEMP temp13) (CALL (NAME _I_alloc_i) (TEMP temp12)))
+
+(MOVE (TEMP t1) (TEMP temp13))
+
+(MOVE (TEMP temp20) (MEM (SUB (TEMP t0) (CONST 8))))
+
+(MOVE (TEMP temp16) (CONST 1000))
+
+(MOVE (TEMP temp17) (CALL (NAME _Ilargestprime_ii) (TEMP temp16)))
+
+(MOVE (TEMP temp18) (TEMP temp17))
+
+(MOVE (TEMP temp19) (CALL (NAME _IunparseInt_aii) (TEMP temp18)))
+
+(MOVE (MEM (TEMP t1)) (ADD (TEMP temp20) (MEM (SUB (TEMP temp19) (CONST 8)))))
+
+(MOVE (TEMP t1) (ADD (TEMP t1) (CONST 8)))
+
+(MOVE (TEMP t2) (CONST 0))
+
+(LABEL l16)
+
+(CJUMP (LT (TEMP t2) (MEM (SUB (TEMP t0) (CONST 8)))) l17 l18)
+
+(LABEL l17)
+
+(MOVE (MEM (ADD (TEMP t1) (MUL (TEMP t2) (CONST 8))))
+ (MEM (ADD (TEMP t0) (MUL (TEMP t2) (CONST 8)))))
+
+(MOVE (TEMP t2) (ADD (TEMP t2) (CONST 1)))
+
+(JUMP (NAME l16))
+
+(LABEL l18)
+
+(MOVE (TEMP t3) (CONST 0))
+
+(MOVE (TEMP t4) (MEM (SUB (TEMP t0) (CONST 8))))
+
+(LABEL l19)
+
+(MOVE (TEMP temp27) (TEMP t3))
+
+(MOVE (TEMP temp23) (CONST 1000))
+
+(MOVE (TEMP temp24) (CALL (NAME _Ilargestprime_ii) (TEMP temp23)))
+
+(MOVE (TEMP temp25) (TEMP temp24))
+
+(MOVE (TEMP temp26) (CALL (NAME _IunparseInt_aii) (TEMP temp25)))
+
+(CJUMP (LT (TEMP temp27) (MEM (SUB (TEMP temp26) (CONST 8)))) l20 l21)
+
+(LABEL l20)
+
+(MOVE (TEMP temp30) (CONST 1000))
+
+(MOVE (TEMP temp31) (CALL (NAME _Ilargestprime_ii) (TEMP temp30)))
+
+(MOVE (TEMP temp32) (TEMP temp31))
+
+(MOVE (TEMP temp33) (CALL (NAME _IunparseInt_aii) (TEMP temp32)))
+
+(MOVE (MEM (ADD (TEMP t1) (MUL (ADD (TEMP t3) (TEMP t4)) (CONST 8))))
+ (MEM (ADD (TEMP temp33) (MUL (TEMP t3) (CONST 8)))))
+
+(MOVE (TEMP t3) (ADD (TEMP t3) (CONST 1)))
+
+(JUMP (NAME l19))
+
+(LABEL l21)
+
+(MOVE (TEMP temp34) (TEMP t1))
+
+(EXP (CALL (NAME _Iprint_pai) (TEMP temp34)))
+
+(LABEL tempLabel2)
+
+(MOVE (TEMP n) (TEMP _ARG0))
+
+(MOVE (TEMP i) (CONST 2))
+
+(LABEL l6)
+
+(CJUMP (LEQ (MUL (TEMP i) (TEMP i)) (TEMP n)) l7 l8)
+
+(LABEL l7)
+
+(MOVE (TEMP temp37) (TEMP i))
+
+(MOVE (TEMP temp38) (TEMP n))
+
+(MOVE (TEMP temp39) (CALL (NAME _Igcd_iii) (TEMP temp37) (TEMP temp38)))
+
+(CJUMP (NEQ (TEMP temp39) (CONST 1)) l9 l10)
+
+(LABEL l9)
+
+(MOVE (TEMP _RET0) (CONST 0))
+
+(RETURN)
+
+(LABEL l10)
+
+(MOVE (TEMP i) (ADD (TEMP i) (CONST 1)))
+
+(JUMP (NAME l6))
+
+(LABEL l8)
+
+(MOVE (TEMP _RET0) (CONST 1))
+
+(RETURN)
+
+(LABEL tempLabel3)
+
+(MOVE (TEMP max) (TEMP _ARG0))
+
+(MOVE (TEMP a) (CONST 1))
+
+(MOVE (TEMP largest) (CONST 1))
+
+(LABEL l11)
+
+(CJUMP (LT (TEMP a) (TEMP max)) l12 l13)
+
+(LABEL l12)
+
+(MOVE (TEMP temp41) (TEMP a))
+
+(MOVE (TEMP temp42) (CALL (NAME _Iisprime_bi) (TEMP temp41)))
+
+(CJUMP (TEMP temp42) l14 l15)
+
+(LABEL l14)
+
+(MOVE (TEMP largest) (TEMP a))
+
+(LABEL l15)
+
+(MOVE (TEMP a) (ADD (TEMP a) (CONST 1)))
+
+(JUMP (NAME l11))
+
+(LABEL l13)
+
+(MOVE (TEMP _RET0) (TEMP largest))
+
+(RETURN)
+
 [xic] Generating intermediate code completed
 ]
   xic (Test --irgen): 2 out of 3 tests succeeded.
-xthScript: 57 out of 60 tests succeeded.
+xthScript: 58 out of 60 tests succeeded.

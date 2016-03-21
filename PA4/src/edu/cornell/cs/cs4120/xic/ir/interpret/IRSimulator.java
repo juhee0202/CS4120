@@ -230,7 +230,7 @@ public class IRSimulator {
 
         // Simulate!
         while (frame.advance());
-
+        
         return get(frame, Configuration.ABSTRACT_RET_PREFIX + 0);
     }
 

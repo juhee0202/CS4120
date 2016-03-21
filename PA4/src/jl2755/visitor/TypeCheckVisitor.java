@@ -90,7 +90,6 @@ public class TypeCheckVisitor implements ASTVisitor {
 				Main.handleSemanticError(seo);
 			}
 			tempType = new VarType(varTypeView.getIsBool(), varTypeView.getNumBrackets() - numberOfBrackets);
-			System.out.println(tempType);
 		}
 		else if (index == 1){
 			ae.getFunctionCall().accept(this);

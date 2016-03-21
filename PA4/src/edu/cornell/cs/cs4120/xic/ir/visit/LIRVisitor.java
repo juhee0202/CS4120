@@ -17,7 +17,7 @@ public class LIRVisitor extends IRVisitor implements IRTreeVisitor{
 	private Pair<IRSeq,IRNode> tempSeq;
 	private int globalTempCount = 0;
 	private Map<String, BasicBlock> labelToBasicBlock;
-	public IRCompUnit program;
+	public IRNode program;
 	private static final IRConst TRUE = new IRConst(1);
 	
 	public LIRVisitor() {

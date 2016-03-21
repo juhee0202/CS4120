@@ -619,6 +619,7 @@ public class MIRVisitor implements ASTVisitor{
 	@Override
 	public void visit(TupleInit ti) {
 		ti.getFunctionCall().accept(this);
+		IRCall fCall = (IRCall) tempNode;
 		if (ti.getIndex() == 0) {
 			// _ = f()
 			tempNode = new IRExp((IRExpr) tempNode);
@@ -634,7 +635,8 @@ public class MIRVisitor implements ASTVisitor{
 				VarDecl vd = vdlist.get(i);
 				if (vd != null) {
 					// Assign result of function call
-					temp = new IRTemp(vd.getIdentifier().toString());
+					vd.getIdentifier().accept(this);
+					temp = (IRTemp) tempNode;
 					result = new IRTemp(Configuration.ABSTRACT_RET_PREFIX+i);
 					move = new IRMove(temp,result);
 					stmts.add(move);
@@ -642,8 +644,10 @@ public class MIRVisitor implements ASTVisitor{
 				}
 			}
 			if (allUnderscore) {
-				tempNode = new IRExp((IRExpr) tempNode);
+				tempNode = new IRExp(fCall);
 			} else {
+				IRExp throwAway = new IRExp(fCall);
+				stmts.add(0,throwAway);
 				tempNode = new IRSeq(stmts);
 			}
 		}

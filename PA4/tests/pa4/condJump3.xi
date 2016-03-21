@@ -4,9 +4,9 @@
 use io
 
 main(args:int[][]) {
-    f1()
-    if (f1() | f2()) {
-        print("Hello\n")
+    while(f1() | f2()) {
+    	print("Hello\n")
+    	return;
     }
 }
 

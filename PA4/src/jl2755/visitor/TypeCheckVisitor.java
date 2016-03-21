@@ -39,22 +39,23 @@ public class TypeCheckVisitor implements ASTVisitor {
 	@Override
 	public void visit(ArrayElement ae) {
 		// check if the variables inside indexed brackets have been declared
-				IndexedBrackets ib= ae.getIndexedBrackets();
-				for (Expr exp: ib.getContent()) {
-					exp.accept(this);
-					
-					// check that the index in [index] is an int
-					if (!(tempType instanceof VarType && 
-							((VarType) tempType).isInt())) {
-						String s = "Expected int, but found " + tempType.toString();
-						SemanticErrorObject seo = new SemanticErrorObject(
-													exp.getLineNumber(),
-													exp.getColumnNumber(),
-													s
-													);
-						Main.handleSemanticError(seo);
-					}
-				}
+		IndexedBrackets ib= ae.getIndexedBrackets();
+		for (Expr exp: ib.getContent()) {
+			exp.accept(this);
+
+			// check that the index in [index] is an int
+			if (!(tempType instanceof VarType && 
+					((VarType) tempType).isInt())) {
+				String s = "Expected int, but found " + tempType.toString();
+				SemanticErrorObject seo = new SemanticErrorObject(
+						exp.getLineNumber(),
+						exp.getColumnNumber(),
+						s
+						);
+				Main.handleSemanticError(seo);
+			}
+		}
+		
 		int index = ae.getIndex();
 		if (index == 0){
 			if (!(env.containsKey(ae.getIdentifier().toString()))){
@@ -1106,13 +1107,13 @@ public class TypeCheckVisitor implements ASTVisitor {
 				for (Expr idx: mb.getContent()) {
 					idx.accept(this);
 					
-					// check that the index in [index] is an int
+					// check that the expr inside [] is of type int
 					if (!(tempType instanceof VarType && 
 							((VarType) tempType).isInt())) {
 						String s = "Expected int, but found " + tempType.toString();
 						SemanticErrorObject seo = new SemanticErrorObject(
-													vd.getIdentifier().getLineNumber(), 
-													vd.getIdentifier().getColumnNumber(),
+													idx.getLineNumber(), 
+													idx.getColumnNumber(),
 													s
 													);
 						Main.handleSemanticError(seo);

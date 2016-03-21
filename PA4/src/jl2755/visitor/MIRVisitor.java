@@ -23,7 +23,7 @@ public class MIRVisitor implements ASTVisitor{
 	private static final int FALSE = 0;
 	private int labelCount = 0;
 	private int tempCount = 0;
-	public IRNode program;
+	public IRCompUnit program;
 	
 	@Override
 	public void visit(ArrayElement ae) {

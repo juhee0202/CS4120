@@ -7,4 +7,6 @@ public interface Expr {
 	public void accept(ASTVisitor v);
 	public int getColumnNumber();
 	public int getLineNumber();
+	public void setSurroundedParentheses();
+	public boolean isSurroundedParentheses();
 }

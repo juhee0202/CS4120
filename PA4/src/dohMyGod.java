@@ -33,6 +33,8 @@ public class dohMyGod {
 		
 		
 		
+		
+		
 	}
 	
 	@Test
@@ -65,5 +67,10 @@ public class dohMyGod {
 		System.out.println(newString);
 	}
 	
+	@Test
+	public void test3() {
+		long a = (long) Math.pow(2, 63);
+		System.out.println((-9223372036854775808l));
+	}
 
 }

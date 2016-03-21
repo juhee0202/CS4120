@@ -148,7 +148,7 @@ expr ::= constant:c                                                 {: RESULT = 
          |
          function_call:fc                                           {: RESULT = fc; :}
          |
-         OPEN_PAREN expr:expression CLOSE_PAREN                     {: RESULT = expression; :}
+         OPEN_PAREN expr:expression CLOSE_PAREN                     {: expression.setSurroundedParentheses(); RESULT = expression; :}
          |
          error:e                                                    {: Main.handleSyntaxError("Invalid expression."); :}
          ;

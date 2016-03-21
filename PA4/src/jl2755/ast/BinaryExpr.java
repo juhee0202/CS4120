@@ -16,6 +16,7 @@ public class BinaryExpr implements OpExpr {
 	private Expr rightExpr;
 	private BinaryOp op;
 	private VType type;
+	private boolean isSurroundedByParentheses = false;
 
 	public BinaryExpr(Expr leftE, Expr rightE, BinaryOp o) {
 		leftExpr = leftE;
@@ -102,5 +103,15 @@ public class BinaryExpr implements OpExpr {
 	@Override
 	public int getLineNumber() {
 		return leftExpr_line;
+	}
+
+	@Override
+	public void setSurroundedParentheses() {
+		isSurroundedByParentheses = true;
+	}
+
+	@Override
+	public boolean isSurroundedParentheses() {
+		return isSurroundedByParentheses;
 	}
 }

@@ -112,6 +112,11 @@ public class LIRVisitor extends IRVisitor implements IRTreeVisitor{
 			IRLabel labelle = new IRLabel("tempLabel"+i);
 			shitler.add(labelle);
 			shitler.addAll(tempSeq.part1().stmts());
+			
+			for (int j = 0; j < shitler.size(); j++) {
+				System.out.println(shitler.get(j).toString());
+			}
+			
 			IRSeq body = new IRSeq(shitler);
 			List<BasicBlock> basicBlockList = createBasicBlocks(body);
 			// Construct trace list

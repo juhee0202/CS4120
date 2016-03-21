@@ -413,7 +413,8 @@ public class ConstantFolderVisitor implements ASTVisitor{
 
 	@Override
 	public void visit(VarInit vi) {
-		vi.getVarDecl().accept(this);
+//		vi.getVarDecl().accept(this);
+		vi.getType().accept(this);
 		vi.getExpr().accept(this);
 		if (caseIndex == 0) {
 			vi.setExpr(new Literal(tempLong + "", 0));

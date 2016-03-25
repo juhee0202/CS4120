@@ -1,0 +1,27 @@
+(COMPUNIT
+ Program
+ (FUNC
+  _Imain_paai
+  (SEQ
+   (LABEL tempLabel0)
+   (MOVE (TEMP args) (TEMP _ARG0))
+   (MOVE (TEMP y) (TEMP _RET1))
+   (MOVE (TEMP temp1) (MEM (ADD (TEMP y) (MUL (CONST 8) (CONST 0)))))
+   (EXP (CALL (NAME _Iprint_pai) (TEMP temp1)))
+   (RETURN)))
+ (FUNC
+  _Imultiple_t2aiaaiaiai
+  (SEQ
+   (LABEL tempLabel1)
+   (MOVE (TEMP x) (TEMP _ARG0))
+   (MOVE (TEMP y) (TEMP _ARG1))
+   (MOVE (TEMP temp4) (CONST 16))
+   (MOVE (TEMP temp5) (CALL (NAME _I_alloc_i) (TEMP temp4)))
+   (MOVE (TEMP t2) (TEMP temp5))
+   (MOVE (MEM (TEMP t2)) (CONST 1))
+   (MOVE (MEM (ADD (CONST 8) (TEMP t2))) (TEMP y))
+   (MOVE (TEMP t2) (ADD (TEMP t2) (CONST 8)))
+   (MOVE (TEMP a) (TEMP t2))
+   (MOVE (TEMP _RET0) (TEMP x))
+   (MOVE (TEMP _RET1) (TEMP a))
+   (RETURN))))

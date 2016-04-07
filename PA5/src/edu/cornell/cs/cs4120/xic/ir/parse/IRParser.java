@@ -579,7 +579,7 @@ class CUP$IRParser$actions {
                 IRExpr x = CUP$IRParser$stack.elementAt(CUP$IRParser$top-1).<IRExpr> value();
                 IRExpr y = CUP$IRParser$stack.peek().<IRExpr> value();
                 
-        RESULT = new IRBinOp(IRBinOp.OpType.ADD, x,y);
+        RESULT = new IRBinOp(OpType.ADD, x,y);
     
                 CUP$IRParser$result = parser.getSymbolFactory().newSymbol("op",11, RESULT);
             }
@@ -592,7 +592,7 @@ class CUP$IRParser$actions {
                 IRExpr x = CUP$IRParser$stack.elementAt(CUP$IRParser$top-1).<IRExpr> value();
                 IRExpr y = CUP$IRParser$stack.peek().<IRExpr> value();
                 
-        RESULT = new IRBinOp(IRBinOp.OpType.SUB, x,y);
+        RESULT = new IRBinOp(OpType.SUB, x,y);
     
                 CUP$IRParser$result = parser.getSymbolFactory().newSymbol("op",11, RESULT);
             }
@@ -605,7 +605,7 @@ class CUP$IRParser$actions {
                 IRExpr x = CUP$IRParser$stack.elementAt(CUP$IRParser$top-1).<IRExpr> value();
                 IRExpr y = CUP$IRParser$stack.peek().<IRExpr> value();
                 
-        RESULT = new IRBinOp(IRBinOp.OpType.MUL, x,y);
+        RESULT = new IRBinOp(OpType.MUL, x,y);
     
                 CUP$IRParser$result = parser.getSymbolFactory().newSymbol("op",11, RESULT);
             }
@@ -618,7 +618,7 @@ class CUP$IRParser$actions {
                 IRExpr x = CUP$IRParser$stack.elementAt(CUP$IRParser$top-1).<IRExpr> value();
                 IRExpr y = CUP$IRParser$stack.peek().<IRExpr> value();
                 
-        RESULT = new IRBinOp(IRBinOp.OpType.HMUL, x,y);
+        RESULT = new IRBinOp(OpType.HMUL, x,y);
     
                 CUP$IRParser$result = parser.getSymbolFactory().newSymbol("op",11, RESULT);
             }
@@ -631,7 +631,7 @@ class CUP$IRParser$actions {
                 IRExpr x = CUP$IRParser$stack.elementAt(CUP$IRParser$top-1).<IRExpr> value();
                 IRExpr y = CUP$IRParser$stack.peek().<IRExpr> value();
                 
-        RESULT = new IRBinOp(IRBinOp.OpType.DIV, x,y);
+        RESULT = new IRBinOp(OpType.DIV, x,y);
     
                 CUP$IRParser$result = parser.getSymbolFactory().newSymbol("op",11, RESULT);
             }
@@ -644,7 +644,7 @@ class CUP$IRParser$actions {
                 IRExpr x = CUP$IRParser$stack.elementAt(CUP$IRParser$top-1).<IRExpr> value();
                 IRExpr y = CUP$IRParser$stack.peek().<IRExpr> value();
                 
-        RESULT = new IRBinOp(IRBinOp.OpType.MOD, x,y);
+        RESULT = new IRBinOp(OpType.MOD, x,y);
     
                 CUP$IRParser$result = parser.getSymbolFactory().newSymbol("op",11, RESULT);
             }
@@ -657,7 +657,7 @@ class CUP$IRParser$actions {
                 IRExpr x = CUP$IRParser$stack.elementAt(CUP$IRParser$top-1).<IRExpr> value();
                 IRExpr y = CUP$IRParser$stack.peek().<IRExpr> value();
                 
-        RESULT = new IRBinOp(IRBinOp.OpType.AND, x,y);
+        RESULT = new IRBinOp(OpType.AND, x,y);
     
                 CUP$IRParser$result = parser.getSymbolFactory().newSymbol("op",11, RESULT);
             }
@@ -670,7 +670,7 @@ class CUP$IRParser$actions {
                 IRExpr x = CUP$IRParser$stack.elementAt(CUP$IRParser$top-1).<IRExpr> value();
                 IRExpr y = CUP$IRParser$stack.peek().<IRExpr> value();
                 
-        RESULT = new IRBinOp(IRBinOp.OpType.OR, x,y);
+        RESULT = new IRBinOp(OpType.OR, x,y);
     
                 CUP$IRParser$result = parser.getSymbolFactory().newSymbol("op",11, RESULT);
             }
@@ -683,7 +683,7 @@ class CUP$IRParser$actions {
                 IRExpr x = CUP$IRParser$stack.elementAt(CUP$IRParser$top-1).<IRExpr> value();
                 IRExpr y = CUP$IRParser$stack.peek().<IRExpr> value();
                 
-        RESULT = new IRBinOp(IRBinOp.OpType.XOR, x,y);
+        RESULT = new IRBinOp(OpType.XOR, x,y);
     
                 CUP$IRParser$result = parser.getSymbolFactory().newSymbol("op",11, RESULT);
             }
@@ -696,7 +696,7 @@ class CUP$IRParser$actions {
                 IRExpr x = CUP$IRParser$stack.elementAt(CUP$IRParser$top-1).<IRExpr> value();
                 IRExpr y = CUP$IRParser$stack.peek().<IRExpr> value();
                 
-        RESULT = new IRBinOp(IRBinOp.OpType.LSHIFT, x,y);
+        RESULT = new IRBinOp(OpType.LSHIFT, x,y);
     
                 CUP$IRParser$result = parser.getSymbolFactory().newSymbol("op",11, RESULT);
             }
@@ -709,7 +709,7 @@ class CUP$IRParser$actions {
                 IRExpr x = CUP$IRParser$stack.elementAt(CUP$IRParser$top-1).<IRExpr> value();
                 IRExpr y = CUP$IRParser$stack.peek().<IRExpr> value();
                 
-        RESULT = new IRBinOp(IRBinOp.OpType.RSHIFT, x,y);
+        RESULT = new IRBinOp(OpType.RSHIFT, x,y);
     
                 CUP$IRParser$result = parser.getSymbolFactory().newSymbol("op",11, RESULT);
             }
@@ -722,7 +722,7 @@ class CUP$IRParser$actions {
                 IRExpr x = CUP$IRParser$stack.elementAt(CUP$IRParser$top-1).<IRExpr> value();
                 IRExpr y = CUP$IRParser$stack.peek().<IRExpr> value();
                 
-        RESULT = new IRBinOp(IRBinOp.OpType.ARSHIFT, x,y);
+        RESULT = new IRBinOp(OpType.ARSHIFT, x,y);
     
                 CUP$IRParser$result = parser.getSymbolFactory().newSymbol("op",11, RESULT);
             }
@@ -735,7 +735,7 @@ class CUP$IRParser$actions {
                 IRExpr x = CUP$IRParser$stack.elementAt(CUP$IRParser$top-1).<IRExpr> value();
                 IRExpr y = CUP$IRParser$stack.peek().<IRExpr> value();
                 
-        RESULT = new IRBinOp(IRBinOp.OpType.EQ, x,y);
+        RESULT = new IRBinOp(OpType.EQ, x,y);
     
                 CUP$IRParser$result = parser.getSymbolFactory().newSymbol("op",11, RESULT);
             }
@@ -748,7 +748,7 @@ class CUP$IRParser$actions {
                 IRExpr x = CUP$IRParser$stack.elementAt(CUP$IRParser$top-1).<IRExpr> value();
                 IRExpr y = CUP$IRParser$stack.peek().<IRExpr> value();
                 
-        RESULT = new IRBinOp(IRBinOp.OpType.NEQ, x,y);
+        RESULT = new IRBinOp(OpType.NEQ, x,y);
     
                 CUP$IRParser$result = parser.getSymbolFactory().newSymbol("op",11, RESULT);
             }
@@ -761,7 +761,7 @@ class CUP$IRParser$actions {
                 IRExpr x = CUP$IRParser$stack.elementAt(CUP$IRParser$top-1).<IRExpr> value();
                 IRExpr y = CUP$IRParser$stack.peek().<IRExpr> value();
                 
-        RESULT = new IRBinOp(IRBinOp.OpType.LT, x,y);
+        RESULT = new IRBinOp(OpType.LT, x,y);
     
                 CUP$IRParser$result = parser.getSymbolFactory().newSymbol("op",11, RESULT);
             }
@@ -774,7 +774,7 @@ class CUP$IRParser$actions {
                 IRExpr x = CUP$IRParser$stack.elementAt(CUP$IRParser$top-1).<IRExpr> value();
                 IRExpr y = CUP$IRParser$stack.peek().<IRExpr> value();
                 
-        RESULT = new IRBinOp(IRBinOp.OpType.GT, x,y);
+        RESULT = new IRBinOp(OpType.GT, x,y);
     
                 CUP$IRParser$result = parser.getSymbolFactory().newSymbol("op",11, RESULT);
             }
@@ -787,7 +787,7 @@ class CUP$IRParser$actions {
                 IRExpr x = CUP$IRParser$stack.elementAt(CUP$IRParser$top-1).<IRExpr> value();
                 IRExpr y = CUP$IRParser$stack.peek().<IRExpr> value();
                 
-        RESULT = new IRBinOp(IRBinOp.OpType.LEQ, x,y);
+        RESULT = new IRBinOp(OpType.LEQ, x,y);
     
                 CUP$IRParser$result = parser.getSymbolFactory().newSymbol("op",11, RESULT);
             }
@@ -800,7 +800,7 @@ class CUP$IRParser$actions {
                 IRExpr x = CUP$IRParser$stack.elementAt(CUP$IRParser$top-1).<IRExpr> value();
                 IRExpr y = CUP$IRParser$stack.peek().<IRExpr> value();
                 
-        RESULT = new IRBinOp(IRBinOp.OpType.GEQ, x,y);
+        RESULT = new IRBinOp(OpType.GEQ, x,y);
     
                 CUP$IRParser$result = parser.getSymbolFactory().newSymbol("op",11, RESULT);
             }

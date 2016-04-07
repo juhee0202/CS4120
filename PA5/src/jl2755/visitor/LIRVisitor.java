@@ -1,18 +1,15 @@
-package edu.cornell.cs.cs4120.xic.ir.visit;
+package jl2755.visitor;
 
-import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import edu.cornell.cs.cs4120.util.InternalCompilerError;
 import edu.cornell.cs.cs4120.xic.ir.*;
-import edu.cornell.cs.cs4120.xic.ir.IRBinOp.OpType;
-import edu.cornell.cs.cs4120.xic.ir.interpret.Configuration;
+import edu.cornell.cs.cs4120.xic.ir.OpType;
 import polyglot.util.Pair;
 
-public class LIRVisitor extends IRVisitor implements IRTreeVisitor{
+public class LIRVisitor implements IRTreeVisitor{
 	
 	private Pair<IRSeq,IRNode> tempSeq;
 	private int globalTempCount = 0;
@@ -56,7 +53,6 @@ public class LIRVisitor extends IRVisitor implements IRTreeVisitor{
 		// Get side effects and pure expressions of target
 		IRSeq holySideEffects = tempSeq.part1();
 		IRExpr holyTarget = (IRExpr) tempSeq.part2();
-		IRTemp targetTemp = new IRTemp("temp" + globalTempCount++);
 		
 		// Keep track of temps to put in CALL at the end
 		List<IRExpr> holyTemps = new ArrayList<IRExpr>();

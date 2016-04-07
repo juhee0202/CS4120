@@ -1,7 +1,7 @@
 package edu.cornell.cs.cs4120.xic.ir;
 
 import edu.cornell.cs.cs4120.util.SExpPrinter;
-import edu.cornell.cs.cs4120.xic.ir.visit.IRTreeVisitor;
+import jl2755.visitor.IRTreeVisitor;
 
 /**
  * An intermediate representation for a 64-bit integer constant.

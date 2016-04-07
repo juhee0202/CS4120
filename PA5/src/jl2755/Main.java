@@ -24,7 +24,6 @@ import edu.cornell.cs.cs4120.util.SExpPrinter;
 import edu.cornell.cs.cs4120.xic.ir.IRCompUnit;
 import edu.cornell.cs.cs4120.xic.ir.IRNode;
 import edu.cornell.cs.cs4120.xic.ir.interpret.IRSimulator;
-import edu.cornell.cs.cs4120.xic.ir.visit.LIRVisitor;
 import java_cup.runtime.Symbol;
 import jl2755.ast.Identifier;
 import jl2755.ast.Interface;
@@ -36,6 +35,7 @@ import jl2755.exceptions.SyntaxError;
 import jl2755.type.FunType;
 import jl2755.type.VType;
 import jl2755.visitor.ConstantFolderVisitor;
+import jl2755.visitor.LIRVisitor;
 import jl2755.visitor.MIRVisitor;
 import jl2755.visitor.TypeCheckVisitor;
 

@@ -3,18 +3,14 @@ package jl2755.visitor;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import edu.cornell.cs.cs4120.util.Copy;
 import edu.cornell.cs.cs4120.xic.ir.*;
-import edu.cornell.cs.cs4120.xic.ir.IRBinOp.OpType;
+import edu.cornell.cs.cs4120.xic.ir.OpType;
 import edu.cornell.cs.cs4120.xic.ir.interpret.Configuration;
-import edu.cornell.cs.cs4120.xic.ir.visit.LIRVisitor;
 import jl2755.ast.*;
 import jl2755.type.VarType;
-import edu.cornell.cs.cs4120.xic.ir.interpret.Configuration;
 
 public class MIRVisitor implements ASTVisitor{
 	
@@ -24,7 +20,6 @@ public class MIRVisitor implements ASTVisitor{
 	private int labelCount = 0;
 	private int tempCount = 0;
 	public IRNode program;
-	private boolean negativeNumber;
 	
 	@Override
 	public void visit(ArrayElement ae) {

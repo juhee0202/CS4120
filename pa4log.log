@@ -1,0 +1,2134 @@
+commit 5c9a15ce4118aa41adc285e0c4638d97a13e19c1
+Author: ttl33 <ttl33@cornell.edu>
+Date:   Sun Mar 20 23:39:04 2016 -0400
+
+    organize tests
+
+commit f2f15087d868319ffa0f62ee62062ded03022d70
+Author: filthydoughboy <jp882@cornell.edu>
+Date:   Sun Mar 20 23:32:22 2016 -0400
+
+    rah
+
+commit b2e4b7da445ff073b51a0fd16775ef2620dfeba4
+Merge: 7c800a0 337faa1
+Author: filthydoughboy <jp882@cornell.edu>
+Date:   Sun Mar 20 23:28:36 2016 -0400
+
+    Merge branch 'master' of https://github.com/juhee0202/CS4120
+
+commit 7c800a02fa56f8447967bb06c135e2df0d069ac4
+Author: filthydoughboy <jp882@cornell.edu>
+Date:   Sun Mar 20 23:28:31 2016 -0400
+
+    FINAL
+
+commit 337faa101d1aef8b0f8bc11e26014aa62bb14fd7
+Merge: f8a76f0 3c4ec98
+Author: Ju Hee Lee <juhee0202@gmail.com>
+Date:   Sun Mar 20 23:27:55 2016 -0400
+
+    test caes added
+
+commit f8a76f0c427d213f9f43bb44213acd2f2c769406
+Author: Ju Hee Lee <juhee0202@gmail.com>
+Date:   Sun Mar 20 23:25:59 2016 -0400
+
+    fixed bug in array literal
+
+commit 3c4ec98a5d9589f11578d9dbc278eacd0f1ed515
+Merge: b0908e0 569f144
+Author: ttl33 <ttl33@cornell.edu>
+Date:   Sun Mar 20 23:21:20 2016 -0400
+
+    merge
+
+commit b0908e0acccd8c8b81dd0b300d498bb8947c16a3
+Author: ttl33 <ttl33@cornell.edu>
+Date:   Sun Mar 20 23:21:10 2016 -0400
+
+    tests and fixes
+
+commit 569f14451318d68b5d46d4b96c315e0e73a259d2
+Merge: 2b86152 04ae398
+Author: Ju Hee Lee <juhee0202@gmail.com>
+Date:   Sun Mar 20 22:37:53 2016 -0400
+
+    um wat
+
+commit 2b861529d5d7d72ee4b26bc35a4efa9f73d1279c
+Author: Ju Hee Lee <juhee0202@gmail.com>
+Date:   Sun Mar 20 22:37:24 2016 -0400
+
+    comments
+
+commit 04ae39864ee08ff9e8824ec078dcf51445c24e0e
+Merge: 8d4e765 a05fc62
+Author: Sung Won An <sa579@cornell.edu>
+Date:   Sun Mar 20 22:33:40 2016 -0400
+
+    Merge branch 'master' of https://github.com/juhee0202/CS4120
+
+commit 8d4e765ad66b51cfe2d816b6a9e51dbfd7233a2d
+Author: Sung Won An <sa579@cornell.edu>
+Date:   Sun Mar 20 22:33:32 2016 -0400
+
+    undo change to IRCompUnit
+
+commit 416e47b498fc83033677940dc73614b5e3ec428b
+Author: Sung Won An <sa579@cornell.edu>
+Date:   Sun Mar 20 22:32:57 2016 -0400
+
+    changed program to IRCompUnit
+
+commit a05fc62c2ac2cc15bd6650aaf5ac51708d9f7c89
+Author: ttl33 <ttl33@cornell.edu>
+Date:   Sun Mar 20 21:42:42 2016 -0400
+
+    IRExp
+
+commit 6e2692d02a9c5209710395baa4016ea23235f7ba
+Merge: fc800c1 d30427e
+Author: ttl33 <ttl33@cornell.edu>
+Date:   Sun Mar 20 20:31:03 2016 -0400
+
+    merge
+
+commit fc800c12906900f639bbe8227fceb5a182d2c2d3
+Author: ttl33 <ttl33@cornell.edu>
+Date:   Sun Mar 20 20:30:50 2016 -0400
+
+    basicblock error squashed
+
+commit d30427ece35d813ec27556a2ec17e31592236a57
+Merge: 1b879f2 3c47675
+Author: Ju Hee Lee <juhee0202@gmail.com>
+Date:   Sun Mar 20 20:28:34 2016 -0400
+
+    merge
+
+commit 1b879f232b7a181985ff2b8b6c95bab0ea47096d
+Author: Ju Hee Lee <juhee0202@gmail.com>
+Date:   Sun Mar 20 20:28:09 2016 -0400
+
+    erro rhandling
+
+commit 3c47675ed18c63a87396c5c9b7caee3089917ff0
+Author: filthydoughboy <jp882@cornell.edu>
+Date:   Sun Mar 20 20:13:25 2016 -0400
+
+    kk
+
+commit 35df8fe3f526a88d2e4a142ddd93b05cafac6cc8
+Merge: 8c83fab 2bdae85
+Author: filthydoughboy <jp882@cornell.edu>
+Date:   Sun Mar 20 20:10:02 2016 -0400
+
+    Merge branch 'master' of https://github.com/juhee0202/CS4120
+
+commit 8c83fab5c9c5207d07558ba0e237ba6cb7d4b313
+Author: filthydoughboy <jp882@cornell.edu>
+Date:   Sun Mar 20 20:09:49 2016 -0400
+
+    asldkasdlk
+
+commit 2bdae85d39525a5daadd2e32c5b300367d6cb7d2
+Merge: 82897e5 da06a54
+Author: ttl33 <ttl33@cornell.edu>
+Date:   Sun Mar 20 20:08:41 2016 -0400
+
+    merge
+
+commit 82897e5fd5c8cb1b2669d97636f65c75315d468f
+Author: ttl33 <ttl33@cornell.edu>
+Date:   Sun Mar 20 20:08:16 2016 -0400
+
+    array stuff
+
+commit da06a543877a736e4518da7bae9d50e96ffec7cf
+Author: filthydoughboy <jp882@cornell.edu>
+Date:   Sun Mar 20 20:08:02 2016 -0400
+
+    typecheck yis
+
+commit 72d58c71143eae11e2af5d9a1146bb054ca8610a
+Merge: 364e73d e645b0b
+Author: Ju Hee Lee <juhee0202@gmail.com>
+Date:   Sun Mar 20 17:49:01 2016 -0400
+
+    try again
+
+commit 364e73dd97ee99ccd2c0d287668911ce5d538b26
+Author: Ju Hee Lee <juhee0202@gmail.com>
+Date:   Sun Mar 20 17:48:32 2016 -0400
+
+    fixed some mistakes from pa2
+
+commit e645b0be7aedbbbf91474838b53ed3da69484311
+Author: ttl33 <ttl33@cornell.edu>
+Date:   Sun Mar 20 14:40:51 2016 -0400
+
+    almost
+
+commit 9dc40635698074218657f880d350610d63ea86fa
+Author: ttl33 <ttl33@cornell.edu>
+Date:   Sun Mar 20 14:12:47 2016 -0400
+
+    array concat
+
+commit 23bf82c983271b054a5aa72d78327f29be5cec7f
+Author: filthydoughboy <jp882@cornell.edu>
+Date:   Sun Mar 20 12:57:30 2016 -0400
+
+    createArray
+
+commit 9192a6e0e5122f6b722ae987dcfc94350bca2e2c
+Author: ttl33 <ttl33@cornell.edu>
+Date:   Sat Mar 19 23:12:10 2016 -0400
+
+    lex error handling fixed
+
+commit cd91f05d457aa1bdc7806ca846f9a9b6c0829b1d
+Author: filthydoughboy <jp882@cornell.edu>
+Date:   Sat Mar 19 23:04:27 2016 -0400
+
+    added pa1tests
+
+commit e823b0234706af83bcb351931675cc8650f9927d
+Author: filthydoughboy <jp882@cornell.edu>
+Date:   Sat Mar 19 23:00:11 2016 -0400
+
+    almost done
+
+commit bac37c3ad14579b0d08a58fcd2bfaf8c3578f716
+Author: Ju Hee Lee <juhee0202@gmail.com>
+Date:   Sat Mar 19 15:32:30 2016 -0400
+
+    small bug
+
+commit 707388b97d7300365ef773e0aad2c37b6ad45e2c
+Author: Sung Won An <sa579@cornell.edu>
+Date:   Sat Mar 19 15:24:15 2016 -0400
+
+    added opt
+
+commit 1889ef476c0f42d39a3ff929c9a61ffecacc3f96
+Author: Sung Won An <sa579@cornell.edu>
+Date:   Sat Mar 19 15:02:57 2016 -0400
+
+    notes
+
+commit 3ec91e4ad526923bcde71e42764ad532868a8bea
+Merge: 227eac7 74290b5
+Author: filthydoughboy <jp882@cornell.edu>
+Date:   Sat Mar 19 04:37:38 2016 -0400
+
+    Merge branch 'master' of https://github.com/juhee0202/CS4120
+
+commit 227eac713079d75c7a23b43147a63867f58e35fd
+Author: filthydoughboy <jp882@cornell.edu>
+Date:   Sat Mar 19 04:37:32 2016 -0400
+
+    CFG
+
+commit 74290b50761e174879125dc785231225fec0e86c
+Author: Sung Won An <sa579@cornell.edu>
+Date:   Sat Mar 19 03:11:04 2016 -0400
+
+    tempCount in MIR
+
+commit 872a28c0adbff6e8222aef43b40b34e9ffb57e80
+Author: Sung Won An <sa579@cornell.edu>
+Date:   Sat Mar 19 02:45:45 2016 -0400
+
+    clean up
+
+commit 94596d2fab2194cd90e5f9b96245f5c0e3bd9444
+Merge: 10ac45f b957ef1
+Author: filthydoughboy <jp882@cornell.edu>
+Date:   Sat Mar 19 02:40:29 2016 -0400
+
+    :)
+
+commit 10ac45ff8a635029bf4c61088b3e7572afc99d34
+Author: filthydoughboy <jp882@cornell.edu>
+Date:   Sat Mar 19 02:39:34 2016 -0400
+
+    i trust myself fuck u
+
+commit b957ef1136b2dd337ef6bb01fc4d569eb4241e03
+Merge: 7d6e8a6 371e49e
+Author: Sung Won An <sa579@cornell.edu>
+Date:   Sat Mar 19 02:38:48 2016 -0400
+
+    Merge branch 'master' of https://github.com/juhee0202/CS4120
+
+commit 7d6e8a613ebb912f209e9004870292bcfe5f9fa9
+Author: Sung Won An <sa579@cornell.edu>
+Date:   Sat Mar 19 02:38:43 2016 -0400
+
+    main
+
+commit 371e49ef363092ea4bac8f0b9d743d994cc08738
+Merge: 8c77dd6 07a7b19
+Author: ttl33 <ttl33@cornell.edu>
+Date:   Sat Mar 19 01:03:49 2016 -0400
+
+    merge
+
+commit 8c77dd693bce24fd627245bc9c423093cd3a8ab8
+Author: ttl33 <ttl33@cornell.edu>
+Date:   Sat Mar 19 01:03:37 2016 -0400
+
+    decorating AST classes
+
+commit 07a7b19c3f365f188abb07a047ce81fef264b31e
+Author: Sung Won An <sa579@cornell.edu>
+Date:   Sat Mar 19 01:01:53 2016 -0400
+
+    revert
+
+commit e368113ebb7cc7f7ee9d4c05a0f4190d84c5d3c2
+Author: filthydoughboy <jp882@cornell.edu>
+Date:   Sat Mar 19 00:51:06 2016 -0400
+
+    work done
+
+commit c6a993ac3664143412d98989a407eac66cce69de
+Merge: 9a76d92 69cb5a5
+Author: filthydoughboy <jp882@cornell.edu>
+Date:   Fri Mar 18 22:10:10 2016 -0400
+
+    Merge branch 'master' of https://github.com/juhee0202/CS4120
+
+commit 9a76d9271b1a90be4c1bd80e253bc65f8dca51d5
+Author: filthydoughboy <jp882@cornell.edu>
+Date:   Fri Mar 18 22:10:05 2016 -0400
+
+    LIRVisitor
+
+commit 69cb5a5ca960f9ba2cc53601479d5b02b9b88682
+Author: Sung Won An <sa579@cornell.edu>
+Date:   Fri Mar 18 22:07:25 2016 -0400
+
+    added EXP
+
+commit b548f58e1ba34c6deac8d397554817ef3a9d767c
+Merge: 314d421 4b5d790
+Author: ttl33 <ttl33@cornell.edu>
+Date:   Fri Mar 18 21:06:26 2016 -0400
+
+    merge
+
+commit 314d4212d163259a24734395aef526a4b7501886
+Author: ttl33 <ttl33@cornell.edu>
+Date:   Fri Mar 18 21:05:58 2016 -0400
+
+    IRFuncDecl IRCompUnit
+
+commit 4b5d790c5dffe30993a6dbffdb34d2a900854c2a
+Author: Sung Won An <sa579@cornell.edu>
+Date:   Fri Mar 18 21:04:54 2016 -0400
+
+    added IRReturn
+
+commit ab0d47eb68098f1ffddc1a9cb5c4e8d8bb6a5c10
+Author: filthydoughboy <jp882@cornell.edu>
+Date:   Fri Mar 18 20:47:48 2016 -0400
+
+    johaanananananan
+
+commit 6fa35d1df26e778f4bc5bae509adc1c781d5a1fb
+Merge: 1d08498 d4e7e45
+Author: filthydoughboy <jp882@cornell.edu>
+Date:   Fri Mar 18 18:47:51 2016 -0400
+
+    Merge branch 'master' of https://github.com/juhee0202/CS4120
+
+commit 1d0849800330d48bcb58880266507f8ec501962d
+Author: filthydoughboy <jp882@cornell.edu>
+Date:   Fri Mar 18 18:47:47 2016 -0400
+
+    ??
+
+commit d4e7e4584c38f16938f63d52d10086c4a46195fa
+Merge: a770459 c6f82de
+Author: ttl33 <ttl33@cornell.edu>
+Date:   Fri Mar 18 18:47:47 2016 -0400
+
+    merge
+
+commit a770459463966ecac2c0590dd53ac3a58ce366ba
+Author: ttl33 <ttl33@cornell.edu>
+Date:   Fri Mar 18 18:47:32 2016 -0400
+
+    length(e)
+
+commit c6f82de5bfbb14204f284d996e284dea2d4ef073
+Merge: c62c61e c616e1d
+Author: Sung Won An <sa579@cornell.edu>
+Date:   Fri Mar 18 18:46:47 2016 -0400
+
+    merge fixes
+
+commit c62c61e0cf9d3ac7a2e686f472d1a234f1c2f31f
+Author: Sung Won An <sa579@cornell.edu>
+Date:   Fri Mar 18 18:43:48 2016 -0400
+
+    call me the exterminator
+
+commit c616e1d1b0d8ef6428fbaf9663732c58b43e3c64
+Author: ttl33 <ttl33@cornell.edu>
+Date:   Fri Mar 18 18:34:46 2016 -0400
+
+    code review
+
+commit 5c7836cf8d44747d2f4faa9faaac3583d688b503
+Merge: 536f683 852344b
+Author: filthydoughboy <jp882@cornell.edu>
+Date:   Fri Mar 18 03:32:17 2016 -0400
+
+    Merge branch 'master' of https://github.com/juhee0202/CS4120
+
+commit 536f683630e341a0cd1e418ab0a785407128e55c
+Author: filthydoughboy <jp882@cornell.edu>
+Date:   Fri Mar 18 03:32:13 2016 -0400
+
+    freeeeeeeeee meeeeeeeeeee
+
+commit 852344b05b2e2d91795d8641c760b58ca5c655f9
+Author: Sung Won An <sa579@cornell.edu>
+Date:   Fri Mar 18 03:13:21 2016 -0400
+
+    assignment stmt
+
+commit f8e4afcd4c294564ae45c1f956d58ff48af34096
+Merge: bca2c21 6c6e500
+Author: Sung Won An <sa579@cornell.edu>
+Date:   Fri Mar 18 02:45:54 2016 -0400
+
+    Merge branch 'master' of https://github.com/juhee0202/CS4120
+
+commit bca2c21a5c76f11f151f9a59e074ed273cd5cee3
+Author: Sung Won An <sa579@cornell.edu>
+Date:   Fri Mar 18 02:45:49 2016 -0400
+
+    config
+
+commit 6c6e50095dff3607d9afb97d911a2702902f7da5
+Author: filthydoughboy <jp882@cornell.edu>
+Date:   Fri Mar 18 02:19:49 2016 -0400
+
+    ?
+
+commit 55bf55c9d5b47f7c74898b5d753831f029e66d3b
+Author: ttl33 <ttl33@cornell.edu>
+Date:   Fri Mar 18 02:19:03 2016 -0400
+
+    .classpath
+
+commit 5a0cc9b9989a837fe5ee33a6f099e0aebf0047a4
+Merge: dc35927 ac40c5f
+Author: Ju Hee Lee <juhee0202@gmail.com>
+Date:   Fri Mar 18 02:08:30 2016 -0400
+
+    meeergeee
+
+commit dc359273a38e723c13435c7d84188cbebd679e17
+Merge: 03026bb a0b10b3
+Author: Ju Hee Lee <juhee0202@gmail.com>
+Date:   Fri Mar 18 02:04:59 2016 -0400
+
+    merge pls
+
+commit ac40c5f3e661b7e231a963d339d87418f7ceb85c
+Merge: 0b526b2 a0b10b3
+Author: Sung Won An <sa579@cornell.edu>
+Date:   Fri Mar 18 02:01:04 2016 -0400
+
+    merge fixes
+
+commit 0b526b2e6bc7bcb3840457df6b241713b4bc32da
+Author: Sung Won An <sa579@cornell.edu>
+Date:   Fri Mar 18 01:58:58 2016 -0400
+
+    cleaned visitor
+
+commit 03026bb4eedef33fa13522dc34a1526e135e82ef
+Author: Ju Hee Lee <juhee0202@gmail.com>
+Date:   Fri Mar 18 01:56:21 2016 -0400
+
+    retry
+
+commit 09bc2c4bc2221483fbd0bc55988dc46dbe9799fe
+Author: Ju Hee Lee <juhee0202@gmail.com>
+Date:   Fri Mar 18 01:52:16 2016 -0400
+
+    juhee
+
+commit a0b10b3326ff97689ce41dc4fbc5312943340722
+Merge: 22b1486 df88937
+Author: ttl33 <ttl33@cornell.edu>
+Date:   Fri Mar 18 01:48:11 2016 -0400
+
+    merge
+
+commit 22b1486ed2df90cf836bf8ab84474c5a1754b952
+Author: ttl33 <ttl33@cornell.edu>
+Date:   Fri Mar 18 01:47:30 2016 -0400
+
+    fdl in MIRVisitor Program
+
+commit df8893768b292e340813a621cd7e4bc1cdf68961
+Author: Sung Won An <sa579@cornell.edu>
+Date:   Fri Mar 18 01:43:33 2016 -0400
+
+    cleaned up visitors
+
+commit d4b608dd9aee2f6cfb70c92aa6c89047cb7e3283
+Author: ttl33 <ttl33@cornell.edu>
+Date:   Fri Mar 18 01:35:43 2016 -0400
+
+    MIRVisitor ReturnStmt
+
+commit 0fb3bf1898bc5c90d95ffdcddfa2fb907ab164d3
+Author: ttl33 <ttl33@cornell.edu>
+Date:   Fri Mar 18 01:20:49 2016 -0400
+
+    MIR visit BlockStmt
+
+commit f3784e10e253326248b3a978275a72c31deb1c4f
+Merge: caea38e 7f8e7d8
+Author: ttl33 <ttl33@cornell.edu>
+Date:   Fri Mar 18 00:38:44 2016 -0400
+
+    merge
+
+commit caea38e310721189c5449e2c9ab3bd95772df21b
+Author: ttl33 <ttl33@cornell.edu>
+Date:   Fri Mar 18 00:36:46 2016 -0400
+
+    translating function name to ABI name
+
+commit 7f8e7d8dedca46afe62fa06656ce22ad01e87343
+Author: Sung Won An <sa579@cornell.edu>
+Date:   Fri Mar 18 00:15:42 2016 -0400
+
+    added control flow grammar
+
+commit bafeacc76a989087f8e8e6e29394f76be9b57897
+Author: ttl33 <ttl33@cornell.edu>
+Date:   Wed Mar 16 11:39:04 2016 -0400
+
+    translating function name to its ABI name
+
+commit f594075c8914b8a9219375f7d51fdd938d55b73f
+Author: filthydoughboy <jp882@cornell.edu>
+Date:   Mon Mar 14 20:48:28 2016 -0400
+
+    finished constant folding
+
+commit 48628766cf1d982c54e5533a146670311609199f
+Merge: df4665b d7bc5a0
+Author: ttl33 <ttl33@cornell.edu>
+Date:   Tue Mar 15 19:22:12 2016 -0400
+
+    merge
+
+commit df4665bbb331c24e64fcf0bb7a625ab0fee021cc
+Author: ttl33 <ttl33@cornell.edu>
+Date:   Tue Mar 15 19:22:03 2016 -0400
+
+    commit before pull
+
+commit d7bc5a0b5be8aa4cbe8065528de2fdf4d5a76851
+Author: Sung Won An <sa579@cornell.edu>
+Date:   Tue Mar 15 15:48:14 2016 -0400
+
+    compile fixes
+
+commit a3aaef526c8ed769a9b859e4482621138869c29b
+Author: Sung Won An <sa579@cornell.edu>
+Date:   Tue Mar 15 15:37:29 2016 -0400
+
+    updated release files
+
+commit bc5f223d5e11d1eb9d88398165c25c799ad091c7
+Author: Sung Won An <sa579@cornell.edu>
+Date:   Tue Mar 15 15:30:00 2016 -0400
+
+    jeff's MIR
+
+commit d963af75e05c468222b6ee2f7407e7fc36f030a0
+Merge: dec6957 06ff8e6
+Author: Sung Won An <sa579@cornell.edu>
+Date:   Mon Mar 14 22:44:15 2016 -0400
+
+    Merge branch 'master' of https://github.com/juhee0202/CS4120
+
+commit dec695704236a8279483d86528b2732c27fb011e
+Author: Sung Won An <sa579@cornell.edu>
+Date:   Mon Mar 14 22:44:09 2016 -0400
+
+    commit before pull
+
+commit 06ff8e6eddf978d4cbb6a55a01bc2d91a5e75407
+Author: filthydoughboy <jp882@cornell.edu>
+Date:   Mon Mar 14 20:48:28 2016 -0400
+
+    pls
+
+commit e5fe9b2b593c12573edd218688ea10e94d533d01
+Merge: 9e2c26c a497cb2
+Author: filthydoughboy <jp882@cornell.edu>
+Date:   Mon Mar 14 20:48:28 2016 -0400
+
+    ???
+
+commit 9e2c26c5e397f099501d6811f3f9939c3822b450
+Author: filthydoughboy <jp882@cornell.edu>
+Date:   Mon Mar 14 20:47:21 2016 -0400
+
+    3/14 meeting
+
+commit 5d325da1117ca43d5bae8cde0c4fde58edd658e6
+Merge: 3ec7b4c a497cb2
+Author: Sung Won An <sa579@cornell.edu>
+Date:   Mon Mar 14 19:41:59 2016 -0400
+
+    Merge branch 'master' of https://github.com/juhee0202/CS4120
+
+commit 3ec7b4c0b58ec90f2f6230bc38f8685a5e3d582a
+Author: Sung Won An <sa579@cornell.edu>
+Date:   Mon Mar 14 19:41:50 2016 -0400
+
+    vars
+
+commit a497cb2a42cb73fcc36266d3b9d9ee30ec83fd85
+Author: ttl33 <ttl33@cornell.edu>
+Date:   Mon Mar 14 17:10:38 2016 -0400
+
+    visit(FunctionDecl fd) partially done
+
+commit 40a2faf792c6df13295c680c2ce599de1d3a512c
+Author: ttl33 <ttl33@cornell.edu>
+Date:   Mon Mar 14 16:45:03 2016 -0400
+
+    visit(FunctionCall fc)
+
+commit cbe7688dfd52eb50c6bb5d1f6693531ec85f2a36
+Merge: 8bb1141 563d47f
+Author: ttl33 <ttl33@cornell.edu>
+Date:   Fri Mar 11 14:34:33 2016 -0500
+
+    merge
+
+commit 8bb11413da106fbe5e4fcaa2b67de46287f06732
+Author: ttl33 <ttl33@cornell.edu>
+Date:   Fri Mar 11 13:39:43 2016 -0500
+
+    error handling
+
+commit 563d47f78f9f0539cfb3b67840358bf2d8cd8c35
+Author: filthydoughboy <jp882@cornell.edu>
+Date:   Thu Mar 10 23:57:06 2016 -0500
+
+    our 3/10 meeting
+
+commit 9e969552f4d03db6fc36f9eb0b35e00cbcb18e7a
+Author: filthydoughboy <jp882@cornell.edu>
+Date:   Thu Mar 10 23:15:19 2016 -0500
+
+    JEFF DO IT
+
+commit a5ff18e127a1c47e90b86b5bce00cb0ae67ba11a
+Author: ttl33 <ttl33@cornell.edu>
+Date:   Thu Mar 10 22:05:34 2016 -0500
+
+    error handling
+
+commit b3f11b973187b5f8dfd37201b8354d547a8d1195
+Author: filthydoughboy <jp882@cornell.edu>
+Date:   Thu Mar 10 21:20:10 2016 -0500
+
+    added some javadoc
+
+commit b98b6afdcd321151ae10600a3dd23bee3f0ef9b9
+Author: Sung Won An <sa579@cornell.edu>
+Date:   Thu Mar 10 20:25:36 2016 -0500
+
+    fixed up main
+
+commit 770c079693e5190962a91eb7c0d866d8ec34a66c
+Author: filthydoughboy <jp882@cornell.edu>
+Date:   Wed Mar 9 00:31:31 2016 -0500
+
+    trying to delete and stuff
+
+commit 52ded3fa5abe61d6521b4fd6a57a7a6db2d0ce79
+Author: filthydoughboy <jp882@cornell.edu>
+Date:   Wed Mar 9 00:21:55 2016 -0500
+
+    updated provided pa4 code
+
+commit 4c2d2b4f0b3378a426521e245d26fe0ed4ec89d0
+Merge: 5e5127a 07203c7
+Author: Sung Won An <sa579@cornell.edu>
+Date:   Sat Mar 5 15:31:04 2016 -0500
+
+    Merge branch 'master' of https://github.com/juhee0202/CS4120
+
+commit 5e5127af356fd9e132273b98987738e579e15ccb
+Author: Sung Won An <sa579@cornell.edu>
+Date:   Sat Mar 5 15:30:42 2016 -0500
+
+    created PA4
+
+commit 07203c75c10ba3389b18f00e1eb2324cf2a731c7
+Author: ttl33 <ttl33@cornell.edu>
+Date:   Fri Mar 4 22:20:40 2016 -0500
+
+    heY
+
+commit 249ad72c945bd95e1cd8178f2b7fb97f72bbfcf6
+Merge: 3addeeb 2bb9651
+Author: Ju Hee Lee <juhee0202@gmail.com>
+Date:   Fri Mar 4 22:07:58 2016 -0500
+
+    merge
+
+commit 3addeeb07aff4d8ef80e23c47ce0d8029272d6be
+Author: Ju Hee Lee <juhee0202@gmail.com>
+Date:   Fri Mar 4 22:07:16 2016 -0500
+
+    fixed command line
+
+commit 2bb965157331f1edd339894fdcba85498c737d4f
+Author: ttl33 <ttl33@cornell.edu>
+Date:   Fri Mar 4 22:06:30 2016 -0500
+
+    yo
+
+commit ca1fe9e49061748d80ae86ad5af0e8fdfb342643
+Author: ttl33 <ttl33@cornell.edu>
+Date:   Fri Mar 4 21:56:54 2016 -0500
+
+    lexical error
+
+commit e91e37b795b319d8f530714a7ff46acbb483d4c4
+Merge: 92d239d 42cc27b
+Author: ttl33 <ttl33@cornell.edu>
+Date:   Fri Mar 4 21:34:43 2016 -0500
+
+    yo
+
+commit 92d239d5c12a00a3d92645098f21a41ecd74b7dc
+Author: ttl33 <ttl33@cornell.edu>
+Date:   Fri Mar 4 21:29:44 2016 -0500
+
+    yo
+
+commit ffb395d1561524c9beca4e305e10f1b5ae98574c
+Author: ttl33 <ttl33@cornell.edu>
+Date:   Fri Mar 4 21:29:10 2016 -0500
+
+    yo
+
+commit 42cc27b711a15ffc7bcbdb4735817f0e692d05d0
+Merge: 0d7a892 f3bfbde
+Author: Ju Hee Lee <juhee0202@gmail.com>
+Date:   Fri Mar 4 21:22:54 2016 -0500
+
+    tests added
+
+commit 0d7a892e44440b9e604151d5ed2fca4ae0252136
+Author: Ju Hee Lee <juhee0202@gmail.com>
+Date:   Fri Mar 4 21:22:41 2016 -0500
+
+    juhee test
+
+commit f3bfbde84d73c68220e08c6150651df87d8513a2
+Merge: 640c033 8db600d
+Author: ttl33 <ttl33@cornell.edu>
+Date:   Fri Mar 4 20:25:05 2016 -0500
+
+    he
+
+commit 640c0330e6628dddcb1704efd94501a4725068f3
+Author: ttl33 <ttl33@cornell.edu>
+Date:   Fri Mar 4 20:24:54 2016 -0500
+
+    heh
+
+commit e1f49044683a6de10d7106c255054cbde9441562
+Author: ttl33 <ttl33@cornell.edu>
+Date:   Fri Mar 4 20:24:40 2016 -0500
+
+    hey
+
+commit 8db600d819719d725184734048be35fcfeaddd8e
+Merge: c1ebea4 ebefd58
+Author: Ju Hee Lee <juhee0202@gmail.com>
+Date:   Fri Mar 4 20:17:01 2016 -0500
+
+    merged
+
+commit c1ebea42e571650e94c903acb1d5ac646421c919
+Author: Ju Hee Lee <juhee0202@gmail.com>
+Date:   Fri Mar 4 20:16:47 2016 -0500
+
+    juhee tests hehehehe eehehehe
+
+commit ebefd58a487ed4aae58b108ada4119f28e88b3bb
+Author: filthydoughboy <jp882@cornell.edu>
+Date:   Fri Mar 4 19:59:42 2016 -0500
+
+    my stuff
+
+commit 13cf24bccf7e2bbbab8602327e334530a6c97b86
+Merge: 274e6b3 fadaebc
+Author: Sung Won An <sa579@cornell.edu>
+Date:   Fri Mar 4 19:57:18 2016 -0500
+
+    Merge branch 'master' of https://github.com/juhee0202/CS4120
+
+commit 274e6b3b10e8c7599b972dd82094e1d34c57f82b
+Author: Sung Won An <sa579@cornell.edu>
+Date:   Fri Mar 4 19:57:09 2016 -0500
+
+    test files
+
+commit fadaebc7e6bbe43993c14feef0dced1e11c90aa8
+Merge: 54c7701 6eb4b46
+Author: ttl33 <ttl33@cornell.edu>
+Date:   Fri Mar 4 19:56:44 2016 -0500
+
+    yo
+
+commit 54c77010e1e5c4071dc6d7a60d81011fc1c9959e
+Author: ttl33 <ttl33@cornell.edu>
+Date:   Fri Mar 4 19:56:34 2016 -0500
+
+    tests
+
+commit 6eb4b46ab99809af7b3022b27dd2d6b38eedd27c
+Merge: f238113 a47326d
+Author: Ju Hee Lee <juhee0202@gmail.com>
+Date:   Fri Mar 4 19:54:20 2016 -0500
+
+    typecheker
+
+commit f238113e53a716ed57b04d4670d835ecd5fe4914
+Author: Ju Hee Lee <juhee0202@gmail.com>
+Date:   Fri Mar 4 19:53:56 2016 -0500
+
+    typechecker
+
+commit a47326d9bb57907e16f9bf3006a616162b994187
+Author: ttl33 <ttl33@cornell.edu>
+Date:   Fri Mar 4 19:17:23 2016 -0500
+
+    yo
+
+commit 57f13b5f2117b7ae4b7b5c28fe51a2ff2e8e2048
+Merge: 557f8e9 3112c69
+Author: ttl33 <ttl33@cornell.edu>
+Date:   Fri Mar 4 19:08:50 2016 -0500
+
+    merge
+
+commit 557f8e9a0ce495ac72d7b2d5ecfa72e76aa741cf
+Author: ttl33 <ttl33@cornell.edu>
+Date:   Fri Mar 4 19:08:41 2016 -0500
+
+    quick commit
+
+commit b534d48e6ee71d8bdfdf99811e74994ef1aaf917
+Author: ttl33 <ttl33@cornell.edu>
+Date:   Fri Mar 4 19:08:17 2016 -0500
+
+    quick commit
+
+commit 3112c6941f8ee8baffb16351ae56481ea358dec0
+Merge: 10e8366 bffdeea
+Author: Ju Hee Lee <juhee0202@gmail.com>
+Date:   Fri Mar 4 18:54:39 2016 -0500
+
+    flex filed changed
+
+commit 10e8366c25506bb47c8dccc863150c9993c7cd23
+Author: Ju Hee Lee <juhee0202@gmail.com>
+Date:   Fri Mar 4 18:53:21 2016 -0500
+
+    new scanner jeffy fixed
+
+commit d54a0af58a0175dd85729455fcce19aef56342cb
+Merge: 7d488d9 e0584d5
+Author: Ju Hee Lee <juhee0202@gmail.com>
+Date:   Fri Mar 4 18:52:54 2016 -0500
+
+    indexing mistake fixed
+
+commit bffdeea665d562334240715c970d89acdb5b5807
+Author: filthydoughboy <jp882@cornell.edu>
+Date:   Fri Mar 4 17:43:03 2016 -0500
+
+    slight error check for empty array literal
+
+commit e3cd8b321dd6ff388ba5bed5e332e731d0ff5626
+Author: filthydoughboy <jp882@cornell.edu>
+Date:   Fri Mar 4 17:39:19 2016 -0500
+
+    error checking in vartype
+
+commit 15d3e2aeccba3fdb147b4f66a7146b93416e9d07
+Author: ttl33 <ttl33@cornell.edu>
+Date:   Fri Mar 4 17:25:15 2016 -0500
+
+    comments for brackets related classes in ast
+
+commit 7d488d96355c9f92da64d9fa39b79321aaec1e82
+Author: Ju Hee Lee <juhee0202@gmail.com>
+Date:   Fri Mar 4 17:06:22 2016 -0500
+
+    commit before merge
+
+commit e0584d5ff9e50d9561d7f59f4f217c01f756a62b
+Merge: b8f6680 980cb94
+Author: ttl33 <ttl33@cornell.edu>
+Date:   Fri Mar 4 15:03:22 2016 -0500
+
+    merge
+
+commit b8f66803a7dadf8339d19a73050029e4bcde8876
+Author: ttl33 <ttl33@cornell.edu>
+Date:   Fri Mar 4 15:03:12 2016 -0500
+
+    quick nullpointer error fix
+
+commit 980cb940ff40d159643264eb9212a6291ceaed72
+Merge: a55e44e 95e7c42
+Author: Ju Hee Lee <juhee0202@gmail.com>
+Date:   Fri Mar 4 14:55:55 2016 -0500
+
+    binary expr
+
+commit a55e44e817fb5514fda020d85c72f99a6a5d1e7b
+Author: Ju Hee Lee <juhee0202@gmail.com>
+Date:   Fri Mar 4 14:55:02 2016 -0500
+
+    binaryexpres visitor fixed
+
+commit 95e7c42fa25fde27845f4441e95ca1db0bbcb3c5
+Author: ttl33 <ttl33@cornell.edu>
+Date:   Fri Mar 4 14:54:02 2016 -0500
+
+    tupleinit bug fix
+
+commit 8b19dc6758d2f7184b895ad4f420ab8d388e6ff2
+Author: ttl33 <ttl33@cornell.edu>
+Date:   Fri Mar 4 14:03:22 2016 -0500
+
+    quick fix
+
+commit 46e002e347bf21c207cb2f59d0520eec84169947
+Author: ttl33 <ttl33@cornell.edu>
+Date:   Fri Mar 4 12:49:50 2016 -0500
+
+    col line number fix
+
+commit 5c593aadfabde2671d78bb1b1f06967f82ca2f97
+Author: filthydoughboy <jp882@cornell.edu>
+Date:   Fri Mar 4 04:22:28 2016 -0500
+
+    YES MUDDERFUCK BITCHES
+
+commit f68a278c1800488d4d250d63a8195436bb8ad8e8
+Merge: 325f425 143cd36
+Author: Sung Won An <sa579@cornell.edu>
+Date:   Fri Mar 4 01:13:55 2016 -0500
+
+    Merge branch 'master' of https://github.com/juhee0202/CS4120
+
+commit 325f4259e9b072aea837cbfc5b333f3a4159d894
+Author: Sung Won An <sa579@cornell.edu>
+Date:   Fri Mar 4 01:13:34 2016 -0500
+
+    stmt errors
+
+commit 143cd360e8adf140a1cd79a632fe721be5e5dc38
+Merge: 0fcbb50 0779c9f
+Author: Ju Hee Lee <juhee0202@gmail.com>
+Date:   Fri Mar 4 01:03:15 2016 -0500
+
+    huh
+
+commit 0fcbb506f7690b5d6706d226e249a6f48040c4af
+Author: Ju Hee Lee <juhee0202@gmail.com>
+Date:   Fri Mar 4 01:02:49 2016 -0500
+
+    try merge
+
+commit 0779c9f144a14516231052840fc11ad644790795
+Author: ttl33 <ttl33@cornell.edu>
+Date:   Fri Mar 4 00:59:38 2016 -0500
+
+    added print method in the environment
+
+commit a9775d67e2e41c356aa299b41e5ba10d44178b42
+Merge: ed040aa 7fc381a
+Author: ttl33 <ttl33@cornell.edu>
+Date:   Fri Mar 4 00:55:34 2016 -0500
+
+    merge
+
+commit ed040aa695d0468339fb34e2b57afba90268a2d0
+Author: ttl33 <ttl33@cornell.edu>
+Date:   Fri Mar 4 00:55:24 2016 -0500
+
+    error handling for function related visit methods and program
+
+commit 7fc381a2bf3d74faef8adbe957199c626b4b6290
+Merge: 60045ca 5d93efa
+Author: Ju Hee Lee <juhee0202@gmail.com>
+Date:   Fri Mar 4 00:54:38 2016 -0500
+
+    changed line col
+
+commit 60045ca54c76af40f857dd18da133f3bcc0eb7d5
+Author: Ju Hee Lee <juhee0202@gmail.com>
+Date:   Fri Mar 4 00:50:58 2016 -0500
+
+    juhee errors
+
+commit 5d93efa2292c8fcfa6ff07aec04c56cac05f34df
+Author: filthydoughboy <jp882@cornell.edu>
+Date:   Fri Mar 4 00:50:23 2016 -0500
+
+    added my error handling
+
+commit bde3b6e271ff20192cec311e1496a0f64653daa9
+Author: filthydoughboy <jp882@cornell.edu>
+Date:   Fri Mar 4 00:33:35 2016 -0500
+
+    current best
+
+commit 0dab6395e1cc2fe1e2090e8f2413ff381bb9e791
+Merge: a5a69c7 2ef3b1b
+Author: Ju Hee Lee <juhee0202@gmail.com>
+Date:   Fri Mar 4 00:22:01 2016 -0500
+
+    merge fixes
+
+commit a5a69c760bb2ff5dbd1568a7d4ca1e78ea0aac85
+Author: Ju Hee Lee <juhee0202@gmail.com>
+Date:   Fri Mar 4 00:21:35 2016 -0500
+
+    main fixes
+
+commit 2ef3b1be54417ecd491f9acaed9d683f780a5ac2
+Author: ttl33 <ttl33@cornell.edu>
+Date:   Fri Mar 4 00:21:13 2016 -0500
+
+    updated parser
+
+commit 342046b5942c43cab5ea1fdd799f35cbe2d9f81d
+Merge: 09b5cfa 2497501
+Author: ttl33 <ttl33@cornell.edu>
+Date:   Fri Mar 4 00:14:54 2016 -0500
+
+    merge
+
+commit 09b5cfa58a856a6159fdecbd3594c750ee7f2b46
+Author: ttl33 <ttl33@cornell.edu>
+Date:   Fri Mar 4 00:14:44 2016 -0500
+
+    small fix
+
+commit 24975014ba01a148fec779559b4a7c6f7d7cc878
+Author: filthydoughboy <jp882@cornell.edu>
+Date:   Fri Mar 4 00:13:51 2016 -0500
+
+    idk what i did anymore
+
+commit 2b4ceba51b5d04230f9afed77d1c81e3384b3cb1
+Author: ttl33 <ttl33@cornell.edu>
+Date:   Thu Mar 3 23:55:12 2016 -0500
+
+    error handling in xi.cup
+
+commit 24f851fe45729fffb723b53fe20fe6d76fc3a9c2
+Merge: 7537c1c 31644e4
+Author: ttl33 <ttl33@cornell.edu>
+Date:   Thu Mar 3 22:45:55 2016 -0500
+
+    merge
+
+commit 7537c1c9e9872fd02150e021ae2574a04ab7806e
+Author: ttl33 <ttl33@cornell.edu>
+Date:   Thu Mar 3 22:45:44 2016 -0500
+
+    added preTypeCheck sweep logic in visit(Program p) & modified visit(FunctionDecl fd) appropriately
+
+commit 31644e436ad771ffb6e28d33927e669ceb02b9ee
+Author: filthydoughboy <jp882@cornell.edu>
+Date:   Thu Mar 3 22:24:10 2016 -0500
+
+    added toStrings
+
+commit 8124c681f83d6d68fd2fd6bf7e038e04dfcd1fb4
+Author: filthydoughboy <jp882@cornell.edu>
+Date:   Thu Mar 3 22:05:34 2016 -0500
+
+    didnt save typechecker
+
+commit adc9ce32eee55eb244e0d206c2cf92acdffa8b1a
+Author: filthydoughboy <jp882@cornell.edu>
+Date:   Thu Mar 3 22:04:44 2016 -0500
+
+    our changes in 3/3 meeting
+
+commit 47dd937894908b0467e7ef6dcff83d2ba55663c7
+Author: Sung Won An <sa579@cornell.edu>
+Date:   Thu Mar 3 19:21:21 2016 -0500
+
+    unit type
+
+commit 03ce6f20ef3da1533cc3c0e5d72544a8da06a789
+Merge: 28a1230 004aed9
+Author: Ju Hee Lee <juhee0202@gmail.com>
+Date:   Thu Mar 3 19:04:43 2016 -0500
+
+    merged!
+
+commit 28a1230f00eb5316de5a3ef54f64024259b4c67a
+Author: Ju Hee Lee <juhee0202@gmail.com>
+Date:   Thu Mar 3 19:01:25 2016 -0500
+
+    merge
+
+commit 004aed9b3a9279287a22ad8a3482f3949f93e730
+Merge: f47af97 71c6021
+Author: ttl33 <ttl33@cornell.edu>
+Date:   Thu Mar 3 18:12:46 2016 -0500
+
+    merge
+
+commit f47af97a51137472f10cefe9ec2144503738ef02
+Author: ttl33 <ttl33@cornell.edu>
+Date:   Thu Mar 3 18:11:58 2016 -0500
+
+    added error handling for function related visit methods
+
+commit 71c602145d7578008a474295a28fc994bbc6ad05
+Author: Sung Won An <sa579@cornell.edu>
+Date:   Thu Mar 3 17:53:58 2016 -0500
+
+    new parser
+
+commit 1054886acedabfb4a56f0a69ff97ffa9b34451d2
+Author: Sung Won An <sa579@cornell.edu>
+Date:   Thu Mar 3 17:49:07 2016 -0500
+
+    cup file merge fixes
+
+commit 65ac9e4de07fe88a9297166c8316b0e4b58bcaac
+Merge: a145bc8 5a36ecb
+Author: Sung Won An <sa579@cornell.edu>
+Date:   Thu Mar 3 17:39:23 2016 -0500
+
+    Merge branch 'master' of https://github.com/juhee0202/CS4120
+
+commit a145bc885c5a1c4c0bba1291e9dfd4cf07271ef3
+Merge: 201338a 135ac9e
+Author: Sung Won An <sa579@cornell.edu>
+Date:   Thu Mar 3 17:39:09 2016 -0500
+
+    merge fixes
+
+commit 5a36ecb6ab49cc09cf596d0bb28ef9296d7de508
+Author: ttl33 <ttl33@cornell.edu>
+Date:   Thu Mar 3 17:07:18 2016 -0500
+
+    quick cleanup
+
+commit 201338af58438524e425b8d47709978d3cd88736
+Author: Sung Won An <sa579@cornell.edu>
+Date:   Thu Mar 3 17:01:59 2016 -0500
+
+    added interface parsing
+
+commit 135ac9ed6b611abc68f0055a2c83a86234235fa8
+Merge: 16a6c21 59be854
+Author: ttl33 <ttl33@cornell.edu>
+Date:   Thu Mar 3 17:01:15 2016 -0500
+
+    merge
+
+commit 16a6c21f14132997a4a0c21183d2832a6be39af9
+Merge: bf9932d 86ca870
+Author: ttl33 <ttl33@cornell.edu>
+Date:   Thu Mar 3 17:00:47 2016 -0500
+
+    merge
+
+commit 59be8546cf57c7f4bc7ab1a5e0d5836112967577
+Author: filthydoughboy <jp882@cornell.edu>
+Date:   Thu Mar 3 17:00:33 2016 -0500
+
+    changed isbool stuff
+
+commit bf9932d398bc783052478ec1d8ee428a1517a425
+Author: ttl33 <ttl33@cornell.edu>
+Date:   Thu Mar 3 16:55:56 2016 -0500
+
+    visit(TupleInit ti)
+
+commit 86ca8709a9a646b5977229aa18ae0095be572be5
+Author: filthydoughboy <jp882@cornell.edu>
+Date:   Thu Mar 3 16:34:44 2016 -0500
+
+    array + vartype
+
+commit 9835a2a526a401ce9b25ae807731c98c0f7ea9fe
+Author: ttl33 <ttl33@cornell.edu>
+Date:   Thu Mar 3 15:29:24 2016 -0500
+
+    removed visit(FunctionParam fp) method
+
+commit b87a1620ea85544ecc3000e691bc4c27ecdb817e
+Merge: 9a74ccc 3e10170
+Author: ttl33 <ttl33@cornell.edu>
+Date:   Thu Mar 3 15:28:45 2016 -0500
+
+    modified xi.cup & implemented visit methods for FunctionCall, FunctionArg, FunctionDecl, FunctionDeclList
+
+commit 9a74cccde9f66edd9cc82fd697f3731bc43caed7
+Author: ttl33 <ttl33@cornell.edu>
+Date:   Thu Mar 3 13:34:39 2016 -0500
+
+    commit before pull
+
+commit 3e10170390159edfe3b9e50cbc454073a4f8cc48
+Author: Ju Hee Lee <juhee0202@gmail.com>
+Date:   Thu Mar 3 01:37:09 2016 -0500
+
+    did some visit
+
+commit 4bff244bafa18f6c4baf6ffee6dcbc93c92e1dfb
+Merge: 2edb3c3 906e3f8
+Author: Ju Hee Lee <juhee0202@gmail.com>
+Date:   Wed Mar 2 23:58:49 2016 -0500
+
+    merge
+
+commit 906e3f8ea0f41d85604bbb4e75afee574aca243d
+Merge: f4eea5b 76d8e83
+Author: filthydoughboy <jp882@cornell.edu>
+Date:   Wed Mar 2 23:57:27 2016 -0500
+
+    Merge branch 'master' of https://github.com/juhee0202/CS4120
+
+commit 2edb3c385d4bba088e3a4378016f79108ce9d1fe
+Merge: 42b817d 76d8e83
+Author: Ju Hee Lee <juhee0202@gmail.com>
+Date:   Wed Mar 2 23:57:23 2016 -0500
+
+    merging
+
+commit f4eea5b4a4ad86adab1f78f51701c2a2f941ad1d
+Author: filthydoughboy <jp882@cornell.edu>
+Date:   Wed Mar 2 23:57:15 2016 -0500
+
+    trying again
+
+commit 42b817df7b9cbf8f10fab9e47cf3daf40e547896
+Author: Ju Hee Lee <juhee0202@gmail.com>
+Date:   Wed Mar 2 23:23:18 2016 -0500
+
+    type
+
+commit 76d8e83e145861495a3899e6764ca89c68f5eeae
+Author: Sung Won An <sa579@cornell.edu>
+Date:   Wed Mar 2 17:35:06 2016 -0500
+
+    added stack scopes for stmts
+
+commit 045d8c3e9feeba2f53c6e8958b2b9c11d4a21fc5
+Merge: 8799ded ad9d736
+Author: Sung Won An <sa579@cornell.edu>
+Date:   Wed Mar 2 17:22:59 2016 -0500
+
+    merge fixes
+
+commit 8799ded8e56bcf90545bfb09141f9449dc39fe00
+Author: Sung Won An <sa579@cornell.edu>
+Date:   Wed Mar 2 17:17:02 2016 -0500
+
+    finished stmts
+
+commit ad9d7364914b0523a0045e88bb9f282074fc4699
+Author: filthydoughboy <jp882@cornell.edu>
+Date:   Wed Mar 2 17:09:53 2016 -0500
+
+    deleted visits to interfaces
+
+commit abc76bb3f5bcda9a04dc9b879fb1ff3efe1038c7
+Merge: 7294b0b 66f0d60
+Author: filthydoughboy <jp882@cornell.edu>
+Date:   Wed Mar 2 16:51:31 2016 -0500
+
+    Merge branch 'master' of https://github.com/juhee0202/CS4120
+
+commit 7294b0b7cf67390dc775416d81acbda18decedc8
+Author: filthydoughboy <jp882@cornell.edu>
+Date:   Wed Mar 2 16:51:15 2016 -0500
+
+    added accept
+
+commit 66f0d601fee0771895efe947a6c0043777353c5a
+Author: Ju Hee Lee <juhee0202@gmail.com>
+Date:   Wed Mar 2 16:44:29 2016 -0500
+
+    binaryexpr
+
+commit 56de46f5f3f7734bee2c81453ad67d94ad031ee1
+Merge: f2664d1 1c42fb5
+Author: Ju Hee Lee <juhee0202@gmail.com>
+Date:   Wed Mar 2 16:42:54 2016 -0500
+
+    wat
+
+commit f2664d1abb47033610f1dbb93aa8d90bba2c9767
+Author: Ju Hee Lee <juhee0202@gmail.com>
+Date:   Wed Mar 2 16:41:43 2016 -0500
+
+    merge
+
+commit 1c42fb5fd6f6fb40c2ce5995ec0f15a8f742e98b
+Merge: e4571d1 6f828df
+Author: Sung Won An <sa579@cornell.edu>
+Date:   Wed Mar 2 15:41:01 2016 -0500
+
+    Merge branch 'master' of https://github.com/juhee0202/CS4120
+
+commit e4571d1331273c52d211c1b724a8c6440e37c5df
+Merge: 63ac2ba e1e7450
+Author: Sung Won An <sa579@cornell.edu>
+Date:   Wed Mar 2 15:40:12 2016 -0500
+
+    pre commit
+
+commit 6f828df48b3a90a538dcaa80e32e6bdd5ab706a9
+Author: ttl33 <ttl33@cornell.edu>
+Date:   Wed Mar 2 14:56:28 2016 -0500
+
+    modified FunType to handle various cases (ex. 0 parameter, 1 parameter, 1< parameters etc)
+
+commit 63ac2bafb0801c7a7084b958c4a015fa08dae7e6
+Author: Sung Won An <sa579@cornell.edu>
+Date:   Wed Mar 2 13:28:40 2016 -0500
+
+    commit before pull
+
+commit e1e74505a37cbc0009740483e432a49abea98a34
+Author: ttl33 <ttl33@cornell.edu>
+Date:   Wed Mar 2 12:54:51 2016 -0500
+
+    added new types
+
+commit 6b36dc3b991a94892020983fb082b74cb49a2ddb
+Merge: 3205b88 a83bdf4
+Author: filthydoughboy <jp882@cornell.edu>
+Date:   Wed Mar 2 12:29:41 2016 -0500
+
+    Merge branch 'master' of https://github.com/juhee0202/CS4120
+
+commit 3205b888399dfd7e5cced8bac2257babb6c7e9ae
+Author: filthydoughboy <jp882@cornell.edu>
+Date:   Tue Mar 1 23:11:07 2016 -0500
+
+    3/1 changes
+
+commit a83bdf4548534eac2095849a2d5f3d4282c10a48
+Author: Sung Won An <sa579@cornell.edu>
+Date:   Tue Mar 1 22:22:51 2016 -0500
+
+    alphabetized nonterminal list
+
+commit 475063d429e430eb5a3f2b1a5d15d116ee62b70d
+Merge: e05754e 3a3a298
+Author: Sung Won An <sa579@cornell.edu>
+Date:   Sun Feb 28 19:41:40 2016 -0500
+
+    Merge branch 'master' of https://github.com/juhee0202/CS4120
+
+commit e05754efab9993e18cf6012de696e59acf44c2fc
+Author: Sung Won An <sa579@cornell.edu>
+Date:   Sun Feb 28 19:41:33 2016 -0500
+
+    pa1mainfixes
+
+commit 3a3a2983671cfe7048aa4374f38f3b3c47d33530
+Merge: 237fe05 18e0246
+Author: filthydoughboy <jp882@cornell.edu>
+Date:   Sun Feb 28 19:39:58 2016 -0500
+
+    Merge branch 'master' of https://github.com/juhee0202/CS4120
+
+commit 237fe05d5280aca32d902cdc38d25fd990f946bf
+Author: filthydoughboy <jp882@cornell.edu>
+Date:   Sun Feb 28 19:39:36 2016 -0500
+
+    mastermind
+
+commit 18e0246e4dddc9588b4f061ab66ddb3677304f00
+Author: Sung Won An <sa579@cornell.edu>
+Date:   Sun Feb 28 19:23:31 2016 -0500
+
+    fixed flex
+
+commit db626c6a63a9eb4daecc7261e215735c59549bd8
+Author: Sung Won An <sa579@cornell.edu>
+Date:   Sun Feb 28 19:11:46 2016 -0500
+
+    alphabetized cup file
+
+commit 1ad14d96b76331873f5651efbcf67439ad770dfc
+Merge: 774dc58 b4979a3
+Author: Sung Won An <sa579@cornell.edu>
+Date:   Sun Feb 28 19:03:02 2016 -0500
+
+    Merge branch 'master' of https://github.com/juhee0202/CS4120
+
+commit b4979a34859c90ce52d1bf1637cd5f8d8a056bd6
+Author: filthydoughboy <jp882@cornell.edu>
+Date:   Sun Feb 28 19:03:02 2016 -0500
+
+    again
+
+commit 774dc58e831155bb8da6ad77d207d848655bb2be
+Merge: a5f7e66 67de76f
+Author: Sung Won An <sa579@cornell.edu>
+Date:   Sun Feb 28 18:59:21 2016 -0500
+
+    Merge branch 'master' of https://github.com/juhee0202/CS4120
+
+commit a5f7e6669afdde73124077c6c47c2e6f2ea4d078
+Author: Sung Won An <sa579@cornell.edu>
+Date:   Sun Feb 28 18:59:12 2016 -0500
+
+    fixed flex
+
+commit 67de76f3c52a8cd38e1aa01c7a4b380de35ea7be
+Author: filthydoughboy <jp882@cornell.edu>
+Date:   Sun Feb 28 18:14:04 2016 -0500
+
+    no
+
+commit 577795e24cd1f365e4ff3df0d2d009b54c092a09
+Merge: fa2ccf3 76a703a
+Author: filthydoughboy <jp882@cornell.edu>
+Date:   Sun Feb 28 16:11:37 2016 -0500
+
+    rekt that pa2
+
+commit fa2ccf39d51820a4dbe7ab6566e47c4abb8aee71
+Author: filthydoughboy <jp882@cornell.edu>
+Date:   Sun Feb 28 16:04:56 2016 -0500
+
+    changed xi.cup
+
+commit 76a703a7f559a7846d8f2cfdd26ff0d40b26b03f
+Author: ttl33 <ttl33@cornell.edu>
+Date:   Sat Feb 27 19:23:28 2016 -0500
+
+    from saturday meeting
+
+commit cad38e62fee1ad18999a09e137811920a66baa0c
+Author: ttl33 <ttl33@cornell.edu>
+Date:   Sat Feb 27 15:10:23 2016 -0500
+
+    PA3 start
+
+commit 4704c2ab5bdb577110b8f53ff3855c2c526c051e
+Author: ttl33 <ttl33@cornell.edu>
+Date:   Mon Feb 22 00:57:34 2016 -0500
+
+    hey
+
+commit e52d98c6a37fdd71bb108407e102de07eb37a577
+Merge: 61ac9e7 47c9963
+Author: Sung Won An <sa579@cornell.edu>
+Date:   Sun Feb 21 23:41:36 2016 -0500
+
+    Merge branch 'master' of https://github.com/juhee0202/CS4120
+
+commit 47c9963766d814171d05a22eda37766547a1d6fd
+Author: ttl33 <ttl33@cornell.edu>
+Date:   Sun Feb 21 23:41:36 2016 -0500
+
+    yo
+
+commit 61ac9e765ab011b7caf034f58a87d9c33bdba1e3
+Author: Sung Won An <sa579@cornell.edu>
+Date:   Sun Feb 21 23:41:29 2016 -0500
+
+    added values to terminals
+
+commit 4837c9d07f38c340af26a7206014f5649afc4fea
+Author: ttl33 <ttl33@cornell.edu>
+Date:   Sun Feb 21 23:11:14 2016 -0500
+
+    yo
+
+commit 69ff35e06450fbca56aa79561550a744f8e4d8bc
+Author: ttl33 <ttl33@cornell.edu>
+Date:   Sun Feb 21 22:37:57 2016 -0500
+
+    almostt
+
+commit 28b5afd351a629a8585bd028bcb636fabb6df7a8
+Merge: 5ed068c 36b56ad
+Author: ttl33 <ttl33@cornell.edu>
+Date:   Sun Feb 21 20:36:37 2016 -0500
+
+    almost
+
+commit 5ed068c3912c1e7f38ea4019bad101d0e23799e4
+Author: ttl33 <ttl33@cornell.edu>
+Date:   Sun Feb 21 20:32:17 2016 -0500
+
+    yo
+
+commit 36b56ad8a6db253c163933375407b7873c7dcd32
+Author: Sung Won An <sa579@cornell.edu>
+Date:   Sun Feb 21 20:25:17 2016 -0500
+
+    xic script
+
+commit b9e09dd2ba64669ed2eb59817fd009da38b03af7
+Author: ttl33 <ttl33@cornell.edu>
+Date:   Sun Feb 21 18:53:47 2016 -0500
+
+    minor fix
+
+commit a96396f60b889fdc34113cd80fad591e502e4ba7
+Author: ttl33 <ttl33@cornell.edu>
+Date:   Sun Feb 21 18:43:08 2016 -0500
+
+    commandline
+
+commit c58a6f7ae3d9b40a0c5ee1ba350d24c8c4782a7c
+Author: ttl33 <ttl33@cornell.edu>
+Date:   Sun Feb 21 17:36:33 2016 -0500
+
+    yo
+
+commit f06ea3a76bb4b571fe7daa240d55891676e35e3a
+Author: ttl33 <ttl33@cornell.edu>
+Date:   Sun Feb 21 17:35:16 2016 -0500
+
+    commit
+
+commit c3baf1c6c3a4370cfb01f6a6d75cc611cedeef0f
+Merge: b3bd752 96bfa6b
+Author: ttl33 <ttl33@cornell.edu>
+Date:   Sun Feb 21 08:36:37 2016 -0500
+
+    almost
+
+commit b3bd7520a888b9d124446232cc22f983d07e2ab7
+Merge: 5165ff5 3975e2e
+Author: ttl33 <ttl33@cornell.edu>
+Date:   Sun Feb 21 03:31:59 2016 -0500
+
+    commit before merge
+
+commit 96bfa6b22a6977c7f6bf9d17221b3136f156a32e
+Author: Sung Won An <sa579@cornell.edu>
+Date:   Sun Feb 21 03:31:11 2016 -0500
+
+    strings
+
+commit 5165ff5d8703f5fb345d8873827194059513905f
+Author: ttl33 <ttl33@cornell.edu>
+Date:   Sun Feb 21 02:48:19 2016 -0500
+
+    .gitignore
+
+commit 3975e2e6ad2e3045696ebad925fc6314a81bf8d7
+Author: filthydoughboy <jp882@cornell.edu>
+Date:   Sun Feb 21 07:47:28 2016 +0000
+
+    woops
+
+commit 6108f263326bbb05d6bc6e09b95d19d5780c201c
+Author: filthydoughboy <jp882@cornell.edu>
+Date:   Sun Feb 21 07:45:48 2016 +0000
+
+    FIXED THIS GARBAGE
+
+commit 5a5ac8c1ffe36762af33820177fc0197168be030
+Author: filthydoughboy <jp882@cornell.edu>
+Date:   Sun Feb 21 00:27:46 2016 -0500
+
+    fixes
+
+commit 8a094acebadf85c599e2f1cfdff02478a6af15ea
+Author: filthydoughboy <jp882@cornell.edu>
+Date:   Sun Feb 21 00:27:00 2016 -0500
+
+    fixes
+
+commit e1a6424711a76afdebc94932bded605b54c1d41b
+Author: filthydoughboy <jp882@cornell.edu>
+Date:   Sun Feb 21 00:25:39 2016 -0500
+
+    fixes
+
+commit 1941b3fda9ba8071f642bd218f411fd037cdbc77
+Author: filthydoughboy <jp882@cornell.edu>
+Date:   Sun Feb 21 00:22:25 2016 -0500
+
+    got actions
+
+commit 7f473dfeec3e5533f23a9ed58299a40a0494815e
+Author: filthydoughboy <jp882@cornell.edu>
+Date:   Sat Feb 20 21:05:00 2016 -0500
+
+    actions cup
+
+commit 3d73ea83d93ca313f89bc88e53b1dd53b1f8076e
+Author: Ju Hee Lee <juhee0202@gmail.com>
+Date:   Sat Feb 20 21:00:25 2016 -0500
+
+    removed wrong ast dir
+
+commit 47cde98983e9944e53d3020a84300866e94f2948
+Author: ttl33 <ttl33@cornell.edu>
+Date:   Sat Feb 20 20:55:29 2016 -0500
+
+    commit
+
+commit b1d087af406f5706a6020bcc193fe6ff9221e2b7
+Author: Sung Won An <sa579@cornell.edu>
+Date:   Sat Feb 20 17:15:29 2016 -0500
+
+    ast
+
+commit 1c09185872a1c8137f017bc9a0c0589a247c3e9c
+Author: Sung Won An <sa579@cornell.edu>
+Date:   Sat Feb 20 17:12:20 2016 -0500
+
+    project file system rework
+
+commit 6f2bbb7725c66a9ce1eac8de36b694ade6f88dfa
+Merge: 0ec9dfd d0c9d71
+Author: ttl33 <ttl33@cornell.edu>
+Date:   Sat Feb 20 15:32:07 2016 -0500
+
+    merge
+
+commit 0ec9dfd3cfec7b7a008878e84a80cfb19118f226
+Author: ttl33 <ttl33@cornell.edu>
+Date:   Sat Feb 20 15:31:15 2016 -0500
+
+    commit before merge
+
+commit 23059e3deff0c623c4d69342f7ba934d74aa4411
+Author: ttl33 <ttl33@cornell.edu>
+Date:   Sat Feb 20 15:30:30 2016 -0500
+
+    xi.cup
+
+commit d0c9d71eaac9bddada7644f5f933c3fe63d3821d
+Author: Ju Hee Lee <juhee0202@gmail.com>
+Date:   Sat Feb 20 13:05:45 2016 -0500
+
+    parse added
+
+commit 1176d56bcccdddce105e2e22040ddff76f7b6285
+Author: ttl33 <ttl33@cornell.edu>
+Date:   Sat Feb 20 12:22:05 2016 -0500
+
+    xi.cup compiles without error but its prolly wrong haha
+
+commit 819ddb45dcda54814551bc3a158d64bf8c30bf00
+Author: filthydoughboy <jp882@cornell.edu>
+Date:   Sat Feb 20 16:00:54 2016 +0000
+
+    fixed minor cup errors
+
+commit b1f8f5a669636b8d82b2e442e5ff2c7d268f518e
+Merge: 137bb35 12360e8
+Author: ttl33 <ttl33@cornell.edu>
+Date:   Sat Feb 20 10:59:36 2016 -0500
+
+    small edits
+
+commit 137bb3568595b9d0979a163710807f09c8cc2a14
+Author: ttl33 <ttl33@cornell.edu>
+Date:   Sat Feb 20 10:59:22 2016 -0500
+
+    small edits
+
+commit 12360e8b4ce4a58af71269b7c9e22c1a501daed9
+Author: filthydoughboy <jp882@cornell.edu>
+Date:   Sat Feb 20 15:57:01 2016 +0000
+
+    aaa
+
+commit c7edb0cd62f893cf56b56808e65de3951021fbd1
+Merge: df8fd24 a9d725c
+Author: ttl33 <ttl33@cornell.edu>
+Date:   Fri Feb 19 23:15:10 2016 -0500
+
+    merge
+
+commit df8fd2499f5e0228af6ded6c463355a63fb587a6
+Author: ttl33 <ttl33@cornell.edu>
+Date:   Fri Feb 19 23:13:58 2016 -0500
+
+    commit before merge
+
+commit a9d725cd5a820c31a0645a134fd0bf1c04d80677
+Author: Sung Won An <sa579@cornell.edu>
+Date:   Fri Feb 19 23:11:08 2016 -0500
+
+    juhee commit
+
+commit 8c0cd87dcb10ee6fee447d1e622e9ce81ce8ac40
+Merge: 4399101 982e189
+Author: Sung Won An <sa579@cornell.edu>
+Date:   Fri Feb 19 21:19:50 2016 -0500
+
+    Merge branch 'master' of https://github.com/juhee0202/CS4120
+
+commit 43991010ac28dc1d364a3eaf1ef0fe617a9c01dd
+Author: Sung Won An <sa579@cornell.edu>
+Date:   Fri Feb 19 21:19:42 2016 -0500
+
+    added function stuff
+
+commit 982e18911f5fb5efd55049972928015aa7814af4
+Author: Ju Hee Lee <juhee0202@gmail.com>
+Date:   Fri Feb 19 20:33:58 2016 -0500
+
+    astree
+
+commit 7aa6d71f83f1f95c84ce59620cdf30038dfc9bd5
+Author: ttl33 <ttl33@cornell.edu>
+Date:   Fri Feb 19 19:55:43 2016 -0500
+
+    stmt started & editted prev grammar
+
+commit fc9cec6db3c43bc23091f1ad5b3e7f4bd6a7297a
+Author: ttl33 <ttl33@cornell.edu>
+Date:   Fri Feb 19 19:21:23 2016 -0500
+
+    array_element added ex. a[3]
+
+commit 2c315b66025af02cf032aed4146343471156e421
+Author: ttl33 <ttl33@cornell.edu>
+Date:   Fri Feb 19 19:10:32 2016 -0500
+
+    added array literal
+
+commit 6cd520248de51f9cf47047f6827ebf85f78ebd7f
+Author: ttl33 <ttl33@cornell.edu>
+Date:   Fri Feb 19 18:54:43 2016 -0500
+
+    xi_thomas.cup
+
+commit a7ea66fe268514304d492005e77f1921625745e2
+Author: Sung Won An <sa579@cornell.edu>
+Date:   Fri Feb 19 15:28:50 2016 -0500
+
+    changes to flex and symbols
+
+commit 9684dc00d57e51c9439ddb1f134a6a8b0a9602e2
+Author: Sung Won An <sa579@cornell.edu>
+Date:   Thu Feb 18 23:56:04 2016 -0500
+
+    first try
+
+commit ade7666398bb1d20040d34fd66ba8914d8d8b4cd
+Author: Sung Won An <sa579@cornell.edu>
+Date:   Thu Feb 18 22:22:27 2016 -0500
+
+    variable decl
+
+commit 28cb6cc8d7abceee22577ba4090681bdd9856b49
+Author: ttl33 <ttl33@cornell.edu>
+Date:   Thu Feb 18 21:46:50 2016 -0500
+
+    release file updated
+
+commit 91f5357d59aec8a035cd78290c9b21f79d3c5c2a
+Author: ttl33 <ttl33@cornell.edu>
+Date:   Mon Feb 15 13:29:10 2016 -0500
+
+    PA2 = PA1 + starterCode
+
+commit 7c0d64c72a247acecd9c95de07d9957110c00e75
+Author: ttl33 <ttl33@cornell.edu>
+Date:   Mon Feb 15 13:23:34 2016 -0500
+
+    random files
+
+commit 10fd69b5b35d4346ac1cb5d3d0b3c7d9a394fa09
+Author: ttl33 <ttl33@cornell.edu>
+Date:   Tue Feb 9 00:44:10 2016 -0500
+
+    new zip
+
+commit 65347f71844a224129d65eeb68c8cfcc6e367eb5
+Author: ttl33 <ttl33@cornell.edu>
+Date:   Tue Feb 9 00:40:46 2016 -0500
+
+    new zip
+
+commit 648d27807e8a987572192497441277e281805fd3
+Author: Jonathan Park <jp882@cornell.edu>
+Date:   Tue Feb 9 00:31:18 2016 -0500
+
+    hopefully
+
+commit a428cc05265be9c827f72b8e8478212244da5156
+Merge: 4ca0199 f8217f7
+Author: Sung Won An <sa579@cornell.edu>
+Date:   Tue Feb 9 00:13:10 2016 -0500
+
+    Merge branch 'master' of https://github.com/juhee0202/CS4120
+
+commit 4ca01995dc195f36ceb6d572eae4560db16869da
+Author: Sung Won An <sa579@cornell.edu>
+Date:   Tue Feb 9 00:12:14 2016 -0500
+
+    fixed row/col num
+
+commit f8217f7faa1466e69d04c95f80339680ad648d66
+Author: ttl33 <ttl33@cornell.edu>
+Date:   Mon Feb 8 23:57:25 2016 -0500
+
+    zip folder added
+
+commit c54c2c7abdb524210c5cf7609b46b006b1f14862
+Merge: 8d4f8bc 131da63
+Author: ttl33 <ttl33@cornell.edu>
+Date:   Mon Feb 8 23:48:15 2016 -0500
+
+    xic modified
+
+commit 8d4f8bc75d178321c2e59e28f4e96d82aba86809
+Author: ttl33 <ttl33@cornell.edu>
+Date:   Mon Feb 8 23:45:36 2016 -0500
+
+    commit before merge
+
+commit 131da63420404390fae08d54f5acfd1ae715d9be
+Author: Jonathan Park <jp882@cornell.edu>
+Date:   Mon Feb 8 23:44:11 2016 -0500
+
+    safe submission
+
+commit 98e0dd1dab827f00d7b77f11032b62736295133c
+Author: Jonathan Park <jp882@cornell.edu>
+Date:   Mon Feb 8 23:43:17 2016 -0500
+
+    fixed some errors
+
+commit eed249009e5a80e8406a38f2b47f76160a02cb9c
+Author: Sung Won An <sa579@cornell.edu>
+Date:   Mon Feb 8 23:30:00 2016 -0500
+
+    fixed string lengths
+
+commit 396fe99323547ed7a09d09b55c51a760255cc654
+Author: Sung Won An <sa579@cornell.edu>
+Date:   Mon Feb 8 23:27:23 2016 -0500
+
+    added underscore and fixed string lengths
+
+commit ff6dc20c0f2d23cd92750a461d09f259c4d32064
+Author: Sung Won An <sa579@cornell.edu>
+Date:   Mon Feb 8 23:08:22 2016 -0500
+
+    column number fix
+
+commit ce9a586f3a9968afc72bca7fec0ddb025cb87d35
+Merge: c16a36f a09dd0e
+Author: ttl33 <ttl33@cornell.edu>
+Date:   Mon Feb 8 22:44:54 2016 -0500
+
+    zip folder created
+
+commit 5bde718cd4a8a1ce0b7d83dc06783949b32f5375
+Merge: 32df87d 7b54601
+Author: Sung Won An <sa579@cornell.edu>
+Date:   Mon Feb 8 22:44:43 2016 -0500
+
+    Merge branch 'master' of https://github.com/juhee0202/CS4120
+
+commit 32df87d482ae79402f19e791a2bcd48ebfba6c41
+Author: Sung Won An <sa579@cornell.edu>
+Date:   Mon Feb 8 22:44:37 2016 -0500
+
+    fixes
+
+commit 7b5460125367fa6b7593e222bf022e79bac1a3ee
+Author: Jonathan Park <jp882@cornell.edu>
+Date:   Mon Feb 8 22:41:16 2016 -0500
+
+    git sucks
+
+commit 4a6981ae6d8206f8381348eefd113cebc05e1f68
+Author: Sung Won An <sa579@cornell.edu>
+Date:   Mon Feb 8 22:31:26 2016 -0500
+
+    fixes: length and identifiers
+
+commit c16a36f42fcaa14e2c71e05252c6458794d528ac
+Author: ttl33 <ttl33@cornell.edu>
+Date:   Mon Feb 8 22:19:53 2016 -0500
+
+    xic script
+
+commit a09dd0ed6b7fdc6f20786905901d3c03cc3baa93
+Merge: 7d5c27e 40f33e8
+Author: Ju Hee Lee <juhee0202@gmail.com>
+Date:   Mon Feb 8 22:03:58 2016 -0500
+
+    merge pls
+
+commit 7d5c27eea3562c160e16267c3d3dbf0465b48c17
+Author: Ju Hee Lee <juhee0202@gmail.com>
+Date:   Mon Feb 8 22:02:58 2016 -0500
+
+    prints to output file for only lex
+
+commit 40f33e8839b0a9ceafadec592c5ca8a37c2d7ac2
+Author: Sung Won An <sa579@cornell.edu>
+Date:   Mon Feb 8 22:01:22 2016 -0500
+
+    debug: fixed integer bounds, hex chars
+
+commit 4a5b168536d80b2f015d31efc731e49811d21b73
+Author: Sung Won An <sa579@cornell.edu>
+Date:   Mon Feb 8 21:28:22 2016 -0500
+
+    used long instead of int
+
+commit 88e4d4fbddbca20c2e4e9340306dc2ff5ab1f4a7
+Merge: 943243f d53271b
+Author: Sung Won An <sa579@cornell.edu>
+Date:   Mon Feb 8 20:18:01 2016 -0500
+
+    Merge branch 'master' of https://github.com/juhee0202/CS4120
+
+commit 943243ff39ff3bafe633e7bd1d9f44a6696c7dcb
+Author: Sung Won An <sa579@cornell.edu>
+Date:   Mon Feb 8 19:19:16 2016 -0500
+
+    fixed character issue
+
+commit d53271ba0156b3e54763b64d50f12085acd3f89e
+Author: ttl33 <ttl33@cornell.edu>
+Date:   Mon Feb 8 16:51:08 2016 -0500
+
+    build script modified
+
+commit 22bd5412e2bd71cef63b2eb9daf6a891bac90508
+Author: Sung Won An <sa579@cornell.edu>
+Date:   Mon Feb 8 16:48:12 2016 -0500
+
+    deleted a comment
+
+commit cdbb8b086c6ba07a3bb1316470902f4b3b7198b4
+Merge: 1560148 32d1023
+Author: Ju Hee Lee <juhee0202@gmail.com>
+Date:   Sun Feb 7 22:56:02 2016 -0500
+
+    finished error prints
+
+commit 156014807da75245048fcbcd9066a2413fd21f17
+Author: Ju Hee Lee <juhee0202@gmail.com>
+Date:   Sun Feb 7 22:49:15 2016 -0500
+
+    pa1 changed to while loop
+
+commit 32d102372eb8d90cd78e6ca7f1dc1c6d78d2485a
+Author: Sung Won An <sa579@cornell.edu>
+Date:   Sun Feb 7 22:48:45 2016 -0500
+
+    added specs
+
+commit cff1bfb603033209973e084a6f2319ae6ad298c2
+Author: Sung Won An <sa579@cornell.edu>
+Date:   Sun Feb 7 22:47:26 2016 -0500
+
+    getters for column and line
+
+commit fc69a477efae247192661563d9395b31d811fa61
+Author: Jonathan Park <jp882@cornell.edu>
+Date:   Sun Feb 7 22:30:40 2016 -0500
+
+    updted newline characters
+
+commit 812af9c9008affa7e30f87d0a335d553935d2678
+Author: Ju Hee Lee <juhee0202@gmail.com>
+Date:   Sun Feb 7 22:26:26 2016 -0500
+
+    pushed pa1
+
+commit e50714dac476439f0c469b7e7817cc8deb86ae45
+Author: Sung Won An <sa579@cornell.edu>
+Date:   Sun Feb 7 21:48:06 2016 -0500
+
+    fixed backslash backslash
+
+commit 3ae570cc10fbfd8d35e837fd0f54a2613c41c4d7
+Merge: e700678 7939465
+Author: Sung Won An <sa579@cornell.edu>
+Date:   Sun Feb 7 21:34:34 2016 -0500
+
+    Merge branch 'master' of https://github.com/juhee0202/CS4120
+
+commit e7006787102fcbe8801366c2271031df41967217
+Author: Sung Won An <sa579@cornell.edu>
+Date:   Sun Feb 7 21:33:46 2016 -0500
+
+    fixes
+
+commit 793946581eb74dda0f6d90205027c7d66646e3c4
+Merge: af02ce4 3d7ccb3
+Author: ttl33 <ttl33@cornell.edu>
+Date:   Sun Feb 7 21:33:17 2016 -0500
+
+    merge
+
+commit af02ce46c5666b5685384242f3ddb8350d92bbf0
+Author: ttl33 <ttl33@cornell.edu>
+Date:   Sun Feb 7 21:32:33 2016 -0500
+
+    xic script
+
+commit 3d7ccb398ac4968049a20a22889f33364e145002
+Author: Sung Won An <sa579@cornell.edu>
+Date:   Sun Feb 7 21:32:03 2016 -0500
+
+    escape char fix
+
+commit 1f44130616b584411740a24894c81e21e24ebc67
+Author: Sung Won An <sa579@cornell.edu>
+Date:   Sun Feb 7 21:27:22 2016 -0500
+
+    fixed escape chars
+
+commit 3183b0d7ab8079289426ef8949b9492314a79825
+Merge: 2a7114f c9cfaec
+Author: Sung Won An <sa579@cornell.edu>
+Date:   Sun Feb 7 21:23:11 2016 -0500
+
+    Merge branch 'master' of https://github.com/juhee0202/CS4120
+
+commit 2a7114f7b3e250236f9e3670c22145b5be10a15d
+Author: Sung Won An <sa579@cornell.edu>
+Date:   Sun Feb 7 21:22:52 2016 -0500
+
+    added use
+
+commit c9cfaec1bfc9ddbe055f780a0abafadcf98c47af
+Author: ttl33 <ttl33@cornell.edu>
+Date:   Sun Feb 7 19:28:44 2016 -0500
+
+    jar issue resolved
+
+commit 625ae99f9d4f4bd88f3a5b7b1bef8014dbb28d26
+Merge: 4f48f42 ae20153
+Author: ttl33 <ttl33@cornell.edu>
+Date:   Sun Feb 7 17:24:04 2016 -0500
+
+    merge conflict resolved
+
+commit 4f48f4251386e76c9cd9621d6adf54c0dd78bda3
+Author: ttl33 <ttl33@cornell.edu>
+Date:   Sun Feb 7 17:22:19 2016 -0500
+
+    commit before pull
+
+commit ae20153b6b2f6aefddbdb1a35090a1b24781f3ef
+Author: Sung Won An <sa579@cornell.edu>
+Date:   Sun Feb 7 17:20:17 2016 -0500
+
+    parseHex fix
+
+commit 1948ea72b962eab7aca3c23f1659501a671c6d48
+Merge: bf28b5d 5a4c5f6
+Author: Ju Hee Lee <juhee0202@gmail.com>
+Date:   Sun Feb 7 17:09:20 2016 -0500
+
+    wat merge
+
+commit 5a4c5f66faf79ae5eafeb0200bd3df9e957aeb90
+Author: Sung Won An <sa579@cornell.edu>
+Date:   Sun Feb 7 17:07:00 2016 -0500
+
+    fixes
+
+commit bf28b5db004ec16efe7f3e8f9c3e2963844a0262
+Author: Ju Hee Lee <juhee0202@gmail.com>
+Date:   Sun Feb 7 17:05:06 2016 -0500
+
+    try building thomas pls
+
+commit af9596f847bd118b1e6dae5d4e4451173226c96f
+Author: Sung Won An <sa579@cornell.edu>
+Date:   Sun Feb 7 16:51:29 2016 -0500
+
+    final xi.flex
+
+commit 70c8a1d25c040d40b4e0106f8624f3fe34cd6100
+Author: Sung Won An <sa579@cornell.edu>
+Date:   Sun Feb 7 16:35:56 2016 -0500
+
+    merge fixes
+
+commit e5f22fe35041b2feae063517ae59eb92bd158d29
+Merge: d20d3d3 25e15cd
+Author: Sung Won An <sa579@cornell.edu>
+Date:   Sun Feb 7 16:33:44 2016 -0500
+
+    Merge branch 'master' of https://github.com/juhee0202/CS4120
+
+commit d20d3d38a4654b881335be648a72bba88d2f89a6
+Author: Sung Won An <sa579@cornell.edu>
+Date:   Sun Feb 7 16:33:36 2016 -0500
+
+    added int to YYINITIAL
+
+commit 25e15cd25fee0ddae54fe27b9557d3c0177c98cc
+Merge: 8bcdec0 a29ebdd
+Author: ttl33 <ttl33@cornell.edu>
+Date:   Sun Feb 7 16:32:33 2016 -0500
+
+    merge conflict resolved
+
+commit 8bcdec08fec28e9cc7b27b84a59e35f8c24739a7
+Author: ttl33 <ttl33@cornell.edu>
+Date:   Sun Feb 7 16:31:31 2016 -0500
+
+    modify .flex and build.xml
+
+commit a29ebdd6b826237884dcc47486521bc1fbb29058
+Author: Sung Won An <sa579@cornell.edu>
+Date:   Sun Feb 7 16:06:41 2016 -0500
+
+    added hex conversion to ascii
+
+commit 4c152adacdc80cb99e4ceaa96b040b4476dd6681
+Author: ttl33 <ttl33@cornell.edu>
+Date:   Sun Feb 7 15:27:36 2016 -0500
+
+    first commit

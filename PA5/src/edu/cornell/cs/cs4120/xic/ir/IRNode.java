@@ -67,4 +67,8 @@ public abstract class IRNode {
     }
 	
     public abstract void accept(IRTreeVisitor irv);
+    
+    public abstract void addLeft(IRNode irn);
+    
+    public abstract void addRight(IRNode irn);
 }

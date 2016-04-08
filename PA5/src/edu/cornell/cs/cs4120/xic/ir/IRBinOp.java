@@ -68,4 +68,14 @@ public class IRBinOp extends IRExpr {
     public void accept(IRTreeVisitor irv) {
     	irv.visit(this);
     }
+
+	@Override
+	public void addLeft(IRNode irn) {
+		left = (IRExpr) irn;
+	}
+
+	@Override
+	public void addRight(IRNode irn) {
+		right = (IRExpr) irn;
+	}
 }

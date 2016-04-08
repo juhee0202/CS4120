@@ -82,4 +82,14 @@ public class IRMem extends IRExpr {
     public void accept(IRTreeVisitor irv) {
     	irv.visit(this);
     }
+
+	@Override
+	public void addLeft(IRNode irn) {
+		expr = (IRExpr) irn;
+	}
+
+	@Override
+	public void addRight(IRNode irn) {
+		return;
+	}
 }

@@ -3,10 +3,21 @@ package jl2755.assembly;
 import java.util.ArrayList;
 import java.util.List;
 
+import edu.cornell.cs.cs4120.xic.ir.IRBinOp;
+import edu.cornell.cs.cs4120.xic.ir.IRCJump;
 import edu.cornell.cs.cs4120.xic.ir.IRCall;
+import edu.cornell.cs.cs4120.xic.ir.IRConst;
+import edu.cornell.cs.cs4120.xic.ir.IRExp;
 import edu.cornell.cs.cs4120.xic.ir.IRExpr;
+import edu.cornell.cs.cs4120.xic.ir.IRJump;
+import edu.cornell.cs.cs4120.xic.ir.IRLabel;
 import edu.cornell.cs.cs4120.xic.ir.IRMem;
+import edu.cornell.cs.cs4120.xic.ir.IRMove;
+import edu.cornell.cs.cs4120.xic.ir.IRName;
 import edu.cornell.cs.cs4120.xic.ir.IRNode;
+import edu.cornell.cs.cs4120.xic.ir.IRReturn;
+import edu.cornell.cs.cs4120.xic.ir.IRSeq;
+import edu.cornell.cs.cs4120.xic.ir.IRTemp;
 
 public class Pattern {
 
@@ -62,13 +73,48 @@ public class Pattern {
 	 * @return
 	 */
 	private static IRNode stringToNode(String nodeName) {
-		if (nodeName.contains("Mem")) {
-			return new IRMem(null);
+		if (nodeName.contains("BinOp")) {
+			return new IRBinOp(null,null,null);
 		}
 		if (nodeName.contains("Call")) {
 			IRExpr[] hue = null;
 			return new IRCall(null, hue);
 		}
-		// TODO: Everyone finish their parts
+		if (nodeName.contains("CJump")) {
+			return new IRCJump(null,null);
+		}
+		if (nodeName.contains("Const")) {
+			return new IRConst(0);
+		}
+		if (nodeName.contains("Exp")) {
+			return new IRExp(null);
+		}
+		if (nodeName.contains("Jump")) {
+			return new IRJump(null);
+		}
+		if (nodeName.contains("Label")) {
+			return new IRLabel(null);
+		}
+		if (nodeName.contains("Mem")) {
+			return new IRMem(null);
+		}
+		if (nodeName.contains("Move")) {
+			return new IRMove(null,null);
+		}
+		if (nodeName.contains("Name")) {
+			return new IRName(null);
+		}
+		if (nodeName.contains("Return")) {
+			return new IRReturn();
+		}
+		if (nodeName.contains("Seq")) {
+			return new IRSeq();
+		}
+		if (nodeName.contains("Temp")) {
+			return new IRTemp(null);
+		}
+		System.out.println("You wrote a weird string for node name");
+		assert(false);
+		return null;
 	}
 }

@@ -505,7 +505,6 @@ public class TypeCheckVisitor implements ASTVisitor {
 			if (!returnIsLast) {
 				tempType = new UnitType();
 			}
-			// TODO: Check StmtList and propagate up return statement
 			returnIsLast = false;
 		}
 		
@@ -1162,26 +1161,6 @@ public class TypeCheckVisitor implements ASTVisitor {
 			Main.handleSemanticError(seo);
 		}	
 	}
-
-//	@Override
-//	public void visit(VarInit vi) {
-//		// Check if predeclared
-//		vi.getVarDecl().accept(this);
-//		VType tempLeftType = tempType;
-//		vi.getExpr().accept(this);
-//		VType tempRightType = tempType;
-//		if (!(tempLeftType.equals(tempRightType))){
-//			String s = "Expected " + tempLeftType.toString() 
-//						+ ", but found " + tempRightType.toString();
-//			SemanticErrorObject seo = new SemanticErrorObject(
-//										vi.getExpr().getLineNumber(), 
-//										vi.getExpr().getColumnNumber(),
-//										s
-//										);
-//			Main.handleSemanticError(seo);
-//		}	
-//	}
-	
 
 	/**
 	 * Dirties tempType

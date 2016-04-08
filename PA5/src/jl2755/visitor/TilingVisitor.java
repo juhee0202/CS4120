@@ -1,6 +1,9 @@
 package jl2755.visitor;
 
 import java.util.HashMap;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 import edu.cornell.cs.cs4120.xic.ir.IRBinOp;
 import edu.cornell.cs.cs4120.xic.ir.IRCJump;
@@ -25,6 +28,22 @@ import jl2755.assembly.*;
 public class TilingVisitor implements IRTreeVisitor {
 
 	private HashMap<IRNode, Tile> tileMap;
+	
+	/** Lists of strings representing possible tiles. */
+	
+	private static final List<String> JUMP_PRE = new ArrayList<String>(
+			Arrays.asList(
+					"Jump", 
+					"Name"
+					));
+	private static final List<String> JUMP_IN = new ArrayList<String>(
+			Arrays.asList(
+					"Name", 
+					"Jump"
+					));
+	
+	
+	
 
 	@Override
 	public void visit(IRBinOp bo) {

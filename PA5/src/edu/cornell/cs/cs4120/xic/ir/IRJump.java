@@ -55,4 +55,15 @@ public class IRJump extends IRStmt {
     public void accept(IRTreeVisitor irv) {
     	irv.visit(this);
     }
+
+	@Override
+	public void addLeft(IRNode irn) {
+		target = (IRExpr) irn;
+		return;
+	}
+
+	@Override
+	public void addRight(IRNode irn) {
+		return;
+	}
 }

@@ -358,7 +358,7 @@ public class Main {
 			bw.close();
 			System.out.println("[xic] Parsing completed");
 		} catch (Exception e) {
-//			e.printStackTrace();
+			e.printStackTrace();
 		}
 	}
 	

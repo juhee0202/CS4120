@@ -3,21 +3,7 @@ package jl2755.assembly;
 import java.util.ArrayList;
 import java.util.List;
 
-import edu.cornell.cs.cs4120.xic.ir.IRBinOp;
-import edu.cornell.cs.cs4120.xic.ir.IRCJump;
-import edu.cornell.cs.cs4120.xic.ir.IRCall;
-import edu.cornell.cs.cs4120.xic.ir.IRConst;
-import edu.cornell.cs.cs4120.xic.ir.IRExp;
-import edu.cornell.cs.cs4120.xic.ir.IRExpr;
-import edu.cornell.cs.cs4120.xic.ir.IRJump;
-import edu.cornell.cs.cs4120.xic.ir.IRLabel;
-import edu.cornell.cs.cs4120.xic.ir.IRMem;
-import edu.cornell.cs.cs4120.xic.ir.IRMove;
-import edu.cornell.cs.cs4120.xic.ir.IRName;
-import edu.cornell.cs.cs4120.xic.ir.IRNode;
-import edu.cornell.cs.cs4120.xic.ir.IRReturn;
-import edu.cornell.cs.cs4120.xic.ir.IRSeq;
-import edu.cornell.cs.cs4120.xic.ir.IRTemp;
+import edu.cornell.cs.cs4120.xic.ir.*;
 
 public class Pattern {
 

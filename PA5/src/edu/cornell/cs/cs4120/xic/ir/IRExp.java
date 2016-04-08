@@ -57,4 +57,16 @@ public class IRExp extends IRStmt {
     public void accept(IRTreeVisitor irv) {
     	irv.visit(this);
     }
+
+	@Override
+	public void addLeft(IRNode irn) {
+		// TODO Auto-generated method stub
+		expr = (IRExpr) irn;
+	}
+
+	@Override
+	public void addRight(IRNode irn) {
+		// TODO Auto-generated method stub
+		return;
+	}
 }

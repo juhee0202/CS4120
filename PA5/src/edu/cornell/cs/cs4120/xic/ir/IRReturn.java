@@ -21,4 +21,14 @@ public class IRReturn extends IRStmt {
     public void accept(IRTreeVisitor irv) {
     	irv.visit(this);
     }
+
+	@Override
+	public void addLeft(IRNode irn) {
+		return;
+	}
+
+	@Override
+	public void addRight(IRNode irn) {
+		return;
+	}
 }

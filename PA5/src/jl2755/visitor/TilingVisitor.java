@@ -194,6 +194,11 @@ public class TilingVisitor implements IRTreeVisitor {
 	 * ...
 	 * mov e1, rdi
 	 * call f
+	 * mov rax, dest
+	 * add $(8*(n-6)), rsp
+	 * 
+	 * TODO
+	 * modify visit(IRMove) to handle MOVE(expr,CALL(...))
 	 */
 	@Override
 	public void visit(IRCall call) {
@@ -297,14 +302,14 @@ public class TilingVisitor implements IRTreeVisitor {
 
 	@Override
 	public void visit(IRESeq eseq) {
-		// TODO Auto-generated method stub
-
+		return;
 	}
 
+	// assumption: EXP is only used to wrap CALL
 	@Override
 	public void visit(IRExp exp) {
-		// TODO Auto-generated method stub
-
+		IRCall call = (IRCall) exp.expr();
+		call.accept(this);
 	}
 
 	@Override

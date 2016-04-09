@@ -27,7 +27,7 @@ import jl2755.assembly.*;
 
 public class TilingVisitor implements IRTreeVisitor {
 
-	private HashMap<IRNode, Tile> tileMap;
+	private HashMap<IRNode, List<Tile>> tileMap;
 //	= new Tile(matchdPattern, parameters);
 	private static IRTreeEqualsVisitor cmpTreeVisitor = new IRTreeEqualsVisitor();
 	
@@ -207,6 +207,8 @@ public class TilingVisitor implements IRTreeVisitor {
 		}
 		Tile constTile = new Tile(null, 0, new Constant(con.value()));
 		tileMap.put(con, constTile);
+		globalTile = constTile;
+		tileMap.get(child).
 	}
 
 	@Override

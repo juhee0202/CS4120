@@ -31,6 +31,66 @@ public class TilingVisitor implements IRTreeVisitor {
 	
 	/** Lists of strings representing possible tiles. */
 	
+	private static final List<String> BINOP1_PRE = new ArrayList<String>(
+			Arrays.asList(
+					"Binop",
+					"Temp1",
+					"Temp2"
+			));
+	private static final List<String> BINOP1_IN = new ArrayList<String>(
+			Arrays.asList(
+					"Temp1",
+					"Binop",
+					"Temp2"
+			));
+	private static final List<String> BINOP2_PRE = new ArrayList<String>(
+			Arrays.asList(
+					"Binop",
+					"Mem",
+					"Temp"
+			));
+	private static final List<String> BINOP2_IN = new ArrayList<String>(
+			Arrays.asList(
+					"Mem",
+					"Binop",
+					"Temp"
+			));
+	private static final List<String> BINOP3_PRE = new ArrayList<String>(
+			Arrays.asList(
+					"Binop",
+					"Temp",
+					"Mem"
+			));
+	private static final List<String> BINOP3_IN = new ArrayList<String>(
+			Arrays.asList(
+					"Temp",
+					"Binop",
+					"Mem"
+			));
+	private static final List<String> BINOP4_PRE = new ArrayList<String>(
+			Arrays.asList(
+					"Binop",
+					"Const",
+					"Temp"
+			));
+	private static final List<String> BINOP4_IN = new ArrayList<String>(
+			Arrays.asList(
+					"Const",
+					"Binop",
+					"Temp"
+			));
+	private static final List<String> BINOP5_PRE = new ArrayList<String>(
+			Arrays.asList(
+					"Binop",
+					"Const",
+					"Mem"
+			));
+	private static final List<String> BINOP5_IN = new ArrayList<String>(
+			Arrays.asList(
+					"Const",
+					"Binop",
+					"Mem"
+			));
 	private static final List<String> JUMP_PRE = new ArrayList<String>(
 			Arrays.asList(
 					"Jump", 
@@ -57,32 +117,11 @@ public class TilingVisitor implements IRTreeVisitor {
 		BinOpTile binOp;
 		switch(op) {
 		case ADD: 
-			binOp = new BinOpTile(tileMap.get(left).getRelevantOperand(),
-					tileMap.get(right).getRelevantOperand(), op);
-			tileMap.put(bo, binOp);
-			break;
 		case SUB:
-			binOp = new BinOpTile(tileMap.get(left).getRelevantOperand(),
-					tileMap.get(right).getRelevantOperand(), op);
-			tileMap.put(bo, binOp);
-			break;
 		case MUL:
-			binOp = new BinOpTile(tileMap.get(left).getRelevantOperand(),
-					tileMap.get(right).getRelevantOperand(), op);
-			tileMap.put(bo, binOp);
-			break;
 		case HMUL:
-			binOp = new BinOpTile(tileMap.get(left).getRelevantOperand(),
-					tileMap.get(right).getRelevantOperand(), op);
-			tileMap.put(bo, binOp);
-			break;
 		case DIV:
-			binOp = new BinOpTile(tileMap.get(left).getRelevantOperand(),
-					tileMap.get(right).getRelevantOperand(), op);
-			tileMap.put(bo, binOp);
-			break;
 		case MOD:
-			// TODO
 		case AND:
 			// cmp
 		case OR:

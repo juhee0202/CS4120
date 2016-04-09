@@ -53,10 +53,72 @@ public class IRTreeEqualsVisitor implements IRTreeVisitor{
 		}
 		if (left instanceof IRESeq) {
 			if (right instanceof IRESeq) {
-				
+				return true;
 			}
+			return false;
 		}
-		
+		if (left instanceof IRExp) {
+			if (right instanceof IRExp) {
+				return true;
+			}
+			return false;
+		}
+		if (left instanceof IRFuncDecl) {
+			if (right instanceof IRFuncDecl) {
+				return true;
+			}
+			return false;
+		}
+		if (left instanceof IRJump) {
+			if (right instanceof IRJump) {
+				return true;
+			}
+			return false;
+		}
+		if (left instanceof IRLabel) {
+			if (right instanceof IRLabel) {
+				return true;
+			}
+			return false;
+		}
+		if (left instanceof IRMem) {
+			if (right instanceof IRMem) {
+				return true;
+			}
+			return false;
+		}
+		if (left instanceof IRMove) {
+			if (right instanceof IRMove) {
+				return true;
+			}
+			return false;
+		}
+		if (left instanceof IRName) {
+			if (right instanceof IRName) {
+				return true;
+			}
+			return false;
+		}
+		if (left instanceof IRReturn) {
+			if (right instanceof IRReturn) {
+				return true;
+			}
+			return false;
+		}
+		if (left instanceof IRSeq) {
+			if (right instanceof IRSeq) {
+				return true;
+			}
+			return false;
+		}
+		if (left instanceof IRTemp) {
+			if (right instanceof IRTemp) {
+				return true;
+			}
+			return false;
+		}
+		System.out.println("Something wrong happened in IRTreeEqualsVisitor equals");
+		assert(false);
 		return false;
 	}
 	

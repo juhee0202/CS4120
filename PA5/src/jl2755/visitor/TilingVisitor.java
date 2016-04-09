@@ -31,6 +31,7 @@ public class TilingVisitor implements IRTreeVisitor {
 
 	private HashMap<IRNode, Tile> tileMap;
 	private static IRTreeEqualsVisitor cmpTreeVisitor = new IRTreeEqualsVisitor();
+	private int registerCount = 0;
 
 	/** list of first 6 function call arg registers */
 	private static final String[] ARG_REG_LIST = {
@@ -249,21 +250,79 @@ public class TilingVisitor implements IRTreeVisitor {
 		Operand leftOperand = tileMap.get(left).getDest();
 		Operand rightOperand = tileMap.get(right).getDest();
 		
-		switch (leftOperand.getOpType()) {
-		case "Register":
-		case "Memory":
-		case "Constant":
+		List<Instruction> instrList = new ArrayList<Instruction>();
+		int cost = 0;
+		Operand argDest = null;
+		
+		if (leftOperand instanceof Constant) {
+			/* Change <binop> CONST, CONST to
+			 * 		MOV CONST, REG
+			 * 		<binop> CONST, REG */
+			if (rightOperand instanceof Constant) {
+				Register t = new Register("tileRegister" + registerCount++);
+				Instruction moveInstruction = new Instruction(Operation.MOV, rightOperand, t);
+				Instruction binopConstReg = new Instruction(tileOp, leftOperand, t);
+				instrList.add(moveInstruction);
+				instrList.add(binopConstReg);
+				cost = 2;
+				argDest = t;
+			}
+			else {
+				Instruction binopConstRegOrMem = new Instruction(tileOp, leftOperand, rightOperand);
+				instrList.add(binopConstRegOrMem);
+				cost = 1;
+				argDest = rightOperand;
+			}
+		}
+		else if (leftOperand instanceof Memory) {
+			if (rightOperand instanceof Register) {
+				Instruction binopMemReg = new Instruction(tileOp, leftOperand, rightOperand);
+				instrList.add(binopMemReg);
+				cost = 1;
+				argDest = rightOperand;
+			}
+			else if (rightOperand instanceof Constant) {
+				Instruction binopConstMem = new Instruction(tileOp, rightOperand, leftOperand);
+				instrList.add(binopConstMem);
+				cost = 1;
+				argDest = leftOperand;
+			}
+			/* 
+			 * Change <binop> MEM1, MEM2 to
+			 * 		MOV MEM2 REG
+			 * 		<binop> MEM1, REG
+			 */
+			else if (rightOperand instanceof Memory) {
+				Register t = new Register("tileRegister" + registerCount++);
+				Instruction moveInstruction = new Instruction(Operation.MOV, rightOperand, t);
+				Instruction binopMemReg = new Instruction(tileOp, leftOperand, t);
+				instrList.add(moveInstruction);
+				instrList.add(binopMemReg);
+				cost = 2;
+				argDest = t;
+			}
+		}
+		else if (leftOperand instanceof Register) {
+			if (rightOperand instanceof Memory || rightOperand instanceof Register) {
+				Instruction binopRegRegOrMem = new Instruction(
+						tileOp, 
+						leftOperand, 
+						rightOperand
+						);
+				instrList.add(binopRegRegOrMem);
+				cost = 1;
+				argDest = rightOperand;
+			}
+			else if (rightOperand instanceof Constant) {
+				Instruction binopConstReg = new Instruction(tileOp, rightOperand, leftOperand);
+				instrList.add(binopConstReg);
+				cost = 1;
+				argDest = leftOperand;
+			}
 		}
 		
-		// creating instructions to put into Tile
-		List<Instruction> instr = new ArrayList<Instruction>();
-		Operand src = null;
-		Operand dest = null;
-		Instruction addInstruction = new Instruction(tileOp, src, dest);
-		instr.add(addInstruction);
-		
-		// creating list of Tile to put into tileMap
-		Tile tile = new Tile(TilingVisitor.BINOP_PRE, TilingVisitor.BINOP_IN, instr, 1);
+		// create tile and put into tileMap
+		Tile tile = new Tile(instrList, cost, argDest);
 		tileMap.put(bo, tile);
 	}
 	

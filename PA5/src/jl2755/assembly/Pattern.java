@@ -8,8 +8,9 @@ import edu.cornell.cs.cs4120.xic.ir.*;
 public class Pattern {
 
 	private IRNode rootOfSubtree;
+	private Instruction instruction;
 
-	public Pattern(List<String> inOrder, List<String> preOrder) {
+	public Pattern(List<String> inOrder, List<String> preOrder, Instruction instr) {
 		rootOfSubtree = makeTree(inOrder, preOrder);
 	}
 

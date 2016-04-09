@@ -28,6 +28,9 @@ import jl2755.assembly.*;
 public class TilingVisitor implements IRTreeVisitor {
 
 	private HashMap<IRNode, Tile> tileMap;
+//	= new Tile(matchdPattern, parameters);
+	private static IRTreeEqualsVisitor cmpTreeVisitor = new IRTreeEqualsVisitor();
+
 	
 	/** Lists of strings representing possible tiles. */
 		
@@ -196,8 +199,7 @@ public class TilingVisitor implements IRTreeVisitor {
 			Arrays.asList(
 					"Temp"
 					));
-	
-	
+		
 	@Override
 	public void visit(IRBinOp bo) {
 		// TODO Auto-generated method stub
@@ -208,37 +210,7 @@ public class TilingVisitor implements IRTreeVisitor {
 
 		OpType op = bo.opType();
 		BinOpTile binOp;
-		switch(op) {
-		case ADD: 
-		case SUB:
-		case MUL:
-		case HMUL:
-		case DIV:
-		case MOD:
-		case AND:
-			// cmp
-		case OR:
-			// cmp
-		case XOR:
-			// cmp
-		case LSHIFT:
-			// TODO
-		case RSHIFT:
-			// TODO
-		case ARSHIFT:
-			// TODO
-		case EQ:
-			// cmp
-		case NEQ:
-			// cmp
-		case LT:
-			// cmp
-		case GT:
-			// cmp
-		case LEQ:
-			// cmp
-		case GEQ:
-			// cmp
+		
 		}
 	}
 

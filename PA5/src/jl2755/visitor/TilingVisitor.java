@@ -35,10 +35,6 @@ public class TilingVisitor implements IRTreeVisitor {
 	/** Lists of strings representing possible tiles. */
 	// TODO: put all these in a json file and read the json file to populate patternMap
 
-//	// BINOP
-//	private static final List<String> BINOP = new ArrayList<String>(
-//			Arrays.asList("BINOP"));
-
 	// CJUMP
 	private static final List<String> CJUMP_BINOP_PRE = new ArrayList<String>(
 			Arrays.asList(

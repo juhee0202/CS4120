@@ -29,7 +29,7 @@ import jl2755.assembly.Instruction.Operation;
 
 public class TilingVisitor implements IRTreeVisitor {
 
-	private HashMap<IRNode, List<Tile>> tileMap;
+	private HashMap<IRNode, Tile> tileMap;
 
 	private static IRTreeEqualsVisitor cmpTreeVisitor = new IRTreeEqualsVisitor();
 
@@ -204,44 +204,65 @@ public class TilingVisitor implements IRTreeVisitor {
 		List<IRExpr> args = call.args();
 		int numArgs = args.size();
 		
-		// for args7...
 		List<Instruction> instructions = new ArrayList<Instruction>();
+		// temp list to be appended to instructions after visiting all arg exprs
+		List<Instruction> tempInstructions = new ArrayList<Instruction>();
+		
+		// for args7...
 		if (numArgs > 6) {
 			for (int i = numArgs-1; i > 6; i--) {
 				// tile the expression
 				IRExpr expr = args.get(i); 
 				expr.accept(this);
-				Tile tile = tileMap.get(expr);
+				Tile exprTile = tileMap.get(expr);
+				List<Instruction> exprInstrs = exprTile.getInstructions();
+				// check if the tile is a mem-tile (no instruction) 
+				if (exprInstrs != null) {
+					instructions.addAll(exprInstrs);
+				}
+				Operand dest = exprTile.getDest();
 				
-				// assembly: "push ei"
-				Instruction instr = new Instruction(Operation.PUSH, tile.getDest());
-				instructions.add(instr);
+				// "push dest"
+				Instruction instr = new Instruction(Operation.PUSH, dest);
+				tempInstructions.add(instr);
 			}
-			
 			numArgs = 6;
 		}
 		
 		// for args1 ... args6
 		for (int i = numArgs-1; i >= 0; i--) {
-			IRExpr expr = args.get(6);
-			expr.accept(this);
-			Tile tile = tileMap.get(expr);
+			// tile the expression
+			IRExpr expr = args.get(i);
+			expr.accept(this);			
+			Tile exprTile = tileMap.get(expr);
+			List<Instruction> exprInstr = exprTile.getInstructions();
+			if (exprInstr != null) {
+				instructions.addAll(exprInstr);
+			}
+			Operand dest = exprTile.getDest();
 			
-			Instruction instr = new Instruction(Operation.MOV, 
-												tile.getDest(),
-												new Register(ARG_REG_LIST[i]));
-			instructions.add(instr);
+			// ex) "mov e3 rdi"
+			Operand reg = new Register(ARG_REG_LIST[i]);
+			Instruction instr = new Instruction(Operation.MOV, dest, reg);
+			tempInstructions.add(instr);
 		}
 		
 		// tile f
 		IRExpr target = call.target();
 		target.accept(this);
+		Tile targetTile = tileMap.get(target);
+		List<Instruction> targetInstr = targetTile.getInstructions();
+		if (targetInstr != null) {
+			instructions.addAll(targetInstr);
+		}
+		Operand targetDest = targetTile.getDest();
+		Instruction callInstruction = new Instruction(Operation.CALL, targetDest);
+		tempInstructions.add(callInstruction);
+	
+		// append tempInstructions to instructions
+		instructions.addAll(tempInstructions);
 		
-		// TODO: check
-		Instruction callInstruction = new Instruction(Operation.CALL, tileMap.get(target).getDest());
-		instructions.add(callInstruction);
-		
-		// create a corresponding tile
+		// create a Tile for this node
 		Operand dest = new Register("rax");
 		Tile tile = new Tile(instructions, instructions.size(), dest);
 		tileMap.put(call, tile);
@@ -339,5 +360,4 @@ public class TilingVisitor implements IRTreeVisitor {
 		// TODO Auto-generated method stub
 
 	}
-
 }

@@ -1,29 +1,118 @@
 package jl2755.assembly;
 
 import java.util.ArrayList;
+import java.util.List;
+
+import edu.cornell.cs.cs4120.xic.ir.*;
 
 public class Tile {
 
-	private Pattern pattern;
+	private IRNode rootOfSubtree;
 	private int cost;
-	private String opcode;
-	private Operand src;
-	private Operand dest;
+	private List<Instruction> instructions;
+
+	public Tile(List<String> inOrder, List<String> preOrder, List<Instruction> i) {
+		rootOfSubtree = makeTree(inOrder, preOrder);
+		instructions = i;
+	}
+
+	/**
+	 * Strings should be name of IRNode instance plus a number to make
+	 * each node unique
+	 * 
+	 * @param inOrder is the in order traversal of such a tree
+	 * @param preOrder is the pre order traversal of such a tree
+	 * @return the root of the tree that the in order and pre order
+	 * traversals describes
+	 */
+	private static IRNode makeTree(List<String> inOrder, List<String> preOrder) {
+		if (preOrder.size() == 0) {
+			return null;
+		}
+		String headOfSubtree = preOrder.get(0);
+		preOrder.remove(0);
+		
+		int indexInInOrder = inOrder.indexOf(headOfSubtree);
+		
+		List<String> leftSubtree = inOrder.subList(0, indexInInOrder);
+		
+		List<String> rightSubtree = new ArrayList<String>();
+		
+		if (!(indexInInOrder == inOrder.size() - 1)) {
+			rightSubtree = inOrder.subList(indexInInOrder + 1, inOrder.size() - 1);
+		}
+		
+		IRNode rootOfLeft = makeTree(leftSubtree, preOrder);
+		IRNode rootOfRight = makeTree(rightSubtree, preOrder);
+		
+		IRNode root = stringToNode(headOfSubtree);
+		root.addLeft(rootOfLeft);
+		root.addRight(rootOfRight);
+		
+		return root;
+	}
 	
-	public Tile(Pattern argPattern, int argCost, String argOpcode, Operand argSrc, Operand argDest) {
-		pattern = argPattern;
-		cost = argCost;
-		opcode = argOpcode;
-		src = argSrc;
-		dest = argDest;
+	/**
+	 * NAMING CONVENTION:
+	 * IRMem = Mem;
+	 * IRCall = Call;
+	 * 
+	 * 
+	 * @param nodeName
+	 * @return
+	 */
+	private static IRNode stringToNode(String nodeName) {
+		if (nodeName.contains("BinOp")) {
+			return new IRBinOp(null,null,null);
+		}
+		if (nodeName.contains("Call")) {
+			IRExpr[] hue = null;
+			return new IRCall(null, hue);
+		}
+		if (nodeName.contains("CJump")) {
+			return new IRCJump(null,null);
+		}
+		if (nodeName.contains("Const")) {
+			return new IRConst(0);
+		}
+		if (nodeName.contains("Exp")) {
+			return new IRExp(null);
+		}
+		if (nodeName.contains("Jump")) {
+			return new IRJump(null);
+		}
+		if (nodeName.contains("Label")) {
+			return new IRLabel(null);
+		}
+		if (nodeName.contains("Mem")) {
+			return new IRMem(null);
+		}
+		if (nodeName.contains("Move")) {
+			return new IRMove(null,null);
+		}
+		if (nodeName.contains("Name")) {
+			return new IRName(null);
+		}
+		if (nodeName.contains("Return")) {
+			return new IRReturn();
+		}
+		if (nodeName.contains("Seq")) {
+			return new IRSeq();
+		}
+		if (nodeName.contains("Temp")) {
+			return new IRTemp(null);
+		}
+		System.out.println("You wrote a weird string for node name");
+		assert(false);
+		return null;
 	}
 
-	public Pattern getPattern() {
-		return pattern;
+	public IRNode getRootOfSubtree() {
+		return rootOfSubtree;
 	}
 
-	public void setPattern(Pattern pattern) {
-		this.pattern = pattern;
+	public void setRootOfSubtree(IRNode rootOfSubtree) {
+		this.rootOfSubtree = rootOfSubtree;
 	}
 
 	public int getCost() {
@@ -34,28 +123,11 @@ public class Tile {
 		this.cost = cost;
 	}
 
-	public String getOpcode() {
-		return opcode;
+	public List<Instruction> getInstructions() {
+		return instructions;
 	}
 
-	public void setOpcode(String opcode) {
-		this.opcode = opcode;
+	public void setInstructions(List<Instruction> instructions) {
+		this.instructions = instructions;
 	}
-
-	public Operand getSrc() {
-		return src;
-	}
-
-	public void setSrc(Operand src) {
-		this.src = src;
-	}
-
-	public Operand getDest() {
-		return dest;
-	}
-
-	public void setDest(Operand dest) {
-		this.dest = dest;
-	}
-	
 }

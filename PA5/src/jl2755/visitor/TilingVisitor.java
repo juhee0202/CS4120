@@ -40,56 +40,9 @@ public class TilingVisitor implements IRTreeVisitor {
 	/** Lists of strings representing possible tiles. */
 	// TODO: put all these in a json file and read the json file to populate patternMap
 
-	private static final List<String> BINOP1_PRE = new ArrayList<String>(
-			Arrays.asList(
-					"Binop"
-					));
-	private static final List<String> BINOP1_IN = new ArrayList<String>(
-			Arrays.asList(
-					"Binop"
-					));
-	private static final List<String> BINOP2_PRE = new ArrayList<String>(
-			Arrays.asList(
-					"Binop",
-					"Mem"
-					));
-	private static final List<String> BINOP2_IN = new ArrayList<String>(
-			Arrays.asList(
-					"Mem",
-					"Binop"
-					));
-	private static final List<String> BINOP3_PRE = new ArrayList<String>(
-			Arrays.asList(
-					"Binop",
-					"Mem"
-					));
-	private static final List<String> BINOP3_IN = new ArrayList<String>(
-			Arrays.asList(
-					"Binop",
-					"Mem"
-					));
-	private static final List<String> BINOP4_PRE = new ArrayList<String>(
-			Arrays.asList(
-					"Binop",
-					"Const"
-					));
-	private static final List<String> BINOP4_IN = new ArrayList<String>(
-			Arrays.asList(
-					"Const",
-					"Binop"
-					));
-	private static final List<String> BINOP5_PRE = new ArrayList<String>(
-			Arrays.asList(
-					"Binop",
-					"Const",
-					"Mem"
-					));
-	private static final List<String> BINOP5_IN = new ArrayList<String>(
-			Arrays.asList(
-					"Const",
-					"Binop",
-					"Mem"
-					));
+//	// BINOP
+//	private static final List<String> BINOP = new ArrayList<String>(
+//			Arrays.asList("BINOP"));
 
 	// CJUMP
 	private static final List<String> CJUMP_BINOP_PRE = new ArrayList<String>(
@@ -226,10 +179,8 @@ public class TilingVisitor implements IRTreeVisitor {
 		right.accept(this);
 
 		OpType op = bo.opType();
-		BinOpTile binOp;
-		
 	}
-
+	
 	@Override
 	public void visit(IRCall call) {
 		if (tileMap.containsKey(call)) {

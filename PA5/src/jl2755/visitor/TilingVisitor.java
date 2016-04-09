@@ -5,24 +5,7 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import edu.cornell.cs.cs4120.xic.ir.IRBinOp;
-import edu.cornell.cs.cs4120.xic.ir.IRCJump;
-import edu.cornell.cs.cs4120.xic.ir.IRCall;
-import edu.cornell.cs.cs4120.xic.ir.IRCompUnit;
-import edu.cornell.cs.cs4120.xic.ir.IRConst;
-import edu.cornell.cs.cs4120.xic.ir.IRESeq;
-import edu.cornell.cs.cs4120.xic.ir.IRExp;
-import edu.cornell.cs.cs4120.xic.ir.IRFuncDecl;
-import edu.cornell.cs.cs4120.xic.ir.IRJump;
-import edu.cornell.cs.cs4120.xic.ir.IRLabel;
-import edu.cornell.cs.cs4120.xic.ir.IRMem;
-import edu.cornell.cs.cs4120.xic.ir.IRMove;
-import edu.cornell.cs.cs4120.xic.ir.IRName;
-import edu.cornell.cs.cs4120.xic.ir.IRNode;
-import edu.cornell.cs.cs4120.xic.ir.IRReturn;
-import edu.cornell.cs.cs4120.xic.ir.IRSeq;
-import edu.cornell.cs.cs4120.xic.ir.IRTemp;
-import edu.cornell.cs.cs4120.xic.ir.OpType;
+import edu.cornell.cs.cs4120.xic.ir.*;
 import jl2755.assembly.*;
 
 public class TilingVisitor implements IRTreeVisitor {
@@ -234,7 +217,35 @@ public class TilingVisitor implements IRTreeVisitor {
 	@Override
 	public void visit(IRCJump cj) {
 		// TODO Auto-generated method stub
-
+		IRExpr condition = cj.expr();
+		List<Tile> tiling = new ArrayList<Tile>();
+		Tile tempTile;
+		if (condition instanceof IRConst) {
+			// boolean literal
+			tempTile = new Tile()
+		} else if (condition instanceof IRTemp) {
+			// temp
+			
+		} else if (condition instanceof IRMem) {
+			// mem
+			
+		} else {
+			// expression
+			IRBinOp expr = (IRBinOp) condition;
+			OpType op = expr.opType();
+			switch (op) {
+			case AND:
+				
+			case OR:
+			case XOR:
+			case EQ:
+			case NEQ:
+			case LT:
+			case LEQ:
+			case GT:
+			case GEQ:
+			}
+		}
 	}
 
 	@Override

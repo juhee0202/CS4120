@@ -7,8 +7,7 @@ public class Instruction {
 	// TODO: complete this
 	public enum Operation {
 	    ADD, SUB, MUL, HMUL, DIV, MOD, AND, OR, XOR, LSHIFT, RSHIFT, ARSHIFT,
-	    EQ, NEQ, LT, GT, LEQ, GEQ,
-	    MOV,CALL,PUSH;
+	    EQ, NEQ, LT, GT, LEQ, GEQ, LABEL, MOV, CALL, PUSH;
 
 	    @Override
 	    public String toString() {
@@ -49,6 +48,8 @@ public class Instruction {
 	            return "LEQ";
 	        case GEQ:
 	            return "GEQ";
+	        case LABEL:
+	        	return "";
 	        case MOV:
 	            return "MOV";
 	        case CALL:

@@ -29,6 +29,12 @@ public class Tile {
 		cost = argCost;
 	}
 	
+	public Tile(List<Instruction> i, int argCost, Operand argDest) {
+		instructions = i;
+		cost = argCost;
+		dest = argDest;
+	}
+	
 	/**
 	 * Strings should be name of IRNode instance plus a number to make
 	 * each node unique

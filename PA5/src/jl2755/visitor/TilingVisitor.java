@@ -245,8 +245,10 @@ public class TilingVisitor implements IRTreeVisitor {
 
 	@Override
 	public void visit(IRConst con) {
-		// TODO Auto-generated method stub
-
+		if (tileMap.containsKey(con)) {
+			return;
+		}
+		Tile constTile = new Tile();
 	}
 
 	@Override

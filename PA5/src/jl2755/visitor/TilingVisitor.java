@@ -24,11 +24,11 @@ import edu.cornell.cs.cs4120.xic.ir.IRSeq;
 import edu.cornell.cs.cs4120.xic.ir.IRTemp;
 import edu.cornell.cs.cs4120.xic.ir.OpType;
 import jl2755.assembly.*;
+import jl2755.assembly.Instruction.Operation;
 
 public class TilingVisitor implements IRTreeVisitor {
 
-	private HashMap<IRNode, Tile> tileMap;
-//	= new Tile(matchdPattern, parameters);
+	private HashMap<IRNode, List<Tile>> tileMap;
 	private static IRTreeEqualsVisitor cmpTreeVisitor = new IRTreeEqualsVisitor();
 	
 	/** Used to communicate a child's Tile value to the parent */
@@ -37,6 +37,16 @@ public class TilingVisitor implements IRTreeVisitor {
 	/** Lists of strings representing possible tiles. */
 	// TODO: put all these in a json file and read the json file to populate patternMap
 
+	// BINOP
+	private static final List<String> BINOP_PRE = new ArrayList<String>(
+			Arrays.asList(
+					"BinOp"
+					));
+	private static final List<String> BINOP_IN = new ArrayList<String>(
+			Arrays.asList(
+					"BinOp"
+					));
+	
 	// CJUMP
 	private static final List<String> CJUMP_BINOP_PRE = new ArrayList<String>(
 			Arrays.asList(
@@ -172,6 +182,78 @@ public class TilingVisitor implements IRTreeVisitor {
 		right.accept(this);
 
 		OpType op = bo.opType();
+		Operation tileOp = null;
+		switch(op) {
+		case ADD:
+			tileOp = Operation.ADD;
+            break;
+        case SUB:
+        	tileOp = Operation.SUB;
+            break;
+        case MUL:
+        	tileOp = Operation.MUL;
+            break;
+        case HMUL:
+        	tileOp = Operation.HMUL;
+            break;
+        case DIV:
+        	tileOp = Operation.DIV;
+            break;
+        case MOD:
+        	tileOp = Operation.MOD;
+            break;
+        case AND:
+        	tileOp = Operation.AND;
+            break;
+        case OR:
+        	tileOp = Operation.OR;
+            break;
+        case XOR:
+        	tileOp = Operation.XOR;
+            break;
+        case LSHIFT:
+        	tileOp = Operation.LSHIFT;
+            break;
+        case RSHIFT:
+        	tileOp = Operation.RSHIFT;
+            break;
+        case ARSHIFT:
+        	tileOp = Operation.ARSHIFT;
+            break;
+        case EQ:
+        	tileOp = Operation.EQ;
+            break;
+        case NEQ:
+        	tileOp = Operation.NEQ;
+            break;
+        case LT:
+        	tileOp = Operation.LT;
+            break;
+        case GT:
+        	tileOp = Operation.GT;
+            break;
+        case LEQ:
+        	tileOp = Operation.LEQ;
+            break;
+        case GEQ:
+        	tileOp = Operation.GEQ;
+            break;
+		}
+		
+		List<Instruction> instructions = new ArrayList<Instruction>();
+		
+		List<Tile> tiles = new ArrayList<Tile>();
+		
+		
+		Operand src = null;
+		Operand dest = null;
+		Instruction addInstruction = new Instruction(op, src, dest);
+		instructions.add(addInstruction);
+		
+		tiles.add(new Tile(binopString, binopString, instructions, 1);
+		tiles.addAll(tileMap.get(bo.left()));
+		tiles.addAll(tileMap.get(bo.right()));
+		tileMap.put(bo, tiles);
 	}
 	
 	@Override
@@ -203,6 +285,8 @@ public class TilingVisitor implements IRTreeVisitor {
 		}
 		Tile constTile = new Tile(null, 0, new Constant(con.value()));
 		tileMap.put(con, constTile);
+		globalTile = constTile;
+		tileMap.get(child).
 	}
 
 	@Override

@@ -34,51 +34,41 @@ public class TilingVisitor implements IRTreeVisitor {
 	
 	private static final List<String> BINOP1_PRE = new ArrayList<String>(
 			Arrays.asList(
-					"Binop",
-					"Temp1",
-					"Temp2"
+					"Binop"
 			));
 	private static final List<String> BINOP1_IN = new ArrayList<String>(
 			Arrays.asList(
-					"Temp1",
-					"Binop",
-					"Temp2"
+					"Binop"
 			));
 	private static final List<String> BINOP2_PRE = new ArrayList<String>(
 			Arrays.asList(
 					"Binop",
-					"Mem",
-					"Temp"
+					"Mem"
 			));
 	private static final List<String> BINOP2_IN = new ArrayList<String>(
 			Arrays.asList(
 					"Mem",
-					"Binop",
-					"Temp"
+					"Binop"
 			));
 	private static final List<String> BINOP3_PRE = new ArrayList<String>(
 			Arrays.asList(
 					"Binop",
-					"Temp",
 					"Mem"
 			));
 	private static final List<String> BINOP3_IN = new ArrayList<String>(
 			Arrays.asList(
-					"Temp",
 					"Binop",
 					"Mem"
 			));
 	private static final List<String> BINOP4_PRE = new ArrayList<String>(
 			Arrays.asList(
 					"Binop",
-					"Const",
-					"Temp"
+					"Const"
 			));
 	private static final List<String> BINOP4_IN = new ArrayList<String>(
 			Arrays.asList(
 					"Const",
-					"Binop",
-					"Temp"
+					"Binop"
 			));
 	private static final List<String> BINOP5_PRE = new ArrayList<String>(
 			Arrays.asList(
@@ -94,32 +84,32 @@ public class TilingVisitor implements IRTreeVisitor {
 			));
 	
 	// CJUMP
-	private static final List<String> CJUMP_BinOp_PRE = new ArrayList<String>(
+	private static final List<String> CJUMP_BINOP_PRE = new ArrayList<String>(
 			Arrays.asList(
 					"CJump", 
 					"BinOp"
 					));
-	private static final List<String> CJUMP_BinOp_IN = new ArrayList<String>(
+	private static final List<String> CJUMP_BINOP_IN = new ArrayList<String>(
 			Arrays.asList(
 					"BinOp",
 					"CJump"
 					));
-	private static final List<String> CJUMP_Temp_PRE = new ArrayList<String>(
+	private static final List<String> CJUMP_TEMP_PRE = new ArrayList<String>(
 			Arrays.asList(
 					"CJump", 
 					"Temp"
 					));
-	private static final List<String> CJUMP_Temp_IN = new ArrayList<String>(
+	private static final List<String> CJUMP_TEMP_IN = new ArrayList<String>(
 			Arrays.asList(
 					"Temp",
 					"CJump"
 					));
-	private static final List<String> CJUMP_Mem_PRE = new ArrayList<String>(
+	private static final List<String> CJUMP_MEM_PRE = new ArrayList<String>(
 			Arrays.asList(
 					"CJump", 
 					"Mem"
 					));
-	private static final List<String> CJUMP_Mem_IN = new ArrayList<String>(
+	private static final List<String> CJUMP_MEM_IN = new ArrayList<String>(
 			Arrays.asList(
 					"Mem",
 					"CJump"

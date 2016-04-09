@@ -30,6 +30,7 @@ public class TilingVisitor implements IRTreeVisitor {
 	private HashMap<IRNode, Tile> tileMap;
 	
 	/** Lists of strings representing possible tiles. */
+		
 	
 	private static final List<String> BINOP1_PRE = new ArrayList<String>(
 			Arrays.asList(
@@ -91,6 +92,40 @@ public class TilingVisitor implements IRTreeVisitor {
 					"Binop",
 					"Mem"
 			));
+	
+	// CJUMP
+	private static final List<String> CJUMP_BinOp_PRE = new ArrayList<String>(
+			Arrays.asList(
+					"CJump", 
+					"BinOp"
+					));
+	private static final List<String> CJUMP_BinOp_IN = new ArrayList<String>(
+			Arrays.asList(
+					"BinOp",
+					"CJump"
+					));
+	private static final List<String> CJUMP_Temp_PRE = new ArrayList<String>(
+			Arrays.asList(
+					"CJump", 
+					"Temp"
+					));
+	private static final List<String> CJUMP_Temp_IN = new ArrayList<String>(
+			Arrays.asList(
+					"Temp",
+					"CJump"
+					));
+	private static final List<String> CJUMP_Mem_PRE = new ArrayList<String>(
+			Arrays.asList(
+					"CJump", 
+					"Mem"
+					));
+	private static final List<String> CJUMP_Mem_IN = new ArrayList<String>(
+			Arrays.asList(
+					"Mem",
+					"CJump"
+					));
+	
+	// JUMP
 	private static final List<String> JUMP_PRE = new ArrayList<String>(
 			Arrays.asList(
 					"Jump", 
@@ -98,12 +133,10 @@ public class TilingVisitor implements IRTreeVisitor {
 					));
 	private static final List<String> JUMP_IN = new ArrayList<String>(
 			Arrays.asList(
-					"Name", 
+					"Name",
 					"Jump"
 					));
-	
-	
-	
+
 
 	@Override
 	public void visit(IRBinOp bo) {

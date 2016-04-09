@@ -12,6 +12,7 @@ import edu.cornell.cs.cs4120.xic.ir.IRCompUnit;
 import edu.cornell.cs.cs4120.xic.ir.IRConst;
 import edu.cornell.cs.cs4120.xic.ir.IRESeq;
 import edu.cornell.cs.cs4120.xic.ir.IRExp;
+import edu.cornell.cs.cs4120.xic.ir.IRExpr;
 import edu.cornell.cs.cs4120.xic.ir.IRFuncDecl;
 import edu.cornell.cs.cs4120.xic.ir.IRJump;
 import edu.cornell.cs.cs4120.xic.ir.IRLabel;
@@ -28,11 +29,15 @@ import jl2755.assembly.Instruction.Operation;
 
 public class TilingVisitor implements IRTreeVisitor {
 
-	private HashMap<IRNode, List<Tile>> tileMap;
+	private HashMap<IRNode, Tile> tileMap;
 	private static IRTreeEqualsVisitor cmpTreeVisitor = new IRTreeEqualsVisitor();
+
+	/** list of first 6 function call arg registers */
+	private static final String[] ARG_REG_LIST = {
+			"rdi", "rsi", "rdx", "rcx", "r8", "r9"
+	};
+
 	
-	/** Used to communicate a child's Tile value to the parent */
-	private Tile globalTile;
 	
 	/** Lists of strings representing possible tiles. */
 	// TODO: put all these in a json file and read the json file to populate patternMap
@@ -176,10 +181,6 @@ public class TilingVisitor implements IRTreeVisitor {
 	@Override
 	public void visit(IRBinOp bo) {
 		// TODO Auto-generated method stub
-		IRNode left = bo.left();
-		IRNode right = bo.right();
-		left.accept(this);
-		right.accept(this);
 
 		OpType op = bo.opType();
 		Operation tileOp = null;
@@ -239,27 +240,94 @@ public class TilingVisitor implements IRTreeVisitor {
         	tileOp = Operation.GEQ;
             break;
 		}
+				
+		IRNode left = bo.left();
+		IRNode right = bo.right();
+		left.accept(this);
+		right.accept(this);
 		
-		List<Instruction> instructions = new ArrayList<Instruction>();
+		Operand leftOperand = tileMap.get(left).getDest();
+		Operand rightOperand = tileMap.get(right).getDest();
 		
-		List<Tile> tiles = new ArrayList<Tile>();
+		switch (leftOperand.getOpType()) {
+		case "Register":
+		case "Memory":
+		case "Constant":
+		}
 		
-		
+		// creating instructions to put into Tile
+		List<Instruction> instr = new ArrayList<Instruction>();
 		Operand src = null;
 		Operand dest = null;
-		Instruction addInstruction = new Instruction(op, src, dest);
-		instructions.add(addInstruction);
+		Instruction addInstruction = new Instruction(tileOp, src, dest);
+		instr.add(addInstruction);
 		
-		tiles.add(new Tile(binopString, binopString, instructions, 1);
-		tiles.addAll(tileMap.get(bo.left()));
-		tiles.addAll(tileMap.get(bo.right()));
-		tileMap.put(bo, tiles);
+		// creating list of Tile to put into tileMap
+		Tile tile = new Tile(TilingVisitor.BINOP_PRE, TilingVisitor.BINOP_IN, instr, 1);
+		tileMap.put(bo, tile);
 	}
 	
+	/**
+	 * Assembly: 
+	 * push en
+	 * push en-1
+	 * ...
+	 * push e7
+	 * mov e6, r9
+	 * ...
+	 * mov e1, rdi
+	 * call f
+	 */
 	@Override
 	public void visit(IRCall call) {
-		// TODO Auto-generated method stub
-
+		if (tileMap.containsKey(call)) {
+			return;
+		}
+		
+		List<IRExpr> args = call.args();
+		int numArgs = args.size();
+		
+		// for args7...
+		List<Instruction> instructions = new ArrayList<Instruction>();
+		if (numArgs > 6) {
+			for (int i = numArgs-1; i > 6; i--) {
+				// tile the expression
+				IRExpr expr = args.get(i); 
+				expr.accept(this);
+				Tile tile = tileMap.get(expr);
+				
+				// assembly: "push ei"
+				Instruction instr = new Instruction(Operation.PUSH, tile.getDest());
+				instructions.add(instr);
+			}
+			
+			numArgs = 6;
+		}
+		
+		// for args1 ... args6
+		for (int i = numArgs-1; i >= 0; i--) {
+			IRExpr expr = args.get(6);
+			expr.accept(this);
+			Tile tile = tileMap.get(expr);
+			
+			Instruction instr = new Instruction(Operation.MOV, 
+												tile.getDest(),
+												new Register(ARG_REG_LIST[i]));
+			instructions.add(instr);
+		}
+		
+		// tile f
+		IRExpr target = call.target();
+		target.accept(this);
+		
+		// TODO: check
+		Instruction callInstruction = new Instruction(Operation.CALL, tileMap.get(target).getDest());
+		instructions.add(callInstruction);
+		
+		// create a corresponding tile
+		Operand dest = new Register("rax");
+		Tile tile = new Tile(instructions, instructions.size(), dest);
+		tileMap.put(call, tile);
 	}
 
 	@Override
@@ -284,15 +352,15 @@ public class TilingVisitor implements IRTreeVisitor {
 			return;
 		}
 		Tile constTile = new Tile(null, 0, new Constant(con.value()));
-		tileMap.put(con, constTile);
-		globalTile = constTile;
-		tileMap.get(child).
+		List<Tile> tempListOfTiles = new ArrayList<Tile>();
+		tempListOfTiles.add(constTile);
+		tileMap.put(con, tempListOfTiles);
 	}
 
 	@Override
 	public void visit(IRESeq eseq) {
-		// TODO Auto-generated method stub
-
+		// Should not be here I think
+		System.out.println("Got to ESeq in TilingVisitor when you shouldn't have");
 	}
 
 	@Override
@@ -315,8 +383,13 @@ public class TilingVisitor implements IRTreeVisitor {
 
 	@Override
 	public void visit(IRLabel l) {
-		// TODO Auto-generated method stub
-
+		if (tileMap.containsKey(l)) {
+			return;
+		}
+		Instruction labelInst = new Instruction(Operation.LABEL,
+				null, new Label(l.name()));
+		List<Instruction> tempListOfInstr = new ArrayList<Instruction>();
+		Tile labelTile = new Tile(tempListOfInstr,0,l.name());
 	}
 
 	@Override

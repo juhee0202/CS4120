@@ -563,9 +563,7 @@ public class TilingVisitor implements IRTreeVisitor {
 			return;
 		}
 		Tile constTile = new Tile(null, 0, new Constant(con.value()));
-		List<Tile> tempListOfTiles = new ArrayList<Tile>();
-		tempListOfTiles.add(constTile);
-		tileMap.put(con, tempListOfTiles);
+		tileMap.put(con, constTile);
 	}
 
 	@Override
@@ -605,7 +603,9 @@ public class TilingVisitor implements IRTreeVisitor {
 		Instruction labelInst = new Instruction(Operation.LABEL,
 				null, new Label(l.name()));
 		List<Instruction> tempListOfInstr = new ArrayList<Instruction>();
-		Tile labelTile = new Tile(tempListOfInstr,0,l.name());
+		tempListOfInstr.add(labelInst);
+		Tile labelTile = new Tile(tempListOfInstr,0,new Label(l.name()));
+		tileMap.put(l,labelTile);
 	}
 
 	@Override

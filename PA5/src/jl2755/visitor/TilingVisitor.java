@@ -29,8 +29,8 @@ import jl2755.assembly.Instruction.Operation;
 
 public class TilingVisitor implements IRTreeVisitor {
 
-	private HashMap<IRNode, Tile> tileMap;
-//	= new Tile(matchdPattern, parameters);
+	private HashMap<IRNode, List<Tile>> tileMap;
+
 	private static IRTreeEqualsVisitor cmpTreeVisitor = new IRTreeEqualsVisitor();
 
 	/** list of first 6 function call arg registers */
@@ -39,8 +39,6 @@ public class TilingVisitor implements IRTreeVisitor {
 	};
 
 	
-	/** Used to communicate a child's Tile value to the parent */
-	private Tile globalTile;
 	
 	/** Lists of strings representing possible tiles. */
 	// TODO: put all these in a json file and read the json file to populate patternMap
@@ -271,7 +269,9 @@ public class TilingVisitor implements IRTreeVisitor {
 			return;
 		}
 		Tile constTile = new Tile(null, 0, new Constant(con.value()));
-		tileMap.put(con, constTile);
+		List<Tile> tempListOfTiles = new ArrayList<Tile>();
+		tempListOfTiles.add(constTile);
+		tileMap.put(con, tempListOfTiles);
 	}
 
 	@Override

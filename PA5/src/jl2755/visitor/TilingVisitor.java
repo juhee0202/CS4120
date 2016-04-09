@@ -5,25 +5,7 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import edu.cornell.cs.cs4120.xic.ir.IRBinOp;
-import edu.cornell.cs.cs4120.xic.ir.IRCJump;
-import edu.cornell.cs.cs4120.xic.ir.IRCall;
-import edu.cornell.cs.cs4120.xic.ir.IRCompUnit;
-import edu.cornell.cs.cs4120.xic.ir.IRConst;
-import edu.cornell.cs.cs4120.xic.ir.IRESeq;
-import edu.cornell.cs.cs4120.xic.ir.IRExp;
-import edu.cornell.cs.cs4120.xic.ir.IRExpr;
-import edu.cornell.cs.cs4120.xic.ir.IRFuncDecl;
-import edu.cornell.cs.cs4120.xic.ir.IRJump;
-import edu.cornell.cs.cs4120.xic.ir.IRLabel;
-import edu.cornell.cs.cs4120.xic.ir.IRMem;
-import edu.cornell.cs.cs4120.xic.ir.IRMove;
-import edu.cornell.cs.cs4120.xic.ir.IRName;
-import edu.cornell.cs.cs4120.xic.ir.IRNode;
-import edu.cornell.cs.cs4120.xic.ir.IRReturn;
-import edu.cornell.cs.cs4120.xic.ir.IRSeq;
-import edu.cornell.cs.cs4120.xic.ir.IRTemp;
-import edu.cornell.cs.cs4120.xic.ir.OpType;
+import edu.cornell.cs.cs4120.xic.ir.*;
 import jl2755.assembly.*;
 import jl2755.assembly.Instruction.Operation;
 
@@ -391,8 +373,237 @@ public class TilingVisitor implements IRTreeVisitor {
 
 	@Override
 	public void visit(IRCJump cj) {
-		// TODO Auto-generated method stub
+		IRExpr condition = cj.expr();
+		Tile tempTile = null;
+		List<Instruction> instructions = new ArrayList<Instruction>();
+		Instruction tempInst;
+		Operand tempSrc;
+		Operand tempDest;
+		Operand label = new Label(cj.trueLabel());
+		int cost;
 
+		if (condition instanceof IRConst) {		
+			// Visit condition child
+			condition.accept(this);
+			Tile condTile = tileMap.get(condition);
+			cost = condTile.getCost();
+			
+			// test c,c
+			tempSrc = condTile.getDest();
+			tempInst = new Instruction(Operation.TEST,tempSrc,tempSrc);
+			instructions.add(tempInst);
+			cost += tempInst.getCost();
+			
+			// jnz l
+			tempInst = new Instruction(Operation.JNZ,label);
+			instructions.add(tempInst);
+			cost += tempInst.getCost();
+			
+			tempTile = new Tile(instructions,cost);
+		} else if (condition instanceof IRTemp) {		
+			// Visit condition child
+			condition.accept(this);
+			Tile condTile = tileMap.get(condition);
+			cost = condTile.getCost();
+			
+			// test r,r
+			tempSrc = condTile.getDest();
+			tempInst = new Instruction(Operation.TEST,tempSrc,tempSrc);
+			instructions.add(tempInst);
+			cost += tempInst.getCost();
+			
+			// jnz l
+			tempInst = new Instruction(Operation.JNZ,label);
+			instructions.add(tempInst);
+			cost += tempInst.getCost();
+			
+			tempTile = new Tile(instructions,cost);
+		} else if (condition instanceof IRMem) {
+			// Visit condition child
+			condition.accept(this);
+			Tile condTile = tileMap.get(condition);
+			cost = condTile.getCost();
+			
+			// test mem,1
+			tempSrc = condTile.getDest();
+			tempDest = new Constant(1);
+			tempInst = new Instruction(Operation.TEST,tempSrc,tempDest);
+			instructions.add(tempInst);
+			cost += tempInst.getCost();
+			
+			// jnz l
+			tempInst = new Instruction(Operation.JNZ,label);
+			instructions.add(tempInst);
+			cost += tempInst.getCost();
+			
+			tempTile = new Tile(instructions,cost);
+		} else {
+			
+			IRBinOp expr = (IRBinOp) condition;
+			IRExpr left = expr.left();
+			IRExpr right = expr.right();
+			Tile leftTile;
+			Tile rightTile;
+			OpType op = expr.opType();
+			switch (op) {
+			case AND:
+			case OR:
+			case XOR:
+				// Visit condition child
+				condition.accept(this);
+				Tile condTile = tileMap.get(condition);
+				cost = condTile.getCost();
+				
+				// test r,r
+				tempSrc = condTile.getDest();
+				tempInst = new Instruction(Operation.TEST,tempSrc,tempSrc);
+				instructions.add(tempInst);
+				cost += tempInst.getCost();
+				
+				// jnz l
+				tempInst = new Instruction(Operation.JNZ,label);
+				instructions.add(tempInst);
+				cost += tempInst.getCost();
+				
+				tempTile = new Tile(instructions,cost);
+				break;
+			case EQ:
+				// Visit left and right
+				left.accept(this);
+				right.accept(this);
+				leftTile = tileMap.get(left);
+				rightTile = tileMap.get(right);
+				cost = leftTile.getCost() + rightTile.getCost();
+				
+				// cmp e1,e2
+				tempSrc = leftTile.getDest();
+				tempDest = rightTile.getDest();
+				tempInst = new Instruction(Operation.CMP,tempSrc,tempDest);
+				instructions.add(tempInst);
+				cost += tempInst.getCost();
+				
+				// je l
+				tempInst = new Instruction(Operation.JE,label);
+				instructions.add(tempInst);
+				cost += tempInst.getCost();
+				
+				tempTile = new Tile(instructions,cost);
+				break;
+			case NEQ:
+				// Visit left and right
+				left.accept(this);
+				right.accept(this);
+				leftTile = tileMap.get(left);
+				rightTile = tileMap.get(right);
+				cost = leftTile.getCost() + rightTile.getCost();
+				
+				// cmp e1,e2
+				tempSrc = leftTile.getDest();
+				tempDest = rightTile.getDest();
+				tempInst = new Instruction(Operation.CMP,tempSrc,tempDest);
+				instructions.add(tempInst);
+				cost += tempInst.getCost();
+				
+				// jne l
+				tempInst = new Instruction(Operation.JNE,label);
+				instructions.add(tempInst);
+				cost += tempInst.getCost();
+				
+				tempTile = new Tile(instructions,cost);
+				break;
+				
+			// TODO: Check AT&T syntax for cmp for 4 below!!!
+			case LT:
+				// Visit left and right
+				left.accept(this);
+				right.accept(this);
+				leftTile = tileMap.get(left);
+				rightTile = tileMap.get(right);
+				cost = leftTile.getCost() + rightTile.getCost();
+				
+				// cmp e1,e2
+				tempSrc = leftTile.getDest();
+				tempDest = rightTile.getDest();
+				tempInst = new Instruction(Operation.CMP,tempSrc,tempDest);
+				instructions.add(tempInst);
+				cost += tempInst.getCost();
+				
+				// jl l
+				tempInst = new Instruction(Operation.JL,label);
+				instructions.add(tempInst);
+				cost += tempInst.getCost();
+				
+				tempTile = new Tile(instructions,cost);
+				break;
+			case LEQ:
+				// Visit left and right
+				left.accept(this);
+				right.accept(this);
+				leftTile = tileMap.get(left);
+				rightTile = tileMap.get(right);
+				cost = leftTile.getCost() + rightTile.getCost();
+				
+				// cmp e1,e2
+				tempSrc = leftTile.getDest();
+				tempDest = rightTile.getDest();
+				tempInst = new Instruction(Operation.CMP,tempSrc,tempDest);
+				instructions.add(tempInst);
+				cost += tempInst.getCost();
+				
+				// jle l
+				tempInst = new Instruction(Operation.JLE,label);
+				instructions.add(tempInst);
+				cost += tempInst.getCost();
+				
+				tempTile = new Tile(instructions,cost);
+				break;
+			case GT:
+				// Visit left and right
+				left.accept(this);
+				right.accept(this);
+				leftTile = tileMap.get(left);
+				rightTile = tileMap.get(right);
+				cost = leftTile.getCost() + rightTile.getCost();
+				
+				// cmp e1,e2
+				tempSrc = leftTile.getDest();
+				tempDest = rightTile.getDest();
+				tempInst = new Instruction(Operation.CMP,tempSrc,tempDest);
+				instructions.add(tempInst);
+				cost += tempInst.getCost();
+				
+				// jg l
+				tempInst = new Instruction(Operation.JG,label);
+				instructions.add(tempInst);
+				cost += tempInst.getCost();
+				
+				tempTile = new Tile(instructions,cost);
+				break;
+			case GEQ:
+				// Visit left and right
+				left.accept(this);
+				right.accept(this);
+				leftTile = tileMap.get(left);
+				rightTile = tileMap.get(right);
+				cost = leftTile.getCost() + rightTile.getCost();
+				
+				// cmp e1,e2
+				tempSrc = leftTile.getDest();
+				tempDest = rightTile.getDest();
+				tempInst = new Instruction(Operation.CMP,tempSrc,tempDest);
+				instructions.add(tempInst);
+				cost += tempInst.getCost();
+				
+				// jge l
+				tempInst = new Instruction(Operation.JGE,label);
+				instructions.add(tempInst);
+				cost += tempInst.getCost();
+				
+				tempTile = new Tile(instructions,cost);
+				break;
+			}
+		}
+		tileMap.put(cj,tempTile);
 	}
 
 	@Override
@@ -411,9 +622,7 @@ public class TilingVisitor implements IRTreeVisitor {
 			return;
 		}
 		Tile constTile = new Tile(null, 0, new Constant(con.value()));
-		List<Tile> tempListOfTiles = new ArrayList<Tile>();
-		tempListOfTiles.add(constTile);
-		tileMap.put(con, tempListOfTiles);
+		tileMap.put(con, constTile);
 	}
 
 	@Override
@@ -436,8 +645,13 @@ public class TilingVisitor implements IRTreeVisitor {
 
 	@Override
 	public void visit(IRJump j) {
-		// TODO Auto-generated method stub
-
+		// jmp l
+		Operand label = new Label(((IRTemp) j.target()).name());
+		Instruction jmp = new Instruction(Operation.JMP,label);
+		
+		List<Instruction> instructions = new ArrayList<Instruction>();
+		instructions.add(jmp);
+		tileMap.put(j,new Tile(instructions,jmp.getCost()));
 	}
 
 	@Override
@@ -448,7 +662,9 @@ public class TilingVisitor implements IRTreeVisitor {
 		Instruction labelInst = new Instruction(Operation.LABEL,
 				null, new Label(l.name()));
 		List<Instruction> tempListOfInstr = new ArrayList<Instruction>();
-		Tile labelTile = new Tile(tempListOfInstr,0,l.name());
+		tempListOfInstr.add(labelInst);
+		Tile labelTile = new Tile(tempListOfInstr,0,new Label(l.name()));
+		tileMap.put(l,labelTile);
 	}
 
 	@Override

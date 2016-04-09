@@ -304,7 +304,7 @@ public class TilingVisitor implements IRTreeVisitor {
 			return;
 		}
 		Instruction labelInst = new Instruction(Operation.LABEL,
-				null, l.name());
+				null, new Label(l.name()));
 		List<Instruction> tempListOfInstr = new ArrayList<Instruction>();
 		Tile labelTile = new Tile(tempListOfInstr,0,l.name());
 	}

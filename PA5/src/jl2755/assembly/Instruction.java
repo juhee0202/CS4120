@@ -7,7 +7,7 @@ public class Instruction {
 	// TODO: complete this
 	public enum Operation {
 	    ADD, SUB, MUL, HMUL, DIV, MOD, AND, OR, XOR, LSHIFT, RSHIFT, ARSHIFT,
-	    EQ, NEQ, LT, GT, LEQ, GEQ;
+	    EQ, NEQ, LT, GT, LEQ, GEQ, LABEL;
 
 	    @Override
 	    public String toString() {
@@ -48,24 +48,26 @@ public class Instruction {
 	            return "LEQ";
 	        case GEQ:
 	            return "GEQ";
+	        case LABEL:
+	        	return "";
 	        }
 	        throw new InternalCompilerError("Unknown op type");
 	    }
 	}
 	
 	private Operation op;
-	private String src;
-	private String dest;
+	private Operand src;
+	private Operand dest;
 	private int cost;
 	
-	public Instruction(Operation operation, String source, String destination) {
+	public Instruction(Operation operation, Operand source, Operand destination) {
 		op = operation;
 		src = source;
 		dest = destination;
 		cost = 0;
 	}
 	
-	public Instruction(Operation operation, String source, String destination,
+	public Instruction(Operation operation, Operand source, Operand destination,
 						int cost) {
 		op = operation;
 		src = source;
@@ -80,16 +82,16 @@ public class Instruction {
 	public void setOp(Operation op) {
 		this.op = op;
 	}
-	public String getSrc() {
+	public Operand getSrc() {
 		return src;
 	}
-	public void setSrc(String src) {
+	public void setSrc(Operand src) {
 		this.src = src;
 	}
-	public String getDest() {
+	public Operand getDest() {
 		return dest;
 	}
-	public void setDest(String dest) {
+	public void setDest(Operand dest) {
 		this.dest = dest;
 	}
 	public int getCost() {

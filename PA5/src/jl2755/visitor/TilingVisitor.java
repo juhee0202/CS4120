@@ -24,6 +24,7 @@ import edu.cornell.cs.cs4120.xic.ir.IRSeq;
 import edu.cornell.cs.cs4120.xic.ir.IRTemp;
 import edu.cornell.cs.cs4120.xic.ir.OpType;
 import jl2755.assembly.*;
+import jl2755.assembly.Instruction.Operation;
 
 public class TilingVisitor implements IRTreeVisitor {
 
@@ -211,8 +212,8 @@ public class TilingVisitor implements IRTreeVisitor {
 
 	@Override
 	public void visit(IRESeq eseq) {
-		// TODO Auto-generated method stub
-
+		// Should not be here I think
+		System.out.println("Got to ESeq in TilingVisitor when you shouldn't have");
 	}
 
 	@Override
@@ -235,8 +236,13 @@ public class TilingVisitor implements IRTreeVisitor {
 
 	@Override
 	public void visit(IRLabel l) {
-		// TODO Auto-generated method stub
-
+		if (tileMap.containsKey(l)) {
+			return;
+		}
+		Instruction labelInst = new Instruction(Operation.LABEL,
+				null, l.name());
+		List<Instruction> tempListOfInstr = new ArrayList<Instruction>();
+		Tile labelTile = new Tile(tempListOfInstr,0,l.name());
 	}
 
 	@Override

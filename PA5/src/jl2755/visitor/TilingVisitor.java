@@ -32,10 +32,15 @@ public class TilingVisitor implements IRTreeVisitor {
 	private HashMap<IRNode, Tile> tileMap;
 //	= new Tile(matchdPattern, parameters);
 	private static IRTreeEqualsVisitor cmpTreeVisitor = new IRTreeEqualsVisitor();
+
+	/** list of first 6 function call arg registers */
 	private static final String[] ARG_REG_LIST = {
 			"rdi", "rsi", "rdx", "rcx", "r8", "r9"
 	};
 
+	
+	/** Used to communicate a child's Tile value to the parent */
+	private Tile globalTile;
 	
 	/** Lists of strings representing possible tiles. */
 	// TODO: put all these in a json file and read the json file to populate patternMap
@@ -181,6 +186,17 @@ public class TilingVisitor implements IRTreeVisitor {
 		OpType op = bo.opType();
 	}
 	
+	/**
+	 * Assembly: 
+	 * push en
+	 * push en-1
+	 * ...
+	 * push e7
+	 * mov e6, r9
+	 * ...
+	 * mov e1, rdi
+	 * call f
+	 */
 	@Override
 	public void visit(IRCall call) {
 		if (tileMap.containsKey(call)) {
@@ -226,6 +242,11 @@ public class TilingVisitor implements IRTreeVisitor {
 		// TODO: check
 		Instruction callInstruction = new Instruction(Operation.CALL, tileMap.get(target).getDest());
 		instructions.add(callInstruction);
+		
+		// create a corresponding tile
+		Operand dest = new Register("rax");
+		Tile tile = new Tile(instructions, instructions.size(), dest);
+		tileMap.put(call, tile);
 	}
 
 	@Override
@@ -240,10 +261,17 @@ public class TilingVisitor implements IRTreeVisitor {
 
 	}
 
+	/**
+	 * Check if a Tile has been made for this IRConst node. If not,
+	 * 
+	 */
 	@Override
 	public void visit(IRConst con) {
-		// TODO Auto-generated method stub
-
+		if (tileMap.containsKey(con)) {
+			return;
+		}
+		Tile constTile = new Tile(null, 0, new Constant(con.value()));
+		tileMap.put(con, constTile);
 	}
 
 	@Override

@@ -1,5 +1,7 @@
 package jl2755.visitor;
 
+import java.util.List;
+
 import edu.cornell.cs.cs4120.xic.ir.IRBinOp;
 import edu.cornell.cs.cs4120.xic.ir.IRCJump;
 import edu.cornell.cs.cs4120.xic.ir.IRCall;
@@ -7,6 +9,7 @@ import edu.cornell.cs.cs4120.xic.ir.IRCompUnit;
 import edu.cornell.cs.cs4120.xic.ir.IRConst;
 import edu.cornell.cs.cs4120.xic.ir.IRESeq;
 import edu.cornell.cs.cs4120.xic.ir.IRExp;
+import edu.cornell.cs.cs4120.xic.ir.IRExpr;
 import edu.cornell.cs.cs4120.xic.ir.IRFuncDecl;
 import edu.cornell.cs.cs4120.xic.ir.IRJump;
 import edu.cornell.cs.cs4120.xic.ir.IRLabel;
@@ -18,9 +21,159 @@ import edu.cornell.cs.cs4120.xic.ir.IRReturn;
 import edu.cornell.cs.cs4120.xic.ir.IRSeq;
 import edu.cornell.cs.cs4120.xic.ir.IRTemp;
 
+/**
+ * Class that is used to compare two trees and see if one is a pattern
+ * in another.
+ */
 public class IRTreeEqualsVisitor implements IRTreeVisitor{
 
+	private boolean currentBool;
+	
+	private IRNode currentNode;
+	
+	public IRTreeEqualsVisitor(){
+		
+	}
+	
+	/**
+	 * Checks if the pattern tree is a subtree rooted in
+	 * the IRTree
+	 * 
+	 * @param rootOfFakeInstance is the pattern tree
+	 * @param rootOfRealInstance is the IRTree we are looking for a pattern in
+	 * @return true iff the pattern tree is a subtree rooted in the IRTree
+	 */
+	public boolean equalTrees(IRNode rootOfFakeInstance, IRNode rootOfRealInstance) {
+		currentBool = true;
+		equalSubTrees(rootOfFakeInstance, rootOfRealInstance);
+		return currentBool;
+	}
+	
+	private void equalSubTrees(IRNode rootOfFakeInstance, IRNode rootOfRealInstance) {
+		boolean temp = doesEquals(rootOfFakeInstance, rootOfRealInstance);
+		
+		currentBool = currentBool && temp;
+		if (temp) {
+			currentNode = rootOfRealInstance;
+			rootOfFakeInstance.accept(this);
+		}
+	}
+	
+	@Override
+	public void visit(IRBinOp bo) {
+		IRBinOp tempCurrent = (IRBinOp) currentNode;
+		
+		equalSubTrees(bo.left(), tempCurrent.left());
+		equalSubTrees(bo.right(), tempCurrent.right());
+	}
+
+	@Override
+	public void visit(IRCall call) {
+		IRCall tempCurrent = (IRCall) currentNode;
+		
+		equalSubTrees(call.target(),tempCurrent.target());
+		List<IRExpr> fakeExprs = call.args();
+		List<IRExpr> trueExprs = tempCurrent.args();
+		if (fakeExprs.size() != trueExprs.size()) {
+			currentBool = false;
+		}
+		else {
+			for (int i = 0; i < fakeExprs.size(); i++) {
+				equalSubTrees(fakeExprs.get(i),trueExprs.get(i));
+			}
+		}
+	}
+
+	@Override
+	public void visit(IRCJump cj) {
+		IRCJump tempCurrent = (IRCJump) currentNode;
+		
+		equalSubTrees(cj.expr(),tempCurrent.expr());
+	}
+
+	@Override
+	public void visit(IRCompUnit cu) {
+		// Not needed
+	}
+
+	@Override
+	public void visit(IRConst con) {
+		// Not needed
+	}
+
+	@Override
+	public void visit(IRESeq eseq) {
+		// Not needed
+	}
+
+	@Override
+	public void visit(IRExp exp) {
+		IRExp tempCurrent = (IRExp) currentNode;
+		
+		equalSubTrees(exp.expr(),tempCurrent.expr());
+	}
+
+	@Override
+	public void visit(IRFuncDecl fd) {
+		IRFuncDecl tempCurrent = (IRFuncDecl) currentNode;
+		
+		equalSubTrees(fd.body(),tempCurrent.body());
+	}
+
+	@Override
+	public void visit(IRJump j) {
+		IRJump tempCurrent = (IRJump) currentNode;
+		
+		equalSubTrees(j.target(), tempCurrent.target());
+	}
+
+	@Override
+	public void visit(IRLabel l) {
+		// Not needed
+	}
+
+	@Override
+	public void visit(IRMem mem) {
+		IRMem tempCurrent = (IRMem) currentNode;
+		
+		equalSubTrees(mem.expr(), tempCurrent.expr());
+	}
+
+	@Override
+	public void visit(IRMove mov) {
+		IRMove tempCurrent = (IRMove) currentNode;
+		
+		equalSubTrees(mov.target(),tempCurrent.target());
+		equalSubTrees(mov.expr(),tempCurrent.expr());
+	}
+
+	@Override
+	public void visit(IRName name) {
+		// Not needed
+	}
+
+	@Override
+	public void visit(IRReturn ret) {
+		// Not needed
+	}
+
+	@Override
+	public void visit(IRSeq seq) {
+		// Not needed
+	}
+
+	@Override
+	public void visit(IRTemp temp) {
+		// Not needed
+	}
+	
 	private static boolean doesEquals(IRNode left, IRNode right) {
+		if (left == null) {
+			if (right == null) {
+				return true;
+			}
+			return false;
+		}
 		if (left instanceof IRBinOp) {
 			if (right instanceof IRBinOp) {
 				return true;
@@ -120,102 +273,6 @@ public class IRTreeEqualsVisitor implements IRTreeVisitor{
 		System.out.println("Something wrong happened in IRTreeEqualsVisitor equals");
 		assert(false);
 		return false;
-	}
-	
-	@Override
-	public void visit(IRBinOp bo) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void visit(IRCall call) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void visit(IRCJump cj) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void visit(IRCompUnit cu) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void visit(IRConst con) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void visit(IRESeq eseq) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void visit(IRExp exp) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void visit(IRFuncDecl fd) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void visit(IRJump j) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void visit(IRLabel l) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void visit(IRMem mem) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void visit(IRMove mov) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void visit(IRName name) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void visit(IRReturn ret) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void visit(IRSeq seq) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void visit(IRTemp temp) {
-		// TODO Auto-generated method stub
-		
 	}
 
 }

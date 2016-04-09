@@ -3,17 +3,17 @@ package jl2755.assembly;
 public class Constant implements Operand {
 
 	/** The value of this constant. */
-	private int value;
+	private long value;
 	
-	public Constant(int value) {
+	public Constant(long value) {
 		this.value = value;
 	}
 	
-	public int getValue() {
+	public long getValue() {
 		return value;
 	}
 
-	public void setValue(int value) {
+	public void setValue(long value) {
 		this.value = value;
 	}
 

@@ -10,12 +10,31 @@ public class Tile {
 	private IRNode rootOfSubtree;
 	private int cost;
 	private List<Instruction> instructions;
-
-	public Tile(List<String> inOrder, List<String> preOrder, List<Instruction> i) {
+	private Operand dest;
+	
+	
+	public Tile(List<String> inOrder, List<String> preOrder, List<Instruction> i,
+			int argCost) {
 		rootOfSubtree = makeTree(inOrder, preOrder);
 		instructions = i;
+		cost = argCost;
 	}
-
+	
+	public Tile(List<Operand> argOperands, Tile argTile) {
+		
+	}
+	
+	public Tile(List<Instruction> i, int argCost) {
+		instructions = i;
+		cost = argCost;
+	}
+	
+	public Tile(List<Instruction> i, int argCost, Operand argDest) {
+		instructions = i;
+		cost = argCost;
+		dest = argDest;
+	}
+	
 	/**
 	 * Strings should be name of IRNode instance plus a number to make
 	 * each node unique
@@ -129,5 +148,13 @@ public class Tile {
 
 	public void setInstructions(List<Instruction> instructions) {
 		this.instructions = instructions;
+	}
+
+	public Operand getDest() {
+		return dest;
+	}
+
+	public void setDest(Operand dest) {
+		this.dest = dest;
 	}
 }

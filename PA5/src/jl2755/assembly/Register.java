@@ -7,6 +7,10 @@ public class Register implements Operand {
 	/** The stack address of this register. */
 	private int addr;
 	
+	public Register(String name) {
+		this.name = name;
+	}
+	
 	public Register(String name, int addr) {
 		this.name = name;
 		this.addr = addr;

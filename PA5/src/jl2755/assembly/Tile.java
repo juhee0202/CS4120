@@ -143,4 +143,12 @@ public class Tile {
 	public void setInstructions(List<Instruction> instructions) {
 		this.instructions = instructions;
 	}
+
+	public Operand getDest() {
+		return dest;
+	}
+
+	public void setDest(Operand dest) {
+		this.dest = dest;
+	}
 }

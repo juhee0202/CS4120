@@ -30,7 +30,7 @@ public class TilingVisitor implements IRTreeVisitor {
 	private HashMap<IRNode, Tile> tileMap;
 	
 	/** Lists of strings representing possible tiles. */
-		
+	// TODO: put all these in a json file and read the json file to populate patternMap
 
 	private static final List<String> BINOP1_PRE = new ArrayList<String>(
 			Arrays.asList(
@@ -208,7 +208,6 @@ public class TilingVisitor implements IRTreeVisitor {
 			Arrays.asList(
 					"Temp"
 					));
-	
 	
 	@Override
 	public void visit(IRBinOp bo) {

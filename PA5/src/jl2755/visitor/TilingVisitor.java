@@ -136,8 +136,68 @@ public class TilingVisitor implements IRTreeVisitor {
 					"Name",
 					"Jump"
 					));
-
-
+	
+	// Const
+	private static final List<String> CONST_PRE = new ArrayList<String>(
+			Arrays.asList(
+					"Const"
+					));
+	private static final List<String> CONST_IN = new ArrayList<String>(
+			Arrays.asList(
+					"Const"
+					));
+	
+	// Label
+	private static final List<String> LABEL_PRE = new ArrayList<String>(
+			Arrays.asList(
+					"Label"
+					));
+	private static final List<String> LABEL_IN = new ArrayList<String>(
+			Arrays.asList(
+					"Label"
+					));
+	
+	// Mem
+	private static final List<String> MEM_PRE = new ArrayList<String>(
+			Arrays.asList(
+					"Mem"
+					));
+	private static final List<String> MEM_IN = new ArrayList<String>(
+			Arrays.asList(
+					"Mem"
+					));
+	
+	// Move
+	private static final List<String> MOVE_PRE = new ArrayList<String>(
+			Arrays.asList(
+					"Move"
+					));
+	private static final List<String> MOVE_IN = new ArrayList<String>(
+			Arrays.asList(
+					"Move"
+					));
+	
+	// Name
+	private static final List<String> NAME_PRE = new ArrayList<String>(
+			Arrays.asList(
+					"Name"
+					));
+	private static final List<String> NAME_IN = new ArrayList<String>(
+			Arrays.asList(
+					"Name"
+					));
+	
+	// Temp
+	private static final List<String> TEMP_PRE = new ArrayList<String>(
+			Arrays.asList(
+					"Temp"
+					));
+	private static final List<String> TEMP_IN = new ArrayList<String>(
+			Arrays.asList(
+					"Temp"
+					));
+	
+	
 	@Override
 	public void visit(IRBinOp bo) {
 		// TODO Auto-generated method stub

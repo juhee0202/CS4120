@@ -235,14 +235,49 @@ public class TilingVisitor implements IRTreeVisitor {
 		IRExpr condition = cj.expr();
 		List<Tile> tiling = new ArrayList<Tile>();
 		Tile tempTile;
-		if (condition instanceof IRConst) {
-			// boolean literal
-			tempTile = new Tile()
-		} else if (condition instanceof IRTemp) {
-			// temp
+		List<Instruction> instructions = new ArrayList<Instruction>();
+		Instruction tempInst;
+		Operand tempSrc;
+		Operand tempDest;
+		if (condition instanceof IRConst) {			
+			// test c,c
+			tempSrc = new Constant(((IRConst) condition).value());
+			tempInst = new Instruction(Operation.TEST,tempSrc,tempSrc);
+			instructions.add(tempInst);
 			
+			// jnz l
+			tempDest = new Label(cj.trueLabel());
+			tempInst = new Instruction(Operation.JNZ,tempDest);
+			instructions.add(tempInst);
+			
+			tempTile = new Tile(instructions,2);
+		} else if (condition instanceof IRTemp) {			
+			// test r,r
+			tempSrc = new Register(((IRTemp) condition).name());
+			tempInst = new Instruction(Operation.TEST,tempSrc,tempSrc);
+			instructions.add(tempInst);
+			
+			// jnz l
+			tempDest = new Label(cj.trueLabel());
+			tempInst = new Instruction(Operation.JNZ,tempDest);
+			instructions.add(tempInst);
+			
+			tempTile = new Tile(instructions,2);
 		} else if (condition instanceof IRMem) {
-			// mem
+			// visit condition
+			condition.accept(this);
+			
+			// test c,c
+			tempSrc = tileMap.get(condition);
+			tempInst = new Instruction(Operation.TEST,tempSrc,tempSrc);
+			instructions.add(tempInst);
+			
+			// jnz l
+			tempDest = new Label(cj.trueLabel());
+			tempInst = new Instruction(Operation.JNZ,tempDest);
+			instructions.add(tempInst);
+			
+			tempTile = new Tile(instructions,2);
 			
 		} else {
 			// expression

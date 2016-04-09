@@ -7,7 +7,7 @@ public class Instruction {
 	// TODO: complete this
 	public enum Operation {
 	    ADD, SUB, MUL, HMUL, DIV, MOD, AND, OR, XOR, LSHIFT, RSHIFT, ARSHIFT,
-	    EQ, NEQ, LT, GT, LEQ, GEQ, LABEL;
+	    EQ, NEQ, LT, GT, LEQ, GEQ, LABEL, MOV, CALL, PUSH;
 
 	    @Override
 	    public String toString() {
@@ -50,6 +50,12 @@ public class Instruction {
 	            return "GEQ";
 	        case LABEL:
 	        	return "";
+	        case MOV:
+	            return "MOV";
+	        case CALL:
+	            return "CALL";
+	        case PUSH:
+	            return "PUSH";
 	        }
 	        throw new InternalCompilerError("Unknown op type");
 	    }
@@ -60,11 +66,17 @@ public class Instruction {
 	private Operand dest;
 	private int cost;
 	
+	public Instruction(Operation operation, Operand destination) {
+		op = operation;
+		dest = destination;
+		cost = 1;
+	}
+	
 	public Instruction(Operation operation, Operand source, Operand destination) {
 		op = operation;
 		src = source;
 		dest = destination;
-		cost = 0;
+		cost = 1;
 	}
 	
 	public Instruction(Operation operation, Operand source, Operand destination,

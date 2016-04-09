@@ -12,6 +12,7 @@ import edu.cornell.cs.cs4120.xic.ir.IRCompUnit;
 import edu.cornell.cs.cs4120.xic.ir.IRConst;
 import edu.cornell.cs.cs4120.xic.ir.IRESeq;
 import edu.cornell.cs.cs4120.xic.ir.IRExp;
+import edu.cornell.cs.cs4120.xic.ir.IRExpr;
 import edu.cornell.cs.cs4120.xic.ir.IRFuncDecl;
 import edu.cornell.cs.cs4120.xic.ir.IRJump;
 import edu.cornell.cs.cs4120.xic.ir.IRLabel;
@@ -31,6 +32,12 @@ public class TilingVisitor implements IRTreeVisitor {
 	private HashMap<IRNode, List<Tile>> tileMap;
 
 	private static IRTreeEqualsVisitor cmpTreeVisitor = new IRTreeEqualsVisitor();
+
+	/** list of first 6 function call arg registers */
+	private static final String[] ARG_REG_LIST = {
+			"rdi", "rsi", "rdx", "rcx", "r8", "r9"
+	};
+
 	
 	
 	/** Lists of strings representing possible tiles. */
@@ -177,10 +184,67 @@ public class TilingVisitor implements IRTreeVisitor {
 		OpType op = bo.opType();
 	}
 	
+	/**
+	 * Assembly: 
+	 * push en
+	 * push en-1
+	 * ...
+	 * push e7
+	 * mov e6, r9
+	 * ...
+	 * mov e1, rdi
+	 * call f
+	 */
 	@Override
 	public void visit(IRCall call) {
-		// TODO Auto-generated method stub
-
+		if (tileMap.containsKey(call)) {
+			return;
+		}
+		
+		List<IRExpr> args = call.args();
+		int numArgs = args.size();
+		
+		// for args7...
+		List<Instruction> instructions = new ArrayList<Instruction>();
+		if (numArgs > 6) {
+			for (int i = numArgs-1; i > 6; i--) {
+				// tile the expression
+				IRExpr expr = args.get(i); 
+				expr.accept(this);
+				Tile tile = tileMap.get(expr);
+				
+				// assembly: "push ei"
+				Instruction instr = new Instruction(Operation.PUSH, tile.getDest());
+				instructions.add(instr);
+			}
+			
+			numArgs = 6;
+		}
+		
+		// for args1 ... args6
+		for (int i = numArgs-1; i >= 0; i--) {
+			IRExpr expr = args.get(6);
+			expr.accept(this);
+			Tile tile = tileMap.get(expr);
+			
+			Instruction instr = new Instruction(Operation.MOV, 
+												tile.getDest(),
+												new Register(ARG_REG_LIST[i]));
+			instructions.add(instr);
+		}
+		
+		// tile f
+		IRExpr target = call.target();
+		target.accept(this);
+		
+		// TODO: check
+		Instruction callInstruction = new Instruction(Operation.CALL, tileMap.get(target).getDest());
+		instructions.add(callInstruction);
+		
+		// create a corresponding tile
+		Operand dest = new Register("rax");
+		Tile tile = new Tile(instructions, instructions.size(), dest);
+		tileMap.put(call, tile);
 	}
 
 	@Override

@@ -31,58 +31,58 @@ public class TilingVisitor implements IRTreeVisitor {
 	
 	/** Lists of strings representing possible tiles. */
 		
-	
+
 	private static final List<String> BINOP1_PRE = new ArrayList<String>(
 			Arrays.asList(
 					"Binop"
-			));
+					));
 	private static final List<String> BINOP1_IN = new ArrayList<String>(
 			Arrays.asList(
 					"Binop"
-			));
+					));
 	private static final List<String> BINOP2_PRE = new ArrayList<String>(
 			Arrays.asList(
 					"Binop",
 					"Mem"
-			));
+					));
 	private static final List<String> BINOP2_IN = new ArrayList<String>(
 			Arrays.asList(
 					"Mem",
 					"Binop"
-			));
+					));
 	private static final List<String> BINOP3_PRE = new ArrayList<String>(
 			Arrays.asList(
 					"Binop",
 					"Mem"
-			));
+					));
 	private static final List<String> BINOP3_IN = new ArrayList<String>(
 			Arrays.asList(
 					"Binop",
 					"Mem"
-			));
+					));
 	private static final List<String> BINOP4_PRE = new ArrayList<String>(
 			Arrays.asList(
 					"Binop",
 					"Const"
-			));
+					));
 	private static final List<String> BINOP4_IN = new ArrayList<String>(
 			Arrays.asList(
 					"Const",
 					"Binop"
-			));
+					));
 	private static final List<String> BINOP5_PRE = new ArrayList<String>(
 			Arrays.asList(
 					"Binop",
 					"Const",
 					"Mem"
-			));
+					));
 	private static final List<String> BINOP5_IN = new ArrayList<String>(
 			Arrays.asList(
 					"Const",
 					"Binop",
 					"Mem"
-			));
-	
+					));
+
 	// CJUMP
 	private static final List<String> CJUMP_BINOP_PRE = new ArrayList<String>(
 			Arrays.asList(
@@ -157,6 +157,28 @@ public class TilingVisitor implements IRTreeVisitor {
 					"Mem"
 					));
 	
+	// MEM(BINOP(ADD, CONST, BINOP(ADD, BINOP(MUL, TEMP, CONST), CONST)))
+	// eg: mov mem(%ebx + (%ecx*w + k)), %eax
+	private static final List<String> MEM_EFFECTIVE_PRE = new ArrayList<String>(
+			Arrays.asList(
+					"Mem",
+					"Binop",
+					"Binop",
+					"Binop",
+					"Const",
+					"Const"
+					));
+	private static final List<String> MEM_EFFECTIVE_IN = new ArrayList<String>(
+			Arrays.asList(
+					"Binop",
+					"Binop",
+					"Const",
+					"Binop",
+					"Const",
+					"Mem"
+					));
+
+
 	// Move
 	private static final List<String> MOVE_PRE = new ArrayList<String>(
 			Arrays.asList(

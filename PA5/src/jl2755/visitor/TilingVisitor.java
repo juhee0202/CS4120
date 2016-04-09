@@ -33,96 +33,86 @@ public class TilingVisitor implements IRTreeVisitor {
 
 	
 	/** Lists of strings representing possible tiles. */
-		
-	
+	// TODO: put all these in a json file and read the json file to populate patternMap
+
 	private static final List<String> BINOP1_PRE = new ArrayList<String>(
 			Arrays.asList(
-					"Binop",
-					"Temp1",
-					"Temp2"
-			));
+					"Binop"
+					));
 	private static final List<String> BINOP1_IN = new ArrayList<String>(
 			Arrays.asList(
-					"Temp1",
-					"Binop",
-					"Temp2"
-			));
+					"Binop"
+					));
 	private static final List<String> BINOP2_PRE = new ArrayList<String>(
 			Arrays.asList(
 					"Binop",
-					"Mem",
-					"Temp"
-			));
+					"Mem"
+					));
 	private static final List<String> BINOP2_IN = new ArrayList<String>(
 			Arrays.asList(
 					"Mem",
-					"Binop",
-					"Temp"
-			));
+					"Binop"
+					));
 	private static final List<String> BINOP3_PRE = new ArrayList<String>(
 			Arrays.asList(
 					"Binop",
-					"Temp",
 					"Mem"
-			));
+					));
 	private static final List<String> BINOP3_IN = new ArrayList<String>(
 			Arrays.asList(
-					"Temp",
 					"Binop",
 					"Mem"
-			));
+					));
 	private static final List<String> BINOP4_PRE = new ArrayList<String>(
 			Arrays.asList(
 					"Binop",
-					"Const",
-					"Temp"
-			));
+					"Const"
+					));
 	private static final List<String> BINOP4_IN = new ArrayList<String>(
 			Arrays.asList(
 					"Const",
-					"Binop",
-					"Temp"
-			));
+					"Binop"
+					));
 	private static final List<String> BINOP5_PRE = new ArrayList<String>(
 			Arrays.asList(
 					"Binop",
 					"Const",
 					"Mem"
-			));
+					));
 	private static final List<String> BINOP5_IN = new ArrayList<String>(
 			Arrays.asList(
 					"Const",
 					"Binop",
 					"Mem"
-			));
-	
+					));
+
 	// CJUMP
-	private static final List<String> CJUMP_BinOp_PRE = new ArrayList<String>(
+	private static final List<String> CJUMP_BINOP_PRE = new ArrayList<String>(
 			Arrays.asList(
 					"CJump", 
 					"BinOp"
 					));
-	private static final List<String> CJUMP_BinOp_IN = new ArrayList<String>(
+	private static final List<String> CJUMP_BINOP_IN = new ArrayList<String>(
 			Arrays.asList(
 					"BinOp",
 					"CJump"
 					));
-	private static final List<String> CJUMP_Temp_PRE = new ArrayList<String>(
+	private static final List<String> CJUMP_TEMP_PRE = new ArrayList<String>(
 			Arrays.asList(
 					"CJump", 
 					"Temp"
 					));
-	private static final List<String> CJUMP_Temp_IN = new ArrayList<String>(
+	private static final List<String> CJUMP_TEMP_IN = new ArrayList<String>(
 			Arrays.asList(
 					"Temp",
 					"CJump"
 					));
-	private static final List<String> CJUMP_Mem_PRE = new ArrayList<String>(
+	private static final List<String> CJUMP_MEM_PRE = new ArrayList<String>(
 			Arrays.asList(
 					"CJump", 
 					"Mem"
 					));
-	private static final List<String> CJUMP_Mem_IN = new ArrayList<String>(
+	private static final List<String> CJUMP_MEM_IN = new ArrayList<String>(
 			Arrays.asList(
 					"Mem",
 					"CJump"
@@ -170,6 +160,28 @@ public class TilingVisitor implements IRTreeVisitor {
 					"Mem"
 					));
 	
+	// MEM(BINOP(ADD, CONST, BINOP(ADD, BINOP(MUL, TEMP, CONST), CONST)))
+	// eg: mov mem(%ebx + (%ecx*w + k)), %eax
+	private static final List<String> MEM_EFFECTIVE_PRE = new ArrayList<String>(
+			Arrays.asList(
+					"Mem",
+					"Binop",
+					"Binop",
+					"Binop",
+					"Const",
+					"Const"
+					));
+	private static final List<String> MEM_EFFECTIVE_IN = new ArrayList<String>(
+			Arrays.asList(
+					"Binop",
+					"Binop",
+					"Const",
+					"Binop",
+					"Const",
+					"Mem"
+					));
+
+
 	// Move
 	private static final List<String> MOVE_PRE = new ArrayList<String>(
 			Arrays.asList(
@@ -199,7 +211,7 @@ public class TilingVisitor implements IRTreeVisitor {
 			Arrays.asList(
 					"Temp"
 					));
-		
+
 	@Override
 	public void visit(IRBinOp bo) {
 		// TODO Auto-generated method stub
@@ -211,7 +223,6 @@ public class TilingVisitor implements IRTreeVisitor {
 		OpType op = bo.opType();
 		BinOpTile binOp;
 		
-		}
 	}
 
 	@Override

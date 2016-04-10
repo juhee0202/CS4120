@@ -762,14 +762,15 @@ public class TilingVisitor implements IRTreeVisitor {
 		for (int i = 0; i < tileLibrary.size(); i++) {
 			if (cmpTreeVisitor.equalTrees(tileLibrary.get(i).getRootOfSubtree(), 
 					mem)) {
-				matchingTiles.add(tileLibrary.get(i));
+				matchingTiles.add(new Tile(mem,tileLibrary.get(i)));
 				childrenOfEachTile.add((ArrayList<IRNode>) cmpTreeVisitor.getAllChildrenNode());
 			}
 		}
-		// TODO Must get all children of each matching tiles set
 		
 		ArrayList<ArrayList<Operand>> operandOfEachChildren = new ArrayList<ArrayList<Operand>>();
 		
+		// Iterate through, call accept for each child, and 
+		// populate the Operand list.
 		for (int i = 0; i < childrenOfEachTile.size(); i++) {
 			for (int j = 0; j < childrenOfEachTile.get(i).size(); j++) {
 				IRNode currentNode = childrenOfEachTile.get(i).get(j);
@@ -778,10 +779,31 @@ public class TilingVisitor implements IRTreeVisitor {
 				operandOfEachChildren.get(i).add(currentTile.getDest());
 			}
 		}
-		// TODO: Fill in instructions with operand stuff
+		
+		// Fill in Tiles' Operands
 		for (int i = 0; i < matchingTiles.size(); i++) {
 			matchingTiles.get(i).fillInOperands(operandOfEachChildren.get(i));
 		}
+		
+		// Second pass to merge Tiles. Do not do this in the first pass, otherwise
+		// filling in Operands of instructions will get messed up
+		for (int i = 0; i < childrenOfEachTile.size(); i++) {
+			for (int j = 0; j < childrenOfEachTile.get(i).size(); j++) {
+				Tile currentTile = tileMap.get(childrenOfEachTile.get(i).get(j));
+				matchingTiles.set(i,Tile.mergeTiles(matchingTiles.get(i),currentTile));
+			}
+		}
+		
+		// Third pass through matchingTiles to get a minimum cost Tile
+		int minimumCost = Integer.MAX_VALUE;
+		int indexOfSmallest = -1;
+		for (int i = 0; i < matchingTiles.size(); i++) {
+			if (matchingTiles.get(i).getCost() < minimumCost) {
+				minimumCost = matchingTiles.get(i).getCost();
+				indexOfSmallest = i;
+			}
+		}
+		tileMap.put(mem, matchingTiles.get(indexOfSmallest));
 	}
 
 	@Override
@@ -803,6 +825,8 @@ public class TilingVisitor implements IRTreeVisitor {
 		addingInstr.add(movInstruction);
 		Tile finalTile = new Tile(addingInstr, 1 + sourceTile.getCost() + targetTile.getCost(),
 				targetOperand);
+		finalTile = Tile.mergeTiles(finalTile, sourceTile);
+		finalTile = Tile.mergeTiles(finalTile, targetTile);
 		tileMap.put(mov, finalTile);
 	}
 
@@ -822,7 +846,7 @@ public class TilingVisitor implements IRTreeVisitor {
 		// TODO Auto-generated method stub
 
 	}
-
+	
 	@Override
 	public void visit(IRTemp temp) {
 		if (tileMap.containsKey(temp)) {

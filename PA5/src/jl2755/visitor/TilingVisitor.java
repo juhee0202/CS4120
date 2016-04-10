@@ -248,7 +248,7 @@ public class TilingVisitor implements IRTreeVisitor {
 				operand = t;
 			}
 			
-			Instruction multiply = new Instruction(Operation.IMULQ, operand, null);
+			Instruction multiply = new Instruction(Operation.IMULQ, null, operand);
 			instrList.add(multiply);
 			cost++;
 			
@@ -289,7 +289,7 @@ public class TilingVisitor implements IRTreeVisitor {
 				cost++;
 			}
 
-			Instruction divide = new Instruction(Operation.IDIVQ, divisor, null);
+			Instruction divide = new Instruction(Operation.IDIVQ, null , divisor);
 			instrList.add(divide);
 			cost++;
 			
@@ -311,14 +311,7 @@ public class TilingVisitor implements IRTreeVisitor {
 			Operand src = leftOperand;
 			Operand dest = rightOperand;
 			
-			if (leftOperand instanceof Constant) {
-				Register t = new Register("tileRegister" + registerCount++);
-				Instruction moveToRegister = new Instruction(Operation.MOVQ, leftOperand, t);
-				instrList.add(moveToRegister);
-				cost++;
-				src = t;
-			}
-			if (rightOperand instanceof Constant) {
+			if (leftOperand instanceof Constant && rightOperand instanceof Constant) {
 				Register t = new Register("tileRegister" + registerCount++);
 				Instruction moveToRegister = new Instruction(Operation.MOVQ, rightOperand, t);
 				instrList.add(moveToRegister);

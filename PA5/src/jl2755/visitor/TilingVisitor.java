@@ -173,10 +173,9 @@ public class TilingVisitor implements IRTreeVisitor {
 	 *  */
 	@Override
 	public void visit(IRBinOp bo) {
-		// TODO Auto-generated method stub
-
 		OpType op = bo.opType();
 		Operation tileOp = null;
+		
 		switch(op) {
 		case ADD:
 			tileOp = Operation.ADD;
@@ -185,7 +184,6 @@ public class TilingVisitor implements IRTreeVisitor {
         	tileOp = Operation.SUB;
             break;
         case MUL:
-        	// TODO
         	tileOp = Operation.IMUL;
             break;
         case HMUL:
@@ -193,11 +191,9 @@ public class TilingVisitor implements IRTreeVisitor {
         	tileOp = Operation.HMUL;
             break;
         case DIV:
-        	// TODO
         	tileOp = Operation.IDIV;
             break;
         case MOD:
-        	// TODO
         	tileOp = Operation.MOD;
             break;
         case AND:
@@ -219,27 +215,21 @@ public class TilingVisitor implements IRTreeVisitor {
         	tileOp = Operation.ARSHIFT;
             break;
         case EQ:
-        	// TODO
         	tileOp = Operation.EQ;
             break;
         case NEQ:
-        	// TODO
         	tileOp = Operation.NEQ;
             break;
         case LT:
-        	// TODO
         	tileOp = Operation.LT;
             break;
         case GT:
-        	// TODO
         	tileOp = Operation.GT;
             break;
         case LEQ:
-        	// TODO
         	tileOp = Operation.LEQ;
             break;
         case GEQ:
-        	// TODO
         	tileOp = Operation.GEQ;
             break;
 		}

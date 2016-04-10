@@ -2,6 +2,7 @@ package jl2755.visitor;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -809,5 +810,25 @@ public class TilingVisitor implements IRTreeVisitor {
 		}
 		Tile tempTile = new Tile(null, 0, new Register(temp.name()));
 		tileMap.put(temp, tempTile);
+	}
+	
+	private void stackAllocation(IRNode headNode) {
+		Tile masterTile = tileMap.get(headNode);
+		List<Instruction> everyInstruction = masterTile.getInstructions();
+		Map<String, Integer> registerToStackOffsetMap = new HashMap<String, Integer>();
+		
+		
+	}
+	
+	private List<Instruction> addNecessaryInstruction(
+			List<Instruction> argInstructions,
+			Map<String, Integer> argRegisterToStackOffsetMap) {
+		if (argInstructions.size() == 0) {
+			return new ArrayList<Instruction>();
+		}
+		Instruction currentInstruction = argInstructions.get(0);
+		
+		
+		return null;
 	}
 }

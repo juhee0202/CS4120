@@ -42,11 +42,20 @@ public class FunctionDecl {
 		return functionParam.getParams();
 	}
 	
-	public List<Type> getParamTypes(){
+	public List<Type> getParamTypes() {
 		return functionParam.getParamTypes();
 	}
+	
+	public int getNumParams() {
+		return functionParam.getParamTypes().size();
+	}
+	
 	public List<Type> getReturnTypes() {
 		return returnType.getReturnTypes();
+	}
+	
+	public int getNumReturns() {
+		return returnType.getReturnTypes().size();
 	}
 	
 	public void prettyPrintNode() {

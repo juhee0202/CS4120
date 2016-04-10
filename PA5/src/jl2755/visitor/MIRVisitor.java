@@ -388,6 +388,7 @@ public class MIRVisitor implements ASTVisitor{
 			String id = fc.getABIName();
 			IRName lf = new IRName(id);
 			tempNode = new IRCall(lf);
+			((IRCall) tempNode).setNumReturns(fc.getNumReturns());
 		} else if (index == 1) {							// f(a1,...,an) 
 			// get function label
 			String id = fc.getABIName();
@@ -402,6 +403,7 @@ public class MIRVisitor implements ASTVisitor{
 				irArgs.add((IRExpr) tempNode);
 			}
 			tempNode = new IRCall(lf, irArgs);
+			((IRCall) tempNode).setNumReturns(fc.getNumReturns());
 		} else {											// length(e)
 			fc.getExpr().accept(this);
 			IRExpr array = (IRExpr) tempNode;
@@ -442,7 +444,10 @@ public class MIRVisitor implements ASTVisitor{
 		}
 		
 		// create IRFuncDecl
-		tempNode = new IRFuncDecl(label, seq);	
+		tempNode = new IRFuncDecl(label, seq);
+		((IRFuncDecl) tempNode).setParamList(fd.getParams());
+		((IRFuncDecl) tempNode).setNumArgs(fd.getNumParams());
+		((IRFuncDecl) tempNode).setNumReturns(fd.getNumReturns());
 	}
 
 	@Override

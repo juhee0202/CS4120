@@ -12,6 +12,9 @@ public class Tile {
 	private List<Instruction> instructions;
 	private Operand dest;
 	
+	public Tile(List<Instruction> i) {
+		instructions = i;
+	}
 	
 	public Tile(List<String> inOrder, List<String> preOrder, List<Instruction> i,
 			int argCost) {

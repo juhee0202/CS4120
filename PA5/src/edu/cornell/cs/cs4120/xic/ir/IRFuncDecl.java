@@ -1,5 +1,7 @@
 package edu.cornell.cs.cs4120.xic.ir;
 
+import java.util.List;
+
 import edu.cornell.cs.cs4120.util.SExpPrinter;
 import edu.cornell.cs.cs4120.xic.ir.visit.AggregateVisitor;
 import edu.cornell.cs.cs4120.xic.ir.visit.IRVisitor;
@@ -10,6 +12,9 @@ import jl2755.visitor.IRTreeVisitor;
 public class IRFuncDecl extends IRNode {
     private String name;
     private IRStmt body;
+    private List<String> paramList;
+    private int numArgs;
+    private int numReturns;
 
     public IRFuncDecl(String name, IRStmt stmt) {
         this.name = name;
@@ -78,5 +83,29 @@ public class IRFuncDecl extends IRNode {
 	@Override
 	public void addRight(IRNode irn) {
 		return;
+	}
+
+	public int getNumArgs() {
+		return numArgs;
+	}
+
+	public void setNumArgs(int numArgs) {
+		this.numArgs = numArgs;
+	}
+
+	public int getNumReturns() {
+		return numReturns;
+	}
+
+	public void setNumReturns(int numReturns) {
+		this.numReturns = numReturns;
+	}
+
+	public List<String> getParamList() {
+		return paramList;
+	}
+
+	public void setParamList(List<String> paramList) {
+		this.paramList = paramList;
 	}
 }

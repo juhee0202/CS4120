@@ -17,6 +17,7 @@ import jl2755.visitor.IRTreeVisitor;
 public class IRCall extends IRExpr {
     private IRExpr target;
     private List<IRExpr> args;
+    private int numReturns;
 
     /**
      *
@@ -105,5 +106,13 @@ public class IRCall extends IRExpr {
 	@Override
 	public void addRight(IRNode irn) {
 		return;
+	}
+
+	public int getNumReturns() {
+		return numReturns;
+	}
+
+	public void setNumReturns(int numReturns) {
+		this.numReturns = numReturns;
 	}
 }

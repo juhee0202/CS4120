@@ -6,17 +6,21 @@ public class Instruction {
 	
 	// TODO: complete this
 	public enum Operation {
-	    ADD, SUB, MUL, HMUL, DIV, MOD, AND, OR, XOR, LSHIFT, RSHIFT, ARSHIFT,
-	    EQ, NEQ, LT, GT, LEQ, GEQ, LABEL, MOV, CALL, PUSH, JMP, JE, JNE, 
-	    JG, JGE, JL, JLE, JZ, JNZ, CMP, TEST;
+	    ADD, ADDQ, SUB, SUBQ, MUL, HMUL, DIV, MOD, AND, OR, XOR, LSHIFT, RSHIFT, 
+	    ARSHIFT, EQ, NEQ, LT, GT, LEQ, GEQ, LABEL, MOV, MOVQ, CALL, PUSH, JMP, 
+	    JE, JNE, JG, JGE, JL, JLE, JZ, JNZ, CMP, TEST, PUSHQ, LEAVE, RET;
 
 	    @Override
 	    public String toString() {
 	        switch (this) {
 	        case ADD:
 	            return "ADD";
+	        case ADDQ:
+	        	return "ADDQ";
 	        case SUB:
 	            return "SUB";
+	        case SUBQ:
+	        	return "SUBQ";
 	        case MUL:
 	            return "MUL";
 	        case HMUL:
@@ -53,6 +57,8 @@ public class Instruction {
 	        	return "";
 	        case MOV:
 	            return "MOV";
+	        case MOVQ:
+	        	return "MOVQ";
 	        case CALL:
 	            return "CALL";
 	        case PUSH:
@@ -79,6 +85,12 @@ public class Instruction {
 	        	return "CMP";
 	        case TEST:
 	        	return "TEST";
+	        case PUSHQ:
+	        	return "PUSHQ";
+	        case LEAVE:
+	        	return "LEAVE";
+	        case RET:
+	        	return "RET";
 	        }
 	        throw new InternalCompilerError("Unknown op type");
 	    }
@@ -88,6 +100,11 @@ public class Instruction {
 	private Operand src;
 	private Operand dest;
 	private int cost;
+	
+	public Instruction(Operation operation) {
+		op = operation;
+		cost = 1;
+	}
 	
 	public Instruction(Operation operation, Operand destination) {
 		op = operation;

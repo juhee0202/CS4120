@@ -21,5 +21,10 @@ public class Constant implements Operand {
 	public String toString() {
 		return null;
 	}
+
+	@Override
+	public String getOpType() {
+		return "Constant";
+	}
 	
 }

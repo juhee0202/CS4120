@@ -12,4 +12,9 @@ public class Label implements Operand{
 	public String toString() {
 		return labelName + ":";
 	}
+
+	@Override
+	public String getOpType() {
+		return "Label";
+	}
 }

@@ -57,16 +57,16 @@ public class Tile {
 	 * "parent" Tile of the rightTile. That is, the root of the subtree
 	 * of this new Tile should be the root of leftTile. Therefore,
 	 * the instructions in the right are performed first, and
-	 * the dest in the right becomes the dest of the final Tile.
+	 * the dest in the parent becomes the dest of the final Tile.
 	 * 
-	 * @param leftTile is the parent Tile
-	 * @param rightTile is the child Tile
+	 * @param parentTile is the parent Tile
+	 * @param childTile is the child Tile
 	 * @return a merged Tile
 	 */
-	public static Tile mergeTiles(Tile leftTile, Tile rightTile) {
+	public static Tile mergeTiles(Tile parentTile, Tile childTile) {
 		Tile tempTile = new Tile();
-		List<Instruction> leftInstructions = leftTile.getInstructions();
-		List<Instruction> rightInstructions = rightTile.getInstructions();
+		List<Instruction> leftInstructions = parentTile.getInstructions();
+		List<Instruction> rightInstructions = childTile.getInstructions();
 		List<Instruction> newInstructions = new ArrayList<Instruction>();
 		newInstructions.addAll(rightInstructions);
 		newInstructions.addAll(leftInstructions);
@@ -77,9 +77,9 @@ public class Tile {
 		}
 		
 		tempTile.instructions = copiedInstructions;
-		tempTile.rootOfSubtree = leftTile.rootOfSubtree;
-		tempTile.dest = rightTile.dest;
-		tempTile.cost = leftTile.cost + rightTile.cost;
+		tempTile.rootOfSubtree = parentTile.rootOfSubtree;
+		tempTile.dest = parentTile.dest;
+		tempTile.cost = parentTile.cost + childTile.cost;
 		return tempTile;
 	}
 	
@@ -182,8 +182,22 @@ public class Tile {
 	}
 	
 	public void fillInOperands(List<Operand> argOperands) {
+		if (instructions.size() == 0) {
+			// If no instructions, should be a Mem operation.
+			if (dest instanceof Memory) {
+				if (argOperands.size() == 1) {
+					// At this point, the Tile should be a Mem with
+					// only one child.
+					((Memory) dest).setRegisterBase((Register) argOperands.get(0));
+				}
+			}
+		}
+		
 		for (int i = 0; i < instructions.size(); i++) {
 			instructions.get(i).fillInInstructions(argOperands);
+		}
+		if (argOperands.size() > 0) {
+			dest = argOperands.get(0);
 		}
 	}
 

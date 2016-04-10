@@ -832,7 +832,12 @@ public class TilingVisitor implements IRTreeVisitor {
 		tileMap.put(temp, tempTile);
 	}
 	
-	private void stackAllocation(IRNode headNode) {
+	/**
+	 * Handles converting all temps to stack allocations
+	 * 
+	 * @param headNode	the IR node representing the xi program
+	 */
+	private void stackAllocation(IRCompUnit headNode) {
 		Tile masterTile = tileMap.get(headNode);
 		List<Instruction> everyInstruction = masterTile.getInstructions();
 		Map<String, Integer> registerToStackOffsetMap = new HashMap<String, Integer>();
@@ -840,14 +845,35 @@ public class TilingVisitor implements IRTreeVisitor {
 		
 	}
 	
+	/**
+	 * Inserts the necessary instructions to shuttle values to and from stack
+	 * 
+	 * @param instructions				the list of instructions for our program
+	 * @param regToStack	the map of register names to the relative stack offset
+	 * @return								list of instructions with correct insertions
+	 */
 	private List<Instruction> addNecessaryInstruction(
-			List<Instruction> argInstructions,
-			Map<String, Integer> argRegisterToStackOffsetMap) {
-		if (argInstructions.size() == 0) {
+			List<Instruction> instructions,Map<String, Integer> regToStack) {
+		if (instructions.size() == 0) {
 			return new ArrayList<Instruction>();
 		}
-		Instruction currentInstruction = argInstructions.get(0);
+		Instruction currentInstruction = instructions.get(0);
+		Operand src = currentInstruction.getSrc();
+		Operand dest = currentInstruction.getDest();
 		
+		List<Instruction> added = new ArrayList<Instruction>();
+		if (dest == null) {
+			// Label instruction
+			added.add(currentInstruction);
+			added.addAll(addNecessaryInstruction(
+					instructions.subList(1,instructions.size()),regToStack));
+			return added;
+		}
+		
+		Operation currentOp = currentInstruction.getOp();
+		if (currentOp == Operation.LABEL) {
+			if (regToStack)
+		}
 		
 		return null;
 	}

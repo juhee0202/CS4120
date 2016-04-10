@@ -18,6 +18,9 @@ public class TilingVisitor implements IRTreeVisitor {
 
 	private List<Tile> tileLibrary;
 	
+	private int stackCounter = 0;
+	private HashMap<String, Integer> functionSpaceMap;
+	
 	/** list of first 6 function call arg registers */
 	private static final String[] ARG_REG_LIST = {
 			"rdi", "rsi", "rdx", "rcx", "r8", "r9"
@@ -822,19 +825,21 @@ public class TilingVisitor implements IRTreeVisitor {
 		List<Instruction> everyInstruction = masterTile.getInstructions();
 		Map<String, Integer> registerToStackOffsetMap = new HashMap<String, Integer>();
 		
+		// Call addNecessaryInstruction
 		
 	}
 	
 	/**
 	 * Inserts the necessary instructions to shuttle values to and from stack
 	 * 
-	 * @param instructions				the list of instructions for our program
+	 * @param instructions	the list of instructions for our program
 	 * @param regToStack	the map of register names to the relative stack offset
-	 * @return								list of instructions with correct insertions
+	 * @return				list of instructions with correct insertions
 	 */
 	private List<Instruction> addNecessaryInstruction(
-			List<Instruction> instructions,Map<String, Integer> regToStack) {
-		if (instructions.size() == 0) {
+			List<Instruction> instructions, Map<String, Integer> regToStack) {
+		int size = instructions.size();
+		if (size == 0) {
 			return new ArrayList<Instruction>();
 		}
 		Instruction currentInstruction = instructions.get(0);
@@ -843,18 +848,164 @@ public class TilingVisitor implements IRTreeVisitor {
 		
 		List<Instruction> added = new ArrayList<Instruction>();
 		if (dest == null) {
-			// Label instruction
+			Operation op = currentInstruction.getOp();
+			if (op == Operation.LABEL && op.name().substring(0,5) == "FUNC ") {
+				functionSpaceMap.put(op.name(),stackCounter);
+				stackCounter = 0;
+			}
+			// Label, ret
 			added.add(currentInstruction);
 			added.addAll(addNecessaryInstruction(
-					instructions.subList(1,instructions.size()),regToStack));
+					instructions.subList(1,size),regToStack));
 			return added;
-		}
+		} 
+		Register rcx = new Register("rcx");
+		Register rdx = new Register("rdx");
+		Register r11 = new Register("r11");
+		Register rsp = new Register("rsp");
 		
-		Operation currentOp = currentInstruction.getOp();
-		if (currentOp == Operation.LABEL) {
-			if (regToStack)
+		if (src == null || src instanceof Constant) {
+			// push, pop, call, jumps, div?
+			if (dest instanceof Register) {
+				String reg = ((Register) dest).getName();
+				if (regToStack.containsKey(reg)) {
+					int addr = regToStack.get(reg);
+					Memory mem = new Memory(new Constant(addr),rsp);
+					Instruction movToReg = new Instruction(Operation.MOV,mem,rcx);
+					added.add(movToReg);
+				}
+				currentInstruction.setDest(rcx);
+				added.add(currentInstruction);
+				
+				if (src != null) {
+					int addr1 = -8*++stackCounter;
+					Memory mem1 = new Memory(new Constant(addr1),rsp);
+					Instruction movToMem = new Instruction(Operation.MOV,rcx,mem1);
+					added.add(movToMem);
+					
+					// Add dest to hashmap
+					regToStack.put(reg,addr1);
+				}
+			} else if (dest instanceof Memory) {
+				Memory memOp = (Memory) dest;
+				Register regBase = memOp.getRegisterBase();
+				Register regOff = memOp.getRegisterOffset();
+				Constant cons = memOp.getConstantOffset();
+				Memory newMem;
+				if (regOff != null) {
+					// two register operands for memory
+					int addr1 = regToStack.get(regBase.getName());
+					int addr2 = regToStack.get(regOff.getName());
+					Memory mem1 = new Memory(new Constant(addr1),rsp);
+					Memory mem2 = new Memory(new Constant(addr2),rsp);
+					Instruction movToReg1 = new Instruction(Operation.MOV,mem1,rcx);
+					Instruction movToReg2 = new Instruction(Operation.MOV,mem2,rdx);
+					newMem = new Memory(cons,rcx,rdx,memOp.getConstantFactor());
+					
+					added.add(movToReg1);
+					added.add(movToReg2);
+				} else {
+					int addr = regToStack.get(regBase.getName());
+					Memory mem = new Memory(new Constant(addr),rsp);
+					Instruction movToReg = new Instruction(Operation.MOV,mem,rcx);
+					newMem = new Memory(cons,rcx);
+					
+					added.add(movToReg);
+				}
+				currentInstruction.setDest(newMem);
+				added.add(currentInstruction);
+			} else {
+				added.add(currentInstruction);
+			}
+		} else {
+			// src is not nul
+			if (dest instanceof Memory) {
+				// src must be register
+				int addr1 = regToStack.get(((Register) src).getName());
+				Memory mem1 = new Memory(new Constant(addr1),rsp);
+				Instruction movToReg1 = new Instruction(Operation.MOV,mem1,r11);
+				currentInstruction.setSrc(r11);
+				added.add(movToReg1);
+				
+				Memory memOp = (Memory) dest;
+				Register regBase = memOp.getRegisterBase();
+				Register regOff = memOp.getRegisterOffset();
+				Constant cons = memOp.getConstantOffset();
+				Memory newMem;
+				if (regOff != null) {
+					// two register operands for memory
+					int addr2 = regToStack.get(regBase.getName());
+					int addr3 = regToStack.get(regOff.getName());
+					Memory mem2 = new Memory(new Constant(addr2),rsp);
+					Memory mem3 = new Memory(new Constant(addr3),rsp);
+					Instruction movToReg2 = new Instruction(Operation.MOV,mem2,rcx);
+					Instruction movToReg3 = new Instruction(Operation.MOV,mem3,rdx);
+					newMem = new Memory(cons,rcx,rdx,memOp.getConstantFactor());
+					
+					added.add(movToReg2);
+					added.add(movToReg3);
+					
+				} else {
+					int addr2 = regToStack.get(regBase.getName());
+					Memory mem2 = new Memory(new Constant(addr2),rsp);
+					Instruction movToReg2 = new Instruction(Operation.MOV,mem2,rcx);
+					newMem = new Memory(cons,rcx);
+					
+					added.add(movToReg2);
+				}
+				currentInstruction.setDest(newMem);
+				added.add(currentInstruction);			
+			} else {
+				// dest is register, src is memory
+				String reg = ((Register) dest).getName();
+				if (regToStack.containsKey(reg)) {
+					int addr1 = regToStack.get(reg);
+					Memory mem1 = new Memory(new Constant(addr1),rsp);
+					Instruction movToReg1 = new Instruction(Operation.MOV,mem1,r11);
+					added.add(movToReg1);
+				}
+				currentInstruction.setDest(r11);
+				
+				// Add dest to hashmap
+				int addrNew = -8*++stackCounter;
+				Memory memNew = new Memory(new Constant(addrNew),rsp);
+				regToStack.put(reg,addrNew);
+				Instruction movToMem1 = new Instruction(Operation.MOV,r11,memNew);
+				
+				Memory memOp = (Memory) src;
+				Register regBase = memOp.getRegisterBase();
+				Register regOff = memOp.getRegisterOffset();
+				Constant cons = memOp.getConstantOffset();
+				Memory newMem;
+				if (regOff != null) {
+					// two register operands for memory
+					int addr2 = regToStack.get(regBase.getName());
+					int addr3 = regToStack.get(regOff.getName());
+					Memory mem2 = new Memory(new Constant(addr2),rsp);
+					Memory mem3 = new Memory(new Constant(addr3),rsp);
+					Instruction movToReg2 = new Instruction(Operation.MOV,mem2,rcx);
+					Instruction movToReg3 = new Instruction(Operation.MOV,mem3,rdx);
+					newMem = new Memory(cons,rcx,rdx,memOp.getConstantFactor());
+					
+					added.add(movToReg2);
+					added.add(movToReg3);
+					
+				} else {
+					int addr2 = regToStack.get(regBase.getName());
+					Memory mem2 = new Memory(new Constant(addr2),rsp);
+					Instruction movToReg2 = new Instruction(Operation.MOV,mem2,rcx);
+					newMem = new Memory(cons,rcx);
+					
+					added.add(movToReg2);
+				}
+				currentInstruction.setSrc(newMem);
+				added.add(currentInstruction);
+				added.add(movToMem1);
+			}
 		}
-		
-		return null;
+		added.addAll(addNecessaryInstruction(
+				instructions.subList(1,size),regToStack));
+		return added;
 	}
+	
 }

@@ -341,7 +341,7 @@ public class TilingVisitor implements IRTreeVisitor {
 				operand = t;
 			}
 			
-			Instruction multiply = new Instruction(Operation.IMULQ, operand, null);
+			Instruction multiply = new Instruction(Operation.IMULQ, null, operand);
 			instrList.add(multiply);
 			cost++;
 			
@@ -382,7 +382,7 @@ public class TilingVisitor implements IRTreeVisitor {
 				cost++;
 			}
 
-			Instruction divide = new Instruction(Operation.IDIVQ, divisor, null);
+			Instruction divide = new Instruction(Operation.IDIVQ, null , divisor);
 			instrList.add(divide);
 			cost++;
 			

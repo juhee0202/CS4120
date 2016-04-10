@@ -998,6 +998,10 @@ public class TilingVisitor implements IRTreeVisitor {
 	 */
 	@Override
 	public void visit(IRName name) {
+		if (tileMap.containsKey(name)) {
+			return;
+		}
+		
 		Label label = new Label(name.name());
 		Tile tile = new Tile(null, 0, label);
 		tileMap.put(name, tile);
@@ -1009,6 +1013,10 @@ public class TilingVisitor implements IRTreeVisitor {
 	 */
 	@Override
 	public void visit(IRReturn ret) {
+		if (tileMap.containsKey(ret)) {
+			return;
+		}
+		
 		Instruction instr = new Instruction(Operation.RET);
 		List<Instruction> instructions = new ArrayList<Instruction>();
 		instructions.add(instr);

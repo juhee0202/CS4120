@@ -2,7 +2,6 @@ package jl2755.visitor;
 
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -112,7 +111,7 @@ public class TilingVisitor implements IRTreeVisitor {
 					"Mem"
 					));
 	
-	// MEM(BINOP(ADD, CONST, BINOP(ADD, BINOP(MUL, TEMP, CONST), CONST)))
+	// MEM(BINOP(ADD, TEMP, BINOP(ADD, BINOP(MUL, TEMP, CONST), CONST)))
 	// eg: mov mem(%ebx + (%ecx*w + k)), %eax
 	private static final List<String> MEM_EFFECTIVE_PRE = new ArrayList<String>(
 			Arrays.asList(
@@ -174,10 +173,9 @@ public class TilingVisitor implements IRTreeVisitor {
 	 *  */
 	@Override
 	public void visit(IRBinOp bo) {
-		// TODO Auto-generated method stub
-
 		OpType op = bo.opType();
 		Operation tileOp = null;
+		
 		switch(op) {
 		case ADD:
 			tileOp = Operation.ADD;
@@ -186,19 +184,16 @@ public class TilingVisitor implements IRTreeVisitor {
         	tileOp = Operation.SUB;
             break;
         case MUL:
-        	// TODO
-        	tileOp = Operation.MUL;
+        	tileOp = Operation.IMUL;
             break;
         case HMUL:
         	// TODO
         	tileOp = Operation.HMUL;
             break;
         case DIV:
-        	// TODO
-        	tileOp = Operation.DIV;
+        	tileOp = Operation.IDIV;
             break;
         case MOD:
-        	// TODO
         	tileOp = Operation.MOD;
             break;
         case AND:
@@ -220,27 +215,21 @@ public class TilingVisitor implements IRTreeVisitor {
         	tileOp = Operation.ARSHIFT;
             break;
         case EQ:
-        	// TODO
         	tileOp = Operation.EQ;
             break;
         case NEQ:
-        	// TODO
         	tileOp = Operation.NEQ;
             break;
         case LT:
-        	// TODO
         	tileOp = Operation.LT;
             break;
         case GT:
-        	// TODO
         	tileOp = Operation.GT;
             break;
         case LEQ:
-        	// TODO
         	tileOp = Operation.LEQ;
             break;
         case GEQ:
-        	// TODO
         	tileOp = Operation.GEQ;
             break;
 		}
@@ -331,37 +320,147 @@ public class TilingVisitor implements IRTreeVisitor {
 					argDest = leftOperand;
 				}
 			}
-			
-			// create tile and put into tileMap
-			Tile tile = new Tile(instrList, cost, argDest);
-			tileMap.put(bo, tile);
 		}
-		else if (tileOp == Operation.LSHIFT ||
-				 tileOp == Operation.RSHIFT || 
-				 tileOp == Operation.ARSHIFT) 
-		{
+		/* create instruction 
+		 * 		imul <reg32>,<reg32>
+		 * 		imul <reg32>,<mem>
+		 */
+		else if (tileOp == Operation.IMUL) {
 			if (leftOperand instanceof Constant) {
-				if (rightOperand instanceof Register || rightOperand instanceof Memory) {
-					Instruction shiftConstReg = new Instruction(tileOp, leftOperand, rightOperand);
-					instrList.add(shiftConstReg);
-					cost = 1;
-					argDest = rightOperand;
-				}
-				else if (rightOperand instanceof Constant) {
-					Register t = new Register("tileRegister" + registerCount++);
-					Instruction moveInstruction = new Instruction(Operation.MOV, rightOperand, t);
-					Instruction shiftConstReg = new Instruction(tileOp, leftOperand, t);
-					instrList.add(moveInstruction);
-					instrList.add(shiftConstReg);
-					cost = 2;
-					argDest = t;
-				}
+				Register t = new Register("tileRegister" + registerCount++);
+				Instruction movConstReg = new Instruction(Operation.MOV, leftOperand, t);
+				instrList.add(movConstReg);
+				cost++;
+			}
+			if (rightOperand instanceof Constant) {
+				Register t = new Register("tileRegister" + registerCount++);
+				Instruction movConstReg = new Instruction(Operation.MOV, rightOperand, t);
+				instrList.add(movConstReg);
+				cost++;
+			}
+			Instruction multiply = new Instruction(Operation.IMUL, leftOperand, rightOperand);
+			instrList.add(multiply);
+			cost++;
+			argDest = rightOperand;
+		}
+		else if (tileOp == Operation.HMUL) {
+			// TODO
+		}
+		
+		/* 
+		 * dividend / divisor
+		 * 		mov 0, %rdx
+		 * 		mov dividend, %rax
+		 * 		mov divisor, register
+		 * 		idiv register
+		 * 
+		 * stores quotient in %rax, and remainder in %rdx
+		 */
+		else if (tileOp == Operation.IDIV || tileOp == Operation.MOD) {
+			Register rdx = new Register("rdx");
+			Register rax = new Register("rax");
+			Operand divisor = null;
+			
+			Instruction moveZeroToRdx = new Instruction(Operation.MOV, new Constant(0), rdx);
+			Instruction moveDividendToRax = new Instruction(Operation.MOV, leftOperand, rax);
+			instrList.add(moveZeroToRdx);
+			instrList.add(moveDividendToRax);
+			cost += 2;
+			
+			if (rightOperand instanceof Register) {
+				divisor = (Register) rightOperand;
+			}
+			else if (rightOperand instanceof Memory) {
+				divisor = (Memory) rightOperand;
+			}
+			else if (rightOperand instanceof Constant) {
+				divisor = new Register("tileRegister" + registerCount++);
+				Instruction moveDivisorToReg = new Instruction(Operation.MOV, rightOperand, divisor);
+				instrList.add(moveDivisorToReg);
+				cost++;
+			}
+
+			Instruction divide = new Instruction(Operation.IDIV, divisor, null);
+			instrList.add(divide);
+			cost++;
+			
+			if (tileOp == Operation.IDIV) {
+				argDest = rax;
 			}
 			else {
-				System.out.println("TilingVisitor: LEFT OPERAND FOR SHIFT SHOULD HAVE BEEN A CONSTANT");
+				argDest = rdx;
 			}
 		}
-		// TODO CONTINUE HERE TOMORROW FOR DIFF KINDS OF TILEOP OMFGSDJLKFJSDKLFJDS KILL ME NOW
+		
+		else if (tileOp == Operation.EQ ||
+				 tileOp == Operation.NEQ ||
+				 tileOp == Operation.LT ||
+				 tileOp == Operation.GT ||
+				 tileOp == Operation.LEQ || 
+				 tileOp == Operation.GEQ) 
+		{
+			Operand src = leftOperand;
+			Operand dest = rightOperand;
+			
+			if (leftOperand instanceof Constant) {
+				Register t = new Register("tileRegister" + registerCount++);
+				Instruction moveToRegister = new Instruction(Operation.MOV, leftOperand, t);
+				instrList.add(moveToRegister);
+				cost++;
+				src = t;
+			}
+			if (rightOperand instanceof Constant) {
+				Register t = new Register("tileRegister" + registerCount++);
+				Instruction moveToRegister = new Instruction(Operation.MOV, rightOperand, t);
+				instrList.add(moveToRegister);
+				cost++;
+				dest = t;
+			}
+			Instruction compare = new Instruction(Operation.CMP, src, dest);
+			instrList.add(compare);
+			cost++;
+			
+			if (tileOp == Operation.EQ) {
+				Instruction cmove = new Instruction(Operation.CMOVE, new Constant(1), dest);	    // dest = 1 if equal
+				Instruction cmovne = new Instruction(Operation.CMOVNE, new Constant(0), dest);      // dest = 0 if not equal
+				instrList.add(cmove);
+				instrList.add(cmovne);
+				cost += 2;
+			}
+			else if (tileOp == Operation.NEQ) {
+				Instruction cmovne = new Instruction(Operation.CMOVNE, new Constant(1), dest);		// dest = 1 if not equal
+				Instruction cmove = new Instruction(Operation.CMOVE, new Constant(0), dest);        // dest = 0 if equal
+				instrList.add(cmovne);
+				instrList.add(cmove);
+				cost += 2;
+			}
+			else if (tileOp == Operation.LT) {
+				Instruction cmovl = new Instruction(Operation.CMOVL, new Constant(1), dest);	    // dest = 1 if equal
+				Instruction cmovege = new Instruction(Operation.CMOVGE, new Constant(0), dest);     // dest = 0 if not equal
+				instrList.add(cmovl);
+				instrList.add(cmovege);
+				cost += 2;
+			}
+			else if (tileOp == Operation.LEQ) {
+				Instruction cmovle = new Instruction(Operation.CMOVLE, new Constant(1), dest);	    // dest = 1 if <=
+				Instruction cmovg = new Instruction(Operation.CMOVG, new Constant(0), dest);     	// dest = 0 if >
+				instrList.add(cmovle);
+				instrList.add(cmovg);
+				cost += 2;
+			}
+			else if (tileOp == Operation.GEQ) {
+				Instruction cmovge = new Instruction(Operation.CMOVGE, new Constant(1), dest);	    // dest = 1 if equal
+				Instruction cmovl = new Instruction(Operation.CMOVL, new Constant(0), dest);     // dest = 0 if not equal
+				instrList.add(cmovge);
+				instrList.add(cmovl);
+				cost += 2;
+			}
+			argDest = dest;
+		}
+
+		// create tile and put into tileMap
+		Tile tile = new Tile(instrList, cost, argDest);
+		tileMap.put(bo, tile);
 	}
 	
 	/**
@@ -808,9 +907,6 @@ public class TilingVisitor implements IRTreeVisitor {
 
 	@Override
 	public void visit(IRMove mov) {
-		if (tileMap.containsKey(mov)) {
-			return;
-		}
 		mov.expr().accept(this);
 		mov.target().accept(this);
 		Tile sourceTile = tileMap.get(mov.expr());
@@ -854,51 +950,5 @@ public class TilingVisitor implements IRTreeVisitor {
 		}
 		Tile tempTile = new Tile(null, 0, new Register(temp.name()));
 		tileMap.put(temp, tempTile);
-	}
-	
-	/**
-	 * Handles converting all temps to stack allocations
-	 * 
-	 * @param headNode	the IR node representing the xi program
-	 */
-	private void stackAllocation(IRCompUnit headNode) {
-		Tile masterTile = tileMap.get(headNode);
-		List<Instruction> everyInstruction = masterTile.getInstructions();
-		Map<String, Integer> registerToStackOffsetMap = new HashMap<String, Integer>();
-		
-		
-	}
-	
-	/**
-	 * Inserts the necessary instructions to shuttle values to and from stack
-	 * 
-	 * @param instructions				the list of instructions for our program
-	 * @param regToStack	the map of register names to the relative stack offset
-	 * @return								list of instructions with correct insertions
-	 */
-	private List<Instruction> addNecessaryInstruction(
-			List<Instruction> instructions,Map<String, Integer> regToStack) {
-		if (instructions.size() == 0) {
-			return new ArrayList<Instruction>();
-		}
-		Instruction currentInstruction = instructions.get(0);
-		Operand src = currentInstruction.getSrc();
-		Operand dest = currentInstruction.getDest();
-		
-		List<Instruction> added = new ArrayList<Instruction>();
-		if (dest == null) {
-			// Label instruction
-			added.add(currentInstruction);
-			added.addAll(addNecessaryInstruction(
-					instructions.subList(1,instructions.size()),regToStack));
-			return added;
-		}
-		
-		Operation currentOp = currentInstruction.getOp();
-		if (currentOp == Operation.LABEL) {
-			if (regToStack)
-		}
-		
-		return null;
 	}
 }

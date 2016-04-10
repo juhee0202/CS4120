@@ -8,9 +8,10 @@ public class Instruction {
 	
 	// TODO: complete this
 	public enum Operation {
-	    ADD, SUB, MUL, HMUL, DIV, MOD, AND, OR, XOR, LSHIFT, RSHIFT, ARSHIFT,
+	    ADD, SUB, IMUL, HMUL, IDIV, MOD, AND, OR, XOR, LSHIFT, RSHIFT, ARSHIFT,
 	    EQ, NEQ, LT, GT, LEQ, GEQ, LABEL, MOV, CALL, PUSH, JMP, JE, JNE, 
-	    JG, JGE, JL, JLE, JZ, JNZ, CMP, TEST;
+	    JG, JGE, JL, JLE, JZ, JNZ, CMP, TEST, 
+	    CMOVE, CMOVNE, CMOVL, CMOVLE, CMOVG, CMOVGE, CMOVS, CMOVNS;
 
 	    @Override
 	    public String toString() {
@@ -19,11 +20,11 @@ public class Instruction {
 	            return "ADD";
 	        case SUB:
 	            return "SUB";
-	        case MUL:
+	        case IMUL:
 	            return "MUL";
 	        case HMUL:
 	            return "HMUL";
-	        case DIV:
+	        case IDIV:
 	            return "DIV";
 	        case MOD:
 	            return "MOD";
@@ -91,11 +92,11 @@ public class Instruction {
 	            return 2;
 	        case SUB:
 	            return 2;
-	        case MUL:
+	        case IMUL:
 	            return 2;
 	        case HMUL:
 	            return 2;
-	        case DIV:
+	        case IDIV:
 	            return 2;
 	        case MOD:
 	            return 2;
@@ -152,6 +153,22 @@ public class Instruction {
 	        case CMP:
 	        	return 2;
 	        case TEST:
+	        	return 2;
+	        case CMOVE:
+	        	return 2;
+	        case CMOVNE:
+	        	return 2;
+	        case CMOVL:
+	        	return 2;
+	        case CMOVLE:
+	        	return 2;
+	        case CMOVG:
+	        	return 2;
+	        case CMOVGE:
+	        	return 2;
+	        case CMOVS:
+	        	return 2;
+	        case CMOVNS:
 	        	return 2;
 	        }
 	        throw new InternalCompilerError("Unknown op type");

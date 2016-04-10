@@ -12,6 +12,10 @@ public class Tile {
 	private List<Instruction> instructions;
 	private Operand dest;
 	
+	public Tile(List<Instruction> i) {
+		instructions = i;
+	}
+	
 	/**
 	 * Should only be used in mergeTiles to make a new blank Tile
 	 */

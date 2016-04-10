@@ -2,6 +2,7 @@ package jl2755.visitor;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -17,11 +18,13 @@ public class TilingVisitor implements IRTreeVisitor {
 
 	private List<Tile> tileLibrary;
 	
+	private int stackCounter = 0;
+	private HashMap<String, Integer> functionSpaceMap;
+	
 	/** list of first 6 function call arg registers */
 	private static final String[] ARG_REG_LIST = {
 			"rdi", "rsi", "rdx", "rcx", "r8", "r9"
 	};
-
 	
 	
 	/** Lists of strings representing possible tiles. */
@@ -464,6 +467,7 @@ public class TilingVisitor implements IRTreeVisitor {
 	
 	/**
 	 * Assembly: 
+	 * sub $(8*(m-2)), rsp			// m = number of return values
 	 * push en
 	 * push en-1
 	 * ...
@@ -471,9 +475,10 @@ public class TilingVisitor implements IRTreeVisitor {
 	 * mov e6, r9
 	 * ...
 	 * mov e1, rdi
+	 * (push rax) <- do we need this?
 	 * call f
 	 * mov rax, dest
-	 * add $(8*(n-6)), rsp
+	 * add $(8*( (n-6) + (m-2) ), rsp		// n = number of args
 	 * 
 	 * TODO
 	 * modify visit(IRMove) to handle MOVE(expr,CALL(...))
@@ -486,14 +491,32 @@ public class TilingVisitor implements IRTreeVisitor {
 		
 		List<IRExpr> args = call.args();
 		int numArgs = args.size();
+		int numReturns = call.getNumReturns();
+		int numArgRegs = 6;
 		
 		List<Instruction> instructions = new ArrayList<Instruction>();
 		// temp list to be appended to instructions after visiting all arg exprs
 		List<Instruction> tempInstructions = new ArrayList<Instruction>();
 		
-		// for args7...
-		if (numArgs > 6) {
-			for (int i = numArgs-1; i > 6; i--) {
+		// for ret3...
+		if (numReturns > 2) {
+			// set rdi to ret3's address
+			Register rdi = new Register("rdi");
+			Register rsp = new Register("rsp");
+			Memory ret3 = new Memory(new Constant(-8), rsp); 
+			Instruction instr = new Instruction(Operation.MOVQ, ret3, rdi);
+			tempInstructions.add(instr);
+			
+			// create (m-2) words space 
+			Constant c = new Constant(numReturns - 2);
+			Instruction instr2 = new Instruction(Operation.SUBQ, c, rsp);
+			tempInstructions.add(instr2);
+			numArgRegs--;
+		}
+		
+		// for args7/6...
+		if (numArgs > numArgRegs) {
+			for (int i = numArgs-1; i > numArgRegs; i--) {
 				// tile the expression
 				IRExpr expr = args.get(i); 
 				expr.accept(this);
@@ -506,13 +529,14 @@ public class TilingVisitor implements IRTreeVisitor {
 				Operand dest = exprTile.getDest();
 				
 				// "push dest"
-				Instruction instr = new Instruction(Operation.PUSH, dest);
+				Instruction instr = new Instruction(Operation.PUSHQ, dest);
 				tempInstructions.add(instr);
 			}
-			numArgs = 6;
+			numArgs = numArgRegs;
 		}
 		
-		// for args1 ... args6
+		int offset = numArgRegs == 5 ? 1 : 0; // numArgRegs is 5 if 3< returns
+		// for args1 ... args6/5
 		for (int i = numArgs-1; i >= 0; i--) {
 			// tile the expression
 			IRExpr expr = args.get(i);
@@ -525,8 +549,8 @@ public class TilingVisitor implements IRTreeVisitor {
 			Operand dest = exprTile.getDest();
 			
 			// ex) "mov e3 rdi"
-			Operand reg = new Register(ARG_REG_LIST[i]);
-			Instruction instr = new Instruction(Operation.MOV, dest, reg);
+			Operand reg = new Register(ARG_REG_LIST[i + offset]);
+			Instruction instr = new Instruction(Operation.MOVQ, dest, reg);
 			tempInstructions.add(instr);
 		}
 		
@@ -539,7 +563,7 @@ public class TilingVisitor implements IRTreeVisitor {
 			instructions.addAll(targetInstr);
 		}
 		Operand targetDest = targetTile.getDest();
-		Instruction callInstruction = new Instruction(Operation.CALL, targetDest);
+		Instruction callInstruction = new Instruction(Operation.CALLQ, targetDest);
 		tempInstructions.add(callInstruction);
 	
 		// append tempInstructions to instructions
@@ -821,8 +845,48 @@ public class TilingVisitor implements IRTreeVisitor {
 
 	@Override
 	public void visit(IRFuncDecl fd) {
-		// TODO Auto-generated method stub
-
+		List<Instruction> instructions = new ArrayList<Instruction>();
+		// Label
+		Label fnLabel = new Label(fd.label());
+		instructions.add(new Instruction(Operation.LABEL, fnLabel));
+		// Prologue
+		// "enter 8*l, 0" 8*l will be filled in later
+		Instruction enter = new Instruction(Operation.PUSHQ, null, new Constant(0));
+		instructions.add(enter);
+		// move args to param regs
+		List<String> paramList = fd.getParamList();
+		int numArgs = fd.getNumArgs();
+		int numReturns = fd.getNumReturns();
+		int offset = numReturns > 2 ? 1 : 0;	
+		int numRegParams = Math.min(numArgs, 6-offset);
+		for (int i = 0; i < numRegParams; i++) {
+			Register arg = new Register(ARG_REG_LIST[i + offset]);
+			Register param = new Register(paramList.get(i));
+			Instruction moveArgtoParam = new Instruction(Operation.MOVQ, arg, 
+														 param);
+			instructions.add(moveArgtoParam);
+		}
+		Register rbp = new Register("rbp");
+		for (int i = numRegParams; i < numArgs; i++) {
+			Memory arg = new Memory(new Constant(8*(2+i-numRegParams)), rbp);
+			Register param = new Register(paramList.get(i));
+			Instruction moveArgtoParam = new Instruction(Operation.MOVQ, arg, 
+					 param);
+			instructions.add(moveArgtoParam);
+		}
+		// TODO: is ret3 register rdi value preserved? 
+		// Body
+		IRStmt body = fd.body();
+		body.accept(this);
+		instructions.addAll(tileMap.get(body).getInstructions());
+		// Epilogue
+		// assume last instruction of body is ret
+		Instruction leave = new Instruction(Operation.LEAVE);
+		instructions.add(instructions.size()-1, leave);
+		
+		// create a tile for this node
+		Tile tile = new Tile(instructions);
+		tileMap.put(fd, tile);
 	}
 
 	@Override
@@ -906,6 +970,9 @@ public class TilingVisitor implements IRTreeVisitor {
 
 	@Override
 	public void visit(IRMove mov) {
+		if (tileMap.containsKey(mov)) {
+			return;
+		}
 		mov.expr().accept(this);
 		mov.target().accept(this);
 		Tile sourceTile = tileMap.get(mov.expr());
@@ -915,7 +982,7 @@ public class TilingVisitor implements IRTreeVisitor {
 		List<Instruction> addingInstr = new ArrayList<Instruction>();
 		addingInstr.addAll(sourceTile.getInstructions());
 		addingInstr.addAll(targetTile.getInstructions());
-		Instruction movInstruction = new Instruction(Operation.MOV,
+		Instruction movInstruction = new Instruction(Operation.MOVQ,
 				sourceOperand, targetOperand);
 		addingInstr.add(movInstruction);
 		Tile finalTile = new Tile(addingInstr, 1 + sourceTile.getCost() + targetTile.getCost(),
@@ -925,15 +992,35 @@ public class TilingVisitor implements IRTreeVisitor {
 		tileMap.put(mov, finalTile);
 	}
 
+	/**
+	 * maps name to a label operand
+	 */
 	@Override
 	public void visit(IRName name) {
+		if (tileMap.containsKey(name)) {
+			return;
+		}
 		
+		Label label = new Label(name.name());
+		Tile tile = new Tile(null, 0, label);
+		tileMap.put(name, tile);
 	}
 
+	/**
+	 * "ret"
+	 * @param ret
+	 */
 	@Override
 	public void visit(IRReturn ret) {
-		// TODO Auto-generated method stub
-
+		if (tileMap.containsKey(ret)) {
+			return;
+		}
+		
+		Instruction instr = new Instruction(Operation.RET);
+		List<Instruction> instructions = new ArrayList<Instruction>();
+		instructions.add(instr);
+		Tile tile = new Tile(instructions, 1);
+		tileMap.put(ret, tile);
 	}
 
 	@Override
@@ -950,4 +1037,198 @@ public class TilingVisitor implements IRTreeVisitor {
 		Tile tempTile = new Tile(null, 0, new Register(temp.name()));
 		tileMap.put(temp, tempTile);
 	}
+	
+	/**
+	 * Handles converting all temps to stack allocations
+	 * 
+	 * @param headNode	the IR node representing the xi program
+	 */
+	private void stackAllocation(IRCompUnit headNode) {
+		Tile masterTile = tileMap.get(headNode);
+		List<Instruction> everyInstruction = masterTile.getInstructions();
+		Map<String, Integer> registerToStackOffsetMap = new HashMap<String, Integer>();
+		
+		// Call addNecessaryInstruction
+		
+	}
+	
+	/**
+	 * Inserts the necessary instructions to shuttle values to and from stack
+	 * 
+	 * @param instructions	the list of instructions for our program
+	 * @param regToStack	the map of register names to the relative stack offset
+	 * @return				list of instructions with correct insertions
+	 */
+	private List<Instruction> addNecessaryInstruction(
+			List<Instruction> instructions, Map<String, Integer> regToStack) {
+		int size = instructions.size();
+		if (size == 0) {
+			return new ArrayList<Instruction>();
+		}
+		Instruction currentInstruction = instructions.get(0);
+		Operand src = currentInstruction.getSrc();
+		Operand dest = currentInstruction.getDest();
+		
+		List<Instruction> added = new ArrayList<Instruction>();
+		if (dest == null) {
+			Operation op = currentInstruction.getOp();
+			if (op == Operation.LABEL && op.name().substring(0,5) == "FUNC ") {
+				functionSpaceMap.put(op.name(),stackCounter);
+				stackCounter = 0;
+			}
+			// Label, ret
+			added.add(currentInstruction);
+			added.addAll(addNecessaryInstruction(
+					instructions.subList(1,size),regToStack));
+			return added;
+		} 
+		Register rcx = new Register("rcx");
+		Register rdx = new Register("rdx");
+		Register r11 = new Register("r11");
+		Register rsp = new Register("rsp");
+		
+		if (src == null || src instanceof Constant) {
+			// push, pop, call, jumps, div?
+			if (dest instanceof Register) {
+				String reg = ((Register) dest).getName();
+				if (regToStack.containsKey(reg)) {
+					int addr = regToStack.get(reg);
+					Memory mem = new Memory(new Constant(addr),rsp);
+					Instruction movToReg = new Instruction(Operation.MOV,mem,rcx);
+					added.add(movToReg);
+				}
+				currentInstruction.setDest(rcx);
+				added.add(currentInstruction);
+				
+				if (src != null) {
+					int addr1 = -8*++stackCounter;
+					Memory mem1 = new Memory(new Constant(addr1),rsp);
+					Instruction movToMem = new Instruction(Operation.MOV,rcx,mem1);
+					added.add(movToMem);
+					
+					// Add dest to hashmap
+					regToStack.put(reg,addr1);
+				}
+			} else if (dest instanceof Memory) {
+				Memory memOp = (Memory) dest;
+				Register regBase = memOp.getRegisterBase();
+				Register regOff = memOp.getRegisterOffset();
+				Constant cons = memOp.getConstantOffset();
+				Memory newMem;
+				if (regOff != null) {
+					// two register operands for memory
+					int addr1 = regToStack.get(regBase.getName());
+					int addr2 = regToStack.get(regOff.getName());
+					Memory mem1 = new Memory(new Constant(addr1),rsp);
+					Memory mem2 = new Memory(new Constant(addr2),rsp);
+					Instruction movToReg1 = new Instruction(Operation.MOV,mem1,rcx);
+					Instruction movToReg2 = new Instruction(Operation.MOV,mem2,rdx);
+					newMem = new Memory(cons,rcx,rdx,memOp.getConstantFactor());
+					
+					added.add(movToReg1);
+					added.add(movToReg2);
+				} else {
+					int addr = regToStack.get(regBase.getName());
+					Memory mem = new Memory(new Constant(addr),rsp);
+					Instruction movToReg = new Instruction(Operation.MOV,mem,rcx);
+					newMem = new Memory(cons,rcx);
+					
+					added.add(movToReg);
+				}
+				currentInstruction.setDest(newMem);
+				added.add(currentInstruction);
+			} else {
+				added.add(currentInstruction);
+			}
+		} else {
+			// src is not nul
+			if (dest instanceof Memory) {
+				// src must be register
+				int addr1 = regToStack.get(((Register) src).getName());
+				Memory mem1 = new Memory(new Constant(addr1),rsp);
+				Instruction movToReg1 = new Instruction(Operation.MOV,mem1,r11);
+				currentInstruction.setSrc(r11);
+				added.add(movToReg1);
+				
+				Memory memOp = (Memory) dest;
+				Register regBase = memOp.getRegisterBase();
+				Register regOff = memOp.getRegisterOffset();
+				Constant cons = memOp.getConstantOffset();
+				Memory newMem;
+				if (regOff != null) {
+					// two register operands for memory
+					int addr2 = regToStack.get(regBase.getName());
+					int addr3 = regToStack.get(regOff.getName());
+					Memory mem2 = new Memory(new Constant(addr2),rsp);
+					Memory mem3 = new Memory(new Constant(addr3),rsp);
+					Instruction movToReg2 = new Instruction(Operation.MOV,mem2,rcx);
+					Instruction movToReg3 = new Instruction(Operation.MOV,mem3,rdx);
+					newMem = new Memory(cons,rcx,rdx,memOp.getConstantFactor());
+					
+					added.add(movToReg2);
+					added.add(movToReg3);
+					
+				} else {
+					int addr2 = regToStack.get(regBase.getName());
+					Memory mem2 = new Memory(new Constant(addr2),rsp);
+					Instruction movToReg2 = new Instruction(Operation.MOV,mem2,rcx);
+					newMem = new Memory(cons,rcx);
+					
+					added.add(movToReg2);
+				}
+				currentInstruction.setDest(newMem);
+				added.add(currentInstruction);			
+			} else {
+				// dest is register, src is memory
+				String reg = ((Register) dest).getName();
+				if (regToStack.containsKey(reg)) {
+					int addr1 = regToStack.get(reg);
+					Memory mem1 = new Memory(new Constant(addr1),rsp);
+					Instruction movToReg1 = new Instruction(Operation.MOV,mem1,r11);
+					added.add(movToReg1);
+				}
+				currentInstruction.setDest(r11);
+				
+				// Add dest to hashmap
+				int addrNew = -8*++stackCounter;
+				Memory memNew = new Memory(new Constant(addrNew),rsp);
+				regToStack.put(reg,addrNew);
+				Instruction movToMem1 = new Instruction(Operation.MOV,r11,memNew);
+				
+				Memory memOp = (Memory) src;
+				Register regBase = memOp.getRegisterBase();
+				Register regOff = memOp.getRegisterOffset();
+				Constant cons = memOp.getConstantOffset();
+				Memory newMem;
+				if (regOff != null) {
+					// two register operands for memory
+					int addr2 = regToStack.get(regBase.getName());
+					int addr3 = regToStack.get(regOff.getName());
+					Memory mem2 = new Memory(new Constant(addr2),rsp);
+					Memory mem3 = new Memory(new Constant(addr3),rsp);
+					Instruction movToReg2 = new Instruction(Operation.MOV,mem2,rcx);
+					Instruction movToReg3 = new Instruction(Operation.MOV,mem3,rdx);
+					newMem = new Memory(cons,rcx,rdx,memOp.getConstantFactor());
+					
+					added.add(movToReg2);
+					added.add(movToReg3);
+					
+				} else {
+					int addr2 = regToStack.get(regBase.getName());
+					Memory mem2 = new Memory(new Constant(addr2),rsp);
+					Instruction movToReg2 = new Instruction(Operation.MOV,mem2,rcx);
+					newMem = new Memory(cons,rcx);
+					
+					added.add(movToReg2);
+				}
+				currentInstruction.setSrc(newMem);
+				added.add(currentInstruction);
+				added.add(movToMem1);
+			}
+		}
+		added.addAll(addNecessaryInstruction(
+				instructions.subList(1,size),regToStack));
+		return added;
+	}
+	
 }

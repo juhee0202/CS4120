@@ -2,7 +2,10 @@ package jl2755.ast;
 
 import edu.cornell.cs.cs4120.util.CodeWriterSExpPrinter;
 import jl2755.GlobalPrettyPrinter;
+import jl2755.type.TupleType;
+import jl2755.type.UnitType;
 import jl2755.type.VType;
+import jl2755.type.VarType;
 import jl2755.visitor.ASTVisitor;
 
 /**
@@ -26,6 +29,7 @@ public class FunctionCall implements Expr,NakedStmt {
     private int index;
     private VType type;
     private boolean isSurroundedByParentheses = false;
+    private int numReturns;
 
     public FunctionCall(Identifier id){
         identifier = id;
@@ -104,6 +108,13 @@ public class FunctionCall implements Expr,NakedStmt {
 
 	public void setType(VType type) {
 		this.type = type;
+		if (type instanceof UnitType) {
+			setNumReturns(0);
+		} else if (type instanceof VarType) {
+			setNumReturns(1);
+		} else if (type instanceof TupleType) {
+			setNumReturns(((TupleType) type).getTypes().size());
+		}
 	}
 
 	public String getABIName() {
@@ -191,5 +202,13 @@ public class FunctionCall implements Expr,NakedStmt {
 	@Override
 	public boolean isSurroundedParentheses() {
 		return isSurroundedByParentheses;
+	}
+
+	public int getNumReturns() {
+		return numReturns;
+	}
+
+	public void setNumReturns(int numReturns) {
+		this.numReturns = numReturns;
 	}
 }

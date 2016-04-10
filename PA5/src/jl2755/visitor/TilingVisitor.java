@@ -403,7 +403,28 @@ public class TilingVisitor implements IRTreeVisitor {
 		}
 		
 		else if (tileOp == Operation.EQ) {
+			Operand src = leftOperand;
+			Operand dest = rightOperand;
 			
+			if (leftOperand instanceof Constant) {
+				Register t = new Register("tileRegister" + registerCount++);
+				Instruction moveToRegister = new Instruction(Operation.MOV, leftOperand, t);
+				instrList.add(moveToRegister);
+				cost++;
+				src = t;
+			}
+			if (rightOperand instanceof Constant) {
+				Register t = new Register("tileRegister" + registerCount++);
+				Instruction moveToRegister = new Instruction(Operation.MOV, rightOperand, t);
+				instrList.add(moveToRegister);
+				cost++;
+				dest = t;
+			}
+			Instruction compare = new Instruction(Operation.CMP, src, dest);
+			instrList.add(compare);
+			cost++;
+			
+			Instruction 
 		}
 		else if (tileOp == Operation.NEQ) {
 			

@@ -705,12 +705,8 @@ public class TilingVisitor implements IRTreeVisitor {
 
 	@Override
 	public void visit(IRESeq eseq) {
-<<<<<<< HEAD
-		return;
-=======
 		// Should not be here I think
 		System.out.println("Got to ESeq in TilingVisitor when you shouldn't have");
->>>>>>> 96e585c89069d3a7a103fc46091ab3b60c259fc9
 	}
 
 	// assumption: EXP is only used to wrap CALL
@@ -722,8 +718,11 @@ public class TilingVisitor implements IRTreeVisitor {
 
 	@Override
 	public void visit(IRFuncDecl fd) {
-		// TODO Auto-generated method stub
-
+		// label
+		
+		// prologue
+		// body
+		// epilogue
 	}
 
 	@Override

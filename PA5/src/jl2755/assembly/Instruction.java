@@ -8,7 +8,7 @@ public class Instruction {
 	public enum Operation {
 	    ADD, SUB, MUL, HMUL, DIV, MOD, AND, OR, XOR, LSHIFT, RSHIFT, ARSHIFT,
 	    EQ, NEQ, LT, GT, LEQ, GEQ,
-	    MOV,CALL,PUSH;
+	    MOV,CALL,PUSH,LABEL;
 
 	    @Override
 	    public String toString() {
@@ -55,6 +55,8 @@ public class Instruction {
 	            return "CALL";
 	        case PUSH:
 	            return "PUSH";
+	        case LABEL:
+	            return "LABEL";
 	        }
 	        throw new InternalCompilerError("Unknown op type");
 	    }

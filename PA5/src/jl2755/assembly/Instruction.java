@@ -127,7 +127,7 @@ public class Instruction {
 	        }
 	        throw new InternalCompilerError("Unknown op type");
 	    }
-	    
+
 	    private int numberOfOperandsNeeded() {
 //	        switch (this) {
 //	        case ADDQ:

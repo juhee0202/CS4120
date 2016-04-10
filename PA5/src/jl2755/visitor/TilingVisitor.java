@@ -187,7 +187,6 @@ public class TilingVisitor implements IRTreeVisitor {
         	tileOp = Operation.IMUL;
             break;
         case HMUL:
-        	// TODO
         	tileOp = Operation.HMUL;
             break;
         case DIV:
@@ -343,8 +342,37 @@ public class TilingVisitor implements IRTreeVisitor {
 			cost++;
 			argDest = rightOperand;
 		}
+		/* 
+		 * HMUL x, y
+		 * 		movq %rx,%rax     #Store x into %rax
+		 * 		mulq %y           #multiplies %y to %rax
+		 * 		#mulq stores high and low values into rax and rdx.
+		 * 		movq %rax,(%r8)   #Move low into &lower
+		 * 		movq %rdx,(%r9)   #Move high answer into &higher
+		 */
 		else if (tileOp == Operation.HMUL) {
 			// TODO
+			Register rax = new Register("rax");
+			Operand operand = rightOperand;
+
+			Instruction movToRax = new Instruction(Operation.MOV, leftOperand, rax);
+			instrList.add(movToRax);
+			cost++;
+			
+			if (rightOperand instanceof Constant) {
+				Register t = new Register("tileRegister" + registerCount++);
+				Instruction movConstReg = new Instruction(Operation.MOV, rightOperand, t);
+				instrList.add(movConstReg);
+				cost++;
+				operand = t;
+			}
+			
+			Instruction multiply = new Instruction(Operation.MULQ, operand, null);
+			instrList.add(multiply);
+			cost++;
+			
+			// mulq stores high and low values into rax and rdx
+			argDest = rax;
 		}
 		
 		/* 

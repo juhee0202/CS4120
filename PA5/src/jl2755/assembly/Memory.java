@@ -11,6 +11,14 @@ public class Memory implements Operand {
 	/** (%r1,%r2,w): Multiply r2 and w, add to r1. */
 	private Constant constantFactor;
 	
+	/** Only used for cloning */
+	private Memory() {
+	}
+	
+	public Memory(Constant co) {
+		constantOffset = co;
+	}
+	
 	private static final Constant NO_OFFSET = new Constant(0);
 	private static final Constant NO_FACTOR = new Constant(1);
 	
@@ -81,6 +89,15 @@ public class Memory implements Operand {
 	@Override
 	public String getOpType() {
 		return "Memory";
+	}
+
+	@Override
+	public Operand getNewOperand() {
+		Memory temp = new Memory();
+		temp.constantOffset = (Constant) constantOffset.getNewOperand();
+		temp.registerOffset = (Register) registerOffset.getNewOperand();
+		temp.constantFactor = (Constant) constantFactor.getNewOperand();
+		return temp;
 	}
 	
 }

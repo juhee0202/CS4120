@@ -17,4 +17,9 @@ public class Label implements Operand{
 	public String getOpType() {
 		return "Label";
 	}
+
+	@Override
+	public Operand getNewOperand() {
+		return new Label(labelName);
+	}
 }

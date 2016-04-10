@@ -1,9 +1,19 @@
 import static org.junit.Assert.*;
 
+import java.io.OutputStream;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.junit.Test;
+
+import edu.cornell.cs.cs4120.util.CodeWriterSExpPrinter;
+import edu.cornell.cs.cs4120.util.SExpPrinter;
+import edu.cornell.cs.cs4120.xic.ir.IRNode;
+import jl2755.assembly.Tile;
+import jl2755.visitor.IRTreeEqualsVisitor;
 
 public class dohMyGod {
 
@@ -88,5 +98,43 @@ public class dohMyGod {
 		
 		System.out.println(testing.get(0));
 	}
-
+	
+	@Test
+	public void testEqualTreeVisitor() {
+		IRTreeEqualsVisitor temp = new IRTreeEqualsVisitor();
+		List<String> testPre = new ArrayList<String>(
+				Arrays.asList(
+						"Mem",
+						"BinOp1",
+						"null1",
+						"BinOp2",
+						"BinOp3",
+						"null2",
+						"Const2",
+						"Const1"
+						));
+		
+		List<String> testIn = new ArrayList<String>(
+				Arrays.asList(
+						"null1",
+						"BinOp1",
+						"null2",
+						"BinOp3",
+						"Const2",
+						"BinOp2",
+						"Const1",
+						"Mem"
+						));
+		
+		IRNode tree1 = Tile.makeTree(testIn, testPre);
+		
+		System.out.println(temp.equalTrees(tree1, tree1));
+        StringWriter sw = new StringWriter();
+        try (PrintWriter pw = new PrintWriter(sw);
+                SExpPrinter sp = new CodeWriterSExpPrinter(pw)) {
+              	tree1.printSExp(sp);
+           }
+           System.out.println(sw);
+		System.out.println(temp.getAllChildrenNode());
+	}
 }

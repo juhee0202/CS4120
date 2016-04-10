@@ -26,5 +26,10 @@ public class Constant implements Operand {
 	public String getOpType() {
 		return "Constant";
 	}
+
+	@Override
+	public Operand getNewOperand() {
+		return new Constant(value);
+	}
 	
 }

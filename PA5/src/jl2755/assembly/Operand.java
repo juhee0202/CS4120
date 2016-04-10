@@ -6,4 +6,6 @@ public interface Operand {
 	
 	@Override
 	public String toString();
+	
+	public Operand getNewOperand();
 }

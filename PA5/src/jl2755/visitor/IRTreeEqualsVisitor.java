@@ -21,7 +21,9 @@ import edu.cornell.cs.cs4120.xic.ir.IRNode;
 import edu.cornell.cs.cs4120.xic.ir.IRReturn;
 import edu.cornell.cs.cs4120.xic.ir.IRSeq;
 import edu.cornell.cs.cs4120.xic.ir.IRTemp;
+import jl2755.assembly.Constant;
 import jl2755.assembly.Operand;
+import jl2755.assembly.Register;
 
 /**
  * Class that is used to compare two trees and see if one is a pattern
@@ -52,6 +54,7 @@ public class IRTreeEqualsVisitor implements IRTreeVisitor{
 	public boolean equalTrees(IRNode rootOfFakeInstance, IRNode rootOfRealInstance) {
 		currentBool = true;
 		allChildrenNode = new ArrayList<IRNode>();
+		operandOfNodesInTile = new ArrayList<Operand>();
 		equalSubTrees(rootOfFakeInstance, rootOfRealInstance);
 		return currentBool;
 	}
@@ -62,10 +65,27 @@ public class IRTreeEqualsVisitor implements IRTreeVisitor{
 		currentBool = currentBool && temp;
 		if (temp) {
 			currentNode = rootOfRealInstance;
-			rootOfFakeInstance.accept(this);
+			if (rootOfFakeInstance != null) {
+				rootOfFakeInstance.accept(this);
+
+			}
+		}
+		if (rootOfFakeInstance == null) {
+			allChildrenNode.add(rootOfRealInstance);
+//			if (!(rootOfRealInstance == null)) {
+//				allChildrenNode.add(rootOfRealInstance);
+//			}
 		}
 	}
 	
+	public List<IRNode> getAllChildrenNode() {
+		return allChildrenNode;
+	}
+
+	public List<Operand> getOperandOfNodesInTile() {
+		return operandOfNodesInTile;
+	}
+
 	@Override
 	public void visit(IRBinOp bo) {
 		IRBinOp tempCurrent = (IRBinOp) currentNode;
@@ -105,7 +125,7 @@ public class IRTreeEqualsVisitor implements IRTreeVisitor{
 
 	@Override
 	public void visit(IRConst con) {
-		// Not needed
+		operandOfNodesInTile.add(new Constant(con.value()));
 	}
 
 	@Override
@@ -171,7 +191,7 @@ public class IRTreeEqualsVisitor implements IRTreeVisitor{
 
 	@Override
 	public void visit(IRTemp temp) {
-		// Not needed
+		operandOfNodesInTile.add(new Register(temp.name()));
 	}
 	
 	private static boolean doesEquals(IRNode left, IRNode right) {

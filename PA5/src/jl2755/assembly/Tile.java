@@ -12,6 +12,11 @@ public class Tile {
 	private List<Instruction> instructions;
 	private Operand dest;
 	
+	/**
+	 * Should only be used in mergeTiles to make a new blank Tile
+	 */
+	private Tile() {
+	}
 	
 	public Tile(List<String> inOrder, List<String> preOrder, List<Instruction> i,
 			int argCost) {
@@ -36,6 +41,35 @@ public class Tile {
 	}
 	
 	/**
+	 * Static method that merges two Tiles. The leftTile should be the
+	 * "parent" Tile of the rightTile. That is, the root of the subtree
+	 * of this new Tile should be the root of leftTile.
+	 * 
+	 * @param leftTile
+	 * @param rightTile
+	 * @return
+	 */
+	public static Tile mergeTiles(Tile leftTile, Tile rightTile) {
+		Tile tempTile = new Tile();
+		List<Instruction> leftInstructions = leftTile.getInstructions();
+		List<Instruction> rightInstructions = rightTile.getInstructions();
+		List<Instruction> newInstructions = new ArrayList<Instruction>();
+		newInstructions.addAll(leftInstructions);
+		newInstructions.addAll(rightInstructions);
+		
+		List<Instruction> copiedInstructions = new ArrayList<Instruction>();
+		for (int i = 0; i < newInstructions.size(); i++) {
+			copiedInstructions.add(newInstructions.get(i).getCopyInstruction());
+		}
+		
+		tempTile.instructions = copiedInstructions;
+		tempTile.rootOfSubtree = leftTile.rootOfSubtree;
+		tempTile.dest = rightTile.dest;
+		tempTile.cost = leftTile.cost + rightTile.cost;
+		return tempTile;
+	}
+	
+	/**
 	 * Strings should be name of IRNode instance plus a number to make
 	 * each node unique
 	 * 
@@ -44,10 +78,12 @@ public class Tile {
 	 * @return the root of the tree that the in order and pre order
 	 * traversals describes
 	 */
-	private static IRNode makeTree(List<String> inOrder, List<String> preOrder) {
-		if (preOrder.size() == 0) {
+	public static IRNode makeTree(List<String> inOrder, List<String> preOrder) {
+		if (preOrder.size() == 0 || inOrder.size() == 0) {
 			return null;
 		}
+		System.out.println("This is inOrder " + inOrder);
+		System.out.println("This is preOrder " + preOrder);
 		String headOfSubtree = preOrder.get(0);
 		preOrder.remove(0);
 		
@@ -58,15 +94,17 @@ public class Tile {
 		List<String> rightSubtree = new ArrayList<String>();
 		
 		if (!(indexInInOrder == inOrder.size() - 1)) {
-			rightSubtree = inOrder.subList(indexInInOrder + 1, inOrder.size() - 1);
+			rightSubtree = inOrder.subList(indexInInOrder + 1, inOrder.size());
 		}
 		
 		IRNode rootOfLeft = makeTree(leftSubtree, preOrder);
 		IRNode rootOfRight = makeTree(rightSubtree, preOrder);
 		
 		IRNode root = stringToNode(headOfSubtree);
-		root.addLeft(rootOfLeft);
-		root.addRight(rootOfRight);
+		if (root != null) {
+			root.addLeft(rootOfLeft);
+			root.addRight(rootOfRight);
+		}
 		
 		return root;
 	}
@@ -81,6 +119,9 @@ public class Tile {
 	 * @return
 	 */
 	private static IRNode stringToNode(String nodeName) {
+		if (nodeName.contains("null")) {
+			return null;
+		}
 		if (nodeName.contains("BinOp")) {
 			return new IRBinOp(null,null,null);
 		}
@@ -124,6 +165,12 @@ public class Tile {
 		System.out.println("You wrote a weird string for node name");
 		assert(false);
 		return null;
+	}
+	
+	public void fillInOperands(List<Operand> argOperands) {
+		for (int i = 0; i < instructions.size(); i++) {
+			instructions.get(i).fillInInstructions(argOperands);
+		}
 	}
 
 	public IRNode getRootOfSubtree() {

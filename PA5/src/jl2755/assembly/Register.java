@@ -7,6 +7,10 @@ public class Register implements Operand {
 	/** The stack address of this register. */
 	private int addr;
 	
+	/** Only used for copying */
+	private Register() {
+	}
+	
 	public Register(String name) {
 		this.name = name;
 	}
@@ -14,6 +18,13 @@ public class Register implements Operand {
 	public Register(String name, int addr) {
 		this.name = name;
 		this.addr = addr;
+	}
+	
+	public Operand getNewOperand() {
+		Register temp = new Register();
+		temp.name = name;
+		temp.addr = addr;
+		return temp;
 	}
 	
 	public String getName() {

@@ -758,17 +758,37 @@ public class TilingVisitor implements IRTreeVisitor {
 			return;
 		}
 		List<Tile> matchingTiles = new ArrayList<Tile>();
+		ArrayList<ArrayList<IRNode>> childrenOfEachTile = new ArrayList<ArrayList<IRNode>>();
 		for (int i = 0; i < tileLibrary.size(); i++) {
 			if (cmpTreeVisitor.equalTrees(tileLibrary.get(i).getRootOfSubtree(), 
 					mem)) {
 				matchingTiles.add(tileLibrary.get(i));
+				childrenOfEachTile.add((ArrayList<IRNode>) cmpTreeVisitor.getAllChildrenNode());
 			}
 		}
 		// TODO Must get all children of each matching tiles set
+		
+		ArrayList<ArrayList<Operand>> operandOfEachChildren = new ArrayList<ArrayList<Operand>>();
+		
+		for (int i = 0; i < childrenOfEachTile.size(); i++) {
+			for (int j = 0; j < childrenOfEachTile.get(i).size(); j++) {
+				IRNode currentNode = childrenOfEachTile.get(i).get(j);
+				currentNode.accept(this);
+				Tile currentTile = tileMap.get(currentNode);
+				operandOfEachChildren.get(i).add(currentTile.getDest());
+			}
+		}
+		// TODO: Fill in instructions with operand stuff
+		for (int i = 0; i < matchingTiles.size(); i++) {
+			matchingTiles.get(i).fillInOperands(operandOfEachChildren.get(i));
+		}
 	}
 
 	@Override
 	public void visit(IRMove mov) {
+		if (tileMap.containsKey(mov)) {
+			return;
+		}
 		mov.expr().accept(this);
 		mov.target().accept(this);
 		Tile sourceTile = tileMap.get(mov.expr());

@@ -768,9 +768,6 @@ public class Main {
         if (cmd.hasOption("sourcepath")) {
             String src = cmd.getOptionValue("sourcepath");
             if (src != null) {
-                if (src.charAt(0) == '/') {
-                    src = src.substring(1, src.length());
-                }
                 if (src.charAt(src.length()-1) != '/') {
                     src += "/";
                 }
@@ -782,9 +779,6 @@ public class Main {
         if (cmd.hasOption("libpath")) {
             String lib = cmd.getOptionValue("libpath");
             if (lib != null) {
-                if (lib.charAt(0) == '/') {
-                    lib = lib.substring(1, lib.length());
-                }
                 if (lib.charAt(lib.length()-1) != '/') {
                     lib += "/";
                 }
@@ -796,9 +790,6 @@ public class Main {
         if (cmd.hasOption("D")) {
             String destD = cmd.getOptionValue("D");
             if (destD != null) {
-                if (destD.charAt(0) == '/') {
-                    destD = destD.substring(1, destD.length());
-                }
                 if (destD.charAt(destD.length()-1) != '/') {
                     destD += "/";
                 }
@@ -810,9 +801,6 @@ public class Main {
         if (cmd.hasOption("d")) {
             String destA = cmd.getOptionValue("d");
             if (destA != null) {
-                if (destA.charAt(0) == '/') {
-                    destA = destA.substring(1, destA.length());
-                }
                 if (destA.charAt(destA.length()-1) != '/') {
                     destA += "/";
                 }

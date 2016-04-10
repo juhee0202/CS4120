@@ -86,7 +86,7 @@ public class Main {
 		srcPath = "";
 		destPath = "";
 		libPath = "";
-		currPath = System.getProperty("user.dir") + "/";
+		currPath = System.getProperty("user.dir") + "/";	// not used
 		
 		try {
 			cmd = parser.parse(options, args);
@@ -117,9 +117,6 @@ public class Main {
 		if (cmd.hasOption("sourcepath")) {
 			String src = cmd.getOptionValue("sourcepath");
 			if (src != null) {
-				if (src.charAt(0) == '/') {
-					src = src.substring(1, src.length());
-				}
 				if (src.charAt(src.length()-1) != '/') {
 					src += "/";
 				}
@@ -130,9 +127,6 @@ public class Main {
 		if (cmd.hasOption("libpath")) {
 			String lib = cmd.getOptionValue("libpath");
 			if (lib != null) {
-				if (lib.charAt(0) == '/') {
-					lib = lib.substring(1, lib.length());
-				}
 				if (lib.charAt(lib.length()-1) != '/') {
 					lib += "/";
 				}
@@ -143,9 +137,6 @@ public class Main {
 		if (cmd.hasOption("D")) {
 			String dest = cmd.getOptionValue("D");
 			if (dest != null) {
-				if (dest.charAt(0) == '/') {
-					dest = dest.substring(1, dest.length());
-				}
 				if (dest.charAt(dest.length()-1) != '/') {
 					dest += "/";
 				}

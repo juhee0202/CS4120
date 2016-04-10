@@ -111,7 +111,7 @@ public class TilingVisitor implements IRTreeVisitor {
 					"Mem"
 					));
 	
-	// MEM(BINOP(ADD, CONST, BINOP(ADD, BINOP(MUL, TEMP, CONST), CONST)))
+	// MEM(BINOP(ADD, TEMP, BINOP(ADD, BINOP(MUL, TEMP, CONST), CONST)))
 	// eg: mov mem(%ebx + (%ecx*w + k)), %eax
 	private static final List<String> MEM_EFFECTIVE_PRE = new ArrayList<String>(
 			Arrays.asList(
@@ -330,37 +330,100 @@ public class TilingVisitor implements IRTreeVisitor {
 					argDest = leftOperand;
 				}
 			}
-			
-			// create tile and put into tileMap
-			Tile tile = new Tile(instrList, cost, argDest);
-			tileMap.put(bo, tile);
 		}
-		else if (tileOp == Operation.LSHIFT ||
-				 tileOp == Operation.RSHIFT || 
-				 tileOp == Operation.ARSHIFT) 
-		{
+		/* create instruction 
+		 * 		imul <reg32>,<reg32>
+		 * 		imul <reg32>,<mem>
+		 */
+		else if (tileOp == Operation.MUL) {
 			if (leftOperand instanceof Constant) {
-				if (rightOperand instanceof Register || rightOperand instanceof Memory) {
-					Instruction shiftConstReg = new Instruction(tileOp, leftOperand, rightOperand);
-					instrList.add(shiftConstReg);
-					cost = 1;
-					argDest = rightOperand;
-				}
-				else if (rightOperand instanceof Constant) {
-					Register t = new Register("tileRegister" + registerCount++);
-					Instruction moveInstruction = new Instruction(Operation.MOV, rightOperand, t);
-					Instruction shiftConstReg = new Instruction(tileOp, leftOperand, t);
-					instrList.add(moveInstruction);
-					instrList.add(shiftConstReg);
-					cost = 2;
-					argDest = t;
-				}
+				Register t = new Register("tileRegister" + registerCount++);
+				Instruction movConstReg = new Instruction(Operation.MOV, leftOperand, t);
+				instrList.add(movConstReg);
+				cost++;
+			}
+			if (rightOperand instanceof Constant) {
+				Register t = new Register("tileRegister" + registerCount++);
+				Instruction movConstReg = new Instruction(Operation.MOV, rightOperand, t);
+				instrList.add(movConstReg);
+				cost++;
+			}
+			Instruction multiply = new Instruction(Operation.MUL, leftOperand, rightOperand);
+			instrList.add(multiply);
+			cost++;
+			argDest = rightOperand;
+		}
+		else if (tileOp == Operation.HMUL) {
+			// TODO
+		}
+		
+		/* 
+		 * dividend / divisor
+		 * 		mov 0, %rdx
+		 * 		mov dividend, %rax
+		 * 		mov divisor, register
+		 * 		idiv register
+		 * 
+		 * stores quotient in %rax, and remainder in %rdx
+		 */
+		else if (tileOp == Operation.DIV || tileOp == Operation.MOD) {
+			Register rdx = new Register("rdx");
+			Register rax = new Register("rax");
+			Operand divisor = null;
+			
+			Instruction moveZeroToRdx = new Instruction(Operation.MOV, new Constant(0), rdx);
+			Instruction moveDividendToRax = new Instruction(Operation.MOV, leftOperand, rax);
+			instrList.add(moveZeroToRdx);
+			instrList.add(moveDividendToRax);
+			cost += 2;
+			
+			if (rightOperand instanceof Register) {
+				divisor = (Register) rightOperand;
+			}
+			else if (rightOperand instanceof Memory) {
+				divisor = (Memory) rightOperand;
+			}
+			else if (rightOperand instanceof Constant) {
+				divisor = new Register("tileRegister" + registerCount++);
+				Instruction moveDivisorToReg = new Instruction(Operation.MOV, rightOperand, divisor);
+				instrList.add(moveDivisorToReg);
+				cost++;
+			}
+
+			Instruction divide = new Instruction(Operation.DIV, divisor, null);
+			instrList.add(divide);
+			cost++;
+			
+			if (tileOp == Operation.DIV) {
+				argDest = rax;
 			}
 			else {
-				System.out.println("TilingVisitor: LEFT OPERAND FOR SHIFT SHOULD HAVE BEEN A CONSTANT");
+				argDest = rdx;
 			}
 		}
-		// TODO CONTINUE HERE TOMORROW FOR DIFF KINDS OF TILEOP OMFGSDJLKFJSDKLFJDS KILL ME NOW
+		
+		else if (tileOp == Operation.EQ) {
+			
+		}
+		else if (tileOp == Operation.NEQ) {
+			
+		}
+		else if (tileOp == Operation.LT) {
+			
+		}
+		else if (tileOp == Operation.GT) {
+			
+		}
+		else if (tileOp == Operation.LEQ) {
+			
+		}
+		else if (tileOp == Operation.GEQ) {
+			
+		}
+
+		// create tile and put into tileMap
+		Tile tile = new Tile(instrList, cost, argDest);
+		tileMap.put(bo, tile);
 	}
 	
 	/**

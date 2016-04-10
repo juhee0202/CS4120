@@ -186,7 +186,7 @@ public class TilingVisitor implements IRTreeVisitor {
             break;
         case MUL:
         	// TODO
-        	tileOp = Operation.MUL;
+        	tileOp = Operation.IMUL;
             break;
         case HMUL:
         	// TODO
@@ -194,7 +194,7 @@ public class TilingVisitor implements IRTreeVisitor {
             break;
         case DIV:
         	// TODO
-        	tileOp = Operation.DIV;
+        	tileOp = Operation.IDIV;
             break;
         case MOD:
         	// TODO
@@ -335,7 +335,7 @@ public class TilingVisitor implements IRTreeVisitor {
 		 * 		imul <reg32>,<reg32>
 		 * 		imul <reg32>,<mem>
 		 */
-		else if (tileOp == Operation.MUL) {
+		else if (tileOp == Operation.IMUL) {
 			if (leftOperand instanceof Constant) {
 				Register t = new Register("tileRegister" + registerCount++);
 				Instruction movConstReg = new Instruction(Operation.MOV, leftOperand, t);
@@ -348,7 +348,7 @@ public class TilingVisitor implements IRTreeVisitor {
 				instrList.add(movConstReg);
 				cost++;
 			}
-			Instruction multiply = new Instruction(Operation.MUL, leftOperand, rightOperand);
+			Instruction multiply = new Instruction(Operation.IMUL, leftOperand, rightOperand);
 			instrList.add(multiply);
 			cost++;
 			argDest = rightOperand;
@@ -366,7 +366,7 @@ public class TilingVisitor implements IRTreeVisitor {
 		 * 
 		 * stores quotient in %rax, and remainder in %rdx
 		 */
-		else if (tileOp == Operation.DIV || tileOp == Operation.MOD) {
+		else if (tileOp == Operation.IDIV || tileOp == Operation.MOD) {
 			Register rdx = new Register("rdx");
 			Register rax = new Register("rax");
 			Operand divisor = null;
@@ -390,11 +390,11 @@ public class TilingVisitor implements IRTreeVisitor {
 				cost++;
 			}
 
-			Instruction divide = new Instruction(Operation.DIV, divisor, null);
+			Instruction divide = new Instruction(Operation.IDIV, divisor, null);
 			instrList.add(divide);
 			cost++;
 			
-			if (tileOp == Operation.DIV) {
+			if (tileOp == Operation.IDIV) {
 				argDest = rax;
 			}
 			else {
@@ -402,7 +402,13 @@ public class TilingVisitor implements IRTreeVisitor {
 			}
 		}
 		
-		else if (tileOp == Operation.EQ) {
+		else if (tileOp == Operation.EQ ||
+				 tileOp == Operation.NEQ ||
+				 tileOp == Operation.LT ||
+				 tileOp == Operation.GT ||
+				 tileOp == Operation.LEQ || 
+				 tileOp == Operation.GEQ) 
+		{
 			Operand src = leftOperand;
 			Operand dest = rightOperand;
 			
@@ -424,22 +430,42 @@ public class TilingVisitor implements IRTreeVisitor {
 			instrList.add(compare);
 			cost++;
 			
-			Instruction 
-		}
-		else if (tileOp == Operation.NEQ) {
-			
-		}
-		else if (tileOp == Operation.LT) {
-			
-		}
-		else if (tileOp == Operation.GT) {
-			
-		}
-		else if (tileOp == Operation.LEQ) {
-			
-		}
-		else if (tileOp == Operation.GEQ) {
-			
+			if (tileOp == Operation.EQ) {
+				Instruction cmove = new Instruction(Operation.CMOVE, new Constant(1), dest);	    // dest = 1 if equal
+				Instruction cmovne = new Instruction(Operation.CMOVNE, new Constant(0), dest);      // dest = 0 if not equal
+				instrList.add(cmove);
+				instrList.add(cmovne);
+				cost += 2;
+			}
+			else if (tileOp == Operation.NEQ) {
+				Instruction cmovne = new Instruction(Operation.CMOVNE, new Constant(1), dest);		// dest = 1 if not equal
+				Instruction cmove = new Instruction(Operation.CMOVE, new Constant(0), dest);        // dest = 0 if equal
+				instrList.add(cmovne);
+				instrList.add(cmove);
+				cost += 2;
+			}
+			else if (tileOp == Operation.LT) {
+				Instruction cmovl = new Instruction(Operation.CMOVL, new Constant(1), dest);	    // dest = 1 if equal
+				Instruction cmovege = new Instruction(Operation.CMOVGE, new Constant(0), dest);     // dest = 0 if not equal
+				instrList.add(cmovl);
+				instrList.add(cmovege);
+				cost += 2;
+			}
+			else if (tileOp == Operation.LEQ) {
+				Instruction cmovle = new Instruction(Operation.CMOVLE, new Constant(1), dest);	    // dest = 1 if <=
+				Instruction cmovg = new Instruction(Operation.CMOVG, new Constant(0), dest);     	// dest = 0 if >
+				instrList.add(cmovle);
+				instrList.add(cmovg);
+				cost += 2;
+			}
+			else if (tileOp == Operation.GEQ) {
+				Instruction cmovge = new Instruction(Operation.CMOVGE, new Constant(1), dest);	    // dest = 1 if equal
+				Instruction cmovl = new Instruction(Operation.CMOVL, new Constant(0), dest);     // dest = 0 if not equal
+				instrList.add(cmovge);
+				instrList.add(cmovl);
+				cost += 2;
+			}
+			argDest = dest;
 		}
 
 		// create tile and put into tileMap

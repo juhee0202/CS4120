@@ -907,6 +907,9 @@ public class TilingVisitor implements IRTreeVisitor {
 
 	@Override
 	public void visit(IRMove mov) {
+		if (tileMap.containsKey(mov)) {
+			return;
+		}
 		mov.expr().accept(this);
 		mov.target().accept(this);
 		Tile sourceTile = tileMap.get(mov.expr());

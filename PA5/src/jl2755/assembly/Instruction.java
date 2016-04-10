@@ -8,80 +8,120 @@ public class Instruction {
 	
 	// TODO: complete this
 	public enum Operation {
-	    ADD, SUB, IMUL, HMUL, IDIV, MOD, AND, OR, XOR, LSHIFT, RSHIFT, ARSHIFT,
-	    EQ, NEQ, LT, GT, LEQ, GEQ, LABEL, MOV, CALL, PUSH, JMP, JE, JNE, 
-	    JG, JGE, JL, JLE, JZ, JNZ, CMP, TEST, 
-	    CMOVE, CMOVNE, CMOVL, CMOVLE, CMOVG, CMOVGE, CMOVS, CMOVNS;
+		ADDQ, SUBQ, IMULQ, IDIVQ, ANDQ, ORQ, XORQ, 
+		CMOVE, CMOVNE, CMOVL, CMOVLE, CMOVG, CMOVGE, MOVQ, CMPQ, TESTQ,
+		CALLQ, PUSHQ, LABEL, ENTER, LEAVE, POPQ, // thomas
+		JMP, JE, JNE, JG, JGE, JL, JLE, JZ, JNZ;
+		
+		
+//	    ADD, SUB, IMUL, HMUL, IDIV, MOD, AND, OR, XOR,
+//	    EQ, NEQ, LT, GT, LEQ, GEQ, LABEL, MOV, CALL, PUSH, JMP, JE, JNE, 
+//	    JG, JGE, JL, JLE, JZ, JNZ, CMP, TEST, 
+//	    CMOVE, CMOVNE, CMOVL, CMOVLE, CMOVG, CMOVGE, CMOVS, CMOVNS;
 
 	    @Override
 	    public String toString() {
 	        switch (this) {
-	        case ADD:
-	            return "ADD";
-	        case SUB:
-	            return "SUB";
-	        case IMUL:
-	            return "MUL";
-	        case HMUL:
-	            return "HMUL";
-	        case IDIV:
-	            return "DIV";
-	        case MOD:
-	            return "MOD";
-	        case AND:
-	            return "AND";
-	        case OR:
-	            return "OR";
-	        case XOR:
-	            return "XOR";
-	        case LSHIFT:
-	            return "LSHIFT";
-	        case RSHIFT:
-	            return "RSHIFT";
-	        case ARSHIFT:
-	            return "ARSHIFT";
-	        case EQ:
-	            return "EQ";
-	        case NEQ:
-	            return "NEQ";
-	        case LT:
-	            return "LT";
-	        case GT:
-	            return "GT";
-	        case LEQ:
-	            return "LEQ";
-	        case GEQ:
-	            return "GEQ";
+	        case ADDQ:
+	        	return "ADDQ";
+	        case SUBQ:
+	        	return "SUBQ";
+	        case IMULQ:
+	        	return "IMULQ";
+	        case IDIVQ:
+	        	return "IDIVQ";
+	        case ANDQ:
+	        	return "ANDQ";
+	        case ORQ:
+	        	return "ORQ";
+	        case XORQ:
+	        	return "XORQ";
+	        case CMOVE:
+	        	return "CMOVE";
+	        case CMOVNE:
+	        	return "CMOVNE";
+	        case CMOVL:
+	        	return "CMOVL";
+	        case CMOVLE:
+	        	return "CMOVLE";
+	        case CMOVG:
+	        	return "CMOVG";
+	        case CMOVGE:
+	        	return "CMOVGE";
+	        case CALLQ:
+	        	return "CALLQ";
+	        case PUSHQ:
+	        	return "PUSHQ";
 	        case LABEL:
-	        	return "";
-	        case MOV:
-	            return "MOV";
-	        case CALL:
-	            return "CALL";
-	        case PUSH:
-	            return "PUSH";
-	        case JMP:
-	        	return "JMP";
-	        case JE:
-	        	return "JE";
-	        case JNE:
-	        	return "JNE";
-	        case JG:
-	        	return "JG";
-	        case JGE:
-	        	return "JGE";
-	        case JL:
-	        	return "JL";
-	        case JLE:
-	        	return "JLE";
-	        case JZ:
-	        	return "JZ";
-	        case JNZ:
-	        	return "JNZ";
-	        case CMP:
-	        	return "CMP";
-	        case TEST:
-	        	return "TEST";
+	        	return "LABEL";
+	        case ENTER:
+	        	return "ENTER";
+	        case LEAVE:
+	        	return "LEAVE";
+	        case POPQ:
+	        	return "POPQ";
+	        	 	
+	        
+//	        case ADD:
+//	            return "ADD";
+//	        case SUB:
+//	            return "SUB";
+//	        case IMUL:
+//	            return "MUL";
+//	        case HMUL:
+//	            return "HMUL";
+//	        case IDIV:
+//	            return "DIV";
+//	        case MOD:
+//	            return "MOD";
+//	        case AND:
+//	            return "AND";
+//	        case OR:
+//	            return "OR";
+//	        case XOR:
+//	            return "XOR";
+//	        case EQ:
+//	            return "EQ";
+//	        case NEQ:
+//	            return "NEQ";
+//	        case LT:
+//	            return "LT";
+//	        case GT:
+//	            return "GT";
+//	        case LEQ:
+//	            return "LEQ";
+//	        case GEQ:
+//	            return "GEQ";
+//	        case LABEL:
+//	        	return "";
+//	        case MOV:
+//	            return "MOV";
+//	        case CALL:
+//	            return "CALL";
+//	        case PUSH:
+//	            return "PUSH";
+//	        case JMP:
+//	        	return "JMP";
+//	        case JE:
+//	        	return "JE";
+//	        case JNE:
+//	        	return "JNE";
+//	        case JG:
+//	        	return "JG";
+//	        case JGE:
+//	        	return "JGE";
+//	        case JL:
+//	        	return "JL";
+//	        case JLE:
+//	        	return "JLE";
+//	        case JZ:
+//	        	return "JZ";
+//	        case JNZ:
+//	        	return "JNZ";
+//	        case CMP:
+//	        	return "CMP";
+//	        case TEST:
+//	        	return "TEST";
 	        }
 	        throw new InternalCompilerError("Unknown op type");
 	    }
@@ -105,12 +145,6 @@ public class Instruction {
 	        case OR:
 	            return 2;
 	        case XOR:
-	            return 2;
-	        case LSHIFT:
-	            return 2;
-	        case RSHIFT:
-	            return 2;
-	        case ARSHIFT:
 	            return 2;
 	        case EQ:
 	            return 2;

@@ -1,5 +1,6 @@
 package jl2755.visitor;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import edu.cornell.cs.cs4120.xic.ir.IRBinOp;
@@ -20,6 +21,7 @@ import edu.cornell.cs.cs4120.xic.ir.IRNode;
 import edu.cornell.cs.cs4120.xic.ir.IRReturn;
 import edu.cornell.cs.cs4120.xic.ir.IRSeq;
 import edu.cornell.cs.cs4120.xic.ir.IRTemp;
+import jl2755.assembly.Operand;
 
 /**
  * Class that is used to compare two trees and see if one is a pattern
@@ -31,8 +33,12 @@ public class IRTreeEqualsVisitor implements IRTreeVisitor{
 	
 	private IRNode currentNode;
 	
+	private List<IRNode> allChildrenNode;
+	
+	private List<Operand> operandOfNodesInTile;
+	
 	public IRTreeEqualsVisitor(){
-		
+		allChildrenNode = new ArrayList<IRNode>();
 	}
 	
 	/**
@@ -45,6 +51,7 @@ public class IRTreeEqualsVisitor implements IRTreeVisitor{
 	 */
 	public boolean equalTrees(IRNode rootOfFakeInstance, IRNode rootOfRealInstance) {
 		currentBool = true;
+		allChildrenNode = new ArrayList<IRNode>();
 		equalSubTrees(rootOfFakeInstance, rootOfRealInstance);
 		return currentBool;
 	}

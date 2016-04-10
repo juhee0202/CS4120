@@ -29,10 +29,12 @@ import jl2755.assembly.Instruction.Operation;
 
 public class TilingVisitor implements IRTreeVisitor {
 
-	private HashMap<IRNode, List<Tile>> tileMap;
+	private HashMap<IRNode, Tile> tileMap;
 
 	private static IRTreeEqualsVisitor cmpTreeVisitor = new IRTreeEqualsVisitor();
 
+	private List<Tile> tileLibrary;
+	
 	/** list of first 6 function call arg registers */
 	private static final String[] ARG_REG_LIST = {
 			"rdi", "rsi", "rdx", "rcx", "r8", "r9"
@@ -172,6 +174,11 @@ public class TilingVisitor implements IRTreeVisitor {
 			Arrays.asList(
 					"Temp"
 					));
+	
+	public TilingVisitor() {
+		tileLibrary = new ArrayList<Tile>();
+		
+	}
 
 	@Override
 	public void visit(IRBinOp bo) {
@@ -269,9 +276,7 @@ public class TilingVisitor implements IRTreeVisitor {
 			return;
 		}
 		Tile constTile = new Tile(null, 0, new Constant(con.value()));
-		List<Tile> tempListOfTiles = new ArrayList<Tile>();
-		tempListOfTiles.add(constTile);
-		tileMap.put(con, tempListOfTiles);
+		tileMap.put(con, constTile);
 	}
 
 	@Override
@@ -303,28 +308,52 @@ public class TilingVisitor implements IRTreeVisitor {
 		if (tileMap.containsKey(l)) {
 			return;
 		}
+		Label theName = new Label(l.name());
 		Instruction labelInst = new Instruction(Operation.LABEL,
-				null, new Label(l.name()));
+				null, theName);
 		List<Instruction> tempListOfInstr = new ArrayList<Instruction>();
-		Tile labelTile = new Tile(tempListOfInstr,0,l.name());
+		tempListOfInstr.add(labelInst);
+		Tile labelTile = new Tile(tempListOfInstr,0,theName);
+		tileMap.put(l, labelTile);
 	}
 
 	@Override
 	public void visit(IRMem mem) {
-		// TODO Auto-generated method stub
-
+		if (tileMap.containsKey(mem)) {
+			return;
+		}
+		List<Tile> matchingTiles = new ArrayList<Tile>();
+		for (int i = 0; i < tileLibrary.size(); i++) {
+			if (cmpTreeVisitor.equalTrees(tileLibrary.get(i).getRootOfSubtree(), 
+					mem)) {
+				matchingTiles.add(tileLibrary.get(i));
+			}
+		}
+		// TODO Must get all children of each matching tiles set
 	}
 
 	@Override
 	public void visit(IRMove mov) {
-		// TODO Auto-generated method stub
-
+		mov.expr().accept(this);
+		mov.target().accept(this);
+		Tile sourceTile = tileMap.get(mov.expr());
+		Tile targetTile = tileMap.get(mov.target());
+		Operand sourceOperand = sourceTile.getDest();
+		Operand targetOperand = targetTile.getDest();
+		List<Instruction> addingInstr = new ArrayList<Instruction>();
+		addingInstr.addAll(sourceTile.getInstructions());
+		addingInstr.addAll(targetTile.getInstructions());
+		Instruction movInstruction = new Instruction(Operation.MOV,
+				sourceOperand, targetOperand);
+		addingInstr.add(movInstruction);
+		Tile finalTile = new Tile(addingInstr, 1 + sourceTile.getCost() + targetTile.getCost(),
+				targetOperand);
+		tileMap.put(mov, finalTile);
 	}
 
 	@Override
 	public void visit(IRName name) {
-		// TODO Auto-generated method stub
-
+		
 	}
 
 	@Override
@@ -341,8 +370,11 @@ public class TilingVisitor implements IRTreeVisitor {
 
 	@Override
 	public void visit(IRTemp temp) {
-		// TODO Auto-generated method stub
-
+		if (tileMap.containsKey(temp)) {
+			return;
+		}
+		Tile tempTile = new Tile(null, 0, new Register(temp.name()));
+		tileMap.put(temp, tempTile);
 	}
 
 }

@@ -172,7 +172,7 @@ function_decl ::= identifier:id OPEN_PAREN function_param:fp
 
 function_decl_list ::= function_decl:fd function_decl_list:fdl      {: RESULT = new FunctionDeclList(fd, fdl); :}
                        |                       
-                                                                    {: RESULT = new FunctionDeclList(); :}
+                       function_decl:fd                             {: RESULT = new FunctionDeclList(fd); :}
                        ;
 
 function_param ::= identifier:id COLON type:t                       {: RESULT = new FunctionParam(id, t); :}
@@ -291,6 +291,8 @@ primitive_type ::= INT:i                                            {: RESULT = 
 program ::= function_decl_list:fdl                                  {: RESULT = new Program(fdl); :}
             |
             use_id:useidc function_decl_list:fdl                    {: RESULT = new Program(useidc, fdl); :}
+            |
+                                                                    {: Main.handleSyntaxError("unexpected end of file."); :}
             ;
 
 return_list ::= expr:e                                              {: RESULT = new ReturnList(e); :}

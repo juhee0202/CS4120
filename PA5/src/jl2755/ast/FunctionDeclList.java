@@ -18,10 +18,13 @@ public class FunctionDeclList {
 	private FunctionDeclList functionDeclList;
 	private int index;
 	
-	public FunctionDeclList() {
+	// one functionDecl
+	public FunctionDeclList(FunctionDecl fd) {
 		index = 0;
+		functionDecl = fd;
 	}	
 	
+	// two or more functionDecls
 	public FunctionDeclList(FunctionDecl fd, 
 							FunctionDeclList fdl) {
 		functionDecl = fd;
@@ -34,6 +37,9 @@ public class FunctionDeclList {
 	 */
 	public List<FunctionDecl> getFunctionDecls() {
 		List<FunctionDecl> list = new ArrayList<FunctionDecl>();
+		if (index == 0) {
+			list.add(functionDecl);
+		}
 		if (index == 1) {
 			list.add(functionDecl);
 			list.addAll(functionDeclList.getFunctionDecls());

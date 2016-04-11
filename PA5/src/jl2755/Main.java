@@ -180,7 +180,8 @@ public class Main {
                 } catch (FileNotFoundException e) {
                     System.out.println(srcPath + file + " is not found.");
                 } catch (Exception e) {
-                    System.out.println("Missing argument for option: --lex");
+                	System.out.println("HELLO");
+                    e.printStackTrace();
                 }
             }
         }
@@ -355,6 +356,21 @@ public class Main {
 
             System.out.println("[xic] Parsing");
             Symbol s = p.parse();
+            
+            if (s.value instanceof Interface) {
+            	String errMsg = "2:1 error:Syntax error: unexpected end of file.";
+                try {
+                    bw.write(errMsg);
+                    bw.close();	
+                } catch (IOException e) {
+                    System.out.println("Failed to write to output file");
+                }
+                // throw new SyntaxError(2, 1, errMsg);
+                System.out.println(errMsg);
+                System.out.println("[xic] Parsing Failed.");
+                return;
+            }
+            
             Program result = (Program) s.value;
 
             new GlobalPrettyPrinter(destDPath + rmExtension + ".parsed");
@@ -394,6 +410,21 @@ public class Main {
             /* typecheck */
             parser p = new parser(new Scanner(new FileReader(filename)));
             Symbol s = p.parse();
+            
+            if (s.value instanceof Interface) {
+            	String errMsg = "2:1 error:Syntax error: unexpected end of file.";
+                try {
+                    bw.write(errMsg);
+                    bw.close();	
+                } catch (IOException e) {
+                    System.out.println("Failed to write to output file");
+                }
+                // throw new SyntaxError(2, 1, errMsg);
+                System.out.println(errMsg);
+                System.out.println("[xic] Typechecking Failed.");
+                return;
+            }
+            
             Program result = (Program) s.value;
             TypeCheckVisitor visitor = new TypeCheckVisitor();
             result.accept(visitor);
@@ -581,7 +612,6 @@ public class Main {
         } catch (IOException e) {
             System.out.println("Failed to write to output file");
         }
-
         throw new SyntaxError(error.left, error.right, msg);
     }
 

@@ -720,7 +720,18 @@ public class TilingVisitor implements IRTreeVisitor {
 		stackAllocation(cu);
 		
 		// Set parameters of all function decls
-		// TODO
+		for (Entry<IRNode, Tile> entry : tileMap.entrySet()) {
+			if (entry.getKey() instanceof IRFuncDecl) {
+				IRFuncDecl fd = (IRFuncDecl) entry.getKey();
+				Tile fdTile = entry.getValue();
+				Instruction enter = fdTile.getInstructions().get(1);
+				// complete "enter 8*l, 0"
+				Constant space = new Constant(8*(functionSpaceMap.get(fd.name())));
+				enter.setSrc(space);
+				fdTile.getInstructions().set(1,enter);
+				tileMap.put(fd, fdTile);
+			}
+		}
 	}
 
 	/**

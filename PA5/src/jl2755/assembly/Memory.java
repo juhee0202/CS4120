@@ -11,35 +11,42 @@ public class Memory implements Operand {
 	/** (%r1,%r2,w): Multiply r2 and w, add to r1. */
 	private Constant constantFactor;
 	
+	int index;
+	
 	/** Only used for cloning */
 	private Memory() {
 	}
 	
-	public Memory(Constant co) {
-		constantOffset = co;
-	}
+//	public Memory(Constant co) {
+//		constantOffset = co;
+//	}
 	
 	private static final Constant NO_OFFSET = new Constant(0);
 	private static final Constant NO_FACTOR = new Constant(1);
 	
 	public Memory(Register base) {
 		this(NO_OFFSET,base,null,null);
+		index = 0;
 	}
 	
 	public Memory(Constant co, Register base) {
 		this(co,base,null,null);
+		index = 1;
 	}
 	
 	public Memory(Register base, Register ro) {
 		this(NO_OFFSET,base,ro,NO_FACTOR);
+		index = 2;
 	}
 	
 	public Memory(Register base, Register ro, Constant cf) {
 		this(NO_OFFSET,base,ro,cf);
+		index = 3;
 	}
 	
 	public Memory(Constant co, Register base, Register ro) {
 		this(co,base,ro,NO_FACTOR);
+		index = 4;
 	}
 	
 	public Memory(Constant co, Register base, Register ro, Constant cf) {
@@ -47,6 +54,7 @@ public class Memory implements Operand {
 		registerBase = base;
 		registerOffset = ro;
 		constantFactor = cf;
+		index = 5;
 	}
 	
 	public Register getRegisterBase() {
@@ -83,7 +91,25 @@ public class Memory implements Operand {
 
 	@Override
 	public String toString() {
-		return null;
+		String s = "";
+		if (index == 0) {
+			s += "(" + registerBase.toString() + ")";
+		} else if (index == 1) {
+			s += constantOffset.toString() + "(" + registerBase.toString() + ")";
+		} else if (index == 2) {
+			s += "(" + registerBase.toString() + "," + registerOffset.toString() + ")";
+		} else if (index == 3) {
+			s += "(" + registerBase.toString() + "," + registerOffset.toString()
+					+ "," + constantFactor.toString() + ")";
+		} else if (index == 4) {
+			s += constantOffset.toString() + "(" + registerBase.toString()
+					+ ","  + registerOffset.toString() + ")";
+		} else if (index == 5) {
+			s += constantOffset.toString() + "(" + registerBase.toString()
+					+ "," + registerOffset.toString() + "," + constantFactor.toString()
+					+ ")";
+		}
+		return s;
 	}
 
 	@Override
@@ -94,9 +120,11 @@ public class Memory implements Operand {
 	@Override
 	public Operand getNewOperand() {
 		Memory temp = new Memory();
+		temp.registerBase = (Register) registerBase.getNewOperand();
 		temp.constantOffset = (Constant) constantOffset.getNewOperand();
 		temp.registerOffset = (Register) registerOffset.getNewOperand();
 		temp.constantFactor = (Constant) constantFactor.getNewOperand();
+		temp.index = index;
 		return temp;
 	}
 	

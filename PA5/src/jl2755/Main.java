@@ -37,6 +37,7 @@ import jl2755.type.VType;
 import jl2755.visitor.ConstantFolderVisitor;
 import jl2755.visitor.LIRVisitor;
 import jl2755.visitor.MIRVisitor;
+import jl2755.visitor.TilingVisitor;
 import jl2755.visitor.TypeCheckVisitor;
 
 import java.io.BufferedWriter;
@@ -86,6 +87,7 @@ public class Main {
         // Default paths
         srcPath = "";
         destDPath = "";
+        destAPath = "";
         libPath = "";
         currPath = System.getProperty("user.dir") + "/";
 
@@ -263,6 +265,22 @@ public class Main {
                 } catch (Exception e) {
                     System.out.println("Missing argument for option: --typecheck");
                 }
+            }
+        }
+        
+        files = concat(lexFiles, 
+                parseFiles, 
+                typecheckFiles, 
+                irgenFiles, 
+                irrunFiles,
+                leftoverFiles);
+        for (String file: files) {
+            try { 
+                assembly(srcPath + file);
+            } catch (FileNotFoundException e) {
+                System.out.println(srcPath + file + " is not found.");
+            } catch (Exception e) {
+                System.out.println("Missing argument for option: --typecheck");
             }
         }
 
@@ -517,9 +535,10 @@ public class Main {
             if (index == -1) {
                 index = filename.length();
             }
-
+            
             String rmExtension = filename.substring(0,index);
             File file = new File(destAPath + rmExtension + ".s");
+            System.out.println(destAPath + rmExtension);
             if (!file.exists()) {
                 file.createNewFile();
             }
@@ -542,8 +561,12 @@ public class Main {
 
             /* Generate Assembly Code */
             // TODO: new visitor??
-            //            bw.write(sw.toString());
-            //            bw.close();
+            
+            TilingVisitor tv = new TilingVisitor();
+            String HEHLO = tv.parseTiles(lir.program);
+            
+            bw.write(HEHLO);
+            bw.close();
 
         } catch(LexicalError error) {
             System.out.println(error.getMessage());

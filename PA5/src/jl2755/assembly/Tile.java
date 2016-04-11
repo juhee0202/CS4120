@@ -34,12 +34,17 @@ public class Tile {
 		Tile tempTile = new Tile();
 		tempTile.rootOfSubtree = rootOfRealTree;
 		tempTile.cost = argTile.cost;
-		tempTile.instructions = argTile.instructions;
+		List<Instruction> tempInstructions = argTile.instructions;
+		List<Instruction> newInstructions = new ArrayList<Instruction>();
+		for (int i = 0; i < tempInstructions.size(); i++) {
+			newInstructions.add(tempInstructions.get(i).getCopyInstruction());
+		}
+		instructions = newInstructions;
 	}
 	
-	public Tile(List<Operand> argOperands, Tile argTile) {
-		
-	}
+//	public Tile(List<Operand> argOperands, Tile argTile) {
+//		
+//	}
 	
 	public Tile(List<Instruction> i, int argCost) {
 		instructions = i;
@@ -199,6 +204,16 @@ public class Tile {
 		if (argOperands.size() > 0) {
 			dest = argOperands.get(0);
 		}
+	}
+	
+	@Override
+	public String toString() {
+		String s = "";
+		for (int i = 0; i < instructions.size(); i++) {
+			s += instructions.get(i).toString();
+			s += "\n";
+		}
+		return s;
 	}
 
 	public IRNode getRootOfSubtree() {

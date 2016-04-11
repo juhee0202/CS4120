@@ -19,7 +19,7 @@ public class Constant implements Operand {
 
 	@Override
 	public String toString() {
-		return null;
+		return "$" + value;
 	}
 
 	@Override

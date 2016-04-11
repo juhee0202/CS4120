@@ -67,25 +67,43 @@ public class TilingVisitor implements IRTreeVisitor {
 	private static final List<String> MEM_EFFECTIVE_PRE = new ArrayList<String>(
 			Arrays.asList(
 					"Mem",
-					"Binop",
-					"Binop",
-					"Binop",
-					"Const",
-					"Const"
+					"BinOp1",
+					"null1",
+					"BinOp2",
+					"BinOp3",
+					"null2",
+					"Const2",
+					"Const1"
 					));
 	private static final List<String> MEM_EFFECTIVE_IN = new ArrayList<String>(
 			Arrays.asList(
-					"Binop",
-					"Binop",
-					"Const",
-					"Binop",
-					"Const",
+					"null1",
+					"BinOp1",
+					"null2",
+					"BinOp3",
+					"Const2",
+					"BinOp2",
+					"Const1",
 					"Mem"
 					));
 	
 	public TilingVisitor() {
 		tileLibrary = new ArrayList<Tile>();
+		List<Instruction> emptyInstructions1 = new ArrayList<Instruction>();
+		Tile tile1 = new Tile(MEM_IN,MEM_PRE,emptyInstructions1,0);
 		
+		List<Instruction> emptyInstructions2 = new ArrayList<Instruction>();
+		Tile tile2 = new Tile(MEM_EFFECTIVE_IN,MEM_EFFECTIVE_PRE,emptyInstructions2,0);
+		
+		tileLibrary = new ArrayList<Tile>();
+		tileLibrary.add(tile1);
+		tileLibrary.add(tile2);
+	}
+	
+	public String parseTiles(IRNode argNode) {
+		tileMap = new HashMap<IRNode, Tile>();
+		argNode.accept(this);
+		return tileMap.get(argNode).toString();
 	}
 
 	/**
@@ -712,8 +730,9 @@ public class TilingVisitor implements IRTreeVisitor {
 	@Override
 	public void visit(IRCompUnit cu) {
 		// Visit all function decls
-		for (Entry<String, IRFuncDecl> fd : cu.functions().entrySet()) {
-			((IRFuncDecl) fd).accept(this);
+		
+		for (IRFuncDecl fd : cu.functions().values()) {
+			fd.accept(this);;
 		}
 		
 		// Register/Stack allocation
@@ -732,7 +751,7 @@ public class TilingVisitor implements IRTreeVisitor {
 		if (tileMap.containsKey(con)) {
 			return;
 		}
-		Tile constTile = new Tile(null, 0, new Constant(con.value()));
+		Tile constTile = new Tile(new ArrayList<Instruction>(), 0, new Constant(con.value()));
 		tileMap.put(con, constTile);
 	}
 
@@ -785,6 +804,7 @@ public class TilingVisitor implements IRTreeVisitor {
 		// Body
 		IRStmt body = fd.body();
 		body.accept(this);
+		System.out.println(tileMap.get(body));
 		instructions.addAll(tileMap.get(body).getInstructions());
 		// Epilogue
 		// assume last instruction of body is ret
@@ -965,6 +985,7 @@ public class TilingVisitor implements IRTreeVisitor {
 	@Override
 	public void visit(IRSeq seq) {
 		List<IRStmt> stmtList = seq.stmts();
+		Tile superTile = null;
 		for (int i = 0; i < stmtList.size(); i++) {
 			IRStmt stmt = stmtList.get(i);
 			if (stmt instanceof IRExp) {
@@ -1026,11 +1047,22 @@ public class TilingVisitor implements IRTreeVisitor {
 				//				+ tile for move instructions
 				//				+ tile for epilogue instruction
 				tileMap.put(stmt, masterTile);
+				if (superTile == null) {
+					superTile = masterTile;
+				} else {
+					superTile = Tile.mergeTiles(superTile, masterTile);
+				}
 				i += numReturns;
 			} else {
 				stmt.accept(this);
+				if (superTile == null) {
+					superTile = tileMap.get(stmt);
+				} else {
+					superTile = Tile.mergeTiles(superTile, tileMap.get(stmt));
+				}
 			}
 		}
+		tileMap.put(seq, superTile);
 	}
 	
 	@Override

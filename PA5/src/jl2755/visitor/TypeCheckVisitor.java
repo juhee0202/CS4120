@@ -562,7 +562,7 @@ public class TypeCheckVisitor implements ASTVisitor {
 						fc.getExpr_line(), fc.getExpr_col(), s);
 				Main.handleSemanticError(seo);
 			}
-			tempType = arrayType.getPrimitiveType();
+			tempType = new VarType(false, 0);
 			fc.setType(tempType);
 			return;
 		}

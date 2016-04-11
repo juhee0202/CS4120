@@ -115,10 +115,12 @@ public class LIRVisitor implements IRTreeVisitor{
 					stmtList.addAll(block.stmtList);
 				}
 			}
-			stmtList.remove(0);
-//			assert(stmtList.remove(0) == labelle);
+			stmtList.remove(0);	// remove the tempLabel
 			IRSeq seq = new IRSeq(stmtList);
 			IRFuncDecl newFuncDecl = new IRFuncDecl(funcDecl.name(),seq);
+			newFuncDecl.setNumArgs(funcDecl.getNumArgs());
+			newFuncDecl.setNumReturns(funcDecl.getNumReturns());
+			newFuncDecl.setParamList(funcDecl.getParamList());
 			newFuncDecls.add(newFuncDecl);
 			cu.functions().put(funcDecl.name(), newFuncDecl);
 		}

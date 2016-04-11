@@ -101,8 +101,6 @@ public class Tile {
 		if (preOrder.size() == 0 || inOrder.size() == 0) {
 			return null;
 		}
-		System.out.println("This is inOrder " + inOrder);
-		System.out.println("This is preOrder " + preOrder);
 		String headOfSubtree = preOrder.get(0);
 		preOrder.remove(0);
 		

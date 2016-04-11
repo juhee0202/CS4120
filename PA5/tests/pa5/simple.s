@@ -1,7 +1,6 @@
- FUNC _Imain_paai:
+FUNC(_Imain_paai):
 PUSHQ $0
 RET
-MOVQ$3%x
-MOVQ%_ARG0%args
+MOVQ $3 %x
 LEAVE
- tempLabel0:
+MOVQ %_ARG0 %args

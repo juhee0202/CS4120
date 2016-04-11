@@ -806,7 +806,7 @@ public class TilingVisitor implements IRTreeVisitor {
 	public void visit(IRFuncDecl fd) {
 		List<Instruction> instructions = new ArrayList<Instruction>();
 		// Label
-		Label fnLabel = new Label(fd.label());
+		Label fnLabel = new Label(fd.assemblyLabel());
 		instructions.add(new Instruction(Operation.LABEL, fnLabel));
 		// Prologue
 		// "enter 8*l, 0" 8*l will be filled in later

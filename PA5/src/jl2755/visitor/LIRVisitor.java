@@ -115,7 +115,8 @@ public class LIRVisitor implements IRTreeVisitor{
 					stmtList.addAll(block.stmtList);
 				}
 			}
-			assert(stmtList.remove(0) == labelle);
+			stmtList.remove(0);
+//			assert(stmtList.remove(0) == labelle);
 			IRSeq seq = new IRSeq(stmtList);
 			IRFuncDecl newFuncDecl = new IRFuncDecl(funcDecl.name(),seq);
 			newFuncDecls.add(newFuncDecl);

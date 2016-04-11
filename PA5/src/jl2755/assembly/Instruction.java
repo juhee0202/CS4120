@@ -270,6 +270,10 @@ public class Instruction {
 	
 	@Override
 	public String toString() {
+		if (op == Operation.LABEL) {
+			return dest.toString();
+		}
+		
 		int i = op.numberOfOperandsNeeded();
 		if (i == 0) {
 			return op.toString();
@@ -278,7 +282,7 @@ public class Instruction {
 			return op.toString() + " " + dest.toString();
 		}
 		else {
-			return op.toString() + src.toString() + dest.toString();
+			return op.toString() + " " + src.toString() + " " + dest.toString();
 		}
 	}
 }

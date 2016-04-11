@@ -8,7 +8,7 @@ public class Instruction {
 	
 	// TODO: complete this
 	public enum Operation {
-		ADDQ, SUBQ, IMULQ, IDIVQ, ANDQ, ORQ, XORQ, 
+		ADDQ, SUBQ, IMULQ, IDIVQ, ANDQ, ORQ, XORQ, NOTQ,
 		CMOVE, CMOVNE, CMOVL, CMOVLE, CMOVG, CMOVGE, MOVQ, CMPQ, TESTQ,
 		CALLQ, PUSHQ, LABEL, ENTER, LEAVE, POPQ, RET,
 		JMP, JE, JNE, JG, JGE, JL, JLE, JZ, JNZ;
@@ -36,6 +36,8 @@ public class Instruction {
 	        	return "ORQ";
 	        case XORQ:
 	        	return "XORQ";
+	        case NOTQ:
+	        	return "NOTQ";
 	        case CMOVE:
 	        	return "CMOVE";
 	        case CMOVNE:
@@ -53,7 +55,7 @@ public class Instruction {
 	        case PUSHQ:
 	        	return "PUSHQ";
 	        case LABEL:
-	        	return "LABEL";
+	        	return "";
 	        case ENTER:
 	        	return "ENTER";
 	        case LEAVE:
@@ -62,153 +64,110 @@ public class Instruction {
 	        	return "POPQ";
 	        case RET:
 	        	return "RET";
-	        	 	
-	        
-//	        case ADD:
-//	            return "ADD";
-//	        case SUB:
-//	            return "SUB";
-//	        case IMUL:
-//	            return "MUL";
-//	        case HMUL:
-//	            return "HMUL";
-//	        case IDIV:
-//	            return "DIV";
-//	        case MOD:
-//	            return "MOD";
-//	        case AND:
-//	            return "AND";
-//	        case OR:
-//	            return "OR";
-//	        case XOR:
-//	            return "XOR";
-//	        case EQ:
-//	            return "EQ";
-//	        case NEQ:
-//	            return "NEQ";
-//	        case LT:
-//	            return "LT";
-//	        case GT:
-//	            return "GT";
-//	        case LEQ:
-//	            return "LEQ";
-//	        case GEQ:
-//	            return "GEQ";
-//	        case LABEL:
-//	        	return "";
-//	        case MOV:
-//	            return "MOV";
-//	        case CALL:
-//	            return "CALL";
-//	        case PUSH:
-//	            return "PUSH";
-//	        case JMP:
-//	        	return "JMP";
-//	        case JE:
-//	        	return "JE";
-//	        case JNE:
-//	        	return "JNE";
-//	        case JG:
-//	        	return "JG";
-//	        case JGE:
-//	        	return "JGE";
-//	        case JL:
-//	        	return "JL";
-//	        case JLE:
-//	        	return "JLE";
-//	        case JZ:
-//	        	return "JZ";
-//	        case JNZ:
-//	        	return "JNZ";
-//	        case CMP:
-//	        	return "CMP";
-//	        case TEST:
-//	        	return "TEST";
+	        case JMP:
+	        	return "JMP";
+	        case JE:
+	        	return "JE";
+	        case JNE:
+	        	return "JNE";
+	        case JG:
+	        	return "JG";
+	        case JGE:
+	        	return "JGE";
+	        case JL:
+	        	return "JL";
+	        case JLE:
+	        	return "JLE";
+	        case JZ:
+	        	return "JZ";
+	        case JNZ:
+	        	return "JNZ";
+	        case MOVQ:
+	        	return "MOVQ";
+			case CMPQ:
+				return "CMPQ";
+			case TESTQ:
+				return "TESTQ";
+			default:
+				break;
 	        }
+	        System.out.println(this.name());
 	        throw new InternalCompilerError("Unknown op type");
 	    }
 
 	    private int numberOfOperandsNeeded() {
-//	        switch (this) {
-//	        case ADDQ:
-//	            return 2;
-//	        case SUBQ:
-//	            return 2;
-//	        case IMULQ:
-//	            return 2;
-//	        case HMULQ:
-//	            return 2;
-//	        case IDIVQ:
-//	            return 2;
-//	        case MODQ:
-//	            return 2;
-//	        case AND:
-//	            return 2;
-//	        case OR:
-//	            return 2;
-//	        case XOR:
-//	            return 2;
-//	        case EQ:
-//	            return 2;
-//	        case NEQ:
-//	            return 2;
-//	        case LT:
-//	            return 2;
-//	        case GT:
-//	            return 2;
-//	        case LEQ:
-//	            return 2;
-//	        case GEQ:
-//	            return 2;
-//	        case LABEL:
-//	        	return 0;
-//	        case MOV:
-//	            return 2;
-//	        case CALL:
-//	            return 0;
-//	        case PUSH:
-//	            return 1;
-//	        case JMP:
-//	        	return 1;
-//	        case JE:
-//	        	return 1;
-//	        case JNE:
-//	        	return 1;
-//	        case JG:
-//	        	return 1;
-//	        case JGE:
-//	        	return 1;
-//	        case JL:
-//	        	return 1;
-//	        case JLE:
-//	        	return 1;
-//	        case JZ:
-//	        	return 1;
-//	        case JNZ:
-//	        	return 1;
-//	        case CMP:
-//	        	return 2;
-//	        case TEST:
-//	        	return 2;
-//	        case CMOVE:
-//	        	return 2;
-//	        case CMOVNE:
-//	        	return 2;
-//	        case CMOVL:
-//	        	return 2;
-//	        case CMOVLE:
-//	        	return 2;
-//	        case CMOVG:
-//	        	return 2;
-//	        case CMOVGE:
-//	        	return 2;
-//	        case CMOVS:
-//	        	return 2;
-//	        case CMOVNS:
-//	        	return 2;
-//	        }
-//	        throw new InternalCompilerError("Unknown op type");
-	    	return 0;
+	        switch (this) {
+	        case ADDQ:
+	            return 2;
+	        case SUBQ:
+	            return 2;
+	        case IMULQ:
+	            return 2;
+	        case IDIVQ:
+	            return 2;
+	        case ANDQ:
+	        	return 2;
+	        case ORQ:
+	        	return 2;
+	        case XORQ:
+	        	return 2;
+	        case NOTQ:
+	        	return 1;
+	        case CMOVE:
+	        	return 2;
+	        case CMOVNE:
+	        	return 2;
+	        case CMOVL:
+	        	return 2;
+	        case CMOVLE:
+	        	return 2;
+	        case CMOVG:
+	        	return 2;
+	        case CMOVGE:
+	        	return 2;
+	        case CALLQ:
+	        	return 1;
+	        case PUSHQ:
+	        	return 1;
+	        case LABEL:
+	        	return 1;
+	        case JMP:
+	        	return 1;
+	        case JE:
+	        	return 1;
+	        case JNE:
+	        	return 1;
+	        case JG:
+	        	return 1;
+	        case JGE:
+	        	return 1;
+	        case JL:
+	        	return 1;
+	        case JLE:
+	        	return 1;
+	        case JZ:
+	        	return 1;
+	        case JNZ:
+	        	return 1;
+	        case RET:
+	        	return 0;
+			case CMPQ:
+				return 2;
+			case ENTER:
+				return 2;
+			case LEAVE:
+				return 0;
+			case MOVQ:
+				return 2;
+			case POPQ:
+				return 1;
+			case TESTQ:
+				return 2;
+			default:
+				break;
+	        }
+	        System.out.println(this);
+	        throw new InternalCompilerError("Unknown op type");
 	    }
 	}
 	
@@ -274,8 +233,12 @@ public class Instruction {
 	public Instruction getCopyInstruction() {
 		Instruction temp = new Instruction();
 		temp.op = op;
-		temp.src = src.getNewOperand();
-		temp.dest = dest.getNewOperand();
+		if (src != null) {
+			temp.src = src.getNewOperand();
+		}
+		if (dest != null) {
+			temp.dest = dest.getNewOperand();
+		}
 		temp.cost = cost;
 		return temp;
 	}
@@ -303,5 +266,23 @@ public class Instruction {
 	}
 	public void setCost(int cost) {
 		this.cost = cost;
+	}
+	
+	@Override
+	public String toString() {
+		if (op == Operation.LABEL) {
+			return dest.toString();
+		}
+		
+		int i = op.numberOfOperandsNeeded();
+		if (i == 0) {
+			return op.toString();
+		}
+		else if (i == 1) {
+			return op.toString() + " " + dest.toString();
+		}
+		else {
+			return op.toString() + " " + src.toString() + " " + dest.toString();
+		}
 	}
 }

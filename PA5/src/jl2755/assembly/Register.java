@@ -45,7 +45,7 @@ public class Register implements Operand {
 
 	@Override
 	public String toString() {
-		return null;
+		return "%" + name;
 	}
 
 	@Override

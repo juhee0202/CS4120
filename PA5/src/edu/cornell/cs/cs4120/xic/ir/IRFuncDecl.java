@@ -28,6 +28,10 @@ public class IRFuncDecl extends IRNode {
     public IRStmt body() {
         return body;
     }
+    
+    public String assemblyLabel() {
+    	return "FUNC(" + name + ")";
+    }
 
     @Override
     public String label() {

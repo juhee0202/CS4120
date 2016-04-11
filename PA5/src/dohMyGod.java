@@ -137,4 +137,11 @@ public class dohMyGod {
            System.out.println(sw);
 		System.out.println(temp.getAllChildrenNode());
 	}
+	
+	@Test
+	public void testBitch() {
+		int counter = 0;
+		System.out.println(3*++counter);
+		System.out.println(counter);
+	}
 }

@@ -833,9 +833,14 @@ public class TilingVisitor implements IRTreeVisitor {
 					 param);
 			instructions.add(moveArgtoParam);
 		}
-		// TODO: is ret3 register rdi value preserved? 
-		// Body
+		// Body 
 		IRStmt body = fd.body();
+		// remove duplicate move(%ARG, %arg) instructions
+		if (body instanceof IRSeq) {
+			for (int i = 0; i < numArgs; i++) {
+				((IRSeq) body).stmts().remove(0);
+			}	
+		}
 		body.accept(this);
 		instructions.addAll(tileMap.get(body).getInstructions());
 		// Epilogue

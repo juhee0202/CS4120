@@ -64,17 +64,17 @@ public class Tile {
 	 * the instructions in the right are performed first, and
 	 * the dest in the parent becomes the dest of the final Tile.
 	 * 
-	 * @param parentTile is the parent Tile
-	 * @param childTile is the child Tile
+	 * @param leftTile is the parent Tile
+	 * @param rightTile is the child Tile
 	 * @return a merged Tile
 	 */
-	public static Tile mergeTiles(Tile parentTile, Tile childTile) {
+	public static Tile mergeTiles(Tile leftTile, Tile rightTile) {
 		Tile tempTile = new Tile();
-		List<Instruction> leftInstructions = parentTile.getInstructions();
-		List<Instruction> rightInstructions = childTile.getInstructions();
+		List<Instruction> leftInstructions = leftTile.getInstructions();
+		List<Instruction> rightInstructions = rightTile.getInstructions();
 		List<Instruction> newInstructions = new ArrayList<Instruction>();
-		newInstructions.addAll(rightInstructions);
 		newInstructions.addAll(leftInstructions);
+		newInstructions.addAll(rightInstructions);
 		
 		List<Instruction> copiedInstructions = new ArrayList<Instruction>();
 		for (int i = 0; i < newInstructions.size(); i++) {
@@ -82,9 +82,9 @@ public class Tile {
 		}
 		
 		tempTile.instructions = copiedInstructions;
-		tempTile.rootOfSubtree = parentTile.rootOfSubtree;
-		tempTile.dest = parentTile.dest;
-		tempTile.cost = parentTile.cost + childTile.cost;
+		tempTile.rootOfSubtree = leftTile.rootOfSubtree;
+		tempTile.dest = rightTile.dest;
+		tempTile.cost = leftTile.cost + rightTile.cost;
 		return tempTile;
 	}
 	
@@ -101,8 +101,6 @@ public class Tile {
 		if (preOrder.size() == 0 || inOrder.size() == 0) {
 			return null;
 		}
-		System.out.println("This is inOrder " + inOrder);
-		System.out.println("This is preOrder " + preOrder);
 		String headOfSubtree = preOrder.get(0);
 		preOrder.remove(0);
 		

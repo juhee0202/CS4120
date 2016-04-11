@@ -917,7 +917,7 @@ public class TilingVisitor implements IRTreeVisitor {
 		for (int i = 0; i < childrenOfEachTile.size(); i++) {
 			for (int j = 0; j < childrenOfEachTile.get(i).size(); j++) {
 				Tile currentTile = tileMap.get(childrenOfEachTile.get(i).get(j));
-				matchingTiles.set(i,Tile.mergeTiles(matchingTiles.get(i),currentTile));
+				matchingTiles.set(i,Tile.mergeTiles(currentTile,matchingTiles.get(i)));
 			}
 		}
 		
@@ -953,8 +953,8 @@ public class TilingVisitor implements IRTreeVisitor {
 			newInstructions.add(new Instruction(Operation.MOVQ,sourceOperand,new Register("rcx")));
 			newInstructions.add(new Instruction(Operation.MOVQ,new Register("rcx"),targetOperand));
 			Tile finalTile = new Tile(newInstructions,2,targetOperand);
-			finalTile = Tile.mergeTiles(finalTile, targetTile);
-			finalTile = Tile.mergeTiles(finalTile, sourceTile);
+			finalTile = Tile.mergeTiles(targetTile, finalTile);
+			finalTile = Tile.mergeTiles(sourceTile, finalTile);
 			tileMap.put(mov, finalTile);
 			return;
 		}
@@ -964,8 +964,8 @@ public class TilingVisitor implements IRTreeVisitor {
 				sourceOperand, targetOperand);
 		addingInstr.add(movInstruction);
 		Tile finalTile = new Tile(addingInstr, 1, targetOperand);
-		finalTile = Tile.mergeTiles(finalTile, targetTile);
-		finalTile = Tile.mergeTiles(finalTile, sourceTile);
+		finalTile = Tile.mergeTiles(targetTile, finalTile);
+		finalTile = Tile.mergeTiles(sourceTile, finalTile);
 		
 		// If source was a Call, put an epilogue after the mov instruction
 		// the function should have a single return

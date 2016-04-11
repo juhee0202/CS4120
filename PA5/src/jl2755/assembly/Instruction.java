@@ -55,7 +55,7 @@ public class Instruction {
 	        case PUSHQ:
 	        	return "PUSHQ";
 	        case LABEL:
-	        	return "LABEL";
+	        	return "";
 	        case ENTER:
 	        	return "ENTER";
 	        case LEAVE:
@@ -84,6 +84,12 @@ public class Instruction {
 	        	return "JNZ";
 	        case MOVQ:
 	        	return "MOVQ";
+			case CMPQ:
+				return "CMPQ";
+			case TESTQ:
+				return "TESTQ";
+			default:
+				break;
 	        }
 	        System.out.println(this.name());
 	        throw new InternalCompilerError("Unknown op type");
@@ -145,6 +151,20 @@ public class Instruction {
 	        	return 1;
 	        case RET:
 	        	return 0;
+			case CMPQ:
+				return 2;
+			case ENTER:
+				return 2;
+			case LEAVE:
+				return 0;
+			case MOVQ:
+				return 2;
+			case POPQ:
+				return 1;
+			case TESTQ:
+				return 2;
+			default:
+				break;
 	        }
 	        System.out.println(this);
 	        throw new InternalCompilerError("Unknown op type");

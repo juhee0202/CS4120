@@ -20,7 +20,7 @@ public class TilingVisitor implements IRTreeVisitor {
 	private List<Tile> tileLibrary;
 	
 	private int stackCounter = 0;
-	private HashMap<String, Integer> functionSpaceMap;
+	private HashMap<String, Integer> functionSpaceMap = new HashMap<String, Integer>();
 	
 	/** list of first 6 function call arg registers */
 	private static final String[] ARG_REG_LIST = {
@@ -731,26 +731,48 @@ public class TilingVisitor implements IRTreeVisitor {
 	public void visit(IRCompUnit cu) {
 		// Visit all function decls
 		
+		Tile superTile = null;
+		
 		for (IRFuncDecl fd : cu.functions().values()) {
-			fd.accept(this);;
-		}
-		
-		// Register/Stack allocation
-		stackAllocation(cu);
-		
-		// Set parameters of all function decls
-		for (Entry<IRNode, Tile> entry : tileMap.entrySet()) {
-			if (entry.getKey() instanceof IRFuncDecl) {
-				IRFuncDecl fd = (IRFuncDecl) entry.getKey();
-				Tile fdTile = entry.getValue();
-				Instruction enter = fdTile.getInstructions().get(1);
-				// complete "enter 8*l, 0"
-				Constant space = new Constant(8*(functionSpaceMap.get(fd.name())));
-				enter.setSrc(space);
-				fdTile.getInstructions().set(1,enter);
-				tileMap.put(fd, fdTile);
+			fd.accept(this);
+			if (superTile == null) {
+				superTile = tileMap.get(fd);
+			} else {
+				superTile = Tile.mergeTiles(superTile, tileMap.get(fd));
 			}
 		}
+		
+		tileMap.put(cu, superTile);
+		
+		// Register/Stack allocation
+//		stackAllocation(cu);
+		
+		// Set parameters of all function decls
+//		for (Entry<IRNode, Tile> entry : tileMap.entrySet()) {
+//			if (entry.getKey() instanceof IRFuncDecl) {
+//				IRFuncDecl fd = (IRFuncDecl) entry.getKey();
+//				Tile fdTile = entry.getValue();
+//				Instruction enter = fdTile.getInstructions().get(1);
+//				// complete "enter 8*l, 0"
+//				Constant space = new Constant(8*(functionSpaceMap.get(fd.name())));
+//				enter.setSrc(space);
+//				fdTile.getInstructions().set(1,enter);
+//				tileMap.put(fd, fdTile);
+//			}
+//		}
+		
+//		for (IRFuncDecl fd : cu.functions().values()) {
+//			if (superTile == null) {
+//				superTile = tileMap.get(fd);
+//			} else {
+//				superTile = Tile.mergeTiles(superTile, tileMap.get(fd));
+//			}
+//		}
+		
+		tileMap.put(cu, superTile);
+		
+		// TODO: REFACTOR TO PUT RIGHT TILE IN COMPUNIT AFTER EPILOGUE
+		// AND PROLOGUE STUFFFFFFFFFFFFFFF
 	}
 
 	/**
@@ -1242,6 +1264,7 @@ public class TilingVisitor implements IRTreeVisitor {
 					Instruction movToRegS = new Instruction(Operation.MOVQ,memS,rdx);
 					added.add(movToRegS);
 				} else {
+					System.out.println(regS);
 					System.out.println("Access a register that hasn't been set!");
 					assert(false);
 				}

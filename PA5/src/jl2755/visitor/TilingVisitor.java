@@ -867,15 +867,16 @@ public class TilingVisitor implements IRTreeVisitor {
 		if (tileMap.containsKey(mov)) {
 			return;
 		}
+		
 		mov.expr().accept(this);
 		mov.target().accept(this);
-		// TODO: Check case of 2 mems
-		
 		Tile sourceTile = tileMap.get(mov.expr());
 		Tile targetTile = tileMap.get(mov.target());
 		Operand sourceOperand = sourceTile.getDest();
 		Operand targetOperand = targetTile.getDest();
 		
+		
+		// If both children are Memory Operands
 		if (sourceTile.getDest() instanceof Memory && targetTile.getDest() instanceof Memory) {
 			List<Instruction> newInstructions = new ArrayList<Instruction>();
 			newInstructions.add(new Instruction(Operation.MOVQ,sourceOperand,new Register("rcx")));
@@ -894,6 +895,18 @@ public class TilingVisitor implements IRTreeVisitor {
 		Tile finalTile = new Tile(addingInstr, 1, targetOperand);
 		finalTile = Tile.mergeTiles(finalTile, targetTile);
 		finalTile = Tile.mergeTiles(finalTile, sourceTile);
+		
+		// If source was a Call, put an epilogue after the mov instruction
+		if (mov.expr() instanceof IRCall) {
+			IRCall callVersion = (IRCall) mov.expr();
+			int numArgs = callVersion.args().size();
+			int numReturns  = callVersion.getNumReturns();
+			assert(numReturns == 1);
+			Constant offset = new Constant(8*(Math.max(0,numArgs - 6)));
+			// TODO: Complete epilogue
+			
+		}
+		
 		tileMap.put(mov, finalTile);
 	}
 

@@ -770,7 +770,7 @@ public class TilingVisitor implements IRTreeVisitor {
 //			}
 //		}
 		
-		tileMap.put(cu, superTile);
+//		tileMap.put(cu, superTile);
 		
 		// TODO: REFACTOR TO PUT RIGHT TILE IN COMPUNIT AFTER EPILOGUE
 		// AND PROLOGUE STUFFFFFFFFFFFFFFF
@@ -811,7 +811,7 @@ public class TilingVisitor implements IRTreeVisitor {
 		instructions.add(new Instruction(Operation.LABEL, fnLabel));
 		// Prologue
 		// "enter 8*l, 0" 8*l will be filled in later
-		Instruction enter = new Instruction(Operation.PUSHQ, null, new Constant(0));
+		Instruction enter = new Instruction(Operation.ENTER, new Constant(0), new Constant(0));
 		instructions.add(enter);
 		// move args to param regs
 		List<String> paramList = fd.getParamList();
@@ -822,9 +822,9 @@ public class TilingVisitor implements IRTreeVisitor {
 		for (int i = 0; i < numRegParams; i++) {
 			Register arg = new Register(ARG_REG_LIST[i + offset]);
 			Register param = new Register(paramList.get(i));
-			Instruction moveArgtoParam = new Instruction(Operation.MOVQ, arg, 
+			Instruction moveArgToParam = new Instruction(Operation.MOVQ, arg, 
 														 param);
-			instructions.add(moveArgtoParam);
+			instructions.add(moveArgToParam);
 		}
 		Register rbp = new Register(RegisterName.RBP);
 		for (int i = numRegParams; i < numArgs; i++) {
@@ -838,7 +838,6 @@ public class TilingVisitor implements IRTreeVisitor {
 		// Body
 		IRStmt body = fd.body();
 		body.accept(this);
-		System.out.println(tileMap.get(body));
 		instructions.addAll(tileMap.get(body).getInstructions());
 		// Epilogue
 		// assume last instruction of body is ret

@@ -1,5 +1,6 @@
 FUNC(_Imain_paai):
-PUSHQ $0
+ENTER $0 $0
+MOVQ %rdi %args
 RET
 MOVQ $3 %x
 LEAVE

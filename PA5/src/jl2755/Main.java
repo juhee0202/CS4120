@@ -569,7 +569,6 @@ public class Main {
             
             String rmExtension = filename.substring(0,index);
             File file = new File(destAPath + rmExtension + ".s");
-            System.out.println(destAPath + rmExtension);
             if (!file.exists()) {
                 file.createNewFile();
             }

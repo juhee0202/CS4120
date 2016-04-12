@@ -100,13 +100,13 @@ public class Memory implements Operand {
 			s += "(" + registerBase.toString() + "," + registerOffset.toString() + ")";
 		} else if (index == 3) {
 			s += "(" + registerBase.toString() + "," + registerOffset.toString()
-					+ "," + constantFactor.toString() + ")";
+					+ "," + constantFactor.getValue() + ")";
 		} else if (index == 4) {
-			s += constantOffset.toString() + "(" + registerBase.toString()
+			s += constantOffset.getValue() + "(" + registerBase.toString()
 					+ ","  + registerOffset.toString() + ")";
 		} else if (index == 5) {
-			s += constantOffset.toString() + "(" + registerBase.toString()
-					+ "," + registerOffset.toString() + "," + constantFactor.toString()
+			s += constantOffset.getValue() + "(" + registerBase.toString()
+					+ "," + registerOffset.toString() + "," + constantFactor.getValue()
 					+ ")";
 		}
 		return s;

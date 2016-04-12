@@ -158,78 +158,92 @@ public class TilingVisitor implements IRTreeVisitor {
 		
 		// src: reg, const, mem
 		// dest: reg, mem
+		/* 
+		 * add a, b
+		 * 		mov a %freshTemp
+		 * 		add b %freshTemp
+		 * */
 		if (op == OpType.ADD ||
 			op == OpType.SUB ||
 			op == OpType.AND ||
 			op == OpType.OR  ||
 			op == OpType.XOR) 
 		{
-			if (leftOperand instanceof Constant) {
-				/* Change <binop> CONST, CONST to
-				 * 		MOV CONST, REG
-				 * 		<binop> CONST, REG */
-				if (rightOperand instanceof Constant) {
-					Register t = new Register("tileRegister" + registerCount++);
-					Instruction moveInstruction = new Instruction(Operation.MOVQ, rightOperand, t);
-					Instruction binopConstReg = new Instruction(tileOp, leftOperand, t);
-					instrList.add(moveInstruction);
-					instrList.add(binopConstReg);
-					cost = 2;
-					argDest = t;
-				}
-				else {
-					Instruction binopConstRegOrMem = new Instruction(tileOp, leftOperand, rightOperand);
-					instrList.add(binopConstRegOrMem);
-					cost = 1;
-					argDest = rightOperand;
-				}
-			}
-			else if (leftOperand instanceof Memory) {
-				if (rightOperand instanceof Register) {
-					Instruction binopMemReg = new Instruction(tileOp, leftOperand, rightOperand);
-					instrList.add(binopMemReg);
-					cost = 1;
-					argDest = rightOperand;
-				}
-				else if (rightOperand instanceof Constant) {
-					Instruction binopConstMem = new Instruction(tileOp, rightOperand, leftOperand);
-					instrList.add(binopConstMem);
-					cost = 1;
-					argDest = leftOperand;
-				}
-				/* 
-				 * Change <binop> MEM1, MEM2 to
-				 * 		MOV MEM2 REG
-				 * 		<binop> MEM1, REG
-				 */
-				else if (rightOperand instanceof Memory) {
-					Register t = new Register("tileRegister" + registerCount++);
-					Instruction moveInstruction = new Instruction(Operation.MOVQ, rightOperand, t);
-					Instruction binopMemReg = new Instruction(tileOp, leftOperand, t);
-					instrList.add(moveInstruction);
-					instrList.add(binopMemReg);
-					cost = 2;
-					argDest = t;
-				}
-			}
-			else if (leftOperand instanceof Register) {
-				if (rightOperand instanceof Memory || rightOperand instanceof Register) {
-					Instruction binopRegRegOrMem = new Instruction(
-							tileOp, 
-							leftOperand, 
-							rightOperand
-							);
-					instrList.add(binopRegRegOrMem);
-					cost = 1;
-					argDest = rightOperand;
-				}
-				else if (rightOperand instanceof Constant) {
-					Instruction binopConstReg = new Instruction(tileOp, rightOperand, leftOperand);
-					instrList.add(binopConstReg);
-					cost = 1;
-					argDest = leftOperand;
-				}
-			}
+			Register t = new Register("tileRegister" + registerCount++);
+			Instruction movToFreshTemp = new Instruction(Operation.MOVQ, leftOperand, t);
+			Instruction binopInstr = new Instruction(tileOp, rightOperand, t);
+			instrList.add(movToFreshTemp);
+			instrList.add(binopInstr);
+			cost = 2;
+			argDest = t;
+			
+//			if (leftOperand instanceof Constant) {
+//				/* Change <binop> CONST, CONST to
+//				 * 		MOV CONST, REG
+//				 * 		<binop> CONST, REG */
+//				if (rightOperand instanceof Constant) {
+//					Register t = new Register("tileRegister" + registerCount++);
+//					Instruction moveInstruction = new Instruction(Operation.MOVQ, rightOperand, t);
+//					Instruction binopConstReg = new Instruction(tileOp, leftOperand, t);
+//					instrList.add(moveInstruction);
+//					instrList.add(binopConstReg);
+//					cost = 2;
+//					argDest = t;
+//				}
+//				else {
+//					Instruction binopConstRegOrMem = new Instruction(tileOp, leftOperand, rightOperand);
+//					instrList.add(binopConstRegOrMem);
+//					cost = 1;
+//					argDest = rightOperand;
+//				}
+//			}
+//			else if (leftOperand instanceof Memory) {
+//				if (rightOperand instanceof Register) {
+//					Instruction binopMemReg = new Instruction(tileOp, leftOperand, rightOperand);
+//					instrList.add(binopMemReg);
+//					cost = 1;
+//					argDest = rightOperand;
+//				}
+//				else if (rightOperand instanceof Constant) {
+//					Instruction binopConstMem = new Instruction(tileOp, rightOperand, leftOperand);
+//					instrList.add(binopConstMem);
+//					cost = 1;
+//					argDest = leftOperand;
+//				}
+//				/* 
+//				 * Change <binop> MEM1, MEM2 to
+//				 * 		MOV MEM2 REG
+//				 * 		<binop> MEM1, REG
+//				 */
+//				else if (rightOperand instanceof Memory) {
+//					Register t = new Register("tileRegister" + registerCount++);
+//					Instruction moveInstruction = new Instruction(Operation.MOVQ, rightOperand, t);
+//					Instruction binopMemReg = new Instruction(tileOp, leftOperand, t);
+//					instrList.add(moveInstruction);
+//					instrList.add(binopMemReg);
+//					cost = 2;
+//					argDest = t;
+//				}
+//			}
+//			else if (leftOperand instanceof Register) {
+//				if (rightOperand instanceof Memory || rightOperand instanceof Register) {
+//					Instruction binopRegRegOrMem = new Instruction(
+//							tileOp, 
+//							leftOperand, 
+//							rightOperand
+//							);
+//					instrList.add(binopRegRegOrMem);
+//					cost = 1;
+//					argDest = rightOperand;
+//				}
+//				else if (rightOperand instanceof Constant) {
+//					Instruction binopConstReg = new Instruction(tileOp, rightOperand, leftOperand);
+//					instrList.add(binopConstReg);
+//					cost = 1;
+//					argDest = leftOperand;
+//				}
+//			}
+			
 		}
 		/* create instruction 
 		 * 		imul <reg32>,<reg32>

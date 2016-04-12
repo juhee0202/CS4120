@@ -113,14 +113,6 @@ public class dohMyGod {
 						));
 		
 		IRNode tree1 = Tile.makeTree(testIn, testPre);
-		System.out.println(tree1);
-        StringWriter sw = new StringWriter();
-        try (PrintWriter pw = new PrintWriter(sw);
-                SExpPrinter sp = new CodeWriterSExpPrinter(pw)) {
-              	tree1.printSExp(sp);
-           }
-           System.out.println(sw);
-		System.out.println(temp.getAllChildrenNode());
 		
 		List<String> testPre2 = new ArrayList<String>(
 				Arrays.asList(
@@ -147,13 +139,7 @@ public class dohMyGod {
 						));
 		
 		IRNode tree2 = Tile.makeTree(testIn2, testPre2);
-		System.out.println(temp.equalTrees(tree1, tree2));
+		System.out.println("Subtree result is " + temp.equalTrees(tree1, tree2));
 	}
-	
-	@Test
-	public void testBitch() {
-		int counter = 0;
-		System.out.println(3*++counter);
-		System.out.println(counter);
-	}
+
 }

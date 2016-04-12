@@ -108,7 +108,7 @@ public class Instruction {
 	        case IMULQ2:
 	        	return 2;
 	        case IDIVQ:
-	            return 2;
+	            return 1;
 	        case ANDQ:
 	        	return 2;
 	        case ORQ:

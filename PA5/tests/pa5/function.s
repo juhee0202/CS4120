@@ -12,33 +12,33 @@
  (FUNC _If_pi (SEQ (MOVE (TEMP x) (TEMP _ARG0)) (RETURN))))
 FUNC(Imain_paai):
 	enter	$0 $0
-	movq	%rdi %args
+	movq	%RDI %args
 	movq	$5 %x
 	movq	$6 %y
 	movq	%tileRegister0 %tileRegister1
 	addq	$3 %tileRegister1
 	movq	%tileRegister1 %temp0
-	pushq	%rax
-	pushq	%rcx
-	pushq	%rdx
-	pushq	%r8
-	pushq	%r9
-	pushq	%r10
-	pushq	%r11
-	movq	%temp0 %rdi
+	pushq	%RAX
+	pushq	%RCX
+	pushq	%RDX
+	pushq	%R8
+	pushq	%R9
+	pushq	%R10
+	pushq	%R11
+	movq	%temp0 %RDI
 	callq	FUNC(If_pi)
-	movq	$48(%rsp) %rax
-	movq	$40(%rsp) %rcx
-	movq	$32(%rsp) %rdx
-	movq	$24(%rsp) %r8
-	movq	$16(%rsp) %r9
-	movq	$8(%rsp) %r10
-	movq	$0(%rsp) %r11
-	addq	$56 %rsp
+	movq	48(%RSP) %RAX
+	movq	40(%RSP) %RCX
+	movq	32(%RSP) %RDX
+	movq	24(%RSP) %R8
+	movq	16(%RSP) %R9
+	movq	8(%RSP) %R10
+	movq	0(%RSP) %R11
+	addq	$56 %RSP
 	leave
 	ret
 FUNC(If_pi):
 	enter	$0 $0
-	movq	%rdi %x
+	movq	%RDI %x
 	leave
 	ret

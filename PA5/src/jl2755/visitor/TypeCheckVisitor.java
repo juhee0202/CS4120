@@ -1169,12 +1169,6 @@ public class TypeCheckVisitor implements ASTVisitor {
 										);
 			Main.handleSemanticError(seo);
 		}
-		else {
-			String id = vi.getId().toString();
-			env.put(id, new VarType(vi.getType()));
-			tempType = env.get(id);
-			stack.push(id);
-		}
 		
 		vi.getType().accept(this);
 		VType tempLeftType = tempType;
@@ -1189,7 +1183,13 @@ public class TypeCheckVisitor implements ASTVisitor {
 										s
 										);
 			Main.handleSemanticError(seo);
-		}	
+		}
+		
+		// add variable to the env
+		String id = vi.getId().toString();
+		env.put(id, new VarType(vi.getType()));
+		tempType = env.get(id);
+		stack.push(id);
 	}
 
 	/**

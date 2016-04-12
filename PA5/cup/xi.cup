@@ -49,9 +49,6 @@ non terminal FunctionParam function_param;
 non terminal Identifier identifier;
 non terminal IfStmt if_stmt;
 non terminal IndexedBrackets indexed_brackets;
-non terminal Interface interface;
-non terminal InterfaceFunc interface_func;
-non terminal InterfaceList interface_list;
 non terminal Literal literal;
 non terminal MixedArrayType mixed_array_type;
 non terminal MixedBrackets mixed_brackets;
@@ -71,8 +68,6 @@ non terminal UseId use_id;
 non terminal VarDecl var_decl;
 non terminal VarInit var_init;
 non terminal WhileStmt while_stmt;
-non terminal XiFile xi_file;
-
 
 /* Precedences */
 precedence left OR;
@@ -87,7 +82,7 @@ precedence nonassoc ELSE;     // to avoid "dangling else" problem
 precedence nonassoc SEMICOLON;
 
 
-start with xi_file;
+start with program;
 
 /* Grammar */
 
@@ -195,18 +190,6 @@ indexed_brackets ::= OPEN_BRACKET expr:e CLOSE_BRACKET              {: RESULT = 
                      OPEN_BRACKET expr:e CLOSE_BRACKET
                      indexed_brackets:ib                            {: RESULT = new IndexedBrackets(e, ib); :}
                      ;
-
-interface ::= interface_list:il                                     {: RESULT = new Interface(il); :}
-              ;
-
-interface_func ::= identifier:id OPEN_PAREN function_param:fp 
-                   CLOSE_PAREN return_type:rt                       {: RESULT = new InterfaceFunc(id, fp, rt); :}
-                   ;
-
-interface_list ::= interface_func:ifd interface_list:il             {: RESULT = new InterfaceList(ifd, il); :}
-                   |                       
-                   interface_func:ifd                               {: RESULT = new InterfaceList(ifd); :}
-                   ;
 
 literal ::= INTEGER_LITERAL:il                                      {: RESULT = new Literal(il, 0, illeft, ilright); :}
             |
@@ -367,8 +350,3 @@ var_init ::= identifier:id COLON type:t GETS expr:e                 {: RESULT = 
 
 while_stmt ::= WHILE OPEN_PAREN expr:expression CLOSE_PAREN stmt:s  {: RESULT = new WhileStmt(expression, s); :}
                ;
-
-xi_file ::= program:p                                               {: RESULT = p; :}
-            |
-            interface:i                                             {: RESULT = i; :}
-            ;

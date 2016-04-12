@@ -762,31 +762,31 @@ public class TilingVisitor implements IRTreeVisitor {
 		tileMap.put(cu, superTile);
 		
 		// Register/Stack allocation
-//		stackAllocation(cu);
+		stackAllocation(cu);
 		
 		// Set parameters of all function decls
-//		for (Entry<IRNode, Tile> entry : tileMap.entrySet()) {
-//			if (entry.getKey() instanceof IRFuncDecl) {
-//				IRFuncDecl fd = (IRFuncDecl) entry.getKey();
-//				Tile fdTile = entry.getValue();
-//				Instruction enter = fdTile.getInstructions().get(1);
-//				// complete "enter 8*l, 0"
-//				Constant space = new Constant(8*(functionSpaceMap.get(fd.name())));
-//				enter.setSrc(space);
-//				fdTile.getInstructions().set(1,enter);
-//				tileMap.put(fd, fdTile);
-//			}
-//		}
+		for (Entry<IRNode, Tile> entry : tileMap.entrySet()) {
+			if (entry.getKey() instanceof IRFuncDecl) {
+				IRFuncDecl fd = (IRFuncDecl) entry.getKey();
+				Tile fdTile = entry.getValue();
+				Instruction enter = fdTile.getInstructions().get(1);
+				// complete "enter 8*l, 0"
+				Constant space = new Constant(8*(functionSpaceMap.get(fd.name())));
+				enter.setSrc(space);
+				fdTile.getInstructions().set(1,enter);
+				tileMap.put(fd, fdTile);
+			}
+		}
 		
-//		for (IRFuncDecl fd : cu.functions().values()) {
-//			if (superTile == null) {
-//				superTile = tileMap.get(fd);
-//			} else {
-//				superTile = Tile.mergeTiles(superTile, tileMap.get(fd));
-//			}
-//		}
+		for (IRFuncDecl fd : cu.functions().values()) {
+			if (superTile == null) {
+				superTile = tileMap.get(fd);
+			} else {
+				superTile = Tile.mergeTiles(superTile, tileMap.get(fd));
+			}
+		}
 		
-//		tileMap.put(cu, superTile);
+		tileMap.put(cu, superTile);
 		
 		// TODO: REFACTOR TO PUT RIGHT TILE IN COMPUNIT AFTER EPILOGUE
 		// AND PROLOGUE STUFFFFFFFFFFFFFFF
@@ -1238,7 +1238,8 @@ public class TilingVisitor implements IRTreeVisitor {
 			} else {
 				// dest is constant or label
 				Operation op = currentInstruction.getOp();
-				if (op == Operation.LABEL && op.name().substring(0,5) == "FUNC ") {
+				Operand labelOrConstant = currentInstruction.getDest();
+				if (op == Operation.LABEL && labelOrConstant.toString().contains("FUNC(")) {
 					functionSpaceMap.put(op.name(),stackCounter);
 					stackCounter = 0;
 				}

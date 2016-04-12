@@ -22,6 +22,7 @@ public class TilingVisitor implements IRTreeVisitor {
 	
 	private int stackCounter = 0;
 	private HashMap<String, Integer> functionSpaceMap = new HashMap<String, Integer>();
+	private String currentFunction;
 	
 	/** list of first 6 function call arg registers */
 	private static final String[] ARG_REG_LIST = {
@@ -682,7 +683,7 @@ public class TilingVisitor implements IRTreeVisitor {
 				Tile fdTile = entry.getValue();
 				Instruction enter = fdTile.getInstructions().get(1);
 				// complete "enter 8*l, 0"
-				Constant space = new Constant(8*(functionSpaceMap.get(fd.name())));
+				Constant space = new Constant(8*(functionSpaceMap.get(fd.assemblyLabel())));
 				enter.setSrc(space);
 				fdTile.getInstructions().set(1,enter);
 				tileMap.put(fd, fdTile);
@@ -1164,9 +1165,10 @@ public class TilingVisitor implements IRTreeVisitor {
 			} else {
 				// dest is constant or label
 				Operation op = currentInstruction.getOp();
-				Operand labelOrConstant = currentInstruction.getDest();
-				if (op == Operation.LABEL && labelOrConstant.toString().contains("FUNC(")) {
-					functionSpaceMap.put(op.name(),stackCounter);
+				Operand label = currentInstruction.getDest();
+				if (op == Operation.LABEL && label.toString().contains("FUNC(")) {
+					functionSpaceMap.put(currentFunction,stackCounter);
+					currentFunction = label.toString();
 					stackCounter = 0;
 				}
 				added.add(currentInstruction);

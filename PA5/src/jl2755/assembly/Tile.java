@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import edu.cornell.cs.cs4120.xic.ir.*;
+import jl2755.assembly.Instruction.Operation;
 
 public class Tile {
 
@@ -208,8 +209,12 @@ public class Tile {
 	public String toString() {
 		String s = "";
 		for (int i = 0; i < instructions.size(); i++) {
-			s += instructions.get(i).toString();
-			s += "\n";
+			Instruction instr = instructions.get(i);
+			if (instr.getOp() == Operation.LABEL) {
+				s += instr.toString() + ":\n";
+			} else {
+				s += "\t" + instr.toString() + "\n";
+			}
 		}
 		return s;
 	}

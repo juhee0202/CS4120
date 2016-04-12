@@ -211,13 +211,16 @@ public class TilingVisitor implements IRTreeVisitor {
 		}
 		
 		/* 
+		 * assembly idivq r/m32:
+		 * 		Signed divide RDX:RAX by r/m32, with result 
+		 * 		stored in RAX = Quotient, RDX = Remainder.
+		 *
 		 * dividend / divisor
 		 * 		mov 0, %rdx
 		 * 		mov dividend, %rax
 		 * 		mov divisor, register
 		 * 		idiv register
 		 * 
-		 * stores quotient in %rax, and remainder in %rdx
 		 */
 		else if (op == OpType.DIV || op == OpType.MOD) {
 			Register rdx = new Register("rdx");
@@ -246,15 +249,23 @@ public class TilingVisitor implements IRTreeVisitor {
 			Instruction divide = new Instruction(Operation.IDIVQ, null , divisor);
 			instrList.add(divide);
 			cost++;
-			
-			if (op == OpType.DIV) {
-				argDest = rax;
-			}
-			else {
-				argDest = rdx;
-			}
+			argDest = (op == OpType.DIV)? rax : rdx;
 		}
 		
+		/* 
+		 * cmp <src> <dest> assembly instruction
+		 * imm reg X
+		 * imm mem X
+		 * imm imm X
+		 * 
+		 * reg reg 
+		 * reg mem
+		 * reg imm
+		 * 
+		 * mem reg
+		 * mem mem X
+		 * mem imm
+		 * */
 		else if (op == OpType.EQ ||
 				 op == OpType.NEQ ||
 				 op == OpType.LT ||
@@ -265,53 +276,79 @@ public class TilingVisitor implements IRTreeVisitor {
 			Operand src = leftOperand;
 			Operand dest = rightOperand;
 			
-			if (leftOperand instanceof Constant && rightOperand instanceof Constant) {
-				Register t = new Register("tileRegister" + registerCount++);
-				Instruction moveToRegister = new Instruction(Operation.MOVQ, rightOperand, t);
-				instrList.add(moveToRegister);
-				cost++;
-				dest = t;
+			if (leftOperand instanceof Constant) {
+				if (rightOperand instanceof Register || 
+				    rightOperand instanceof Memory) {
+					src = rightOperand;
+					dest = leftOperand;
+				}
+				else if (rightOperand instanceof Constant) {
+					Register t = new Register("tileRegister" + registerCount++);
+					Instruction moveToRegister = new Instruction(Operation.MOVQ, rightOperand, t);
+					instrList.add(moveToRegister);
+					cost++;
+					dest = t;
+				}
 			}
+			else if (leftOperand instanceof Memory) {
+				if (leftOperand instanceof Memory) {
+					Register t = new Register("tileRegister" + registerCount++);
+					Instruction moveToRegister = new Instruction(Operation.MOVQ, rightOperand, t);
+					instrList.add(moveToRegister);
+					cost++;
+					dest = t;
+				}
+			}
+
 			Instruction compare = new Instruction(Operation.CMPQ, src, dest);
 			instrList.add(compare);
 			cost++;
 			
+			Register result = new Register("tileRegister" + registerCount++);
+			
 			if (op == OpType.EQ) {
-				Instruction cmove = new Instruction(Operation.CMOVE, new Constant(1), dest);	    // dest = 1 if equal
-				Instruction cmovne = new Instruction(Operation.CMOVNE, new Constant(0), dest);      // dest = 0 if not equal
+				Instruction cmove = new Instruction(Operation.CMOVE, new Constant(1), result);	    // dest = 1 if equal
+				Instruction cmovne = new Instruction(Operation.CMOVNE, new Constant(0), result);      // dest = 0 if not equal
 				instrList.add(cmove);
 				instrList.add(cmovne);
 				cost += 2;
 			}
 			else if (op == OpType.NEQ) {
-				Instruction cmovne = new Instruction(Operation.CMOVNE, new Constant(1), dest);		// dest = 1 if not equal
-				Instruction cmove = new Instruction(Operation.CMOVE, new Constant(0), dest);        // dest = 0 if equal
+				Instruction cmovne = new Instruction(Operation.CMOVNE, new Constant(1), result);		// dest = 1 if not equal
+				Instruction cmove = new Instruction(Operation.CMOVE, new Constant(0), result);        // dest = 0 if equal
 				instrList.add(cmovne);
 				instrList.add(cmove);
 				cost += 2;
 			}
 			else if (op == OpType.LT) {
-				Instruction cmovl = new Instruction(Operation.CMOVL, new Constant(1), dest);	    // dest = 1 if equal
-				Instruction cmovege = new Instruction(Operation.CMOVGE, new Constant(0), dest);     // dest = 0 if not equal
+				Instruction cmovl = new Instruction(Operation.CMOVL, new Constant(1), result);	    // dest = 1 if equal
+				Instruction cmovege = new Instruction(Operation.CMOVGE, new Constant(0), result);     // dest = 0 if not equal
 				instrList.add(cmovl);
 				instrList.add(cmovege);
 				cost += 2;
 			}
+			else if (op == OpType.GT) {
+				Instruction cmovg = new Instruction(Operation.CMOVG, new Constant(1), result);	    // dest = 1 if equal
+				Instruction cmovele = new Instruction(Operation.CMOVLE, new Constant(0), result);     // dest = 0 if not equal
+				instrList.add(cmovg);
+				instrList.add(cmovele);
+				cost += 2;
+			}
 			else if (op == OpType.LEQ) {
-				Instruction cmovle = new Instruction(Operation.CMOVLE, new Constant(1), dest);	    // dest = 1 if <=
-				Instruction cmovg = new Instruction(Operation.CMOVG, new Constant(0), dest);     	// dest = 0 if >
+				Instruction cmovle = new Instruction(Operation.CMOVLE, new Constant(1), result);	    // dest = 1 if <=
+				Instruction cmovg = new Instruction(Operation.CMOVG, new Constant(0), result);     	// dest = 0 if >
 				instrList.add(cmovle);
 				instrList.add(cmovg);
 				cost += 2;
 			}
 			else if (op == OpType.GEQ) {
-				Instruction cmovge = new Instruction(Operation.CMOVGE, new Constant(1), dest);	    // dest = 1 if equal
-				Instruction cmovl = new Instruction(Operation.CMOVL, new Constant(0), dest);     // dest = 0 if not equal
+				Instruction cmovge = new Instruction(Operation.CMOVGE, new Constant(1), result);	    // dest = 1 if equal
+				Instruction cmovl = new Instruction(Operation.CMOVL, new Constant(0), result);     // dest = 0 if not equal
 				instrList.add(cmovge);
 				instrList.add(cmovl);
 				cost += 2;
 			}
-			argDest = dest;
+			argDest = result;
 		}
 
 		// create tile and put into tileMap

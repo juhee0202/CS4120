@@ -374,8 +374,22 @@ public class Main {
 
             System.out.println("[xic] Parsing");
             Symbol s = p.parse();
-            
-            if (s.value instanceof Interface) {
+//            if (s.value instanceof Interface) {
+//            	String errMsg = "2:1 error:Syntax error: unexpected end of file.";
+//                try {
+//                    bw.write(errMsg);
+//                    bw.close();	
+//                } catch (IOException e) {
+//                    System.out.println("Failed to write to output file");
+//                }
+//                // throw new SyntaxError(2, 1, errMsg);
+//                System.out.println(errMsg);
+//                System.out.println("[xic] Parsing Failed.");
+//                return;
+//            }
+//           
+            if (!(s.value instanceof Program)) {
+            	// TODO: MAKE THIS ERROR MORE GENERAL OMFG and 2:1 is hard coded oopsiespoopsies :O
             	String errMsg = "2:1 error:Syntax error: unexpected end of file.";
                 try {
                     bw.write(errMsg);
@@ -398,10 +412,13 @@ public class Main {
             System.out.println("[xic] Parsing completed");
         } catch(LexicalError error) {
             System.out.println(error.getMessage());
+            System.out.println("[xic] Parsing failed");
         } catch(SyntaxError error) {
             System.out.println(error.getMessage());
+            System.out.println("[xic] Parsing failed");
         } catch(IOException e) {
             System.out.println("Failed to write to output file " + filename);
+            System.out.println("[xic] Parsing failed");
         } catch(Exception e) {
             // TODO: not sure what kind of exceptions would happen here
             e.printStackTrace();
@@ -453,12 +470,16 @@ public class Main {
 
         } catch(LexicalError error) {
             System.out.println(error.getMessage());
+            System.out.println("[xic] Typechecking failed");
         } catch(SyntaxError error) {
             System.out.println(error.getMessage());
+            System.out.println("[xic] Typechecking failed");
         } catch(SemanticError error) {
             System.out.println(error.getMessage());
+            System.out.println("[xic] Typechecking failed");
         } catch(IOException e) {
             System.out.println("Failed to write to output file " + filename);
+            System.out.println("[xic] Typechecking failed");
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -588,7 +609,16 @@ public class Main {
             program.accept(mir);
             LIRVisitor lir = new LIRVisitor();
             mir.program.accept(lir);
-
+            
+            // TODO: remove
+            StringWriter sw = new StringWriter();
+            try (PrintWriter pw = new PrintWriter(sw);
+                    SExpPrinter sp = new CodeWriterSExpPrinter(pw)) {
+                lir.program.printSExp(sp);
+            }
+            bw.write(sw.toString());
+//            bw.close();
+            
             /* Generate Assembly Code */
             // TODO: new visitor??
             
@@ -626,14 +656,22 @@ public class Main {
      * @param msg
      */
     public static void handleSyntaxError(String msg) {
-
-        String errorMessage = error.left + ":" + error.right + " error:" + msg + error.value;
+    	if (msg.equals("unexpected token ")) {
+    		if (error.value == null) {
+    			error.value = "EOF";
+    		}
+    		msg += error.value;
+    	}
+    	
+        String errorMessage = error.left + ":" + error.right + " error:" + msg;
+        
         try {
             bw.write(errorMessage);
             bw.close();	
         } catch (IOException e) {
             System.out.println("Failed to write to output file");
         }
+        
         throw new SyntaxError(error.left, error.right, msg);
     }
 

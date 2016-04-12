@@ -61,7 +61,7 @@ public class IRTreeEqualsVisitor implements IRTreeVisitor{
 	
 	private void equalSubTrees(IRNode rootOfFakeInstance, IRNode rootOfRealInstance) {
 		boolean temp = doesEquals(rootOfFakeInstance, rootOfRealInstance);
-		
+//		System.out.println("temp is " + temp);
 		currentBool = currentBool && temp;
 		if (temp) {
 			currentNode = rootOfRealInstance;

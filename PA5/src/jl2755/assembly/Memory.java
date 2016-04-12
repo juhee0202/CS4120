@@ -100,13 +100,13 @@ public class Memory implements Operand {
 			s += "(" + registerBase.toString() + "," + registerOffset.toString() + ")";
 		} else if (index == 3) {
 			s += "(" + registerBase.toString() + "," + registerOffset.toString()
-					+ "," + constantFactor.toString() + ")";
+					+ "," + constantFactor.getValue() + ")";
 		} else if (index == 4) {
-			s += constantOffset.toString() + "(" + registerBase.toString()
+			s += constantOffset.getValue() + "(" + registerBase.toString()
 					+ ","  + registerOffset.toString() + ")";
 		} else if (index == 5) {
-			s += constantOffset.toString() + "(" + registerBase.toString()
-					+ "," + registerOffset.toString() + "," + constantFactor.toString()
+			s += constantOffset.getValue() + "(" + registerBase.toString()
+					+ "," + registerOffset.toString() + "," + constantFactor.getValue()
 					+ ")";
 		}
 		return s;
@@ -120,10 +120,18 @@ public class Memory implements Operand {
 	@Override
 	public Operand getNewOperand() {
 		Memory temp = new Memory();
-		temp.registerBase = (Register) registerBase.getNewOperand();
-		temp.constantOffset = (Constant) constantOffset.getNewOperand();
-		temp.registerOffset = (Register) registerOffset.getNewOperand();
-		temp.constantFactor = (Constant) constantFactor.getNewOperand();
+		if (registerBase != null) {
+			temp.registerBase = (Register) registerBase.getNewOperand();
+		}
+		if (constantOffset != null) {
+			temp.constantOffset = (Constant) constantOffset.getNewOperand();
+		}
+		if (registerOffset != null) {
+			temp.registerOffset = (Register) registerOffset.getNewOperand();
+		}
+		if (constantFactor != null) {
+			temp.constantFactor = (Constant) constantFactor.getNewOperand();
+		}
 		temp.index = index;
 		return temp;
 	}

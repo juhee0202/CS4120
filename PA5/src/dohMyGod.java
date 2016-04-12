@@ -104,6 +104,26 @@ public class dohMyGod {
 		IRTreeEqualsVisitor temp = new IRTreeEqualsVisitor();
 		List<String> testPre = new ArrayList<String>(
 				Arrays.asList(
+						"Mem"
+						));
+		
+		List<String> testIn = new ArrayList<String>(
+				Arrays.asList(
+						"Mem"
+						));
+		
+		IRNode tree1 = Tile.makeTree(testIn, testPre);
+		System.out.println(tree1);
+        StringWriter sw = new StringWriter();
+        try (PrintWriter pw = new PrintWriter(sw);
+                SExpPrinter sp = new CodeWriterSExpPrinter(pw)) {
+              	tree1.printSExp(sp);
+           }
+           System.out.println(sw);
+		System.out.println(temp.getAllChildrenNode());
+		
+		List<String> testPre2 = new ArrayList<String>(
+				Arrays.asList(
 						"Mem",
 						"BinOp1",
 						"null1",
@@ -114,7 +134,7 @@ public class dohMyGod {
 						"Const1"
 						));
 		
-		List<String> testIn = new ArrayList<String>(
+		List<String> testIn2 = new ArrayList<String>(
 				Arrays.asList(
 						"null1",
 						"BinOp1",
@@ -126,16 +146,8 @@ public class dohMyGod {
 						"Mem"
 						));
 		
-		IRNode tree1 = Tile.makeTree(testIn, testPre);
-		
-		System.out.println(temp.equalTrees(tree1, tree1));
-        StringWriter sw = new StringWriter();
-        try (PrintWriter pw = new PrintWriter(sw);
-                SExpPrinter sp = new CodeWriterSExpPrinter(pw)) {
-              	tree1.printSExp(sp);
-           }
-           System.out.println(sw);
-		System.out.println(temp.getAllChildrenNode());
+		IRNode tree2 = Tile.makeTree(testIn2, testPre2);
+		System.out.println(temp.equalTrees(tree1, tree2));
 	}
 	
 	@Test

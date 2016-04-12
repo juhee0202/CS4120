@@ -20,9 +20,9 @@ public class SemanticError extends RuntimeException {
     	String s;
     	
     	if (filename == null) {
-    		s = "Semantic error beginning at " + line + ":" + column + ":" + ": " + description; 
+    		s = "Semantic error beginning at " + line + ":" + column + ":" + description; 
     	} else {
-    		s = "Semantic error at " + filename + ":" + line + ":" + column + ":" + ": " + description;
+    		s = "Semantic error at " + filename + ":" + line + ":" + column + ": " + description;
     	}
     	
         return s;         		

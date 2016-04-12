@@ -278,6 +278,22 @@ public class TypeCheckVisitor implements ASTVisitor {
 			
 			VType elementType = new VarType(idType,as.getIndexedBrackets(),as.getIdentifier());
 
+			// check that all the indices inside indexedBrackets are ints
+			List<Expr> exprs = as.getIndexedBrackets().getContent();
+			for (Expr e: exprs) {
+				e.accept(this);
+				VarType exprType = (VarType) tempType;
+				if (!exprType.isInt()) {
+					String s = "Expected an int, but found " + 
+							exprType.toString();
+					SemanticErrorObject seo = new SemanticErrorObject(
+							e.getLineNumber(),
+							e.getColumnNumber(), 
+							s
+							);
+					Main.handleSemanticError(seo);
+				}
+			}
 			
 			as.getExpr().accept(this);
 			VType exprType = tempType;
@@ -754,7 +770,21 @@ public class TypeCheckVisitor implements ASTVisitor {
 	
 	@Override
 	public void visit(IndexedBrackets ib) {
-		return;
+		List<Expr> exprs = ib.getContent();
+		for (Expr e: exprs) {
+			e.accept(this);
+			VarType exprType = (VarType) tempType;
+			if (!exprType.isInt()) {
+				String s = "Expected an int, but found " + 
+						exprType.toString();
+				SemanticErrorObject seo = new SemanticErrorObject(
+						e.getLineNumber(),
+						e.getColumnNumber(), 
+						s
+						);
+				Main.handleSemanticError(seo);
+			}
+		}
 	}
 
 	/** 
@@ -1139,12 +1169,6 @@ public class TypeCheckVisitor implements ASTVisitor {
 										);
 			Main.handleSemanticError(seo);
 		}
-		else {
-			String id = vi.getId().toString();
-			env.put(id, new VarType(vi.getType()));
-			tempType = env.get(id);
-			stack.push(id);
-		}
 		
 		vi.getType().accept(this);
 		VType tempLeftType = tempType;
@@ -1159,7 +1183,13 @@ public class TypeCheckVisitor implements ASTVisitor {
 										s
 										);
 			Main.handleSemanticError(seo);
-		}	
+		}
+		
+		// add variable to the env
+		String id = vi.getId().toString();
+		env.put(id, new VarType(vi.getType()));
+		tempType = env.get(id);
+		stack.push(id);
 	}
 
 	/**

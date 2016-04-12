@@ -876,13 +876,20 @@ public class TilingVisitor implements IRTreeVisitor {
 		Operand sourceOperand = sourceTile.getDest();
 		Operand targetOperand = targetTile.getDest();
 		
+		boolean redundant = sourceOperand.toString().equals(targetOperand.toString());		
 		
 		// If both children are Memory Operands
 		if (sourceTile.getDest() instanceof Memory && targetTile.getDest() instanceof Memory) {
 			List<Instruction> newInstructions = new ArrayList<Instruction>();
-			newInstructions.add(new Instruction(Operation.MOVQ,sourceOperand,new Register("rcx")));
-			newInstructions.add(new Instruction(Operation.MOVQ,new Register("rcx"),targetOperand));
-			Tile finalTile = new Tile(newInstructions,2,targetOperand);
+			Tile finalTile;
+			if (!redundant) {
+				newInstructions.add(new Instruction(Operation.MOVQ,sourceOperand,new Register("rcx")));
+				newInstructions.add(new Instruction(Operation.MOVQ,new Register("rcx"),targetOperand));
+				finalTile = new Tile(newInstructions,2,targetOperand);
+			} else {
+				finalTile = new Tile(newInstructions,0,targetOperand);
+			}
+			
 			finalTile = Tile.mergeTiles(targetTile, finalTile);
 			finalTile = Tile.mergeTiles(sourceTile, finalTile);
 			tileMap.put(mov, finalTile);
@@ -892,8 +899,13 @@ public class TilingVisitor implements IRTreeVisitor {
 		List<Instruction> addingInstr = new ArrayList<Instruction>();
 		Instruction movInstruction = new Instruction(Operation.MOVQ,
 				sourceOperand, targetOperand);
-		addingInstr.add(movInstruction);
-		Tile finalTile = new Tile(addingInstr, 1, targetOperand);
+		Tile finalTile;
+		if (!redundant) {
+			addingInstr.add(movInstruction);	
+			finalTile = new Tile(addingInstr, 1, targetOperand);
+		} else {
+			finalTile = new Tile(addingInstr, 0, targetOperand);
+		}
 		finalTile = Tile.mergeTiles(targetTile, finalTile);
 		finalTile = Tile.mergeTiles(sourceTile, finalTile);
 		

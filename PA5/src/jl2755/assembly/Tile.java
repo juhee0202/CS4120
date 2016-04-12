@@ -188,21 +188,31 @@ public class Tile {
 	public void fillInOperands(List<Operand> argOperands) {
 		if (instructions.size() == 0) {
 			// If no instructions, should be a Mem operation.
-			if (dest instanceof Memory) {
-				if (argOperands.size() == 1) {
-					// At this point, the Tile should be a Mem with
-					// only one child.
-					((Memory) dest).setRegisterBase((Register) argOperands.get(0));
-				}
+//			if (dest instanceof Memory) {
+//				if (argOperands.size() == 1) {
+//					// At this point, the Tile should be a Mem with
+//					// only one child.
+//					((Memory) dest).setRegisterBase((Register) argOperands.get(0));
+//				}
+//			}
+			
+			// TODO: FILL IN INSTRUCTIONS PROPERLY
+			if (argOperands.size() == 4) {
+				dest = new Memory((Constant)argOperands.get(0),
+						(Register)argOperands.get(1),
+						(Register)argOperands.get(2),
+						(Constant)argOperands.get(3));
+			} else if (argOperands.size() == 1) {
+				dest = new Memory((Register)argOperands.get(0));
 			}
 		}
 		
 		for (int i = 0; i < instructions.size(); i++) {
 			instructions.get(i).fillInInstructions(argOperands);
 		}
-		if (argOperands.size() > 0) {
-			dest = argOperands.get(0);
-		}
+//		if (argOperands.size() > 0) {
+//			dest = argOperands.get(0);
+//		}
 	}
 	
 	// TODO: Uncomment

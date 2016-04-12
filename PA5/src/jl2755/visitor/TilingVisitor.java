@@ -159,15 +159,16 @@ public class TilingVisitor implements IRTreeVisitor {
 		// src: reg, const, mem
 		// dest: reg, mem
 		/* 
-		 * add a, b
+		 * binop a, b
 		 * 		mov a %freshTemp
-		 * 		add b %freshTemp
+		 * 		binop b %freshTemp
 		 * */
 		if (op == OpType.ADD ||
 			op == OpType.SUB ||
 			op == OpType.AND ||
 			op == OpType.OR  ||
-			op == OpType.XOR) 
+			op == OpType.XOR ||
+			op == OpType.MUL) 
 		{
 			Register t = new Register("tileRegister" + registerCount++);
 			Instruction movToFreshTemp = new Instruction(Operation.MOVQ, leftOperand, t);
@@ -176,104 +177,13 @@ public class TilingVisitor implements IRTreeVisitor {
 			instrList.add(binopInstr);
 			cost = 2;
 			argDest = t;
-			
-//			if (leftOperand instanceof Constant) {
-//				/* Change <binop> CONST, CONST to
-//				 * 		MOV CONST, REG
-//				 * 		<binop> CONST, REG */
-//				if (rightOperand instanceof Constant) {
-//					Register t = new Register("tileRegister" + registerCount++);
-//					Instruction moveInstruction = new Instruction(Operation.MOVQ, rightOperand, t);
-//					Instruction binopConstReg = new Instruction(tileOp, leftOperand, t);
-//					instrList.add(moveInstruction);
-//					instrList.add(binopConstReg);
-//					cost = 2;
-//					argDest = t;
-//				}
-//				else {
-//					Instruction binopConstRegOrMem = new Instruction(tileOp, leftOperand, rightOperand);
-//					instrList.add(binopConstRegOrMem);
-//					cost = 1;
-//					argDest = rightOperand;
-//				}
-//			}
-//			else if (leftOperand instanceof Memory) {
-//				if (rightOperand instanceof Register) {
-//					Instruction binopMemReg = new Instruction(tileOp, leftOperand, rightOperand);
-//					instrList.add(binopMemReg);
-//					cost = 1;
-//					argDest = rightOperand;
-//				}
-//				else if (rightOperand instanceof Constant) {
-//					Instruction binopConstMem = new Instruction(tileOp, rightOperand, leftOperand);
-//					instrList.add(binopConstMem);
-//					cost = 1;
-//					argDest = leftOperand;
-//				}
-//				/* 
-//				 * Change <binop> MEM1, MEM2 to
-//				 * 		MOV MEM2 REG
-//				 * 		<binop> MEM1, REG
-//				 */
-//				else if (rightOperand instanceof Memory) {
-//					Register t = new Register("tileRegister" + registerCount++);
-//					Instruction moveInstruction = new Instruction(Operation.MOVQ, rightOperand, t);
-//					Instruction binopMemReg = new Instruction(tileOp, leftOperand, t);
-//					instrList.add(moveInstruction);
-//					instrList.add(binopMemReg);
-//					cost = 2;
-//					argDest = t;
-//				}
-//			}
-//			else if (leftOperand instanceof Register) {
-//				if (rightOperand instanceof Memory || rightOperand instanceof Register) {
-//					Instruction binopRegRegOrMem = new Instruction(
-//							tileOp, 
-//							leftOperand, 
-//							rightOperand
-//							);
-//					instrList.add(binopRegRegOrMem);
-//					cost = 1;
-//					argDest = rightOperand;
-//				}
-//				else if (rightOperand instanceof Constant) {
-//					Instruction binopConstReg = new Instruction(tileOp, rightOperand, leftOperand);
-//					instrList.add(binopConstReg);
-//					cost = 1;
-//					argDest = leftOperand;
-//				}
-//			}
-			
-		}
-		/* create instruction 
-		 * 		imul <reg32>,<reg32>
-		 * 		imul <reg32>,<mem>
-		 */
-		else if (op == OpType.MUL) {
-			if (leftOperand instanceof Constant) {
-				Register t = new Register("tileRegister" + registerCount++);
-				Instruction movConstReg = new Instruction(Operation.MOVQ, leftOperand, t);
-				instrList.add(movConstReg);
-				cost++;
-			}
-			if (rightOperand instanceof Constant) {
-				Register t = new Register("tileRegister" + registerCount++);
-				Instruction movConstReg = new Instruction(Operation.MOVQ, rightOperand, t);
-				instrList.add(movConstReg);
-				cost++;
-			}
-			Instruction multiply = new Instruction(Operation.IMULQ, leftOperand, rightOperand);
-			instrList.add(multiply);
-			cost++;
-			argDest = rightOperand;
 		}
 		/* 
 		 * HMUL x, y
-		 * 		movq %rx,%rax     #Store x into %rax
-		 * 		mulq %y           #multiplies %y to %rax
+		 * 		movq %x,%rax     #Store x into %rax
+		 * 		imulq %y           #multiplies %y to %rax
 		 * 		#mulq stores high and low values into rax and rdx.
-		 * 		movq %rax,(%r8)   #Move low into &lower
-		 * 		movq %rdx,(%r9)   #Move high answer into &higher
+		 * 		movq %rax, %freshTemp
 		 */
 		else if (op == OpType.HMUL) {
 			// TODO
@@ -292,11 +202,11 @@ public class TilingVisitor implements IRTreeVisitor {
 				operand = t;
 			}
 			
-			Instruction multiply = new Instruction(Operation.IMULQ, null, operand);
+			Instruction multiply = new Instruction(Operation.IMULQ, operand);
 			instrList.add(multiply);
 			cost++;
 			
-			// mulq stores high and low values into rax and rdx
+			// imulq stores high and low values into rax and rdx
 			argDest = rax;
 		}
 		

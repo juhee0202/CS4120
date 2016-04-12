@@ -10,8 +10,8 @@ import jl2755.visitor.ASTVisitor;
 /**
  * Represents a list of function declarations in a recursive manner.
  * index 
- * 	- 0: no funtion declaration
- * 	- 1: 1 <= function declarations
+ * 	- 0: 1 funcDecl
+ * 	- 1: 2 or more funcDecl
  */
 public class FunctionDeclList {
 	private FunctionDecl functionDecl;
@@ -49,10 +49,6 @@ public class FunctionDeclList {
 	
 	public void prettyPrintNode() {
 		CodeWriterSExpPrinter tempPrinter = GlobalPrettyPrinter.getInstance();
-		
-		if (index == 0) {
-			return;
-		}
 		
 		tempPrinter.startList();
 		functionDecl.prettyPrintNode();

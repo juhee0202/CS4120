@@ -122,7 +122,7 @@ public class TilingVisitor implements IRTreeVisitor {
         	tileOp = Operation.SUBQ;
             break;
         case MUL:
-        	tileOp = Operation.IMULQ;
+        	tileOp = Operation.IMULQ2;
             break;
         case DIV:
         	tileOp = Operation.IDIVQ;
@@ -202,7 +202,7 @@ public class TilingVisitor implements IRTreeVisitor {
 				operand = t;
 			}
 			
-			Instruction multiply = new Instruction(Operation.IMULQ, operand);
+			Instruction multiply = new Instruction(Operation.IMULQ1, operand);
 			instrList.add(multiply);
 			cost++;
 			

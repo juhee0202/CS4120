@@ -374,35 +374,21 @@ public class Main {
 
             System.out.println("[xic] Parsing");
             Symbol s = p.parse();
-//            if (s.value instanceof Interface) {
-//            	String errMsg = "2:1 error:Syntax error: unexpected end of file.";
-//                try {
-//                    bw.write(errMsg);
-//                    bw.close();	
-//                } catch (IOException e) {
-//                    System.out.println("Failed to write to output file");
-//                }
-//                // throw new SyntaxError(2, 1, errMsg);
-//                System.out.println(errMsg);
-//                System.out.println("[xic] Parsing Failed.");
-//                return;
-//            }
-//           
-            if (!(s.value instanceof Program)) {
-            	// TODO: MAKE THIS ERROR MORE GENERAL OMFG and 2:1 is hard coded oopsiespoopsies :O
-            	String errMsg = "2:1 error:Syntax error: unexpected end of file.";
-                try {
-                    bw.write(errMsg);
-                    bw.close();	
+            
+            // this is kind of hacky. when it evaluates to Interface, we must raise error
+            if (s.value instanceof Interface) {
+            	String errorMessage = "2:1 error:Syntax error: unexpected ";
+
+            	try {
+            		bw.write(errorMessage);
+            		bw.close();	
                 } catch (IOException e) {
                     System.out.println("Failed to write to output file");
                 }
-                // throw new SyntaxError(2, 1, errMsg);
-                System.out.println(errMsg);
-                System.out.println("[xic] Parsing Failed.");
-                return;
+                
+                throw new SyntaxError(2, 1, errorMessage);
             }
-            
+
             Program result = (Program) s.value;
 
             new GlobalPrettyPrinter(destDPath + rmExtension + ".parsed");
@@ -660,23 +646,21 @@ public class Main {
      * @param msg
      */
     public static void handleSyntaxError(String msg) {
-    	if (msg.equals("unexpected token ")) {
-    		if (error.value == null) {
-    			error.value = "EOF";
-    		}
-    		msg += error.value;
+    	if (error.value == null) {
+    		error.value = "EOF";
     	}
-    	
-        String errorMessage = error.left + ":" + error.right + " error:" + msg;
-        
-        try {
-            bw.write(errorMessage);
-            bw.close();	
+    	msg += error.value;
+
+    	String errorMessage = error.left + ":" + error.right + " error:" + msg;
+
+    	try {
+    		bw.write(errorMessage);
+    		bw.close();	
         } catch (IOException e) {
             System.out.println("Failed to write to output file");
         }
         
-        throw new SyntaxError(error.left, error.right, msg);
+        throw new SyntaxError(error.left, error.right, errorMessage);
     }
 
     /**

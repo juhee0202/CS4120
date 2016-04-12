@@ -95,7 +95,7 @@ public class Memory implements Operand {
 		if (index == 0) {
 			s += "(" + registerBase.toString() + ")";
 		} else if (index == 1) {
-			s += constantOffset.toString() + "(" + registerBase.toString() + ")";
+			s += constantOffset.getValue() + "(" + registerBase.toString() + ")";
 		} else if (index == 2) {
 			s += "(" + registerBase.toString() + "," + registerOffset.toString() + ")";
 		} else if (index == 3) {

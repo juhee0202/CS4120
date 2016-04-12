@@ -710,6 +710,8 @@ public class TilingVisitor implements IRTreeVisitor {
 		
 		tileMap.put(cu, superTile);
 		
+		superTile = null;
+		
 		// Register/Stack allocation
 		stackAllocation(cu);
 		
@@ -1103,7 +1105,6 @@ public class TilingVisitor implements IRTreeVisitor {
 		Tile masterTile = tileMap.get(headNode);
 		List<Instruction> everyInstruction = masterTile.getInstructions();
 		Map<String, Integer> registerToStackOffsetMap = new HashMap<String, Integer>();
-		System.out.println(everyInstruction);
 		// Call addNecessaryInstruction
 		masterTile.setInstructions(addNecessaryInstruction(
 				everyInstruction,registerToStackOffsetMap));
@@ -1159,7 +1160,6 @@ public class TilingVisitor implements IRTreeVisitor {
 					Instruction movToReg = new Instruction(Operation.MOVQ,mem,rcx);
 					added.add(movToReg);
 				} else {
-					System.out.println(reg);
 					int addr = -8*++stackCounter;
 					mem = new Memory(new Constant(addr),rbp);
 					regToStack.put(reg,addr);
@@ -1318,9 +1318,13 @@ public class TilingVisitor implements IRTreeVisitor {
 				Constant cons = memOp.getConstantOffset();
 				Memory newMem;
 				
-				int addr2 = regToStack.get(regBase.getName());
-				Memory mem2 = new Memory(new Constant(addr2),rbp);
-				Instruction movToReg2 = new Instruction(Operation.MOVQ,mem2,rcx);
+				Instruction movToReg2 = null;
+				if (regBase.getType() == RegisterName.TEMP) {
+					int addr2 = regToStack.get(regBase.getName());
+					Memory mem2 = new Memory(new Constant(addr2),rbp);
+					movToReg2 = new Instruction(Operation.MOVQ,mem2,rcx);
+				}
+				
 				if (regOff != null && regOff.getType() == RegisterName.TEMP) {
 					// two register operands for memory
 					int addr3 = regToStack.get(regOff.getName());

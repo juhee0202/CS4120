@@ -332,16 +332,17 @@ public class ConstantFolderVisitor implements ASTVisitor{
 		if (rs.getIndex() == 1) {
 			List<Expr> returns = rs.getReturns();
 			ReturnList rl = rs.getReturnList();
-			for (Expr e: returns) {
+			for (int i = 0; i < returns.size(); i++) {
+				Expr e = returns.get(i);
 				e.accept(this);
 				if (caseIndex == 0) {
-					rl.setExpr(new Literal(tempLong + "", 0));
+					rl.setExpr(new Literal(tempLong + "", 0),i);
 				}
 				else if (caseIndex == 1) {
-					rl.setExpr(new Literal(tempBool));
+					rl.setExpr(new Literal(tempBool),i);
 				}
 				else if (caseIndex == 2) {
-					rl.setExpr(tempArray);
+					rl.setExpr(tempArray,i);
 				}
 			}
 		}

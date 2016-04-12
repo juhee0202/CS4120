@@ -94,7 +94,6 @@ public class TilingVisitor implements IRTreeVisitor {
 		List<Instruction> emptyInstructions1 = new ArrayList<Instruction>();
 		Tile tile1 = new Tile(MEM_IN,MEM_PRE,emptyInstructions1,0);
 		
-		
 		List<Instruction> emptyInstructions2 = new ArrayList<Instruction>();
 		Tile tile2 = new Tile(MEM_EFFECTIVE_IN,MEM_EFFECTIVE_PRE,emptyInstructions2,0);
 		

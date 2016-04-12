@@ -43,8 +43,7 @@ FUNC(Imain_paai):
 	movq	%RDX %RCX
 	movq	%RCX -32(%RBP)
 	movq	-32(%RBP) %RCX
-	movq	$2 %RCX
-	movq	%RCX -32(%RBP)
+	movq	$2 0(%RCX)
 	movq	$8 %RCX
 	movq	%RCX -40(%RBP)
 	movq	-40(%RBP) %RCX
@@ -52,8 +51,7 @@ FUNC(Imain_paai):
 	addq	%RDX %RCX
 	movq	%RCX -40(%RBP)
 	movq	-40(%RBP) %RCX
-	movq	$1 %RCX
-	movq	%RCX -40(%RBP)
+	movq	$1 0(%RCX)
 	movq	$16 %RCX
 	movq	%RCX -48(%RBP)
 	movq	-48(%RBP) %RCX
@@ -61,8 +59,7 @@ FUNC(Imain_paai):
 	addq	%RDX %RCX
 	movq	%RCX -48(%RBP)
 	movq	-48(%RBP) %RCX
-	movq	$2 %RCX
-	movq	%RCX -48(%RBP)
+	movq	$2 0(%RCX)
 	movq	-32(%RBP) %RDX
 	movq	%RDX %RCX
 	movq	%RCX -56(%RBP)

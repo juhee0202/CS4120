@@ -26,17 +26,17 @@ public class TilingVisitor implements IRTreeVisitor {
 	
 	/** list of first 6 function call arg registers */
 	private static final String[] ARG_REG_LIST = {
-			"rdi", "rsi", "rdx", "rcx", "r8", "r9"
+			"RDI", "RSI", "RDX", "RCX", "R8", "R9"
 	};
 	
 	/** list of callee-saved registers (except rbp) */
 	private static final String[] CALLEE_REG_LIST = {
-			"rdi", "rsi", "rbx", "r12", "r13", "r14", "r15"
+			"RDI", "RSI", "RBX", "R12", "R13", "R14", "R15"
 	};
 	
 	/** list of caller-saved registers */
 	private static final String[] CALLER_REG_LIST = {
-			"rax", "rcx", "rdx", "r8", "r9", "r10", "r11"
+			"RAX", "RCX", "RDX", "R8", "R9", "R10", "R11"
 	};
 	// shuttle regs: rcx, rdx, r11
 	
@@ -887,8 +887,8 @@ public class TilingVisitor implements IRTreeVisitor {
 			List<Instruction> newInstructions = new ArrayList<Instruction>();
 			Tile finalTile;
 			if (!redundant) {
-				newInstructions.add(new Instruction(Operation.MOVQ,sourceOperand,new Register("rcx")));
-				newInstructions.add(new Instruction(Operation.MOVQ,new Register("rcx"),targetOperand));
+				newInstructions.add(new Instruction(Operation.MOVQ,sourceOperand,new Register(RegisterName.RCX)));
+				newInstructions.add(new Instruction(Operation.MOVQ,new Register(RegisterName.RCX),targetOperand));
 				finalTile = new Tile(newInstructions,2,targetOperand);
 			} else {
 				finalTile = new Tile(newInstructions,0,targetOperand);
@@ -1065,10 +1065,11 @@ public class TilingVisitor implements IRTreeVisitor {
 		Tile masterTile = tileMap.get(headNode);
 		List<Instruction> everyInstruction = masterTile.getInstructions();
 		Map<String, Integer> registerToStackOffsetMap = new HashMap<String, Integer>();
-		
+		System.out.println(everyInstruction);
 		// Call addNecessaryInstruction
 		masterTile.setInstructions(addNecessaryInstruction(
 				everyInstruction,registerToStackOffsetMap));
+		functionSpaceMap.put(currentFunction,stackCounter);
 	}
 	
 	/**
@@ -1120,6 +1121,7 @@ public class TilingVisitor implements IRTreeVisitor {
 					Instruction movToReg = new Instruction(Operation.MOVQ,mem,rcx);
 					added.add(movToReg);
 				} else {
+					System.out.println(reg);
 					int addr = -8*++stackCounter;
 					mem = new Memory(new Constant(addr),rbp);
 					regToStack.put(reg,addr);

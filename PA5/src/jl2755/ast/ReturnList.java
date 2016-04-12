@@ -43,6 +43,14 @@ public class ReturnList {
 	public void setExpr(Expr expr) {
 		this.expr = expr;
 	}
+	
+	public void setExpr(Expr argExpr, int n) {
+		if (n == 0) {
+			expr = argExpr;
+		} else {
+			returnList.setExpr(argExpr,n-1);
+		}
+	}
 
 	public ReturnList getReturnList() {
 		return returnList;

@@ -582,6 +582,8 @@ public class Main {
             FileWriter fw = new FileWriter(file.getAbsoluteFile());
             bw = new BufferedWriter(fw);
 
+            System.out.println("[xic] Generating assembly code");
+            
             parser p = new parser(new Scanner(new FileReader(filename)));
             Symbol s = p.parse();
             Program program = (Program) s.value;
@@ -614,6 +616,8 @@ public class Main {
             bw.write(HEHLO);
             bw.close();
 
+            System.out.println("[xic] Generating assembly code completed");
+            
         } catch(LexicalError error) {
             System.out.println(error.getMessage());
         } catch(SyntaxError error) {

@@ -603,10 +603,10 @@ public class Main {
             Program program = (Program) s.value;
             TypeCheckVisitor typeCheck = new TypeCheckVisitor();
             program.accept(typeCheck);
-//            if (optimize) {
-//                ConstantFolderVisitor constantFold = new ConstantFolderVisitor();
-//                program.accept(constantFold);
-//            }
+            if (optimize) {
+                ConstantFolderVisitor constantFold = new ConstantFolderVisitor();
+                program.accept(constantFold);
+            }
             MIRVisitor mir = new MIRVisitor();
             program.accept(mir);
             LIRVisitor lir = new LIRVisitor();

@@ -18,6 +18,7 @@ public class IRCall extends IRExpr {
     private IRExpr target;
     private List<IRExpr> args;
     private int numReturns;
+    private int num8ByteSpace;
 
     /**
      *
@@ -114,5 +115,13 @@ public class IRCall extends IRExpr {
 
 	public void setNumReturns(int numReturns) {
 		this.numReturns = numReturns;
+	}
+
+	public int getNum8ByteSpace() {
+		return num8ByteSpace;
+	}
+
+	public void setNum8ByteSpace(int num8ByteSpace) {
+		this.num8ByteSpace = num8ByteSpace;
 	}
 }

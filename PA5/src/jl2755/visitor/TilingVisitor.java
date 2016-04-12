@@ -381,6 +381,7 @@ public class TilingVisitor implements IRTreeVisitor {
 		int numArgs = args.size();
 		int numReturns = call.getNumReturns();
 		int numArgRegs = ARG_REG_LIST.length;
+		int num8ByteSpace = 0;
 		
 		/* Create an empty list of instructions */
 		List<Instruction> instructions = new ArrayList<Instruction>();
@@ -394,6 +395,7 @@ public class TilingVisitor implements IRTreeVisitor {
 			// "pushq reg"
 			Instruction instr = new Instruction(Operation.PUSHQ, reg);
 			tempInstructions.add(instr);
+			num8ByteSpace++;
 		}
 		
 		/* Allocate stack space for ret3...retm if (m > 2) */
@@ -412,6 +414,7 @@ public class TilingVisitor implements IRTreeVisitor {
 			Instruction instr2 = new Instruction(Operation.SUBQ, c, rsp);
 			tempInstructions.add(instr2);
 			numArgRegs--;	// because rdi is used to store ret3
+			num8ByteSpace += numReturns - 2;
 		}
 		
 		/* Push argn...arg7 (or arg6 if m > 2) */
@@ -428,6 +431,7 @@ public class TilingVisitor implements IRTreeVisitor {
 				// "pushq dest"
 				Instruction instr = new Instruction(Operation.PUSHQ, dest);
 				tempInstructions.add(instr);
+				num8ByteSpace++;
 			}
 			numArgs = numArgRegs;
 		}
@@ -455,6 +459,15 @@ public class TilingVisitor implements IRTreeVisitor {
 		Tile targetTile = tileMap.get(target);
 		List<Instruction> targetInstr = targetTile.getInstructions();
 		instructions.addAll(targetInstr);
+		
+		// make rsp 16byte aligned
+		if (num8ByteSpace % 2 == 1) {
+			Constant c = new Constant(8);
+			Register rsp = new Register(RegisterName.RSP);
+			Instruction extraSpace = new Instruction(Operation.SUBQ, c, rsp);
+			tempInstructions.add(extraSpace);
+			call.setNum8ByteSpace(num8ByteSpace+1);
+		}
 		
 		// "callq targetDest"
 		Label targetDest = (Label)targetTile.getDest();
@@ -1426,7 +1439,7 @@ public class TilingVisitor implements IRTreeVisitor {
 		}
 		
 		// back to original rsp
-		Constant offset = new Constant(8*(argOffset + numCallerReg));
+		Constant offset = new Constant(8*call.getNum8ByteSpace());
 		// "addq offset rsp" 
 		Instruction instr = new Instruction(Operation.ADDQ, offset, rsp);
 		instructions.add(instr);

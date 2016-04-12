@@ -92,6 +92,7 @@ public class TilingVisitor implements IRTreeVisitor {
 		List<Instruction> emptyInstructions1 = new ArrayList<Instruction>();
 		Tile tile1 = new Tile(MEM_IN,MEM_PRE,emptyInstructions1,0);
 		
+		
 		List<Instruction> emptyInstructions2 = new ArrayList<Instruction>();
 		Tile tile2 = new Tile(MEM_EFFECTIVE_IN,MEM_EFFECTIVE_PRE,emptyInstructions2,0);
 		
@@ -103,7 +104,8 @@ public class TilingVisitor implements IRTreeVisitor {
 	public String parseTiles(IRNode argNode) {
 		tileMap = new HashMap<IRNode, Tile>();
 		argNode.accept(this);
-		return tileMap.get(argNode).toString();
+		Tile temp = tileMap.get(argNode);
+		return temp.toString();
 	}
 
 	/**
@@ -847,8 +849,8 @@ public class TilingVisitor implements IRTreeVisitor {
 		instructions.addAll(tileMap.get(body).getInstructions());
 		// Epilogue
 		// assume last instruction of body is ret
-		Instruction leave = new Instruction(Operation.LEAVE);
-		instructions.add(instructions.size()-1, leave);
+//		Instruction leave = new Instruction(Operation.LEAVE);
+//		instructions.add(instructions.size()-1, leave);
 		
 		// create a tile for this node
 		Tile tile = new Tile(instructions);
@@ -858,7 +860,7 @@ public class TilingVisitor implements IRTreeVisitor {
 	@Override
 	public void visit(IRJump j) {
 		// jmp l
-		Operand label = new Label(((IRTemp) j.target()).name());
+		Operand label = new Label(((IRName) j.target()).name());
 		Instruction jmp = new Instruction(Operation.JMP,label);
 		
 		List<Instruction> instructions = new ArrayList<Instruction>();
@@ -1013,10 +1015,11 @@ public class TilingVisitor implements IRTreeVisitor {
 		if (tileMap.containsKey(ret)) {
 			return;
 		}
-		
-		Instruction instr = new Instruction(Operation.RET);
+		Instruction leaveInstr = new Instruction(Operation.LEAVE);
+		Instruction retInstr = new Instruction(Operation.RET);
 		List<Instruction> instructions = new ArrayList<Instruction>();
-		instructions.add(instr);
+		instructions.add(leaveInstr);
+		instructions.add(retInstr);
 		Tile tile = new Tile(instructions, 1);
 		tileMap.put(ret, tile);
 	}

@@ -27,7 +27,7 @@ public class Instruction {
 	        case SUBQ:
 	        	return "subq";
 	        case IMULQ:
-	        	return "imuq";
+	        	return "imulq";
 	        case IDIVQ:
 	        	return "idivq";
 	        case ANDQ:

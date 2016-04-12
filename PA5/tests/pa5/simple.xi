@@ -1,9 +1,8 @@
 main(args: int[][]) {
-  x:int = 3
-  z:int = f(x+5)
+  x:int = 5
+  y:int = f(x)
 }
 
-f(x:int): int {
-  y:int = x + 1
-  return y
+f(x:int):int {
+  return (x + 1)
 }

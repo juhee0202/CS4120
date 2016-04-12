@@ -291,8 +291,6 @@ primitive_type ::= INT:i                                            {: RESULT = 
 program ::= function_decl_list:fdl                                  {: RESULT = new Program(fdl); :}
             |
             use_id:useidc function_decl_list:fdl                    {: RESULT = new Program(useidc, fdl); :}
-            |
-                                                                    {: Main.handleSyntaxError("unexpected end of file."); :}
             ;
 
 return_list ::= expr:e                                              {: RESULT = new ReturnList(e); :}
@@ -377,5 +375,5 @@ xi_file ::= program:p                                               {: RESULT = 
             |
             interface:i                                             {: RESULT = i; :}
             |
-            error:e                                                 {: Main.handleSyntaxError("Unexpected token "); :}  
+            error:e                                                 {: Main.handleSyntaxError("unexpected token "); :}  
             ;

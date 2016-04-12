@@ -196,10 +196,7 @@ public class IRTreeEqualsVisitor implements IRTreeVisitor{
 	
 	private static boolean doesEquals(IRNode left, IRNode right) {
 		if (left == null) {
-			if (right == null) {
-				return true;
-			}
-			return false;
+			return true;
 		}
 		if (left instanceof IRBinOp) {
 			if (right instanceof IRBinOp) {

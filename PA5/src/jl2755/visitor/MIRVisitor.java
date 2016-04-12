@@ -436,18 +436,18 @@ public class MIRVisitor implements ASTVisitor{
 		blockStmt.accept(this);
 		if (tempNode != null) {
 			IRSeq irSeq = (IRSeq) tempNode;
-			List<IRStmt> stmts = irSeq.stmts();
-			// TODO: refactor HUMMUS
-			seq = LIRVisitor.combineTwoStmt(seq, new IRSeq(stmts));
+			seq = LIRVisitor.combineTwoStmt(seq, irSeq);
 		} else {
 			seq = LIRVisitor.combineTwoStmt(seq, new IRSeq(irLabel, new IRReturn()));
 		}
 		
 		// create IRFuncDecl
-		tempNode = new IRFuncDecl(label, seq);
-		((IRFuncDecl) tempNode).setParamList(fd.getParams());
-		((IRFuncDecl) tempNode).setNumArgs(fd.getNumParams());
-		((IRFuncDecl) tempNode).setNumReturns(fd.getNumReturns());
+		IRFuncDecl irFuncDecl = new IRFuncDecl(label, seq);
+		irFuncDecl.setParamList(fd.getParams());
+		irFuncDecl.setNumArgs(fd.getNumParams());
+		irFuncDecl.setNumReturns(fd.getNumReturns());
+		
+		tempNode = irFuncDecl;
 	}
 
 	@Override
@@ -613,7 +613,9 @@ public class MIRVisitor implements ASTVisitor{
 		List<IRStmt> allIRStmts = new ArrayList<IRStmt>();
 		for (int i = 0; i < allStmts.size(); i++) {
 			allStmts.get(i).accept(this);
-			allIRStmts.add((IRStmt) tempNode);
+			if (tempNode != null) {
+				allIRStmts.add((IRStmt) tempNode);
+			}
 		}
 		tempNode = new IRSeq(allIRStmts);
 	}
@@ -702,6 +704,8 @@ public class MIRVisitor implements ASTVisitor{
 				newList.add(moveAddrToTemp);
 				tempNode = new IRSeq(newList);
 			}
+		} else {
+			tempNode = null;
 		}
 		
 		return;

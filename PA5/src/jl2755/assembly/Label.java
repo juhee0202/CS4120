@@ -10,7 +10,7 @@ public class Label implements Operand{
 	
 	@Override
 	public String toString() {
-		return labelName + ":";
+		return labelName;
 	}
 
 	@Override
@@ -21,5 +21,13 @@ public class Label implements Operand{
 	@Override
 	public Operand getNewOperand() {
 		return new Label(labelName);
+	}
+
+	public String getLabelName() {
+		return labelName;
+	}
+
+	public void setLabelName(String labelName) {
+		this.labelName = labelName;
 	}
 }

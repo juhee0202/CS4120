@@ -93,6 +93,7 @@ public class TilingVisitor implements IRTreeVisitor {
 		List<Instruction> emptyInstructions1 = new ArrayList<Instruction>();
 		Tile tile1 = new Tile(MEM_IN,MEM_PRE,emptyInstructions1,0);
 		
+		
 		List<Instruction> emptyInstructions2 = new ArrayList<Instruction>();
 		Tile tile2 = new Tile(MEM_EFFECTIVE_IN,MEM_EFFECTIVE_PRE,emptyInstructions2,0);
 		
@@ -104,7 +105,8 @@ public class TilingVisitor implements IRTreeVisitor {
 	public String parseTiles(IRNode argNode) {
 		tileMap = new HashMap<IRNode, Tile>();
 		argNode.accept(this);
-		return tileMap.get(argNode).toString();
+		Tile temp = tileMap.get(argNode);
+		return temp.toString();
 	}
 
 	/**
@@ -119,11 +121,11 @@ public class TilingVisitor implements IRTreeVisitor {
 		case ADD:
 			tileOp = Operation.ADDQ;
             break;
-        case SUB:
+        case SUB: 
         	tileOp = Operation.SUBQ;
             break;
         case MUL:
-        	tileOp = Operation.IMULQ;
+        	tileOp = Operation.IMULQ2;
             break;
         case DIV:
         	tileOp = Operation.IDIVQ;
@@ -159,108 +161,32 @@ public class TilingVisitor implements IRTreeVisitor {
 		
 		// src: reg, const, mem
 		// dest: reg, mem
+		/* 
+		 * binop a, b
+		 * 		mov a %freshTemp
+		 * 		binop b %freshTemp
+		 * */
 		if (op == OpType.ADD ||
 			op == OpType.SUB ||
 			op == OpType.AND ||
 			op == OpType.OR  ||
-			op == OpType.XOR) 
+			op == OpType.XOR ||
+			op == OpType.MUL) 
 		{
-			if (leftOperand instanceof Constant) {
-				/* Change <binop> CONST, CONST to
-				 * 		MOV CONST, REG
-				 * 		<binop> CONST, REG */
-				if (rightOperand instanceof Constant) {
-					Register t = new Register("tileRegister" + registerCount++);
-					Instruction moveInstruction = new Instruction(Operation.MOVQ, rightOperand, t);
-					Instruction binopConstReg = new Instruction(tileOp, leftOperand, t);
-					instrList.add(moveInstruction);
-					instrList.add(binopConstReg);
-					cost = 2;
-					argDest = t;
-				}
-				else {
-					Instruction binopConstRegOrMem = new Instruction(tileOp, leftOperand, rightOperand);
-					instrList.add(binopConstRegOrMem);
-					cost = 1;
-					argDest = rightOperand;
-				}
-			}
-			else if (leftOperand instanceof Memory) {
-				if (rightOperand instanceof Register) {
-					Instruction binopMemReg = new Instruction(tileOp, leftOperand, rightOperand);
-					instrList.add(binopMemReg);
-					cost = 1;
-					argDest = rightOperand;
-				}
-				else if (rightOperand instanceof Constant) {
-					Instruction binopConstMem = new Instruction(tileOp, rightOperand, leftOperand);
-					instrList.add(binopConstMem);
-					cost = 1;
-					argDest = leftOperand;
-				}
-				/* 
-				 * Change <binop> MEM1, MEM2 to
-				 * 		MOV MEM2 REG
-				 * 		<binop> MEM1, REG
-				 */
-				else if (rightOperand instanceof Memory) {
-					Register t = new Register("tileRegister" + registerCount++);
-					Instruction moveInstruction = new Instruction(Operation.MOVQ, rightOperand, t);
-					Instruction binopMemReg = new Instruction(tileOp, leftOperand, t);
-					instrList.add(moveInstruction);
-					instrList.add(binopMemReg);
-					cost = 2;
-					argDest = t;
-				}
-			}
-			else if (leftOperand instanceof Register) {
-				if (rightOperand instanceof Memory || rightOperand instanceof Register) {
-					Instruction binopRegRegOrMem = new Instruction(
-							tileOp, 
-							leftOperand, 
-							rightOperand
-							);
-					instrList.add(binopRegRegOrMem);
-					cost = 1;
-					argDest = rightOperand;
-				}
-				else if (rightOperand instanceof Constant) {
-					Instruction binopConstReg = new Instruction(tileOp, rightOperand, leftOperand);
-					instrList.add(binopConstReg);
-					cost = 1;
-					argDest = leftOperand;
-				}
-			}
-		}
-		/* create instruction 
-		 * 		imul <reg32>,<reg32>
-		 * 		imul <reg32>,<mem>
-		 */
-		else if (op == OpType.MUL) {
-			if (leftOperand instanceof Constant) {
-				Register t = new Register("tileRegister" + registerCount++);
-				Instruction movConstReg = new Instruction(Operation.MOVQ, leftOperand, t);
-				instrList.add(movConstReg);
-				cost++;
-			}
-			if (rightOperand instanceof Constant) {
-				Register t = new Register("tileRegister" + registerCount++);
-				Instruction movConstReg = new Instruction(Operation.MOVQ, rightOperand, t);
-				instrList.add(movConstReg);
-				cost++;
-			}
-			Instruction multiply = new Instruction(Operation.IMULQ, leftOperand, rightOperand);
-			instrList.add(multiply);
-			cost++;
-			argDest = rightOperand;
+			Register t = new Register("tileRegister" + registerCount++);
+			Instruction movToFreshTemp = new Instruction(Operation.MOVQ, leftOperand, t);
+			Instruction binopInstr = new Instruction(tileOp, rightOperand, t);
+			instrList.add(movToFreshTemp);
+			instrList.add(binopInstr);
+			cost = 2;
+			argDest = t;
 		}
 		/* 
 		 * HMUL x, y
-		 * 		movq %rx,%rax     #Store x into %rax
-		 * 		mulq %y           #multiplies %y to %rax
+		 * 		movq %x,%rax     #Store x into %rax
+		 * 		imulq %y           #multiplies %y to %rax
 		 * 		#mulq stores high and low values into rax and rdx.
-		 * 		movq %rax,(%r8)   #Move low into &lower
-		 * 		movq %rdx,(%r9)   #Move high answer into &higher
+		 * 		movq %rax, %freshTemp
 		 */
 		else if (op == OpType.HMUL) {
 			// TODO
@@ -279,11 +205,11 @@ public class TilingVisitor implements IRTreeVisitor {
 				operand = t;
 			}
 			
-			Instruction multiply = new Instruction(Operation.IMULQ, null, operand);
+			Instruction multiply = new Instruction(Operation.IMULQ1, operand);
 			instrList.add(multiply);
 			cost++;
 			
-			// mulq stores high and low values into rax and rdx
+			// imulq stores high and low values into rax and rdx
 			argDest = rax;
 		}
 		
@@ -494,7 +420,8 @@ public class TilingVisitor implements IRTreeVisitor {
 		instructions.addAll(targetInstr);
 		
 		// "callq targetDest"
-		Operand targetDest = targetTile.getDest();
+		Label targetDest = (Label)targetTile.getDest();
+		targetDest.setLabelName("FUNC("+targetDest.toString().substring(1)+")");
 		Instruction callInstruction = new Instruction(Operation.CALLQ, targetDest);
 		tempInstructions.add(callInstruction);
 	
@@ -746,29 +673,29 @@ public class TilingVisitor implements IRTreeVisitor {
 		tileMap.put(cu, superTile);
 		
 		// Register/Stack allocation
-//		stackAllocation(cu);
+		stackAllocation(cu);
 		
 		// Set parameters of all function decls
-//		for (Entry<IRNode, Tile> entry : tileMap.entrySet()) {
-//			if (entry.getKey() instanceof IRFuncDecl) {
-//				IRFuncDecl fd = (IRFuncDecl) entry.getKey();
-//				Tile fdTile = entry.getValue();
-//				Instruction enter = fdTile.getInstructions().get(1);
-//				// complete "enter 8*l, 0"
-//				Constant space = new Constant(8*(functionSpaceMap.get(fd.name())));
-//				enter.setSrc(space);
-//				fdTile.getInstructions().set(1,enter);
-//				tileMap.put(fd, fdTile);
-//			}
-//		}
+		for (Entry<IRNode, Tile> entry : tileMap.entrySet()) {
+			if (entry.getKey() instanceof IRFuncDecl) {
+				IRFuncDecl fd = (IRFuncDecl) entry.getKey();
+				Tile fdTile = entry.getValue();
+				Instruction enter = fdTile.getInstructions().get(1);
+				// complete "enter 8*l, 0"
+				Constant space = new Constant(8*(functionSpaceMap.get(fd.name())));
+				enter.setSrc(space);
+				fdTile.getInstructions().set(1,enter);
+				tileMap.put(fd, fdTile);
+			}
+		}
 		
-//		for (IRFuncDecl fd : cu.functions().values()) {
-//			if (superTile == null) {
-//				superTile = tileMap.get(fd);
-//			} else {
-//				superTile = Tile.mergeTiles(superTile, tileMap.get(fd));
-//			}
-//		}
+		for (IRFuncDecl fd : cu.functions().values()) {
+			if (superTile == null) {
+				superTile = tileMap.get(fd);
+			} else {
+				superTile = Tile.mergeTiles(superTile, tileMap.get(fd));
+			}
+		}
 		
 		tileMap.put(cu, superTile);
 		
@@ -810,8 +737,9 @@ public class TilingVisitor implements IRTreeVisitor {
 		Label fnLabel = new Label(fd.assemblyLabel());
 		instructions.add(new Instruction(Operation.LABEL, fnLabel));
 		// Prologue
+		// TODO: replace enter with push/mov/sub for optimization
 		// "enter 8*l, 0" 8*l will be filled in later
-		Instruction enter = new Instruction(Operation.PUSHQ, null, new Constant(0));
+		Instruction enter = new Instruction(Operation.ENTER, new Constant(0), new Constant(0));
 		instructions.add(enter);
 		// move args to param regs
 		List<String> paramList = fd.getParamList();
@@ -822,9 +750,9 @@ public class TilingVisitor implements IRTreeVisitor {
 		for (int i = 0; i < numRegParams; i++) {
 			Register arg = new Register(ARG_REG_LIST[i + offset]);
 			Register param = new Register(paramList.get(i));
-			Instruction moveArgtoParam = new Instruction(Operation.MOVQ, arg, 
+			Instruction moveArgToParam = new Instruction(Operation.MOVQ, arg, 
 														 param);
-			instructions.add(moveArgtoParam);
+			instructions.add(moveArgToParam);
 		}
 		Register rbp = new Register(RegisterName.RBP);
 		for (int i = numRegParams; i < numArgs; i++) {
@@ -834,16 +762,20 @@ public class TilingVisitor implements IRTreeVisitor {
 					 param);
 			instructions.add(moveArgtoParam);
 		}
-		// TODO: is ret3 register rdi value preserved? 
-		// Body
+		// Body 
 		IRStmt body = fd.body();
+		// remove duplicate move(%ARG, %arg) instructions
+		if (body instanceof IRSeq) {
+			for (int i = 0; i < numArgs; i++) {
+				((IRSeq) body).stmts().remove(0);
+			}	
+		}
 		body.accept(this);
-		System.out.println(tileMap.get(body));
 		instructions.addAll(tileMap.get(body).getInstructions());
 		// Epilogue
 		// assume last instruction of body is ret
-		Instruction leave = new Instruction(Operation.LEAVE);
-		instructions.add(instructions.size()-1, leave);
+//		Instruction leave = new Instruction(Operation.LEAVE);
+//		instructions.add(instructions.size()-1, leave);
 		
 		// create a tile for this node
 		Tile tile = new Tile(instructions);
@@ -853,7 +785,7 @@ public class TilingVisitor implements IRTreeVisitor {
 	@Override
 	public void visit(IRJump j) {
 		// jmp l
-		Operand label = new Label(((IRTemp) j.target()).name());
+		Operand label = new Label(((IRName) j.target()).name());
 		Instruction jmp = new Instruction(Operation.JMP,label);
 		
 		List<Instruction> instructions = new ArrayList<Instruction>();
@@ -918,7 +850,7 @@ public class TilingVisitor implements IRTreeVisitor {
 		for (int i = 0; i < childrenOfEachTile.size(); i++) {
 			for (int j = 0; j < childrenOfEachTile.get(i).size(); j++) {
 				Tile currentTile = tileMap.get(childrenOfEachTile.get(i).get(j));
-				matchingTiles.set(i,Tile.mergeTiles(matchingTiles.get(i),currentTile));
+				matchingTiles.set(i,Tile.mergeTiles(currentTile,matchingTiles.get(i)));
 			}
 		}
 		
@@ -947,15 +879,22 @@ public class TilingVisitor implements IRTreeVisitor {
 		Operand sourceOperand = sourceTile.getDest();
 		Operand targetOperand = targetTile.getDest();
 		
+		boolean redundant = sourceOperand.toString().equals(targetOperand.toString());		
 		
 		// If both children are Memory Operands
 		if (sourceTile.getDest() instanceof Memory && targetTile.getDest() instanceof Memory) {
 			List<Instruction> newInstructions = new ArrayList<Instruction>();
-			newInstructions.add(new Instruction(Operation.MOVQ,sourceOperand,new Register(RegisterName.RCX)));
-			newInstructions.add(new Instruction(Operation.MOVQ,new Register(RegisterName.RCX),targetOperand));
-			Tile finalTile = new Tile(newInstructions,2,targetOperand);
-			finalTile = Tile.mergeTiles(finalTile, targetTile);
-			finalTile = Tile.mergeTiles(finalTile, sourceTile);
+			Tile finalTile;
+			if (!redundant) {
+				newInstructions.add(new Instruction(Operation.MOVQ,sourceOperand,new Register("rcx")));
+				newInstructions.add(new Instruction(Operation.MOVQ,new Register("rcx"),targetOperand));
+				finalTile = new Tile(newInstructions,2,targetOperand);
+			} else {
+				finalTile = new Tile(newInstructions,0,targetOperand);
+			}
+			
+			finalTile = Tile.mergeTiles(targetTile, finalTile);
+			finalTile = Tile.mergeTiles(sourceTile, finalTile);
 			tileMap.put(mov, finalTile);
 			return;
 		}
@@ -963,10 +902,15 @@ public class TilingVisitor implements IRTreeVisitor {
 		List<Instruction> addingInstr = new ArrayList<Instruction>();
 		Instruction movInstruction = new Instruction(Operation.MOVQ,
 				sourceOperand, targetOperand);
-		addingInstr.add(movInstruction);
-		Tile finalTile = new Tile(addingInstr, 1, targetOperand);
-		finalTile = Tile.mergeTiles(finalTile, targetTile);
-		finalTile = Tile.mergeTiles(finalTile, sourceTile);
+		Tile finalTile;
+		if (!redundant) {
+			addingInstr.add(movInstruction);	
+			finalTile = new Tile(addingInstr, 1, targetOperand);
+		} else {
+			finalTile = new Tile(addingInstr, 0, targetOperand);
+		}
+		finalTile = Tile.mergeTiles(targetTile, finalTile);
+		finalTile = Tile.mergeTiles(sourceTile, finalTile);
 		
 		// If source was a Call, put an epilogue after the mov instruction
 		// the function should have a single return
@@ -1008,10 +952,11 @@ public class TilingVisitor implements IRTreeVisitor {
 		if (tileMap.containsKey(ret)) {
 			return;
 		}
-		
-		Instruction instr = new Instruction(Operation.RET);
+		Instruction leaveInstr = new Instruction(Operation.LEAVE);
+		Instruction retInstr = new Instruction(Operation.RET);
 		List<Instruction> instructions = new ArrayList<Instruction>();
-		instructions.add(instr);
+		instructions.add(leaveInstr);
+		instructions.add(retInstr);
 		Tile tile = new Tile(instructions, 1);
 		tileMap.put(ret, tile);
 	}
@@ -1219,7 +1164,8 @@ public class TilingVisitor implements IRTreeVisitor {
 			} else {
 				// dest is constant or label
 				Operation op = currentInstruction.getOp();
-				if (op == Operation.LABEL && op.name().substring(0,5) == "FUNC ") {
+				Operand labelOrConstant = currentInstruction.getDest();
+				if (op == Operation.LABEL && labelOrConstant.toString().contains("FUNC(")) {
 					functionSpaceMap.put(op.name(),stackCounter);
 					stackCounter = 0;
 				}

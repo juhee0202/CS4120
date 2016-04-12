@@ -613,7 +613,9 @@ public class MIRVisitor implements ASTVisitor{
 		List<IRStmt> allIRStmts = new ArrayList<IRStmt>();
 		for (int i = 0; i < allStmts.size(); i++) {
 			allStmts.get(i).accept(this);
-			allIRStmts.add((IRStmt) tempNode);
+			if (tempNode != null) {
+				allIRStmts.add((IRStmt) tempNode);
+			}
 		}
 		tempNode = new IRSeq(allIRStmts);
 	}
@@ -702,6 +704,8 @@ public class MIRVisitor implements ASTVisitor{
 				newList.add(moveAddrToTemp);
 				tempNode = new IRSeq(newList);
 			}
+		} else {
+			tempNode = null;
 		}
 		
 		return;

@@ -106,7 +106,33 @@ public class TilingVisitor implements IRTreeVisitor {
 		tileMap = new HashMap<IRNode, Tile>();
 		argNode.accept(this);
 		Tile temp = tileMap.get(argNode);
-		return temp.toString();
+		List<Instruction> instructions = temp.getInstructions();
+		
+		/* Create assembly code */
+		String assemblyString = "\t.text\n";
+		boolean isFirstFunction = true;
+		for (int i = 0; i < instructions.size(); i++) {
+			Instruction instr = instructions.get(i);
+			if (instr.getOp() == Operation.LABEL) {
+				Label label = (Label) instr.getDest();
+				String labelString = label.toString();
+				// if it's a function label 
+				if (labelString.contains("FUNC(")) {
+					if (!isFirstFunction) {
+						assemblyString += "\n";
+					} else {
+						isFirstFunction = false;
+					}
+					assemblyString += "\t.global\t" + labelString + "\n";
+					assemblyString += "\t.align\t4\n";
+				}
+				assemblyString += instr.toString() + ":\n";
+			} else {
+				assemblyString += "\t" + instr.toString() + "\n";
+			}
+		}
+		
+		return assemblyString;
 	}
 
 	/**

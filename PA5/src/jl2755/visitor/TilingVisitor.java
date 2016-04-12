@@ -493,7 +493,8 @@ public class TilingVisitor implements IRTreeVisitor {
 		instructions.addAll(targetInstr);
 		
 		// "callq targetDest"
-		Operand targetDest = targetTile.getDest();
+		Label targetDest = (Label)targetTile.getDest();
+		targetDest.setLabelName("FUNC("+targetDest.toString().substring(1)+")");
 		Instruction callInstruction = new Instruction(Operation.CALLQ, targetDest);
 		tempInstructions.add(callInstruction);
 	
@@ -809,6 +810,7 @@ public class TilingVisitor implements IRTreeVisitor {
 		Label fnLabel = new Label(fd.assemblyLabel());
 		instructions.add(new Instruction(Operation.LABEL, fnLabel));
 		// Prologue
+		// TODO: replace enter with push/mov/sub for optimization
 		// "enter 8*l, 0" 8*l will be filled in later
 		Instruction enter = new Instruction(Operation.ENTER, new Constant(0), new Constant(0));
 		instructions.add(enter);

@@ -23,71 +23,71 @@ public class Instruction {
 	    public String toString() {
 	        switch (this) {
 	        case ADDQ:
-	        	return "ADDQ";
+	        	return "addq";
 	        case SUBQ:
-	        	return "SUBQ";
+	        	return "subq";
 	        case IMULQ:
-	        	return "IMULQ";
+	        	return "imuq";
 	        case IDIVQ:
-	        	return "IDIVQ";
+	        	return "idivq";
 	        case ANDQ:
-	        	return "ANDQ";
+	        	return "andq";
 	        case ORQ:
-	        	return "ORQ";
+	        	return "orq";
 	        case XORQ:
-	        	return "XORQ";
+	        	return "xorq";
 	        case NOTQ:
-	        	return "NOTQ";
+	        	return "notq";
 	        case CMOVE:
-	        	return "CMOVE";
+	        	return "cmove";
 	        case CMOVNE:
-	        	return "CMOVNE";
+	        	return "cmovne";
 	        case CMOVL:
-	        	return "CMOVL";
+	        	return "cmovl";
 	        case CMOVLE:
-	        	return "CMOVLE";
+	        	return "cmovle";
 	        case CMOVG:
-	        	return "CMOVG";
+	        	return "cmovg";
 	        case CMOVGE:
-	        	return "CMOVGE";
+	        	return "cmovge";
 	        case CALLQ:
-	        	return "CALLQ";
+	        	return "callq";
 	        case PUSHQ:
-	        	return "PUSHQ";
+	        	return "pushq";
 	        case LABEL:
 	        	return "";
 	        case ENTER:
-	        	return "ENTER";
+	        	return "enter";
 	        case LEAVE:
-	        	return "LEAVE";
+	        	return "leave";
 	        case POPQ:
-	        	return "POPQ";
+	        	return "popq";
 	        case RET:
-	        	return "RET";
+	        	return "ret";
 	        case JMP:
-	        	return "JMP";
+	        	return "jmp";
 	        case JE:
-	        	return "JE";
+	        	return "je";
 	        case JNE:
-	        	return "JNE";
+	        	return "jne";
 	        case JG:
-	        	return "JG";
+	        	return "jg";
 	        case JGE:
-	        	return "JGE";
+	        	return "jge";
 	        case JL:
-	        	return "JL";
+	        	return "jl";
 	        case JLE:
-	        	return "JLE";
+	        	return "jle";
 	        case JZ:
-	        	return "JZ";
+	        	return "jz";
 	        case JNZ:
-	        	return "JNZ";
+	        	return "jnz";
 	        case MOVQ:
-	        	return "MOVQ";
+	        	return "movq";
 			case CMPQ:
-				return "CMPQ";
+				return "cmpq";
 			case TESTQ:
-				return "TESTQ";
+				return "testq";
 			default:
 				break;
 	        }
@@ -279,10 +279,10 @@ public class Instruction {
 			return op.toString();
 		}
 		else if (i == 1) {
-			return op.toString() + " " + dest.toString();
+			return op.toString() + "\t" + dest.toString();
 		}
 		else {
-			return op.toString() + " " + src.toString() + " " + dest.toString();
+			return op.toString() + "\t" + src.toString() + " " + dest.toString();
 		}
 	}
 }

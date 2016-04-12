@@ -15,25 +15,25 @@
    (RETURN))))
 FUNC(Imain_paai):
 	enter	$0 $0
-	movq	%rdi %args
+	movq	%RDI %args
 	movq	$24 %temp0
-	pushq	%rax
-	pushq	%rcx
-	pushq	%rdx
-	pushq	%r8
-	pushq	%r9
-	pushq	%r10
-	pushq	%r11
-	movq	%temp0 %rdi
+	pushq	%RAX
+	pushq	%RCX
+	pushq	%RDX
+	pushq	%R8
+	pushq	%R9
+	pushq	%R10
+	pushq	%R11
+	movq	%temp0 %RDI
 	callq	FUNC(I_alloc_i)
 	movq	%RAX %temp1
-	movq	$48(%RSP) %rax
-	movq	$40(%RSP) %rcx
-	movq	$32(%RSP) %rdx
-	movq	$24(%RSP) %r8
-	movq	$16(%RSP) %r9
-	movq	$8(%RSP) %r10
-	movq	$0(%RSP) %r11
+	movq	$48(%RSP) %RAX
+	movq	$40(%RSP) %RCX
+	movq	$32(%RSP) %RDX
+	movq	$24(%RSP) %R8
+	movq	$16(%RSP) %R9
+	movq	$8(%RSP) %R10
+	movq	$0(%RSP) %R11
 	addq	$56 %RSP
 	movq	%temp1 %t0
 	movq	$2 %t0

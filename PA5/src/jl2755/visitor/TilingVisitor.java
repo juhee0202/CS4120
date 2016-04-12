@@ -151,8 +151,10 @@ public class TilingVisitor implements IRTreeVisitor {
 		left.accept(this);
 		right.accept(this);
 		
-		Operand leftOperand = tileMap.get(left).getDest();
-		Operand rightOperand = tileMap.get(right).getDest();
+		Tile leftTile = tileMap.get(left);
+		Tile rightTile = tileMap.get(right);
+		Operand leftOperand = leftTile.getDest();
+		Operand rightOperand = rightTile.getDest();
 		
 		// declare fields to create new Tile
 		List<Instruction> instrList = new ArrayList<Instruction>();
@@ -355,7 +357,9 @@ public class TilingVisitor implements IRTreeVisitor {
 		}
 
 		// create tile and put into tileMap
-		Tile tile = new Tile(instrList, cost, argDest);
+		Tile currTile = new Tile(instrList, cost, argDest);
+		Tile mergeChildren = Tile.mergeTiles(leftTile, rightTile);
+		Tile tile = Tile.mergeTiles(mergeChildren, currTile);
 		tileMap.put(bo, tile);
 	}
 	

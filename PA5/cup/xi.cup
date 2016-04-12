@@ -12,6 +12,7 @@ parser code  {:
 
   public void report_error(String msg, Object info) {
     Main.setToken((java_cup.runtime.Symbol)info);
+    Main.handleSyntaxError("Syntax error: unexpected ");
   }
 :}
 
@@ -149,8 +150,6 @@ expr ::= constant:c                                                 {: RESULT = 
          function_call:fc                                           {: RESULT = fc; :}
          |
          OPEN_PAREN expr:expression CLOSE_PAREN                     {: expression.setSurroundedParentheses(); RESULT = expression; :}
-         |
-         error:e                                                    {: Main.handleSyntaxError("Invalid expression."); :}
          ;
 
 function_arg ::= expr:expression                                    {: RESULT = new FunctionArg(expression); :}
@@ -364,8 +363,6 @@ var_decl ::= identifier:id COLON mixed_array_type:mat               {: RESULT = 
              ;
 
 var_init ::= identifier:id COLON type:t GETS expr:e                 {: RESULT = new VarInit(id, t, e); :}
-             |
-             error:e                                                {: Main.handleSyntaxError("Invalid assignment operator."); :}
              ;
 
 while_stmt ::= WHILE OPEN_PAREN expr:expression CLOSE_PAREN stmt:s  {: RESULT = new WhileStmt(expression, s); :}
@@ -374,6 +371,4 @@ while_stmt ::= WHILE OPEN_PAREN expr:expression CLOSE_PAREN stmt:s  {: RESULT = 
 xi_file ::= program:p                                               {: RESULT = p; :}
             |
             interface:i                                             {: RESULT = i; :}
-            |
-            error:e                                                 {: Main.handleSyntaxError("unexpected token "); :}  
             ;

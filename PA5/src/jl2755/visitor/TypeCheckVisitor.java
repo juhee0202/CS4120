@@ -867,10 +867,13 @@ public class TypeCheckVisitor implements ASTVisitor {
 
 	/**
 	 * DIRTIES tempType to the return type
+	 * 
 	 */
 	@Override
 	public void visit(ReturnStmt rs) {
 		VType returnType;
+		
+		 // index = 1: function call
 		if (rs.getIndex() == 1) {
 			List<Expr> returnExprs = rs.getReturnList().getListOfExpr();
 			if (returnExprs.size() == 1) {
@@ -885,6 +888,7 @@ public class TypeCheckVisitor implements ASTVisitor {
 				}	
 			}
 		}
+		// index = 0: function call
 		else {
 			returnType = new UnitType();
 		}
@@ -895,6 +899,21 @@ public class TypeCheckVisitor implements ASTVisitor {
 	@Override
 	public void visit(Stmt s) {
 		(s.getNakedStmt()).accept(this);
+		
+		/* check that the statement is not a function call with return value
+		 * only allow procedure call statements */
+		if (s.getNakedStmt() instanceof FunctionCall) {
+			FunctionCall fc = (FunctionCall) s.getNakedStmt();
+
+			if (!tempType.toString().equals("unit")) {
+				String errMsg = fc.getIdentifier().toString() + " is not a procedure";
+				SemanticErrorObject seo = new SemanticErrorObject(
+						fc.getIdentifier_line(), 
+						fc.getIdentifier_col(),
+						errMsg);
+				Main.handleSemanticError(seo);	
+			}
+		}
 	}
 
 	@Override
@@ -1169,12 +1188,6 @@ public class TypeCheckVisitor implements ASTVisitor {
 										);
 			Main.handleSemanticError(seo);
 		}
-		else {
-			String id = vi.getId().toString();
-			env.put(id, new VarType(vi.getType()));
-			tempType = env.get(id);
-			stack.push(id);
-		}
 		
 		vi.getType().accept(this);
 		VType tempLeftType = tempType;
@@ -1189,7 +1202,13 @@ public class TypeCheckVisitor implements ASTVisitor {
 										s
 										);
 			Main.handleSemanticError(seo);
-		}	
+		}
+		
+		// add variable to the env
+		String id = vi.getId().toString();
+		env.put(id, new VarType(vi.getType()));
+		tempType = env.get(id);
+		stack.push(id);
 	}
 
 	/**

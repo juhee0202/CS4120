@@ -374,20 +374,6 @@ public class Main {
 
             System.out.println("[xic] Parsing");
             Symbol s = p.parse();
-            
-            // this is kind of hacky. when it evaluates to Interface, we must raise error
-            if (s.value instanceof Interface) {
-            	String errorMessage = "2:1 error:Syntax error: unexpected ";
-
-            	try {
-            		bw.write(errorMessage);
-            		bw.close();	
-                } catch (IOException e) {
-                    System.out.println("Failed to write to output file");
-                }
-                
-                throw new SyntaxError(2, 1, errorMessage);
-            }
 
             Program result = (Program) s.value;
 
@@ -692,7 +678,7 @@ public class Main {
         Map<String, VType> tempMap = new HashMap<String, VType>();
         Symbol s;
         try {
-            parser p = new parser(new Scanner(new FileReader(absPath)));
+            ixiParser p = new ixiParser(new Scanner(new FileReader(absPath)));
             s = p.parse();
         } catch (FileNotFoundException e) {
             System.out.println("Failed to read input file " + absPath);
@@ -700,17 +686,6 @@ public class Main {
         } catch (Exception e) {
             e.printStackTrace();
             return tempMap;
-        }
-
-        // if the interface file is syntactically invalid
-        if (s.value instanceof Program) {
-            try {
-                bw.write("1:1 error: Interface file is invalid");
-                bw.close();
-            } catch (IOException e) {
-                System.out.println("Failed to write to output file");
-            }
-            throw new SyntaxError(1,1, "Interface file is invalid"); 
         }
 
         Interface result = (Interface) s.value;

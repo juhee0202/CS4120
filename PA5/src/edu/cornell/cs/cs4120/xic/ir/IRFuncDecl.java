@@ -30,7 +30,7 @@ public class IRFuncDecl extends IRNode {
     }
     
     public String assemblyLabel() {
-    	return "FUNC(" + name + ")";
+    	return "FUNC(" + name.substring(1) + ")";
     }
 
     @Override

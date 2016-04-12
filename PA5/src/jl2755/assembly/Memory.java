@@ -120,10 +120,18 @@ public class Memory implements Operand {
 	@Override
 	public Operand getNewOperand() {
 		Memory temp = new Memory();
-		temp.registerBase = (Register) registerBase.getNewOperand();
-		temp.constantOffset = (Constant) constantOffset.getNewOperand();
-		temp.registerOffset = (Register) registerOffset.getNewOperand();
-		temp.constantFactor = (Constant) constantFactor.getNewOperand();
+		if (registerBase != null) {
+			temp.registerBase = (Register) registerBase.getNewOperand();
+		}
+		if (constantOffset != null) {
+			temp.constantOffset = (Constant) constantOffset.getNewOperand();
+		}
+		if (registerOffset != null) {
+			temp.registerOffset = (Register) registerOffset.getNewOperand();
+		}
+		if (constantFactor != null) {
+			temp.constantFactor = (Constant) constantFactor.getNewOperand();
+		}
 		temp.index = index;
 		return temp;
 	}

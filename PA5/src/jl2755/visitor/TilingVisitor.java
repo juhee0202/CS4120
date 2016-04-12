@@ -507,7 +507,8 @@ public class TilingVisitor implements IRTreeVisitor {
 		instructions.addAll(targetInstr);
 		
 		// "callq targetDest"
-		Operand targetDest = targetTile.getDest();
+		Label targetDest = (Label)targetTile.getDest();
+		targetDest.setLabelName("FUNC("+targetDest.toString().substring(1)+")");
 		Instruction callInstruction = new Instruction(Operation.CALLQ, targetDest);
 		tempInstructions.add(callInstruction);
 	
@@ -783,7 +784,7 @@ public class TilingVisitor implements IRTreeVisitor {
 //			}
 //		}
 		
-		tileMap.put(cu, superTile);
+//		tileMap.put(cu, superTile);
 		
 		// TODO: REFACTOR TO PUT RIGHT TILE IN COMPUNIT AFTER EPILOGUE
 		// AND PROLOGUE STUFFFFFFFFFFFFFFF
@@ -823,8 +824,9 @@ public class TilingVisitor implements IRTreeVisitor {
 		Label fnLabel = new Label(fd.assemblyLabel());
 		instructions.add(new Instruction(Operation.LABEL, fnLabel));
 		// Prologue
+		// TODO: replace enter with push/mov/sub for optimization
 		// "enter 8*l, 0" 8*l will be filled in later
-		Instruction enter = new Instruction(Operation.PUSHQ, null, new Constant(0));
+		Instruction enter = new Instruction(Operation.ENTER, new Constant(0), new Constant(0));
 		instructions.add(enter);
 		// move args to param regs
 		List<String> paramList = fd.getParamList();
@@ -835,9 +837,9 @@ public class TilingVisitor implements IRTreeVisitor {
 		for (int i = 0; i < numRegParams; i++) {
 			Register arg = new Register(ARG_REG_LIST[i + offset]);
 			Register param = new Register(paramList.get(i));
-			Instruction moveArgtoParam = new Instruction(Operation.MOVQ, arg, 
+			Instruction moveArgToParam = new Instruction(Operation.MOVQ, arg, 
 														 param);
-			instructions.add(moveArgtoParam);
+			instructions.add(moveArgToParam);
 		}
 		Register rbp = new Register("rbp");
 		for (int i = numRegParams; i < numArgs; i++) {
@@ -847,11 +849,15 @@ public class TilingVisitor implements IRTreeVisitor {
 					 param);
 			instructions.add(moveArgtoParam);
 		}
-		// TODO: is ret3 register rdi value preserved? 
-		// Body
+		// Body 
 		IRStmt body = fd.body();
+		// remove duplicate move(%ARG, %arg) instructions
+		if (body instanceof IRSeq) {
+			for (int i = 0; i < numArgs; i++) {
+				((IRSeq) body).stmts().remove(0);
+			}	
+		}
 		body.accept(this);
-		System.out.println(tileMap.get(body));
 		instructions.addAll(tileMap.get(body).getInstructions());
 		// Epilogue
 		// assume last instruction of body is ret
@@ -931,7 +937,7 @@ public class TilingVisitor implements IRTreeVisitor {
 		for (int i = 0; i < childrenOfEachTile.size(); i++) {
 			for (int j = 0; j < childrenOfEachTile.get(i).size(); j++) {
 				Tile currentTile = tileMap.get(childrenOfEachTile.get(i).get(j));
-				matchingTiles.set(i,Tile.mergeTiles(matchingTiles.get(i),currentTile));
+				matchingTiles.set(i,Tile.mergeTiles(currentTile,matchingTiles.get(i)));
 			}
 		}
 		
@@ -967,8 +973,8 @@ public class TilingVisitor implements IRTreeVisitor {
 			newInstructions.add(new Instruction(Operation.MOVQ,sourceOperand,new Register("rcx")));
 			newInstructions.add(new Instruction(Operation.MOVQ,new Register("rcx"),targetOperand));
 			Tile finalTile = new Tile(newInstructions,2,targetOperand);
-			finalTile = Tile.mergeTiles(finalTile, targetTile);
-			finalTile = Tile.mergeTiles(finalTile, sourceTile);
+			finalTile = Tile.mergeTiles(targetTile, finalTile);
+			finalTile = Tile.mergeTiles(sourceTile, finalTile);
 			tileMap.put(mov, finalTile);
 			return;
 		}
@@ -978,8 +984,8 @@ public class TilingVisitor implements IRTreeVisitor {
 				sourceOperand, targetOperand);
 		addingInstr.add(movInstruction);
 		Tile finalTile = new Tile(addingInstr, 1, targetOperand);
-		finalTile = Tile.mergeTiles(finalTile, targetTile);
-		finalTile = Tile.mergeTiles(finalTile, sourceTile);
+		finalTile = Tile.mergeTiles(targetTile, finalTile);
+		finalTile = Tile.mergeTiles(sourceTile, finalTile);
 		
 		// If source was a Call, put an epilogue after the mov instruction
 		// the function should have a single return

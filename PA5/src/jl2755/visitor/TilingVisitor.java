@@ -118,7 +118,7 @@ public class TilingVisitor implements IRTreeVisitor {
 		case ADD:
 			tileOp = Operation.ADDQ;
             break;
-        case SUB:
+        case SUB: 
         	tileOp = Operation.SUBQ;
             break;
         case MUL:

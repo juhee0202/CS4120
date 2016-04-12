@@ -18,6 +18,7 @@ public class IRCall extends IRExpr {
     private IRExpr target;
     private List<IRExpr> args;
     private int numReturns;
+    private boolean[] returnBoolList; 
     private int num8ByteSpace;
 
     /**
@@ -115,6 +116,19 @@ public class IRCall extends IRExpr {
 
 	public void setNumReturns(int numReturns) {
 		this.numReturns = numReturns;
+		// set [true,...,true] 
+		returnBoolList = new boolean[numReturns];
+		for (int i = 0; i < numReturns; i++) {
+			returnBoolList[i] = true;
+		}
+	}
+	
+	public boolean[] getReturnBoolList() {
+		return returnBoolList;
+	}
+	
+	public void setReturnBoolList(boolean[] rbl) {
+		returnBoolList = rbl;
 	}
 
 	public int getNum8ByteSpace() {

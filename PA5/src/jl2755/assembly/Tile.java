@@ -280,13 +280,14 @@ public class Tile {
 					theOffset = (Constant) argOperands.get(i);
 				}
 			}
-			System.out.println("" + theBase + " " + theOffset);
+//			System.out.println("" + theBase + " " + theOffset);
 			dest = new Memory(theOffset,theBase);
 		}
 		if (theEnum == tileEnum.BASEWITHBOTHOFFSET) {
 			Register theBase = null;
 			Register registerOffset = null;
 			Constant constantOffset = null;
+			System.out.println("TILE " + rootOfSubtree);
 			assert(argOperands.size() == 3);
 			for (int i = 0; i < argOperands.size(); i++) {
 				if (argOperands.get(i).isRegBase()) {

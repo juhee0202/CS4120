@@ -101,6 +101,11 @@ public class dohMyGod {
 		List<String> testing = jl2755.subList(2, 3);
 		
 		System.out.println(testing.get(0));
+		
+		boolean bool = true;
+		bool = bool && false;
+		System.out.println(bool);
+		System.out.println(bool & false);
 	}
 	
 //	@Test
@@ -146,64 +151,6 @@ public class dohMyGod {
 //		System.out.println("Subtree result is " + temp.equalTrees(tree1, tree2));
 //	}
 	
-	@Test
-	public void testNewEqualTrees() {
-		
-		List<String> testPre1 = new ArrayList<String>(
-				Arrays.asList(
-						"Mem",
-						"BinOpAddLeftRegisterBase1",
-						"null1",
-						"BinOpAddRightConstantOffset2",
-						"BinOpMult3LeftRegisterOffsetRightConstantFactor",
-						"null2",
-						"Const2",
-						"Const1"
-						));
-		
-		List<String> testIn1 = new ArrayList<String>(
-				Arrays.asList(
-						"null1",
-						"BinOpAddLeftRegisterBase1",
-						"null2",
-						"BinOpMult3LeftRegisterOffsetRightConstantFactor",
-						"Const2",
-						"BinOpAddRightConstantOffset2",
-						"Const1",
-						"Mem"
-						));
-		
-		IRNode tree1 = Tile.makeTree(testIn1, testPre1);
-		
-		List<String> testPre2 = new ArrayList<String>(
-				Arrays.asList(
-						"Mem",
-						"BinOpAddLeftConstantOffset1",
-						"Const1",
-						"BinOpAdd2LeftRegisterBase",
-						"null1",
-						"BinOpMult3LeftRegisterOffsetRightConstantFactor",
-						"null2",
-						"Const2"
-						));
-		
-		List<String> testIn2 = new ArrayList<String>(
-				Arrays.asList(
-						"Const1",
-						"BinOpAddLeftConstantOffset1",
-						"null1",
-						"BinOpAdd2LeftRegisterBase",
-						"null2",
-						"BinOpMult3LeftRegisterOffsetRightConstantFactor",
-						"Const2",
-						"Mem"
-						));
-		TilingVisitor tiling = new TilingVisitor();
-		IRNode tree2 = Tile.makeTree(testIn2, testPre2);
-		IRTreeEqualsVisitor temp = new IRTreeEqualsVisitor(tiling);
-		System.out.println("Subtree result is " + temp.equalTrees(tree1, tree2));
-		System.out.println(temp.getAllChildrenNode());
-	}
 
 
 }

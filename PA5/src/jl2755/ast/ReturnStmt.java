@@ -17,7 +17,7 @@ public class ReturnStmt {
 	private int return_col;
 	private int return_line;
 	/**
-	 * 0 if it's a procedural return, 1 if it returns something
+	 * 0 if return type is void, 1 otherwise
 	 */
 	private int index;
 	

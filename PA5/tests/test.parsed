@@ -1,1 +1,1 @@
-(((use i02)) ((main () () ())))
+1:6 error:Syntax error: unexpected (

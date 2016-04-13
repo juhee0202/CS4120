@@ -659,7 +659,7 @@ public class Main {
             System.out.println("Failed to write to output file");
         }
         
-        throw new SyntaxError(error.left, error.right, errorMessage);
+        throw new SyntaxError(error.left, error.right, msg, error.value.toString());
     }
 
     /**

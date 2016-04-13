@@ -903,18 +903,48 @@ public class TypeCheckVisitor implements ASTVisitor {
 		if (rs.getIndex() == 1) {
 			List<Expr> returnExprs = rs.getReturnList().getListOfExpr();
 			if (returnExprs.size() == 1) {
-				returnExprs.get(0).accept(this);
+				Expr returnExpr = returnExprs.get(0);
+				returnExpr.accept(this);
 				returnType = tempType;
+				
+				// if return obj is a procedure call, then error!
+				// ex: foo() { return foo() }
+				if (returnType instanceof UnitType) {
+					String errMsg = 
+							((FunctionCall)returnExpr).getIdentifier().toString() +
+							" is not a function that returns a value. ";
+					SemanticErrorObject seo = new SemanticErrorObject(
+							returnExpr.getLineNumber(),
+							returnExpr.getColumnNumber(),
+							errMsg);
+					Main.handleSemanticError(seo);	
+				}
 			}
 			else {
 				returnType = new TupleType();
 				for (int i = 0; i < returnExprs.size(); i++){
-					returnExprs.get(i).accept(this);
+					Expr e = returnExprs.get(i);
+					e.accept(this);
+					VType exprType = tempType;
+					
+					// if expr is a procedure call, then error!
+					if (exprType instanceof UnitType) {
+						String errMsg = 
+								((FunctionCall)e).getIdentifier().toString() +
+								" is not a function that returns a value. ";
+						SemanticErrorObject seo = new SemanticErrorObject(
+								e.getLineNumber(),
+								e.getColumnNumber(),
+								errMsg);
+						Main.handleSemanticError(seo);	
+					}
+					
 					((TupleType)returnType).addToTypes(tempType);
 				}	
 			}
 		}
-		// index = 0: function call
+		
+		// index = 0: return type is void
 		else {
 			returnType = new UnitType();
 		}

@@ -1,1 +1,1 @@
-1:10 error:Syntax error: unexpected {
+1:6 error:Syntax error: unexpected (

@@ -834,12 +834,15 @@ public class TypeCheckVisitor implements ASTVisitor {
 		for (FunctionDecl fd : functionDecls) {
 			String id = fd.getIdentifier().toString();
 			FunType funType = new FunType(fd);
+			
 			// if the function was declared in interface files
 			// OK if same FunType
 			if (if_env.containsKey(id)) {
 				FunType ifFunType = (FunType) if_env.get(id); // safe
 				if (!funType.equals(ifFunType)) {
-					String s = "Multiple declaration found for function " + id;
+					String s = "Conflicting declarations on " + id + ": " 
+							+ "trying to add " + funType.toString() + " when "
+							+ ifFunType.toString() + " already exists.";
 					SemanticErrorObject seo = new SemanticErrorObject(
 							fd.getIdentifier_line(), fd.getIdentifier_col(), s);
 					Main.handleSemanticError(seo);
@@ -855,6 +858,28 @@ public class TypeCheckVisitor implements ASTVisitor {
 			env.put(id, funType);
 			stack.push(id);
 		}
+		
+//		// if multiple function declarations, then check that
+//		// the types are the same
+//		if (if_env.containsKey(funcName)) {
+//			VType existingType = if_env.get(funcName);
+//			VType newType = tempMap.get(funcName);
+//
+//			if (!(existingType.equals(newType))) {
+//				String s = "Conflicting declarations on " + funcName + ": "
+//						+ "trying to add " + newType.toString() + " when "
+//						+ existingType.toString() + " already exists.";
+//				SemanticErrorObject seo = new SemanticErrorObject(
+//						ui.getIdentifier().getLineNumber(), 
+//						ui.getIdentifier().getColumnNumber(),
+//						s);
+//				Main.handleSemanticError(seo);
+//			}
+//		}
+//		// no multiple declarations: add function to env
+//		else{
+//			if_env.put(funcName, tempMap.get(funcName));
+//		}
 		
 		/* Merge if_env with env */
 		env.putAll(if_env);
@@ -1104,13 +1129,20 @@ public class TypeCheckVisitor implements ASTVisitor {
 		for (int i = 0; i < listOfUses.size(); i++){
 			String fileName = listOfUses.get(i);
 			Map<String, VType> tempMap = Main.checkInterface(fileName);
-			Iterator<String> itFuncNames = tempMap.keySet().iterator();
-			while (itFuncNames.hasNext()){
-				String tempFuncNames = itFuncNames.next();
-				if (if_env.containsKey(tempFuncNames)) {
-					VType existingType = if_env.get(tempFuncNames);
-					if (!(existingType.equals(tempMap.get(tempFuncNames)))){
-						String s = tempFuncNames + "is already declared";
+			Iterator<String> funcNameIter = tempMap.keySet().iterator();
+			while (funcNameIter.hasNext()){
+				String funcName = funcNameIter.next();
+				
+				// if multiple function declarations, then check that
+				// the types are the same
+				if (if_env.containsKey(funcName)) {
+					VType existingType = if_env.get(funcName);
+					VType newType = tempMap.get(funcName);
+
+					if (!(existingType.equals(newType))) {
+						String s = "Conflicting declarations on " + funcName + ": "
+								+ "trying to add " + newType.toString() + " when "
+								+ existingType.toString() + " already exists.";
 						SemanticErrorObject seo = new SemanticErrorObject(
 								ui.getIdentifier().getLineNumber(), 
 								ui.getIdentifier().getColumnNumber(),
@@ -1118,8 +1150,9 @@ public class TypeCheckVisitor implements ASTVisitor {
 						Main.handleSemanticError(seo);
 					}
 				}
+				// no multiple declarations: add function to env
 				else{
-					if_env.put(tempFuncNames, tempMap.get(tempFuncNames));
+					if_env.put(funcName, tempMap.get(funcName));
 				}
 			}
 		}

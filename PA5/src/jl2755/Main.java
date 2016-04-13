@@ -93,7 +93,7 @@ public class Main {
 
         // Check path and optimization options
         optionsCheck(cmd);
-        if (target != "linux" && target != "windows" && target != "macos") {
+        if (target.equals("linux") && target.equals("windows") && target.equals("macos")) {
             System.out.println("Invalid target OS argument");
             return;
         }
@@ -151,7 +151,7 @@ public class Main {
 
             for (String file: files) {
                 try { 
-                    lex(srcPath + file);
+                    lex(file);
                 } catch (FileNotFoundException e) {
                     System.out.println(srcPath + file + " is not found.");
                 } catch (Exception e) {
@@ -178,12 +178,12 @@ public class Main {
 
             for (String file: files) {
                 try { 
-                    parse(srcPath + file);
+                    parse(file);
                 } catch (FileNotFoundException e) {
                     System.out.println(srcPath + file + " is not found.");
                 } catch (Exception e) {
                 	System.out.println("HELLO");
-                    e.printStackTrace();
+//                    e.printStackTrace();
                 }
             }
         }
@@ -206,7 +206,7 @@ public class Main {
 
             for (String file: files) {
                 try { 
-                    typecheck(srcPath + file);
+                    typecheck(file);
                 } catch (FileNotFoundException e) {
                     System.out.println(srcPath + file + " is not found.");
                 } catch (Exception e) {
@@ -233,7 +233,7 @@ public class Main {
 
             for (String file: files) {
                 try { 
-                    irgen(srcPath + file);
+                    irgen(file);
                 } catch (FileNotFoundException e) {
                     System.out.println(srcPath + file + " is not found.");
                 } catch (Exception e) {
@@ -260,7 +260,7 @@ public class Main {
 
             for (String file: files) {
                 try { 
-                    irrun(srcPath + file);
+                    irrun(file);
                 } catch (FileNotFoundException e) {
                     System.out.println(srcPath + file + " is not found.");
                 } catch (Exception e) {
@@ -269,6 +269,7 @@ public class Main {
             }
         }
         
+        /* ASSEMBLY */
         files = concat(lexFiles, 
                 parseFiles, 
                 typecheckFiles, 
@@ -277,7 +278,7 @@ public class Main {
                 leftoverFiles);
         for (String file: files) {
             try { 
-                assembly(srcPath + file);
+                assembly(file);
             } catch (FileNotFoundException e) {
                 System.out.println(srcPath + file + " is not found.");
             } catch (Exception e) {
@@ -288,7 +289,7 @@ public class Main {
     }
 
     public static void lex(String filename) throws FileNotFoundException {
-        Scanner lexer = new Scanner(new FileReader(filename));
+        Scanner lexer = new Scanner(new FileReader(srcPath + filename));
         String content = "";
 
         System.out.println("[xic] Lexing");
@@ -301,7 +302,7 @@ public class Main {
             content += error.getMessage();
         } catch (IOException e) {
             // TODO: not too sure what kind of IOException would happen here (there are more in this function)
-            e.printStackTrace();
+//            e.printStackTrace();
         }
 
         while (symbol != null && symbol.sym != 0) {
@@ -325,11 +326,11 @@ public class Main {
             try {
                 symbol = lexer.next_token();
             } catch (LexicalError error) {
-            	error.setFilename(filename);
+            	error.setFilename(srcPath + filename);
                 content += error.getLine() + ":" + error.getColumn() + " error:" + error.getDescription();
                 break;
             } catch (IOException e) {
-                System.out.println("\tFailed to write to output file " + filename);
+                System.out.println("\tFailed to write to output file " + srcPath + filename);
             }
         }
 
@@ -353,12 +354,12 @@ public class Main {
             bw.close();
             System.out.println("[xic] Lexing completed");
         } catch (IOException e) {	
-            System.out.println("Failed to write to output file " + filename);
+            System.out.println("Failed to write to output file " + srcPath + filename);
         }
     }
 
     public static void parse(String filename) throws FileNotFoundException {
-        parser p = new parser(new Scanner(new FileReader(filename)));
+        parser p = new parser(new Scanner(new FileReader(srcPath + filename)));
         
         int index = filename.lastIndexOf('.');
         if (index == -1) {
@@ -387,11 +388,11 @@ public class Main {
             bw.close();
             System.out.println("[xic] Parsing completed");
         } catch(LexicalError error) {
-        	error.setFilename(filename);
+        	error.setFilename(srcPath + filename);
             System.out.println("\t" + error.getMessage());
             System.out.println("[xic] Parsing failed");
         } catch(SyntaxError error) {
-        	error.setFilename(filename);
+        	error.setFilename(srcPath + filename);
             System.out.println("\t" + error.getMessage());
             System.out.println("[xic] Parsing failed");
         } catch(IOException e) {
@@ -399,7 +400,7 @@ public class Main {
             System.out.println("[xic] Parsing failed");
         } catch(Exception e) {
             // TODO: not sure what kind of exceptions would happen here
-            e.printStackTrace();
+//            e.printStackTrace();
         }
     }
 
@@ -422,7 +423,7 @@ public class Main {
             System.out.println("[xic] Typechecking");
 
             /* typecheck */
-            parser p = new parser(new Scanner(new FileReader(filename)));
+            parser p = new parser(new Scanner(new FileReader(srcPath + filename)));
             Symbol s = p.parse();
             
             Program result = (Program) s.value;
@@ -434,22 +435,22 @@ public class Main {
             System.out.println("[xic] Typechecking completed");
 
         } catch(LexicalError error) {
-        	error.setFilename(filename);
+        	error.setFilename(srcPath + filename);
             System.out.println("\t" + error.getMessage());
             System.out.println("[xic] Typechecking failed");
         } catch(SyntaxError error) {
-        	error.setFilename(filename);
+        	error.setFilename(srcPath + filename);
             System.out.println("\t" + error.getMessage());
             System.out.println("[xic] Typechecking failed");
         } catch(SemanticError error) {
-        	error.setFilename(filename);
+        	error.setFilename(srcPath + filename);
             System.out.println("\t" + error.getMessage());
             System.out.println("[xic] Typechecking failed");
         } catch(IOException e) {
             System.out.println("\tFailed to write to output file " + outputFileName);
             System.out.println("[xic] Typechecking failed");
         } catch (Exception e) {
-            e.printStackTrace();
+//            e.printStackTrace();
         }
     }
 
@@ -471,7 +472,7 @@ public class Main {
 
             System.out.println("[xic] Generating intermediate code");
 
-            parser p = new parser(new Scanner(new FileReader(filename)));
+            parser p = new parser(new Scanner(new FileReader(srcPath + filename)));
             Symbol s = p.parse();
             Program program = (Program) s.value;
             TypeCheckVisitor typeCheck = new TypeCheckVisitor();
@@ -517,23 +518,23 @@ public class Main {
             return lir.program;
 
         } catch(LexicalError error) {
-        	error.setFilename(filename);
+        	error.setFilename(srcPath + filename);
             System.out.println("[xic] Generating intermediate code failed");
             System.out.println("\t" + error.getMessage());
         } catch(SyntaxError error) {
-        	error.setFilename(filename);
+        	error.setFilename(srcPath + filename);
         	System.out.println("[xic] Generating intermediate code failed");
             System.out.println("\t" + error.getMessage());
         } catch(SemanticError error) {
-        	error.setFilename(filename);
+        	error.setFilename(srcPath + filename);
         	System.out.println("[xic] Generating intermediate code failed");
             System.out.println("\t" + error.getMessage());
         } catch(IOException e) {
         	System.out.println("[xic] Generating intermediate code failed");
             System.out.println("Failed to write to output file " + outputFileName);
-            e.printStackTrace();
+//            e.printStackTrace();
         } catch (Exception e) {
-            e.printStackTrace();
+//            e.printStackTrace();
         }
         return null;
     }
@@ -552,7 +553,7 @@ public class Main {
             sim.call("_Imain_paai", 0);
             System.out.println("[xic] Interpreting intermediate code completed");
         } catch (Exception e) {
-            e.printStackTrace();
+//            e.printStackTrace();
         }
 
     }
@@ -562,9 +563,12 @@ public class Main {
         if (index == -1) {
             index = filename.length();
         }
-        
+//        System.out.println(filename);
         String rmExtension = filename.substring(0,index);
-        String outputFileName = destAPath + rmExtension + ".S";
+//        if (destAPath.equals("")) {
+//        	destAPath = srcPath;
+//        }
+        String outputFileName = destAPath + rmExtension + ".s";
         try {
             File file = new File(outputFileName);
             if (!file.exists()) {
@@ -575,7 +579,7 @@ public class Main {
 
             System.out.println("[xic] Generating assembly code");
             
-            parser p = new parser(new Scanner(new FileReader(filename)));
+            parser p = new parser(new Scanner(new FileReader(srcPath + filename)));
             Symbol s = p.parse();
             Program program = (Program) s.value;
             TypeCheckVisitor typeCheck = new TypeCheckVisitor();
@@ -716,7 +720,7 @@ public class Main {
         	System.out.println("\tFailed to read input file " + absPath);
         } catch (Exception e) {
         	System.out.println("\t" + absPath);
-            e.printStackTrace();
+//            e.printStackTrace();
         }
         return tempMap;
     }
@@ -836,7 +840,7 @@ public class Main {
         // source path
         if (cmd.hasOption("sourcepath")) {
             String src = cmd.getOptionValue("sourcepath");
-            if (src != null) {
+            if (src != null && src.length() > 0) {
                 if (src.charAt(src.length()-1) != '/') {
                     src += "/";
                 }
@@ -847,7 +851,7 @@ public class Main {
         // library path
         if (cmd.hasOption("libpath")) {
             String lib = cmd.getOptionValue("libpath");
-            if (lib != null) {
+            if (lib != null && lib.length() > 0) {
                 if (lib.charAt(lib.length()-1) != '/') {
                     lib += "/";
                 }
@@ -858,7 +862,7 @@ public class Main {
         // destination diagnostic path
         if (cmd.hasOption("D")) {
             String destD = cmd.getOptionValue("D");
-            if (destD != null) {
+            if (destD != null && destD.length() > 0) {
                 if (destD.charAt(destD.length()-1) != '/') {
                     destD += "/";
                 }
@@ -869,7 +873,7 @@ public class Main {
         // destination assembly path
         if (cmd.hasOption("d")) {
             String destA = cmd.getOptionValue("d");
-            if (destA != null) {
+            if (destA != null && destA.length() > 0) {
                 if (destA.charAt(destA.length()-1) != '/') {
                     destA += "/";
                 }

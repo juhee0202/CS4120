@@ -753,9 +753,9 @@ public class TilingVisitor implements IRTreeVisitor {
 		
 		tileMap.put(cu, superTile);
 		
-		superTile = null;
-		
-		// Register/Stack allocation
+//		superTile = null;
+//		
+//		// Register/Stack allocation
 //		stackAllocation(cu);
 //		
 //		// Set parameters of all function decls

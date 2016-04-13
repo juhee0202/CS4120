@@ -100,48 +100,48 @@ public class dohMyGod {
 		System.out.println(testing.get(0));
 	}
 	
-	@Test
-	public void testEqualTreeVisitor() {
-		IRTreeEqualsVisitor temp = new IRTreeEqualsVisitor();
-		List<String> testPre = new ArrayList<String>(
-				Arrays.asList(
-						"Mem"
-						));
-		
-		List<String> testIn = new ArrayList<String>(
-				Arrays.asList(
-						"Mem"
-						));
-		
-		IRNode tree1 = Tile.makeTree(testIn, testPre);
-		
-		List<String> testPre2 = new ArrayList<String>(
-				Arrays.asList(
-						"Mem",
-						"BinOp1",
-						"null1",
-						"BinOp2",
-						"BinOp3",
-						"null2",
-						"Const2",
-						"Const1"
-						));
-		
-		List<String> testIn2 = new ArrayList<String>(
-				Arrays.asList(
-						"null1",
-						"BinOp1",
-						"null2",
-						"BinOp3",
-						"Const2",
-						"BinOp2",
-						"Const1",
-						"Mem"
-						));
-		
-		IRNode tree2 = Tile.makeTree(testIn2, testPre2);
-		System.out.println("Subtree result is " + temp.equalTrees(tree1, tree2));
-	}
+//	@Test
+//	public void testEqualTreeVisitor() {
+//		IRTreeEqualsVisitor temp = new IRTreeEqualsVisitor();
+//		List<String> testPre = new ArrayList<String>(
+//				Arrays.asList(
+//						"Mem"
+//						));
+//		
+//		List<String> testIn = new ArrayList<String>(
+//				Arrays.asList(
+//						"Mem"
+//						));
+//		
+//		IRNode tree1 = Tile.makeTree(testIn, testPre);
+//		
+//		List<String> testPre2 = new ArrayList<String>(
+//				Arrays.asList(
+//						"Mem",
+//						"BinOp1",
+//						"null1",
+//						"BinOp2",
+//						"BinOp3",
+//						"null2",
+//						"Const2",
+//						"Const1"
+//						));
+//		
+//		List<String> testIn2 = new ArrayList<String>(
+//				Arrays.asList(
+//						"null1",
+//						"BinOp1",
+//						"null2",
+//						"BinOp3",
+//						"Const2",
+//						"BinOp2",
+//						"Const1",
+//						"Mem"
+//						));
+//		
+//		IRNode tree2 = Tile.makeTree(testIn2, testPre2);
+//		System.out.println("Subtree result is " + temp.equalTrees(tree1, tree2));
+//	}
 	
 	@Test
 	public void testNewEqualTrees() {

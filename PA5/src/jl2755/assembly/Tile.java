@@ -12,6 +12,31 @@ public class Tile {
 	private int cost;
 	private List<Instruction> instructions;
 	private Operand dest;
+	private tileEnum theEnum = tileEnum.NOTHING;
+	
+	public enum tileEnum {
+		NOTHING,
+		/**(0)*/
+		BASEONLY,
+		/**0(1)*/
+		BASEWITHCONSTANTOFFSET,
+		/**0(1,2)*/
+		BASEWITHBOTHOFFSET,
+		/**(0,1,2)*/
+		BASEWITHREGISTEROFFSETANDFACTOR,
+		/**0(1,2,3)*/
+		EVERYTHING;
+		
+//		public static Operand enumToEmptyDest(tileEnum argEnum) {
+//			switch (argEnum){
+//			case NOTHING: return null;
+//			case BASEONLY: return new Memory(null);
+//			case BASEWITHCONSTANTOFFSET: return 
+//			
+//			default: System.out.println("Something wrong in enumToEmptyDest method"); break;
+//			}
+//		}
+	}
 	
 	public Tile(List<Instruction> i) {
 		instructions = i;
@@ -23,11 +48,19 @@ public class Tile {
 	private Tile() {
 	}
 	
-	public Tile(List<String> inOrder, List<String> preOrder, List<Instruction> i,
+	public Tile(List<String> preOrder, List<String> inOrder, List<Instruction> i,
 			int argCost) {
 		rootOfSubtree = makeTree(inOrder, preOrder);
 		instructions = i;
 		cost = argCost;
+	}
+	
+	public Tile(List<String> preOrder, List<String> inOrder, List<Instruction> i,
+			int argCost, tileEnum argEnum) {
+		rootOfSubtree = makeTree(inOrder, preOrder);
+		instructions = i;
+		cost = argCost;
+		theEnum = argEnum;
 	}
 	
 	/** Returns a cloned version of argTile with root as a real IRNode */
@@ -41,6 +74,7 @@ public class Tile {
 			newInstructions.add(tempInstructions.get(i).getCopyInstruction());
 		}
 		instructions = newInstructions;
+		theEnum = argTile.theEnum;
 	}
 	
 //	public Tile(List<Operand> argOperands, Tile argTile) {
@@ -137,82 +171,176 @@ public class Tile {
 	 * @return
 	 */
 	private static IRNode stringToNode(String nodeName) {
+		IRNode theMakingNode = null;
 		if (nodeName.contains("null")) {
-			return null;
+			theMakingNode = null;
 		}
-		if (nodeName.contains("BinOp")) {
-			return new IRBinOp(null,null,null);
+		else if (nodeName.contains("BinOpAdd")) {
+			theMakingNode = new IRBinOp(OpType.ADD,null,null);
 		}
-		if (nodeName.contains("Call")) {
+		else if (nodeName.contains("BinOpMult")) {
+			theMakingNode = new IRBinOp(OpType.MUL,null,null);
+		}
+		else if (nodeName.contains("Call")) {
 			IRExpr[] hue = null;
-			return new IRCall(null, hue);
+			theMakingNode = new IRCall(null, hue);
 		}
-		if (nodeName.contains("CJump")) {
-			return new IRCJump(null,null);
+		else if (nodeName.contains("CJump")) {
+			theMakingNode = new IRCJump(null,null);
 		}
-		if (nodeName.contains("Const")) {
-			return new IRConst(0);
+		else if (nodeName.contains("Const")) {
+			theMakingNode = new IRConst(0);
 		}
-		if (nodeName.contains("Exp")) {
-			return new IRExp(null);
+		else if (nodeName.contains("Exp")) {
+			theMakingNode = new IRExp(null);
 		}
-		if (nodeName.contains("Jump")) {
-			return new IRJump(null);
+		else if (nodeName.contains("Jump")) {
+			theMakingNode = new IRJump(null);
 		}
-		if (nodeName.contains("Label")) {
-			return new IRLabel(null);
+		else if (nodeName.contains("Label")) {
+			theMakingNode = new IRLabel(null);
 		}
-		if (nodeName.contains("Mem")) {
-			return new IRMem(null);
+		else if (nodeName.contains("Mem")) {
+			theMakingNode = new IRMem(null);
 		}
-		if (nodeName.contains("Move")) {
-			return new IRMove(null,null);
+		else if (nodeName.contains("Move")) {
+			theMakingNode = new IRMove(null,null);
 		}
-		if (nodeName.contains("Name")) {
-			return new IRName(null);
+		else if (nodeName.contains("Name")) {
+			theMakingNode = new IRName(null);
 		}
-		if (nodeName.contains("Return")) {
-			return new IRReturn();
+		else if (nodeName.contains("Return")) {
+			theMakingNode = new IRReturn();
 		}
-		if (nodeName.contains("Seq")) {
-			return new IRSeq();
+		else if (nodeName.contains("Seq")) {
+			theMakingNode = new IRSeq();
 		}
-		if (nodeName.contains("Temp")) {
-			return new IRTemp(null);
+		else if (nodeName.contains("Temp")) {
+			theMakingNode = new IRTemp(null);
 		}
-		System.out.println("You wrote a weird string for node name");
-		assert(false);
-		return null;
+//		System.out.println("You wrote a weird string for node name");
+//		assert(false);
+		
+		if (nodeName.contains("LeftConstantOffset")) {
+			theMakingNode.setLeftChildEnumType(ChildType.CONSTANTOFFSET);
+		}
+		if (nodeName.contains("RightConstantOffset")) {
+			theMakingNode.setRightChildEnumType(ChildType.CONSTANTOFFSET);
+		}
+		if (nodeName.contains("LeftRegisterBase")) {
+			theMakingNode.setLeftChildEnumType(ChildType.REGISTERBASE);
+		}
+		if (nodeName.contains("RightRegisterBase")) {
+			theMakingNode.setRightChildEnumType(ChildType.REGISTERBASE);
+		}
+		if (nodeName.contains("LeftConstantFactor")) {
+			theMakingNode.setLeftChildEnumType(ChildType.CONSTANTFACTOR);
+		}
+		if (nodeName.contains("RightConstantFactor")) {
+			theMakingNode.setRightChildEnumType(ChildType.CONSTANTFACTOR);
+		}
+		if (nodeName.contains("LeftRegisterOffset")) {
+			theMakingNode.setLeftChildEnumType(ChildType.REGISTERFACTOR);
+		}
+		if (nodeName.contains("RightRegisterOffset")) {
+			theMakingNode.setRightChildEnumType(ChildType.REGISTERFACTOR);
+		}
+		
+		return theMakingNode;
 	}
 	
 	public void fillInOperands(List<Operand> argOperands) {
-		if (instructions.size() == 0) {
-			// If no instructions, should be a Mem operation.
-//			if (dest instanceof Memory) {
-//				if (argOperands.size() == 1) {
-//					// At this point, the Tile should be a Mem with
-//					// only one child.
-//					((Memory) dest).setRegisterBase((Register) argOperands.get(0));
-//				}
-//			}
-			
-			// TODO: FILL IN INSTRUCTIONS PROPERLY
-			if (argOperands.size() == 4) {
-				dest = new Memory((Constant)argOperands.get(3),
-						(Register)argOperands.get(0),
-						(Register)argOperands.get(1),
-						(Constant)argOperands.get(2));
-			} else if (argOperands.size() == 1) {
-				dest = new Memory((Register)argOperands.get(0));
+		
+		// Parse through and replace all Mem Operands with Mov to registers
+		
+		String[] shuttleStuff = {"rcx", "rdx", "r11"};
+		List<Instruction> neededMovs = new ArrayList<Instruction>();
+		for (int i = 0; i < argOperands.size(); i++) {
+			if (argOperands.get(i) instanceof Memory) {
+				neededMovs.add(new Instruction(Operation.MOVQ,argOperands.get(i), new Register(shuttleStuff[i])));
+				argOperands.set(i,new Register(shuttleStuff[i]));
+				cost++;
 			}
 		}
 		
-		for (int i = 0; i < instructions.size(); i++) {
-			instructions.get(i).fillInInstructions(argOperands);
+		
+		if (theEnum == tileEnum.BASEONLY) {
+			Register registerView = (Register) argOperands.get(0);
+			dest = new Memory(registerView);
 		}
-//		if (argOperands.size() > 0) {
-//			dest = argOperands.get(0);
-//		}
+		if (theEnum == tileEnum.BASEWITHCONSTANTOFFSET) {
+			Register theBase = null;
+			Constant theOffset = null;
+			assert(argOperands.size() == 2);
+			for (int i = 0; i < argOperands.size(); i++) {
+				if (argOperands.get(i).isRegBase()) {
+					theBase = (Register) argOperands.get(i);
+				}
+				if (argOperands.get(i).isConstOffset()) {
+					theOffset = (Constant) argOperands.get(i);
+				}
+			}
+			System.out.println("" + theBase + " " + theOffset);
+			dest = new Memory(theOffset,theBase);
+		}
+		if (theEnum == tileEnum.BASEWITHBOTHOFFSET) {
+			Register theBase = null;
+			Register registerOffset = null;
+			Constant constantOffset = null;
+			assert(argOperands.size() == 3);
+			for (int i = 0; i < argOperands.size(); i++) {
+				if (argOperands.get(i).isRegBase()) {
+					theBase = (Register) argOperands.get(i);
+				}
+				if (argOperands.get(i).isRegFactorOffset()) {
+					registerOffset = (Register) argOperands.get(i);
+				}
+				if (argOperands.get(i).isConstOffset()) {
+					constantOffset = (Constant) argOperands.get(i);
+				}
+			}
+			dest = new Memory(constantOffset,theBase,registerOffset);
+		}
+		if (theEnum == tileEnum.BASEWITHREGISTEROFFSETANDFACTOR) {
+			Register theBase = null;
+			Register registerOffset = null;
+			Constant constantFactor = null;
+			assert(argOperands.size() == 3);
+			for (int i = 0; i < argOperands.size(); i++) {
+				if (argOperands.get(i).isRegBase()) {
+					theBase = (Register) argOperands.get(i);
+				}
+				if (argOperands.get(i).isRegFactorOffset()) {
+					registerOffset = (Register) argOperands.get(i);
+				}
+				if (argOperands.get(i).isConstFactor()) {
+					constantFactor = (Constant) argOperands.get(i);
+				}
+			}
+			dest = new Memory(theBase,registerOffset,constantFactor);
+		}
+		if (theEnum == tileEnum.EVERYTHING) {
+			Register theBase = null;
+			Register registerOffset = null;
+			Constant constantFactor = null;
+			Constant constantOffset = null;
+			assert(argOperands.size() == 4);
+			for (int i = 0; i < argOperands.size(); i++) {
+				if (argOperands.get(i).isRegBase()) {
+					theBase = (Register) argOperands.get(i);
+				}
+				if (argOperands.get(i).isRegFactorOffset()) {
+					registerOffset = (Register) argOperands.get(i);
+				}
+				if (argOperands.get(i).isConstFactor()) {
+					constantFactor = (Constant) argOperands.get(i);
+				}
+				if (argOperands.get(i).isConstOffset()) {
+					constantOffset = (Constant) argOperands.get(i);
+				}
+			}
+			dest = new Memory(constantOffset, theBase, registerOffset, constantFactor);
+		}
 	}
 	
 	// TODO: Uncomment
@@ -227,6 +355,8 @@ public class Tile {
 				s += "\t" + instr.toString() + "\n";
 			}
 		}
+		s+=dest;
+		s+=theEnum;
 		return s;
 	}
 

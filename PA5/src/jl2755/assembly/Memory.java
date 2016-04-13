@@ -135,5 +135,25 @@ public class Memory implements Operand {
 		temp.index = index;
 		return temp;
 	}
+
+	@Override
+	public boolean isConstOffset() {
+		return false;
+	}
+
+	@Override
+	public boolean isRegFactorOffset() {
+		return false;
+	}
+
+	@Override
+	public boolean isConstFactor() {
+		return false;
+	}
+
+	@Override
+	public boolean isRegBase() {
+		return false;
+	}
 	
 }

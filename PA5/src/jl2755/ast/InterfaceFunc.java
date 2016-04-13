@@ -10,6 +10,12 @@ public class InterfaceFunc {
 	private FunctionParam functionParam;
 	private ReturnType returnType;
 	
+	public InterfaceFunc(Identifier s, ReturnType rt) {
+		identifier = s;
+		functionParam = new FunctionParam();
+		returnType = rt;
+	}
+	
 	public InterfaceFunc(Identifier s, FunctionParam fp, ReturnType rt) {
 		identifier = s;
 		functionParam = fp;

@@ -15,9 +15,9 @@ import jl2755.visitor.ASTVisitor;
 /**
  *	Represents the function parameters
  *	index
- *	- 0: one parameter 
- *	- 1: more than one parameter
- *	- 2755: no parameter
+ *		0: one parameter 
+ *		1: more than one parameter
+ *		2755: no parameter
  */
 public class FunctionParam {
 	private Identifier identifier;

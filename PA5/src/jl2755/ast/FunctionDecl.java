@@ -24,7 +24,20 @@ public class FunctionDecl {
 	private ReturnType returnType;
 	private BlockStmt blockStmt;
 	private String ABIName;
+	private int index;				// 0 if procedure, 1 otherwise
 	
+	// procedure decl
+	public FunctionDecl(Identifier s, ReturnType rt, BlockStmt bs) {
+		identifier = s;
+		identifier_col = s.getColumnNumber();
+		identifier_line = s.getLineNumber();
+		functionParam = new FunctionParam();
+		returnType = rt;
+		blockStmt = bs;
+		index = 0;
+	}
+	
+	// function decl
 	public FunctionDecl(Identifier s, FunctionParam fp, ReturnType rt, BlockStmt bs) {
 		identifier = s;
 		identifier_col = s.getColumnNumber();
@@ -32,6 +45,7 @@ public class FunctionDecl {
 		functionParam = fp;
 		returnType = rt;
 		blockStmt = bs;
+		index = 1;
 	}
 	
 	public Map<String, Type> getParamsWithTypes() {

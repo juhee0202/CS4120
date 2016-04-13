@@ -8,6 +8,7 @@ import edu.cornell.cs.cs4120.util.SExpPrinter;
 import edu.cornell.cs.cs4120.xic.ir.visit.AggregateVisitor;
 import edu.cornell.cs.cs4120.xic.ir.visit.CheckCanonicalIRVisitor;
 import edu.cornell.cs.cs4120.xic.ir.visit.IRVisitor;
+import jl2755.assembly.ChildType;
 import jl2755.visitor.IRTreeVisitor;
 
 /**
@@ -137,5 +138,29 @@ public class IRCall extends IRExpr {
 
 	public void setNum8ByteSpace(int num8ByteSpace) {
 		this.num8ByteSpace = num8ByteSpace;
+	}
+
+	@Override
+	public ChildType getLeftChildEnumType() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void setLeftChildEnumType(ChildType argEnum) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public ChildType getRightChildEnumType() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void setRightChildEnumType(ChildType argEnum) {
+		// TODO Auto-generated method stub
+		
 	}
 }

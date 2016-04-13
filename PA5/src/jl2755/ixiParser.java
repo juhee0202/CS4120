@@ -32,12 +32,13 @@ public class ixiParser
   /** Production table. */
   protected static final short _production_table[][] = 
     unpackFromStrings(new String[] {
-    "\000\022\000\002\002\004\000\002\011\004\000\002\020" +
-    "\005\000\002\020\007\000\002\020\002\000\002\021\003" +
-    "\000\002\024\003\000\002\025\007\000\002\026\004\000" +
-    "\002\026\003\000\002\033\003\000\002\033\003\000\002" +
-    "\037\004\000\002\037\002\000\002\044\003\000\002\044" +
-    "\003\000\002\045\003\000\002\045\005" });
+    "\000\024\000\002\002\004\000\002\007\004\000\002\007" +
+    "\005\000\002\011\004\000\002\020\005\000\002\020\007" +
+    "\000\002\021\003\000\002\024\003\000\002\025\006\000" +
+    "\002\025\007\000\002\026\004\000\002\026\003\000\002" +
+    "\033\003\000\002\033\003\000\002\037\004\000\002\037" +
+    "\002\000\002\044\003\000\002\044\003\000\002\045\003" +
+    "\000\002\045\005" });
 
   /** Access to production table. */
   @Override
@@ -46,24 +47,28 @@ public class ixiParser
   /** Parse-action table. */
   protected static final short[][] _action_table = 
     unpackFromStrings(new String[] {
-    "\000\033\000\004\004\005\001\002\000\004\044\013\001" +
-    "\002\000\006\044\ufffc\050\ufffc\001\002\000\004\002\012" +
-    "\001\002\000\004\002\ufffb\001\002\000\006\002\ufff8\004" +
-    "\005\001\002\000\004\002\ufff9\001\002\000\004\002\001" +
-    "\001\002\000\006\004\005\045\ufffd\001\002\000\004\050" +
-    "\032\001\002\000\004\045\016\001\002\000\010\002\ufff4" +
-    "\004\ufff4\050\020\001\002\000\006\002\ufffa\004\ufffa\001" +
-    "\002\000\006\024\026\025\023\001\002\000\012\002\ufff2" +
-    "\004\ufff2\045\ufff2\051\ufff2\001\002\000\006\002\ufff5\004" +
-    "\ufff5\001\002\000\012\002\ufff6\004\ufff6\045\ufff6\051\ufff6" +
-    "\001\002\000\012\002\ufff3\004\ufff3\045\ufff3\051\ufff3\001" +
-    "\002\000\010\002\ufff1\004\ufff1\051\027\001\002\000\012" +
-    "\002\ufff7\004\ufff7\045\ufff7\051\ufff7\001\002\000\006\024" +
-    "\026\025\023\001\002\000\006\002\ufff0\004\ufff0\001\002" +
-    "\000\012\002\000\004\000\045\000\051\000\001\002\000" +
-    "\006\024\026\025\023\001\002\000\006\045\uffff\051\034" +
-    "\001\002\000\006\004\005\045\ufffd\001\002\000\004\045" +
-    "\ufffe\001\002" });
+    "\000\040\000\004\004\005\001\002\000\004\044\013\001" +
+    "\002\000\006\044\ufffb\050\ufffb\001\002\000\004\002\012" +
+    "\001\002\000\004\002\ufffa\001\002\000\006\002\ufff6\004" +
+    "\005\001\002\000\004\002\ufff7\001\002\000\004\002\001" +
+    "\001\002\000\006\004\005\045\016\001\002\000\004\050" +
+    "\037\001\002\000\004\045\035\001\002\000\010\002\ufff2" +
+    "\004\ufff2\050\020\001\002\000\006\002\ufff9\004\ufff9\001" +
+    "\002\000\006\024\026\025\023\001\002\000\012\002\ufff0" +
+    "\004\ufff0\045\ufff0\051\ufff0\001\002\000\006\002\ufff3\004" +
+    "\ufff3\001\002\000\014\002\ufff4\004\ufff4\042\ufff4\045\ufff4" +
+    "\051\ufff4\001\002\000\014\002\ufff1\004\ufff1\042\031\045" +
+    "\ufff1\051\ufff1\001\002\000\010\002\uffef\004\uffef\051\027" +
+    "\001\002\000\014\002\ufff5\004\ufff5\042\ufff5\045\ufff5\051" +
+    "\ufff5\001\002\000\006\024\026\025\023\001\002\000\006" +
+    "\002\uffee\004\uffee\001\002\000\004\043\033\001\002\000" +
+    "\012\002\ufffe\004\ufffe\045\ufffe\051\ufffe\001\002\000\014" +
+    "\002\000\004\000\042\031\045\000\051\000\001\002\000" +
+    "\012\002\uffff\004\uffff\045\uffff\051\uffff\001\002\000\010" +
+    "\002\ufff2\004\ufff2\050\020\001\002\000\006\002\ufff8\004" +
+    "\ufff8\001\002\000\006\024\026\025\023\001\002\000\006" +
+    "\045\ufffd\051\041\001\002\000\004\004\005\001\002\000" +
+    "\004\045\ufffc\001\002" });
 
   /** Access to parse-action table. */
   @Override
@@ -72,19 +77,21 @@ public class ixiParser
   /** {@code reduce_goto} table. */
   protected static final short[][] _reduce_table = 
     unpackFromStrings(new String[] {
-    "\000\033\000\012\021\003\024\005\025\007\026\006\001" +
+    "\000\040\000\012\021\003\024\005\025\007\026\006\001" +
     "\001\000\002\001\001\000\002\001\001\000\002\001\001" +
     "\000\002\001\001\000\010\021\003\025\007\026\010\001" +
     "\001\000\002\001\001\000\002\001\001\000\006\020\014" +
     "\021\013\001\001\000\002\001\001\000\002\001\001\000" +
     "\004\037\016\001\001\000\002\001\001\000\012\011\020" +
     "\033\023\044\024\045\021\001\001\000\002\001\001\000" +
-    "\002\001\001\000\002\001\001\000\004\007\030\001\001" +
+    "\002\001\001\000\002\001\001\000\004\007\031\001\001" +
     "\000\002\001\001\000\002\001\001\000\012\011\020\033" +
     "\023\044\024\045\027\001\001\000\002\001\001\000\002" +
-    "\001\001\000\010\011\020\033\023\044\032\001\001\000" +
-    "\002\001\001\000\006\020\034\021\013\001\001\000\002" +
-    "\001\001" });
+    "\001\001\000\002\001\001\000\004\007\033\001\001\000" +
+    "\002\001\001\000\004\037\035\001\001\000\002\001\001" +
+    "\000\010\011\020\033\023\044\037\001\001\000\002\001" +
+    "\001\000\006\020\041\021\013\001\001\000\002\001\001" +
+    "" });
 
   /** Access to {@code reduce_goto} table. */
   @Override
@@ -149,7 +156,7 @@ class CUP$ixiParser$actions {
         this.parser = parser;
     }
 
-    /** Method with the actual generated action code for actions 0 to 17. */
+    /** Method with the actual generated action code for actions 0 to 19. */
     public final java_cup.runtime.Symbol CUP$ixiParser$do_action_part00000000(
             int                        CUP$ixiParser$act_num,
             java_cup.runtime.lr_parser CUP$ixiParser$parser,
@@ -176,7 +183,28 @@ class CUP$ixiParser$actions {
             return CUP$ixiParser$result;
 
         /*. . . . . . . . . . . . . . . . . . . .*/
-        case 1: // empty_array_type ::= primitive_type brackets 
+        case 1: // brackets ::= OPEN_BRACKET CLOSE_BRACKET 
+            {
+                Brackets RESULT = null;
+                 RESULT = new Brackets(); 
+                CUP$ixiParser$result = parser.getSymbolFactory().newSymbol("brackets",5, CUP$ixiParser$stack.elementAt(CUP$ixiParser$top-1), CUP$ixiParser$stack.peek(), RESULT);
+            }
+            return CUP$ixiParser$result;
+
+        /*. . . . . . . . . . . . . . . . . . . .*/
+        case 2: // brackets ::= OPEN_BRACKET CLOSE_BRACKET brackets 
+            {
+                Brackets RESULT = null;
+                int bleft = CUP$ixiParser$stack.peek().left;
+                int bright = CUP$ixiParser$stack.peek().right;
+                Brackets b = CUP$ixiParser$stack.peek().<Brackets> value();
+                 RESULT = new Brackets(b); 
+                CUP$ixiParser$result = parser.getSymbolFactory().newSymbol("brackets",5, CUP$ixiParser$stack.elementAt(CUP$ixiParser$top-2), CUP$ixiParser$stack.peek(), RESULT);
+            }
+            return CUP$ixiParser$result;
+
+        /*. . . . . . . . . . . . . . . . . . . .*/
+        case 3: // empty_array_type ::= primitive_type brackets 
             {
                 EmptyArrayType RESULT = null;
                 int ptleft = CUP$ixiParser$stack.elementAt(CUP$ixiParser$top-1).left;
@@ -191,7 +219,7 @@ class CUP$ixiParser$actions {
             return CUP$ixiParser$result;
 
         /*. . . . . . . . . . . . . . . . . . . .*/
-        case 2: // function_param ::= identifier COLON type 
+        case 4: // function_param ::= identifier COLON type 
             {
                 FunctionParam RESULT = null;
                 int idleft = CUP$ixiParser$stack.elementAt(CUP$ixiParser$top-2).left;
@@ -206,7 +234,7 @@ class CUP$ixiParser$actions {
             return CUP$ixiParser$result;
 
         /*. . . . . . . . . . . . . . . . . . . .*/
-        case 3: // function_param ::= identifier COLON type COMMA function_param 
+        case 5: // function_param ::= identifier COLON type COMMA function_param 
             {
                 FunctionParam RESULT = null;
                 int idleft = CUP$ixiParser$stack.elementAt(CUP$ixiParser$top-4).left;
@@ -224,16 +252,7 @@ class CUP$ixiParser$actions {
             return CUP$ixiParser$result;
 
         /*. . . . . . . . . . . . . . . . . . . .*/
-        case 4: // function_param ::= 
-            {
-                FunctionParam RESULT = null;
-                 RESULT = new FunctionParam(); 
-                CUP$ixiParser$result = parser.getSymbolFactory().newSymbol("function_param",14, CUP$ixiParser$stack.peek(), RESULT);
-            }
-            return CUP$ixiParser$result;
-
-        /*. . . . . . . . . . . . . . . . . . . .*/
-        case 5: // identifier ::= IDENTIFIER 
+        case 6: // identifier ::= IDENTIFIER 
             {
                 Identifier RESULT = null;
                 int idleft = CUP$ixiParser$stack.peek().left;
@@ -245,7 +264,7 @@ class CUP$ixiParser$actions {
             return CUP$ixiParser$result;
 
         /*. . . . . . . . . . . . . . . . . . . .*/
-        case 6: // interface ::= interface_list 
+        case 7: // interface ::= interface_list 
             {
                 Interface RESULT = null;
                 int illeft = CUP$ixiParser$stack.peek().left;
@@ -257,7 +276,22 @@ class CUP$ixiParser$actions {
             return CUP$ixiParser$result;
 
         /*. . . . . . . . . . . . . . . . . . . .*/
-        case 7: // interface_func ::= identifier OPEN_PAREN function_param CLOSE_PAREN return_type 
+        case 8: // interface_func ::= identifier OPEN_PAREN CLOSE_PAREN return_type 
+            {
+                InterfaceFunc RESULT = null;
+                int idleft = CUP$ixiParser$stack.elementAt(CUP$ixiParser$top-3).left;
+                int idright = CUP$ixiParser$stack.elementAt(CUP$ixiParser$top-3).right;
+                Identifier id = CUP$ixiParser$stack.elementAt(CUP$ixiParser$top-3).<Identifier> value();
+                int rtleft = CUP$ixiParser$stack.peek().left;
+                int rtright = CUP$ixiParser$stack.peek().right;
+                ReturnType rt = CUP$ixiParser$stack.peek().<ReturnType> value();
+                 RESULT = new InterfaceFunc(id, rt); 
+                CUP$ixiParser$result = parser.getSymbolFactory().newSymbol("interface_func",19, CUP$ixiParser$stack.elementAt(CUP$ixiParser$top-3), CUP$ixiParser$stack.peek(), RESULT);
+            }
+            return CUP$ixiParser$result;
+
+        /*. . . . . . . . . . . . . . . . . . . .*/
+        case 9: // interface_func ::= identifier OPEN_PAREN function_param CLOSE_PAREN return_type 
             {
                 InterfaceFunc RESULT = null;
                 int idleft = CUP$ixiParser$stack.elementAt(CUP$ixiParser$top-4).left;
@@ -275,7 +309,7 @@ class CUP$ixiParser$actions {
             return CUP$ixiParser$result;
 
         /*. . . . . . . . . . . . . . . . . . . .*/
-        case 8: // interface_list ::= interface_func interface_list 
+        case 10: // interface_list ::= interface_func interface_list 
             {
                 InterfaceList RESULT = null;
                 int ifdleft = CUP$ixiParser$stack.elementAt(CUP$ixiParser$top-1).left;
@@ -290,7 +324,7 @@ class CUP$ixiParser$actions {
             return CUP$ixiParser$result;
 
         /*. . . . . . . . . . . . . . . . . . . .*/
-        case 9: // interface_list ::= interface_func 
+        case 11: // interface_list ::= interface_func 
             {
                 InterfaceList RESULT = null;
                 int ifdleft = CUP$ixiParser$stack.peek().left;
@@ -302,7 +336,7 @@ class CUP$ixiParser$actions {
             return CUP$ixiParser$result;
 
         /*. . . . . . . . . . . . . . . . . . . .*/
-        case 10: // primitive_type ::= INT 
+        case 12: // primitive_type ::= INT 
             {
                 PrimitiveType RESULT = null;
                 int ileft = CUP$ixiParser$stack.peek().left;
@@ -314,7 +348,7 @@ class CUP$ixiParser$actions {
             return CUP$ixiParser$result;
 
         /*. . . . . . . . . . . . . . . . . . . .*/
-        case 11: // primitive_type ::= BOOL 
+        case 13: // primitive_type ::= BOOL 
             {
                 PrimitiveType RESULT = null;
                 int bleft = CUP$ixiParser$stack.peek().left;
@@ -326,7 +360,7 @@ class CUP$ixiParser$actions {
             return CUP$ixiParser$result;
 
         /*. . . . . . . . . . . . . . . . . . . .*/
-        case 12: // return_type ::= COLON type_list 
+        case 14: // return_type ::= COLON type_list 
             {
                 ReturnType RESULT = null;
                 int tlleft = CUP$ixiParser$stack.peek().left;
@@ -338,7 +372,7 @@ class CUP$ixiParser$actions {
             return CUP$ixiParser$result;
 
         /*. . . . . . . . . . . . . . . . . . . .*/
-        case 13: // return_type ::= 
+        case 15: // return_type ::= 
             {
                 ReturnType RESULT = null;
                  RESULT = new ReturnType(); 
@@ -347,7 +381,7 @@ class CUP$ixiParser$actions {
             return CUP$ixiParser$result;
 
         /*. . . . . . . . . . . . . . . . . . . .*/
-        case 14: // type ::= primitive_type 
+        case 16: // type ::= primitive_type 
             {
                 Type RESULT = null;
                 int ptleft = CUP$ixiParser$stack.peek().left;
@@ -359,7 +393,7 @@ class CUP$ixiParser$actions {
             return CUP$ixiParser$result;
 
         /*. . . . . . . . . . . . . . . . . . . .*/
-        case 15: // type ::= empty_array_type 
+        case 17: // type ::= empty_array_type 
             {
                 Type RESULT = null;
                 int atleft = CUP$ixiParser$stack.peek().left;
@@ -371,7 +405,7 @@ class CUP$ixiParser$actions {
             return CUP$ixiParser$result;
 
         /*. . . . . . . . . . . . . . . . . . . .*/
-        case 16: // type_list ::= type 
+        case 18: // type_list ::= type 
             {
                 TypeList RESULT = null;
                 int tleft = CUP$ixiParser$stack.peek().left;
@@ -383,7 +417,7 @@ class CUP$ixiParser$actions {
             return CUP$ixiParser$result;
 
         /*. . . . . . . . . . . . . . . . . . . .*/
-        case 17: // type_list ::= type COMMA type_list 
+        case 19: // type_list ::= type COMMA type_list 
             {
                 TypeList RESULT = null;
                 int tleft = CUP$ixiParser$stack.elementAt(CUP$ixiParser$top-2).left;

@@ -8,4 +8,9 @@ public interface Operand {
 	public String toString();
 	
 	public Operand getNewOperand();
+	
+	public boolean isConstOffset();
+	public boolean isRegFactorOffset();
+	public boolean isConstFactor();
+	public boolean isRegBase();
 }

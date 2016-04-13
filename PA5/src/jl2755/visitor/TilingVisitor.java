@@ -11,11 +11,12 @@ import edu.cornell.cs.cs4120.xic.ir.*;
 import jl2755.assembly.*;
 import jl2755.assembly.Instruction.Operation;
 import jl2755.assembly.Register.RegisterName;
+import jl2755.assembly.Tile.tileEnum;
 
 public class TilingVisitor implements IRTreeVisitor {
 
 	private HashMap<IRNode, Tile> tileMap;
-	private static IRTreeEqualsVisitor cmpTreeVisitor = new IRTreeEqualsVisitor();
+	private IRTreeEqualsVisitor cmpTreeVisitor;
 	private int registerCount = 0;
 
 	private List<Tile> tileLibrary;
@@ -26,17 +27,17 @@ public class TilingVisitor implements IRTreeVisitor {
 	
 	/** list of first 6 function call arg registers */
 	private static final String[] ARG_REG_LIST = {
-			"RDI", "RSI", "RDX", "RCX", "R8", "R9"
+			"rdi", "rsi", "rdx", "rcx", "r8", "r9"
 	};
 	
 	/** list of callee-saved registers (except rbp) */
 	private static final String[] CALLEE_REG_LIST = {
-			"RDI", "RSI", "RBX", "R12", "R13", "R14", "R15"
+			"rdi", "rsi", "rbx", "r12", "r13", "r14", "r15"
 	};
 	
 	/** list of caller-saved registers */
 	private static final String[] CALLER_REG_LIST = {
-			"RAX", "RCX", "RDX", "R8", "R9", "R10", "R11"
+			"rax", "rcx", "rdx", "r8", "r9", "r10", "r11"
 	};
 	// shuttle regs: rcx, rdx, r11
 	
@@ -64,42 +65,213 @@ public class TilingVisitor implements IRTreeVisitor {
 					"Mem"
 					));
 	
-	// MEM(BINOP(ADD, TEMP, BINOP(ADD, BINOP(MUL, TEMP, CONST), CONST)))
-	// eg: mov mem(%ebx + (%ecx*w + k)), %eax
-	private static final List<String> MEM_EFFECTIVE_PRE = new ArrayList<String>(
+	/** Case of just Add between register and constant of the form k(r1)*/
+	private static final List<String> MEMBASEANDOFFSET_PRE = new ArrayList<String>(
 			Arrays.asList(
 					"Mem",
-					"BinOp1",
-					"null1",
-					"BinOp2",
-					"BinOp3",
-					"null2",
-					"Const2",
-					"Const1"
+					"BinOpAddRightConstantOffsetLeftRegisterBase1",
+					"null",
+					"Const"
 					));
-	private static final List<String> MEM_EFFECTIVE_IN = new ArrayList<String>(
+	
+	private static final List<String> MEMBASEANDOFFSET_IN = new ArrayList<String>(
 			Arrays.asList(
+					"null",
+					"BinOpAddRightConstantOffsetLeftRegisterBase1",
+					"Const",
+					"Mem"
+					));
+
+	/** Case of Add between 2 Registers and a Constant of the form k(r1,r2) */
+	private static final List<String> MEMBASEANDREGISTEROFFSET_PRE1 = new ArrayList<String>(
+			Arrays.asList(
+					"Mem",
+					"BinOpAddLeftConstantOffset1",
+					"Const",
+					"BinOpAddLeftRegisterOffsetRightRegisterBase2",
 					"null1",
-					"BinOp1",
+					"null2"
+					));
+	
+	private static final List<String> MEMBASEANDREGISTEROFFSET_IN1 = new ArrayList<String>(
+			Arrays.asList(
+					"Const",
+					"BinOpAddLeftConstantOffset1",
+					"null1",
+					"BinOpAddLeftRegisterOffsetRightRegisterBase2",
 					"null2",
-					"BinOp3",
-					"Const2",
-					"BinOp2",
-					"Const1",
 					"Mem"
 					));
 	
+	/** Same case as above but in different order */
+	private static final List<String> MEMBASEANDREGISTEROFFSET_PRE2 = new ArrayList<String>(
+			Arrays.asList(
+					"Mem",
+					"BinOpAddLeftRegisterBase",
+					"null1",
+					"BinOpAddLeftConstantOffset1",
+					"Const",
+					"null2"));
+	
+	private static final List<String> MEMBASEANDREGISTEROFFSET_IN2 = new ArrayList<String>(
+			Arrays.asList(
+					"null1",
+					"BinOpAddLeftRegisterBase",
+					"Const",
+					"BinOpAddLeftConstantOffset1",
+					"null2",
+					"Mem"
+					));
+	
+	/** Case of Add between a Register and a Mult between a Register and ConstantFactor
+	 * of the form (r1,r2,i)
+	 */
+	private static final List<String> MEMBASEANDREGISTERFACTOR_PRE = new ArrayList<String>(
+			Arrays.asList(
+					"Mem",
+					"BinOpAddLeftRegisterBase",
+					"null1",
+					"BinOpMultLeftRegisterOffsetRightConstantFactor",
+					"null2",
+					"Const"
+					));
+	
+	private static final List<String> MEMBASEANDREGISTERFACTOR_IN = new ArrayList<String>(
+			Arrays.asList(
+					"null1",
+					"BinOpAddLeftRegisterBase",
+					"null2",
+					"BinOpMultLeftRegisterOffsetRightConstantFactor",
+					"Const",
+					"Mem"
+					));
+	
+	/** Case of Add between a Constant, Register, and a Mult between a Register
+	 * and ConstantFactor of the form k(r1,r2,i)
+	 */
+	private static final List<String> MEMEVERYTHING_PRE1 = new ArrayList<String>(
+			Arrays.asList(
+					"Mem",
+					"BinOpAddLeftConstantOffset",
+					"Const1",
+					"BinOpAddLeftRegisterBase",
+					"null1",
+					"BinOpMultLeftRegisterOffsetRightConstantFactor",
+					"null2",
+					"Const2"
+					));
+	
+	private static final List<String> MEMEVERYTHING_IN1 = new ArrayList<String>(
+			Arrays.asList(
+					"Const1",
+					"BinOpAddLeftConstantOffset",
+					"null1",
+					"BinOpAddLeftRegisterBase",
+					"null2",
+					"BinOpMultLeftRegisterOffsetRightConstantFactor",
+					"Const2",
+					"Mem"
+					));
+	
+	/** Same case as above in different order */
+	private static final List<String> MEMEVERYTHING_PRE2 = new ArrayList<String>(
+			Arrays.asList(
+					"Mem",
+					"BinOpAddLeftRegisterBase",
+					"null1",
+					"BinOpAddLeftConstantOffset",
+					"Const1",
+					"BinOpMultLeftRegisterOffsetRightConstantFactor",
+					"null2",
+					"Const2"
+					));
+	
+	private static final List<String> MEMEVERYTHING_IN2 = new ArrayList<String>(
+			Arrays.asList(
+					"null1",
+					"BinOpAddLeftRegisterBase",
+					"Const1",
+					"BinOpAddLeftConstantOffset",
+					"null2",
+					"BinOpMultLeftRegisterOffsetRightConstantFactor",
+					"Const2",
+					"Mem"
+					));
+	
+	/** Same case as above in different order */
+	private static final List<String> MEMEVERYTHING_PRE3 = new ArrayList<String>(
+			Arrays.asList(
+					"Mem",
+					"BinOpAdd",
+					"BinOpMultLeftRegisterOffsetRightConstantFactor",
+					"null1",
+					"Const1",
+					"BinOpAddLeftConstantOffsetRightRegisterBase",
+					"Const2",
+					"null2"
+					));
+	
+	private static final List<String> MEMEVERYTHING_IN3 = new ArrayList<String>(
+			Arrays.asList(
+					"null1",
+					"BinOpMultLeftRegisterOffsetRightConstantFactor",
+					"Const1",
+					"BinOpAdd",
+					"Const2",
+					"BinOpAddLeftConstantOffsetRightRegisterBase",
+					"null2",
+					"Mem"
+					));
+	
+	// MEM(BINOP(ADD, TEMP, BINOP(ADD, BINOP(MUL, TEMP, CONST), CONST)))
+	// eg: mov mem(%ebx + (%ecx*w + k)), %eax
+	
+	
 	public TilingVisitor() {
+		cmpTreeVisitor = new IRTreeEqualsVisitor(this);
+		
 		tileLibrary = new ArrayList<Tile>();
 		List<Instruction> emptyInstructions1 = new ArrayList<Instruction>();
-		Tile tile1 = new Tile(MEM_IN,MEM_PRE,emptyInstructions1,0);
+		Tile tile1 = new Tile(MEM_IN,MEM_PRE,emptyInstructions1,0,tileEnum.BASEONLY);
 		
 		List<Instruction> emptyInstructions2 = new ArrayList<Instruction>();
-		Tile tile2 = new Tile(MEM_EFFECTIVE_IN,MEM_EFFECTIVE_PRE,emptyInstructions2,0);
+		Tile tile2 = new Tile(MEMBASEANDOFFSET_PRE,MEMBASEANDOFFSET_IN,emptyInstructions2,0,
+				tileEnum.BASEWITHCONSTANTOFFSET);
+		
+		List<Instruction> emptyInstructions3 = new ArrayList<Instruction>();
+		Tile tile3 = new Tile(MEMBASEANDREGISTEROFFSET_PRE1,MEMBASEANDREGISTEROFFSET_IN1,
+				emptyInstructions3,0,tileEnum.BASEWITHBOTHOFFSET);
+		
+		List<Instruction> emptyInstructions4 = new ArrayList<Instruction>();
+		Tile tile4 = new Tile(MEMBASEANDREGISTEROFFSET_PRE2,MEMBASEANDREGISTEROFFSET_IN2,
+				emptyInstructions4,0,tileEnum.BASEWITHBOTHOFFSET);
+		
+		List<Instruction> emptyInstruction5 = new ArrayList<Instruction>();
+		Tile tile5 = new Tile(MEMBASEANDREGISTERFACTOR_PRE,MEMBASEANDREGISTERFACTOR_IN,
+				emptyInstruction5,0,tileEnum.BASEWITHREGISTEROFFSETANDFACTOR);
+		
+		List<Instruction> emptyInstruction6 = new ArrayList<Instruction>();
+		Tile tile6 = new Tile(MEMEVERYTHING_PRE1,MEMEVERYTHING_IN1,
+				emptyInstruction6,0,tileEnum.EVERYTHING);
+		
+		List<Instruction> emptyInstruction7 = new ArrayList<Instruction>();
+		Tile tile7 = new Tile(MEMEVERYTHING_PRE2,MEMEVERYTHING_IN2,
+				emptyInstruction7,0,tileEnum.EVERYTHING);
+		
+		List<Instruction> emptyInstruction8 = new ArrayList<Instruction>();
+		Tile tile8 = new Tile(MEMEVERYTHING_PRE3,MEMEVERYTHING_IN3,
+				emptyInstruction8,0,tileEnum.EVERYTHING);
+		
 		
 		tileLibrary = new ArrayList<Tile>();
 		tileLibrary.add(tile1);
 		tileLibrary.add(tile2);
+		tileLibrary.add(tile3);
+		tileLibrary.add(tile4);
+		tileLibrary.add(tile5);
+		tileLibrary.add(tile6);
+		tileLibrary.add(tile7);
+		tileLibrary.add(tile8);
 	}
 	
 	public String parseTiles(IRNode argNode) {
@@ -117,13 +289,13 @@ public class TilingVisitor implements IRTreeVisitor {
 				Label label = (Label) instr.getDest();
 				String labelString = label.toString();
 				// if it's a function label 
-				if (labelString.contains("FUNC(")) {
+				if (labelString.charAt(0) == '_') {
 					if (!isFirstFunction) {
 						assemblyString += "\n";
 					} else {
 						isFirstFunction = false;
 					}
-					assemblyString += "\t.global\t" + labelString + "\n";
+					assemblyString += "\t.globl\t" + labelString + "\n";
 					assemblyString += "\t.align\t4\n";
 				}
 				assemblyString += instr.toString() + ":\n";
@@ -133,6 +305,10 @@ public class TilingVisitor implements IRTreeVisitor {
 		}
 		
 		return assemblyString;
+	}
+	
+	public Tile getTileOfNode(IRNode argNode) {
+		return tileMap.get(argNode);
 	}
 
 	/**
@@ -502,7 +678,8 @@ public class TilingVisitor implements IRTreeVisitor {
 		
 		// "callq targetDest"
 		Label targetDest = (Label)targetTile.getDest();
-		targetDest.setLabelName("FUNC("+targetDest.toString().substring(1)+")");
+		targetDest.setLabelName(targetDest.toString());
+//		targetDest.setLabelName("FUNC("+targetDest.toString().substring(1)+")");
 		Instruction callInstruction = new Instruction(Operation.CALLQ, targetDest);
 		tempInstructions.add(callInstruction);
 	
@@ -749,41 +926,27 @@ public class TilingVisitor implements IRTreeVisitor {
 			} else {
 				superTile = Tile.mergeTiles(superTile, tileMap.get(fd));
 			}
-		}
-		
+		}		
 		tileMap.put(cu, superTile);
 		
-//		superTile = null;
-//		
-//		// Register/Stack allocation
-//		stackAllocation(cu);
-//		
-//		// Set parameters of all function decls
-//		for (Entry<IRNode, Tile> entry : tileMap.entrySet()) {
-//			if (entry.getKey() instanceof IRFuncDecl) {
-//				IRFuncDecl fd = (IRFuncDecl) entry.getKey();
-//				Tile fdTile = entry.getValue();
-//				Instruction enter = fdTile.getInstructions().get(1);
-//				// complete "enter 8*l, 0"
-//				Constant space = new Constant(8*(functionSpaceMap.get(fd.assemblyLabel())));
-//				enter.setSrc(space);
-//				fdTile.getInstructions().set(1,enter);
-//				tileMap.put(fd, fdTile);
-//			}
-//		}
-//		
-//		for (IRFuncDecl fd : cu.functions().values()) {
-//			if (superTile == null) {
-//				superTile = tileMap.get(fd);
-//			} else {
-//				superTile = Tile.mergeTiles(superTile, tileMap.get(fd));
-//			}
-//		}
-//		
-//		tileMap.put(cu, superTile);
-		
-		// TODO: REFACTOR TO PUT RIGHT TILE IN COMPUNIT AFTER EPILOGUE
-		// AND PROLOGUE STUFFFFFFFFFFFFFFF
+		// Register/Stack allocation
+		stackAllocation(cu);
+			
+		// Set parameters of all function decls
+		Tile cuTile = tileMap.get(cu);
+		List<Instruction> instructions = cuTile.getInstructions();
+		for (int i = 0; i < instructions.size(); i++) {
+			Instruction instr = instructions.get(i);
+			// if curr instr is a function label
+			if (instr.getOp() == Operation.LABEL && 
+				((Label)instr.getDest()).getLabelName().charAt(0) == '_') {
+				String fnName = ((Label)instr.getDest()).getLabelName();
+				Instruction enter = instructions.get(++i);
+				// complete "enter 8*l, 0"
+				Constant space = new Constant(8*(functionSpaceMap.get(fnName)));
+				enter.setSrc(space);
+			}
+		}
 	}
 
 	/**
@@ -817,7 +980,7 @@ public class TilingVisitor implements IRTreeVisitor {
 	public void visit(IRFuncDecl fd) {
 		List<Instruction> instructions = new ArrayList<Instruction>();
 		// Label
-		Label fnLabel = new Label(fd.assemblyLabel());
+		Label fnLabel = new Label(fd.name());
 		instructions.add(new Instruction(Operation.LABEL, fnLabel));
 		// Prologue
 		// TODO: replace enter with push/mov/sub for optimization
@@ -904,15 +1067,16 @@ public class TilingVisitor implements IRTreeVisitor {
 		// Initialize list of matching tiles
 		List<Tile> matchingTiles = new ArrayList<Tile>();
 		ArrayList<ArrayList<IRNode>> childrenOfEachTile = new ArrayList<ArrayList<IRNode>>();
+		ArrayList<ArrayList<Operand>> operandOfEachChildren = new ArrayList<ArrayList<Operand>>();
 		for (int i = 0; i < tileLibrary.size(); i++) {
 			if (cmpTreeVisitor.equalTrees(tileLibrary.get(i).getRootOfSubtree(), 
 					mem)) {
+				System.out.println("Printing library tile " + tileLibrary.get(i));
 				matchingTiles.add(new Tile(mem,tileLibrary.get(i)));
 				childrenOfEachTile.add((ArrayList<IRNode>) cmpTreeVisitor.getAllChildrenNode());
+				operandOfEachChildren.add((ArrayList<Operand>) cmpTreeVisitor.getOperandOfNodesInTile());
 			}
 		}
-		
-		ArrayList<ArrayList<Operand>> operandOfEachChildren = new ArrayList<ArrayList<Operand>>();
 		
 		// Iterate through, call accept for each child, and 
 		// populate the Operand list.
@@ -921,8 +1085,6 @@ public class TilingVisitor implements IRTreeVisitor {
 			for (int j = 0; j < childrenOfEachTile.get(i).size(); j++) {
 				IRNode currentNode = childrenOfEachTile.get(i).get(j);
 				currentNode.accept(this);
-				Tile currentTile = tileMap.get(currentNode);
-				operandOfEachChildren.get(i).add(currentTile.getDest());
 			}
 		}
 		
@@ -968,6 +1130,7 @@ public class TilingVisitor implements IRTreeVisitor {
 		Tile targetTile = tileMap.get(mov.target());
 		Operand sourceOperand = sourceTile.getDest();
 		Operand targetOperand = targetTile.getDest();
+		
 		
 		boolean redundant = sourceOperand.toString().equals(targetOperand.toString());		
 		
@@ -1263,7 +1426,8 @@ public class TilingVisitor implements IRTreeVisitor {
 				// dest is constant or label
 				Operation op = currentInstruction.getOp();
 				Operand label = currentInstruction.getDest();
-				if (op == Operation.LABEL && label.toString().contains("FUNC(")) {
+//				if (op == Operation.LABEL && label.toString().contains("FUNC(")) {
+				if (op == Operation.LABEL && label.toString().charAt(0) == '_') {
 					functionSpaceMap.put(currentFunction,stackCounter);
 					currentFunction = label.toString();
 					stackCounter = 0;
@@ -1339,6 +1503,7 @@ public class TilingVisitor implements IRTreeVisitor {
 						Instruction movToRegS = new Instruction(Operation.MOVQ,memS,rdx);
 						added.add(movToRegS);
 					} else {
+						System.out.println(currentInstruction);
 						System.out.println(regS);
 						System.out.println("Access a register that hasn't been set!");
 						assert(false);
@@ -1515,17 +1680,17 @@ public class TilingVisitor implements IRTreeVisitor {
 				Operand returnOperand;
 				Instruction shuttleInstruction = null;
 				if (regNum == 0) {
-					returnOperand = new Register("rax");
+					returnOperand = new Register(RegisterName.RAX);
 				} else if (regNum == 1) {
-					returnOperand = new Register("rdx");
+					returnOperand = new Register(RegisterName.RDX);
 				} else {
-					Register rdi = new Register("rdi");
+					Register rdi = new Register(RegisterName.RDI);
 					Constant offset = new Constant(8*(regNum-2));
 					returnOperand = new Memory(offset, rdi);
 					
 					Operand destOperand = instr.getSrc();
 					if (destOperand instanceof Memory) {
-						Register r11 = new Register("r11");
+						Register r11 = new Register(RegisterName.R11);
 						shuttleInstruction = new Instruction(Operation.MOVQ, returnOperand, r11);
 						returnOperand = r11;
 					}
@@ -1547,17 +1712,17 @@ public class TilingVisitor implements IRTreeVisitor {
 				Operand returnOperand;
 				Instruction shuttleInstruction = null;
 				if (regNum == 0) {
-					returnOperand = new Register("rax");
+					returnOperand = new Register(RegisterName.RAX);
 				} else if (regNum == 1) {
-					returnOperand = new Register("rdx");
+					returnOperand = new Register(RegisterName.RDX);
 				} else {
-					Register rdi = new Register("rdi");
+					Register rdi = new Register(RegisterName.RDI);
 					Constant offset = new Constant(8*(regNum-2));
 					returnOperand = new Memory(offset, rdi);
 					
 					Operand srcOperand = instr.getSrc();
 					if (srcOperand instanceof Memory) {
-						Register r11 = new Register("r11");
+						Register r11 = new Register(RegisterName.R11);
 						shuttleInstruction = new Instruction(Operation.MOVQ, srcOperand, r11);
 						instr.setSrc(r11);
 					}

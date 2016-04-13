@@ -91,6 +91,11 @@ start with interface;
 
 /* Grammar */
 
+brackets ::= OPEN_BRACKET CLOSE_BRACKET                             {: RESULT = new Brackets(); :}
+             | 
+             OPEN_BRACKET CLOSE_BRACKET brackets:b                  {: RESULT = new Brackets(b); :}
+             ;
+             
 empty_array_type ::= primitive_type:pt brackets:b                   {: RESULT = new EmptyArrayType(pt, b); :}
                      ;
 
@@ -98,8 +103,6 @@ function_param ::= identifier:id COLON type:t                       {: RESULT = 
                    |
                    identifier:id COLON type:t COMMA 
                    function_param:fp                                {: RESULT = new FunctionParam(id, t, fp); :}
-                   |
-                                                                    {: RESULT = new FunctionParam(); :}
                    ;
 
 identifier ::= IDENTIFIER:id                                        {: RESULT = new Identifier(id, idleft, idright); :}
@@ -108,7 +111,10 @@ identifier ::= IDENTIFIER:id                                        {: RESULT = 
 interface ::= interface_list:il                                     {: RESULT = new Interface(il); :}
               ;
 
-interface_func ::= identifier:id OPEN_PAREN function_param:fp 
+interface_func ::= identifier:id OPEN_PAREN 
+                   CLOSE_PAREN return_type:rt                       {: RESULT = new InterfaceFunc(id, rt); :}
+                   |
+                   identifier:id OPEN_PAREN function_param:fp 
                    CLOSE_PAREN return_type:rt                       {: RESULT = new InterfaceFunc(id, fp, rt); :}
                    ;
 

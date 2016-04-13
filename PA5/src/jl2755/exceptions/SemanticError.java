@@ -13,10 +13,13 @@ public class SemanticError extends RuntimeException {
 	}
 	
 	public void setFilename(String fn) {
-		filename = fn;
+		if (filename == null) {
+			filename = fn;
+		}
 	}
 	
-    public String message() {
+    @Override
+    public String getMessage() {
     	String s;
     	
     	if (filename == null) {
@@ -25,11 +28,6 @@ public class SemanticError extends RuntimeException {
     		s = "Semantic error at " + filename + ":" + line + ":" + column + ": " + description;
     	}
     	
-        return s;         		
-    }
-	
-    @Override
-    public String getMessage() {
-        return message();
+        return s;
     }
 }

@@ -589,7 +589,6 @@ public class Main {
             LIRVisitor lir = new LIRVisitor();
             mir.program.accept(lir);
             
-//            // TODO: remove
 //            StringWriter sw = new StringWriter();
 //            try (PrintWriter pw = new PrintWriter(sw);
 //                    SExpPrinter sp = new CodeWriterSExpPrinter(pw)) {
@@ -598,6 +597,7 @@ public class Main {
 //            bw.write(sw.toString());
 ////            bw.close();
 //            
+            
             /* Generate Assembly Code */
             // TODO: new visitor??
             

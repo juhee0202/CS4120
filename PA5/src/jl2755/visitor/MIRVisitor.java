@@ -387,8 +387,9 @@ public class MIRVisitor implements ASTVisitor{
 		if (index == 0) {									// f()
 			String id = fc.getABIName();
 			IRName lf = new IRName(id);
-			tempNode = new IRCall(lf);
-			((IRCall) tempNode).setNumReturns(fc.getNumReturns());
+			IRCall call = new IRCall(lf);
+			call.setNumReturns(fc.getNumReturns());
+			tempNode = call;
 		} else if (index == 1) {							// f(a1,...,an) 
 			// get function label
 			String id = fc.getABIName();
@@ -402,8 +403,10 @@ public class MIRVisitor implements ASTVisitor{
 				arg.accept(this);
 				irArgs.add((IRExpr) tempNode);
 			}
-			tempNode = new IRCall(lf, irArgs);
-			((IRCall) tempNode).setNumReturns(fc.getNumReturns());
+			
+			IRCall call = new IRCall(lf, irArgs);
+			call.setNumReturns(fc.getNumReturns());
+			tempNode = call;
 		} else {											// length(e)
 			fc.getExpr().accept(this);
 			IRExpr array = (IRExpr) tempNode;
@@ -627,9 +630,13 @@ public class MIRVisitor implements ASTVisitor{
 	public void visit(TupleInit ti) {
 		ti.getFunctionCall().accept(this);
 		IRCall fCall = (IRCall) tempNode;
+		boolean[] returnBoolList = fCall.getReturnBoolList();
 		if (ti.getIndex() == 0) {
 			// _ = f()
-			tempNode = new IRExp((IRExpr) tempNode);
+			assert(returnBoolList.length == 1);
+			returnBoolList[0] = false;
+			fCall.setReturnBoolList(returnBoolList);
+			tempNode = new IRExp(fCall);
 		} else {	
 			// vd, tupleDeclList = f()
 			IRTemp temp;
@@ -648,8 +655,13 @@ public class MIRVisitor implements ASTVisitor{
 					move = new IRMove(temp,result);
 					stmts.add(move);
 					allUnderscore = false;
+				} else { // _
+					returnBoolList[i] = false;
 				}
 			}
+			
+			fCall.setReturnBoolList(returnBoolList);
+			
 			if (allUnderscore) {
 				tempNode = new IRExp(fCall);
 			} else {

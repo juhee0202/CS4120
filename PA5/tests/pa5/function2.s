@@ -13,21 +13,28 @@
    (MOVE (TEMP temp6) (CONST 7))
    (MOVE (TEMP temp7) (CONST 8))
    (EXP
-    (CALL (NAME _If_piiiiiiii) (TEMP temp0) (TEMP temp1) (TEMP temp2)
+    (CALL (NAME _If_t2iiiiiiiiii) (TEMP temp0) (TEMP temp1) (TEMP temp2)
      (TEMP temp3) (TEMP temp4) (TEMP temp5) (TEMP temp6) (TEMP temp7)))
+   (MOVE (TEMP x1) (TEMP _RET0))
+   (MOVE (TEMP x2) (TEMP _RET1))
    (RETURN)))
  (FUNC
-  _If_piiiiiiii
+  _If_t2iiiiiiiiii
   (SEQ
-   (MOVE (TEMP x1) (TEMP _ARG0))
-   (MOVE (TEMP x2) (TEMP _ARG1))
-   (MOVE (TEMP x3) (TEMP _ARG2))
-   (MOVE (TEMP x4) (TEMP _ARG3))
-   (MOVE (TEMP x5) (TEMP _ARG4))
-   (MOVE (TEMP x6) (TEMP _ARG5))
-   (MOVE (TEMP x7) (TEMP _ARG6))
-   (MOVE (TEMP x8) (TEMP _ARG7))
+   (MOVE (TEMP a1) (TEMP _ARG0))
+   (MOVE (TEMP a2) (TEMP _ARG1))
+   (MOVE (TEMP a3) (TEMP _ARG2))
+   (MOVE (TEMP a4) (TEMP _ARG3))
+   (MOVE (TEMP a5) (TEMP _ARG4))
+   (MOVE (TEMP a6) (TEMP _ARG5))
+   (MOVE (TEMP a7) (TEMP _ARG6))
+   (MOVE (TEMP a8) (TEMP _ARG7))
+   (MOVE (TEMP _RET0) (TEMP a1))
+   (MOVE (TEMP _RET1) (TEMP a2))
    (RETURN))))
+	.text
+	.global	FUNC(Imain_paai)
+	.align	4
 FUNC(Imain_paai):
 	enter	$0 $0
 	movq	%RDI %args
@@ -47,13 +54,17 @@ FUNC(Imain_paai):
 	pushq	%R10
 	pushq	%R11
 	pushq	%temp7
+	pushq	%temp6
 	movq	%temp5 %R9
 	movq	%temp4 %R8
 	movq	%temp3 %RCX
 	movq	%temp2 %RDX
 	movq	%temp1 %RSI
 	movq	%temp0 %RDI
-	callq	FUNC(If_piiiiiiii)
+	subq	$8 %rsp
+	callq	FUNC(If_t2iiiiiiiiii)
+	movq	%rax %x1
+	movq	%rdx %x2
 	movq	64(%rsp) %RAX
 	movq	56(%rsp) %RCX
 	movq	48(%rsp) %RDX
@@ -61,18 +72,23 @@ FUNC(Imain_paai):
 	movq	32(%rsp) %R9
 	movq	24(%rsp) %R10
 	movq	16(%rsp) %R11
-	addq	$0 %rsp
+	addq	$80 %rsp
 	leave
 	ret
-FUNC(If_piiiiiiii):
+
+	.global	FUNC(If_t2iiiiiiiiii)
+	.align	4
+FUNC(If_t2iiiiiiiiii):
 	enter	$0 $0
-	movq	%RDI %x1
-	movq	%RSI %x2
-	movq	%RDX %x3
-	movq	%RCX %x4
-	movq	%R8 %x5
-	movq	%R9 %x6
-	movq	16(%rbp) %x7
-	movq	24(%rbp) %x8
+	movq	%RDI %a1
+	movq	%RSI %a2
+	movq	%RDX %a3
+	movq	%RCX %a4
+	movq	%R8 %a5
+	movq	%R9 %a6
+	movq	16(%rbp) %a7
+	movq	24(%rbp) %a8
+	movq	%a1 %rax
+	movq	%a2 %rdx
 	leave
 	ret

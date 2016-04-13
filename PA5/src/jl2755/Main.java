@@ -695,13 +695,16 @@ public class Main {
             }  
         } catch(LexicalError error) {
 //        	System.out.println(error.getMessage());
+        	System.out.println("\t" + absPath);
         	throw error;
         } catch(SyntaxError error) {
 //        	System.out.println(error.getMessage());
+        	System.out.println("\t" + absPath);
         	throw error;
         } catch (FileNotFoundException e) {
-        	System.out.println("Failed to read input file " + absPath);
+        	System.out.println("\tFailed to read input file " + absPath);
         } catch (Exception e) {
+        	System.out.println("\t" + absPath);
             e.printStackTrace();
         }
         return tempMap;

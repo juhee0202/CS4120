@@ -442,8 +442,13 @@
 #   define mach_type_known
 # endif
 # if defined(__CYGWIN32__) || defined(__CYGWIN__)
-#   define I386
-#   define CYGWIN32
+#   if defined(__LP64__) || defined(_WIN64)
+#     define X86_64
+#     define MSWIN32
+#   else
+#     define I386
+#     define CYGWIN32
+#   endif
 #   define mach_type_known
 # endif
 # if defined(__MINGW32__) && !defined(mach_type_known)

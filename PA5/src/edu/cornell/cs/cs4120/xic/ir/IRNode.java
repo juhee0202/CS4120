@@ -9,6 +9,7 @@ import edu.cornell.cs.cs4120.xic.ir.visit.AggregateVisitor;
 import edu.cornell.cs.cs4120.xic.ir.visit.CheckCanonicalIRVisitor;
 import edu.cornell.cs.cs4120.xic.ir.visit.IRVisitor;
 import edu.cornell.cs.cs4120.xic.ir.visit.InsnMapsBuilder;
+import jl2755.assembly.ChildType;
 import jl2755.visitor.IRTreeVisitor;
 import jl2755.visitor.LIRVisitor;
 
@@ -71,4 +72,12 @@ public abstract class IRNode {
     public abstract void addLeft(IRNode irn);
     
     public abstract void addRight(IRNode irn);
+    
+    public abstract ChildType getLeftChildEnumType();
+    
+    public abstract void setLeftChildEnumType(ChildType argEnum);
+    
+    public abstract ChildType getRightChildEnumType();
+    
+    public abstract void setRightChildEnumType(ChildType argEnum);
 }

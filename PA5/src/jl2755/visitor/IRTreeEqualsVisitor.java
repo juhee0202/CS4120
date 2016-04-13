@@ -21,9 +21,11 @@ import edu.cornell.cs.cs4120.xic.ir.IRNode;
 import edu.cornell.cs.cs4120.xic.ir.IRReturn;
 import edu.cornell.cs.cs4120.xic.ir.IRSeq;
 import edu.cornell.cs.cs4120.xic.ir.IRTemp;
+import jl2755.assembly.ChildType;
 import jl2755.assembly.Constant;
 import jl2755.assembly.Operand;
 import jl2755.assembly.Register;
+import jl2755.assembly.Tile;
 
 /**
  * Class that is used to compare two trees and see if one is a pattern
@@ -39,8 +41,15 @@ public class IRTreeEqualsVisitor implements IRTreeVisitor{
 	
 	private List<Operand> operandOfNodesInTile;
 	
-	public IRTreeEqualsVisitor(){
+	private TilingVisitor tilingVisitor;
+	
+	private enum TreeType {
+		MEM;
+	}
+	
+	public IRTreeEqualsVisitor(TilingVisitor argVisitor){
 		allChildrenNode = new ArrayList<IRNode>();
+		tilingVisitor = argVisitor;
 	}
 	
 	/**
@@ -59,23 +68,28 @@ public class IRTreeEqualsVisitor implements IRTreeVisitor{
 		return currentBool;
 	}
 	
-	private void equalSubTrees(IRNode rootOfFakeInstance, IRNode rootOfRealInstance) {
+	private boolean equalSubTrees(IRNode rootOfFakeInstance, IRNode rootOfRealInstance) {
 		boolean temp = doesEquals(rootOfFakeInstance, rootOfRealInstance);
 //		System.out.println("temp is " + temp);
-		currentBool = currentBool && temp;
+//		currentBool = currentBool && temp;
+
 		if (temp) {
 			currentNode = rootOfRealInstance;
 			if (rootOfFakeInstance != null) {
 				rootOfFakeInstance.accept(this);
-
+			} else {
+				allChildrenNode.add(rootOfRealInstance);
+				rootOfRealInstance.accept(tilingVisitor);
+				operandOfNodesInTile.add(tilingVisitor.getTileOfNode(rootOfRealInstance).getDest());
 			}
 		}
-		if (rootOfFakeInstance == null) {
-			allChildrenNode.add(rootOfRealInstance);
-//			if (!(rootOfRealInstance == null)) {
-//				allChildrenNode.add(rootOfRealInstance);
-//			}
-		}
+//		if (rootOfFakeInstance == null) {
+//			allChildrenNode.add(rootOfRealInstance);
+////			if (!(rootOfRealInstance == null)) {
+////				allChildrenNode.add(rootOfRealInstance);
+////			}
+//		}
+		return temp;
 	}
 	
 	public List<IRNode> getAllChildrenNode() {
@@ -85,20 +99,72 @@ public class IRTreeEqualsVisitor implements IRTreeVisitor{
 	public List<Operand> getOperandOfNodesInTile() {
 		return operandOfNodesInTile;
 	}
+	
+	private static void setTypeOfOperand(Operand argOperand, ChildType argTypeEnum) {
+		if (argTypeEnum == ChildType.CONSTANTFACTOR) {
+			((Constant)argOperand).setConstFactor();
+		} else if (argTypeEnum == ChildType.CONSTANTOFFSET) {
+			((Constant)argOperand).setConstOffset();
+		} else if (argTypeEnum == ChildType.REGISTERBASE) {
+			((Register)argOperand).setRegBase();
+		} else if (argTypeEnum == ChildType.REGISTERFACTOR) {
+			((Register)argOperand).setRegFactorOffset();
+		}
+	}
 
 	@Override
 	public void visit(IRBinOp bo) {
 		IRBinOp tempCurrent = (IRBinOp) currentNode;
 		
-		equalSubTrees(bo.left(), tempCurrent.left());
-		equalSubTrees(bo.right(), tempCurrent.right());
+		boolean normalResult = equalSubTrees(bo.left(), tempCurrent.left()) &&
+				equalSubTrees(bo.right(), tempCurrent.right());
+		
+		if (normalResult) {
+			if (bo.getLeftChildEnumType() != null) {
+				tempCurrent.left().accept(tilingVisitor);
+				Tile tempTile = tilingVisitor.getTileOfNode(tempCurrent.left());
+				Operand destOfLeftTile = tempTile.getDest();
+				setTypeOfOperand(destOfLeftTile,bo.getLeftChildEnumType());
+				operandOfNodesInTile.add(destOfLeftTile);
+			}
+			if (bo.getRightChildEnumType() != null) {
+				tempCurrent.right().accept(tilingVisitor);
+				Tile tempTile = tilingVisitor.getTileOfNode(tempCurrent.right());
+				Operand destOfRightTile = tempTile.getDest();
+				setTypeOfOperand(destOfRightTile,bo.getRightChildEnumType());
+				operandOfNodesInTile.add(destOfRightTile);
+			}
+		}
+		
+		boolean flippedResult = equalSubTrees(bo.left(),tempCurrent.right()) &&
+				equalSubTrees(bo.right(),tempCurrent.left());
+		
+		if (!normalResult && flippedResult) {
+			if (bo.getLeftChildEnumType() != null) {
+				tempCurrent.right().accept(tilingVisitor);
+				Tile tempTile = tilingVisitor.getTileOfNode(tempCurrent.right());
+				Operand destOfRightTile = tempTile.getDest();
+				setTypeOfOperand(destOfRightTile,bo.getLeftChildEnumType());
+				operandOfNodesInTile.add(destOfRightTile);
+			}
+			if (bo.getRightChildEnumType() != null) {
+				tempCurrent.left().accept(tilingVisitor);
+				Tile tempTile = tilingVisitor.getTileOfNode(tempCurrent.left());
+				Operand destOfLeftTile = tempTile.getDest();
+				setTypeOfOperand(destOfLeftTile,bo.getRightChildEnumType());
+				operandOfNodesInTile.add(destOfLeftTile);
+			}
+		}
+		
+		currentBool = currentBool && (normalResult || flippedResult);
+		
 	}
 
 	@Override
 	public void visit(IRCall call) {
 		IRCall tempCurrent = (IRCall) currentNode;
 		
-		equalSubTrees(call.target(),tempCurrent.target());
+		currentBool = currentBool && equalSubTrees(call.target(),tempCurrent.target());
 		List<IRExpr> fakeExprs = call.args();
 		List<IRExpr> trueExprs = tempCurrent.args();
 		if (fakeExprs.size() != trueExprs.size()) {
@@ -106,7 +172,7 @@ public class IRTreeEqualsVisitor implements IRTreeVisitor{
 		}
 		else {
 			for (int i = 0; i < fakeExprs.size(); i++) {
-				equalSubTrees(fakeExprs.get(i),trueExprs.get(i));
+				currentBool = currentBool && equalSubTrees(fakeExprs.get(i),trueExprs.get(i));
 			}
 		}
 	}
@@ -115,7 +181,7 @@ public class IRTreeEqualsVisitor implements IRTreeVisitor{
 	public void visit(IRCJump cj) {
 		IRCJump tempCurrent = (IRCJump) currentNode;
 		
-		equalSubTrees(cj.expr(),tempCurrent.expr());
+		currentBool = currentBool && equalSubTrees(cj.expr(),tempCurrent.expr());
 	}
 
 	@Override
@@ -137,21 +203,21 @@ public class IRTreeEqualsVisitor implements IRTreeVisitor{
 	public void visit(IRExp exp) {
 		IRExp tempCurrent = (IRExp) currentNode;
 		
-		equalSubTrees(exp.expr(),tempCurrent.expr());
+		currentBool = currentBool && equalSubTrees(exp.expr(),tempCurrent.expr());
 	}
 
 	@Override
 	public void visit(IRFuncDecl fd) {
 		IRFuncDecl tempCurrent = (IRFuncDecl) currentNode;
 		
-		equalSubTrees(fd.body(),tempCurrent.body());
+		currentBool = currentBool && equalSubTrees(fd.body(),tempCurrent.body());
 	}
 
 	@Override
 	public void visit(IRJump j) {
 		IRJump tempCurrent = (IRJump) currentNode;
 		
-		equalSubTrees(j.target(), tempCurrent.target());
+		currentBool = currentBool && equalSubTrees(j.target(), tempCurrent.target());
 	}
 
 	@Override
@@ -163,15 +229,15 @@ public class IRTreeEqualsVisitor implements IRTreeVisitor{
 	public void visit(IRMem mem) {
 		IRMem tempCurrent = (IRMem) currentNode;
 		
-		equalSubTrees(mem.expr(), tempCurrent.expr());
+		currentBool = currentBool && equalSubTrees(mem.expr(), tempCurrent.expr());
 	}
 
 	@Override
 	public void visit(IRMove mov) {
 		IRMove tempCurrent = (IRMove) currentNode;
 		
-		equalSubTrees(mov.target(),tempCurrent.target());
-		equalSubTrees(mov.expr(),tempCurrent.expr());
+		currentBool = currentBool && equalSubTrees(mov.target(),tempCurrent.target());
+		currentBool = currentBool && equalSubTrees(mov.expr(),tempCurrent.expr());
 	}
 
 	@Override
@@ -200,7 +266,11 @@ public class IRTreeEqualsVisitor implements IRTreeVisitor{
 		}
 		if (left instanceof IRBinOp) {
 			if (right instanceof IRBinOp) {
-				return true;
+				IRBinOp leftBinOp = (IRBinOp)  left;
+				IRBinOp rightBinOp = (IRBinOp) right;
+				if (leftBinOp.opType() == rightBinOp.opType()) {
+					return true;
+				}
 			}
 			return false;
 		}

@@ -14,6 +14,7 @@ import edu.cornell.cs.cs4120.util.SExpPrinter;
 import edu.cornell.cs.cs4120.xic.ir.IRNode;
 import jl2755.assembly.Tile;
 import jl2755.visitor.IRTreeEqualsVisitor;
+import jl2755.visitor.TilingVisitor;
 
 public class dohMyGod {
 
@@ -140,6 +141,65 @@ public class dohMyGod {
 		
 		IRNode tree2 = Tile.makeTree(testIn2, testPre2);
 		System.out.println("Subtree result is " + temp.equalTrees(tree1, tree2));
+	}
+	
+	@Test
+	public void testNewEqualTrees() {
+		
+		List<String> testPre1 = new ArrayList<String>(
+				Arrays.asList(
+						"Mem",
+						"BinOpAddLeftRegisterBase1",
+						"null1",
+						"BinOpAddRightConstantOffset2",
+						"BinOpMult3LeftRegisterOffsetRightConstantFactor",
+						"null2",
+						"Const2",
+						"Const1"
+						));
+		
+		List<String> testIn1 = new ArrayList<String>(
+				Arrays.asList(
+						"null1",
+						"BinOpAddLeftRegisterBase1",
+						"null2",
+						"BinOpMult3LeftRegisterOffsetRightConstantFactor",
+						"Const2",
+						"BinOpAddRightConstantOffset2",
+						"Const1",
+						"Mem"
+						));
+		
+		IRNode tree1 = Tile.makeTree(testIn1, testPre1);
+		
+		List<String> testPre2 = new ArrayList<String>(
+				Arrays.asList(
+						"Mem",
+						"BinOpAddLeftConstantOffset1",
+						"Const1",
+						"BinOpAdd2LeftRegisterBase",
+						"null1",
+						"BinOpMult3LeftRegisterOffsetRightConstantFactor",
+						"null2",
+						"Const2"
+						));
+		
+		List<String> testIn2 = new ArrayList<String>(
+				Arrays.asList(
+						"Const1",
+						"BinOpAddLeftConstantOffset1",
+						"null1",
+						"BinOpAdd2LeftRegisterBase",
+						"null2",
+						"BinOpMult3LeftRegisterOffsetRightConstantFactor",
+						"Const2",
+						"Mem"
+						));
+		TilingVisitor tiling = new TilingVisitor();
+		IRNode tree2 = Tile.makeTree(testIn2, testPre2);
+		IRTreeEqualsVisitor temp = new IRTreeEqualsVisitor(tiling);
+		System.out.println("Subtree result is " + temp.equalTrees(tree1, tree2));
+		System.out.println(temp.getAllChildrenNode());
 	}
 
 }

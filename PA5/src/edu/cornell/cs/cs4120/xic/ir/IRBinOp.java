@@ -3,6 +3,7 @@ package edu.cornell.cs.cs4120.xic.ir;
 import edu.cornell.cs.cs4120.util.SExpPrinter;
 import edu.cornell.cs.cs4120.xic.ir.visit.AggregateVisitor;
 import edu.cornell.cs.cs4120.xic.ir.visit.IRVisitor;
+import jl2755.assembly.ChildType;
 import jl2755.visitor.IRTreeVisitor;
 
 /**
@@ -13,6 +14,7 @@ public class IRBinOp extends IRExpr {
 
     private OpType type;
     private IRExpr left, right;
+    private ChildType leftType, rightType;
 
     public IRBinOp(OpType type, IRExpr left, IRExpr right) {
         this.type = type;
@@ -85,5 +87,25 @@ public class IRBinOp extends IRExpr {
 	@Override
 	public void addRight(IRNode irn) {
 		right = (IRExpr) irn;
+	}
+
+	@Override
+	public ChildType getLeftChildEnumType() {
+		return leftType;
+	}
+
+	@Override
+	public void setLeftChildEnumType(ChildType argEnum) {
+		leftType = argEnum;
+	}
+
+	@Override
+	public ChildType getRightChildEnumType() {
+		return rightType;
+	}
+
+	@Override
+	public void setRightChildEnumType(ChildType argEnum) {
+		rightType = argEnum;
 	}
 }

@@ -3,6 +3,7 @@ package jl2755.assembly;
 import edu.cornell.cs.cs4120.util.InternalCompilerError;
 
 public class Register implements Operand {
+	
 
 	public enum RegisterName {
 		RAX, RBX, RCX, RDX, RSI, RDI, RSP, RBP,
@@ -311,6 +312,9 @@ public class Register implements Operand {
 	/** The enum value of this register. */
 	private RegisterName type;
 	
+	private boolean isBase;
+	private boolean isFactor;
+	
 	/** Only used for copying */
 	private Register() {
 	}
@@ -356,6 +360,34 @@ public class Register implements Operand {
 	@Override
 	public String getOpType() {
 		return "Register";
+	}
+
+	@Override
+	public boolean isConstOffset() {
+		return false;
+	}
+
+	@Override
+	public boolean isRegFactorOffset() {
+		return isFactor;
+	}
+	
+	public void setRegFactorOffset() {
+		isFactor = true;
+	}
+
+	@Override
+	public boolean isConstFactor() {
+		return false;
+	}
+
+	@Override
+	public boolean isRegBase() {
+		return isBase;
+	}
+	
+	public void setRegBase() {
+		isBase = true;
 	}
 	
 }

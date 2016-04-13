@@ -30,4 +30,24 @@ public class Label implements Operand{
 	public void setLabelName(String labelName) {
 		this.labelName = labelName;
 	}
+
+	@Override
+	public boolean isConstOffset() {
+		return false;
+	}
+
+	@Override
+	public boolean isRegFactorOffset() {
+		return false;
+	}
+
+	@Override
+	public boolean isConstFactor() {
+		return false;
+	}
+
+	@Override
+	public boolean isRegBase() {
+		return false;
+	}
 }

@@ -14,7 +14,7 @@
    (MOVE (TEMP x) (TEMP t0))
    (RETURN))))
 FUNC(Imain_paai):
-	enter	$64 $0
+	enter	$48 $0
 	movq	%RDI %RCX
 	movq	%RCX -8(%RBP)
 	movq	$24 %RCX
@@ -44,34 +44,23 @@ FUNC(Imain_paai):
 	movq	%RCX -32(%RBP)
 	movq	-32(%RBP) %RCX
 	movq	$2 0(%RCX)
-	movq	$8 %RCX
-	movq	%RCX -40(%RBP)
-	movq	-40(%RBP) %RCX
-	movq	-32(%RBP) %RDX
-	addq	%RDX %RCX
-	movq	%RCX -40(%RBP)
-	movq	-40(%RBP) %RCX
-	movq	$1 0(%RCX)
-	movq	$16 %RCX
-	movq	%RCX -48(%RBP)
-	movq	-48(%RBP) %RCX
-	movq	-32(%RBP) %RDX
-	addq	%RDX %RCX
-	movq	%RCX -48(%RBP)
-	movq	-48(%RBP) %RCX
-	movq	$2 0(%RCX)
+	movq	-32(%RBP) %RCX
+	movq	$1 8(%RCX)
+	movq	-32(%RBP) %RCX
+	movq	$2 16(%RCX)
 	movq	-32(%RBP) %RDX
 	movq	%RDX %RCX
-	movq	%RCX -56(%RBP)
-	movq	-56(%RBP) %RCX
+	movq	%RCX -40(%RBP)
+	movq	-40(%RBP) %RCX
 	addq	$8 %RCX
-	movq	%RCX -56(%RBP)
+	movq	%RCX -40(%RBP)
 	movq	-32(%RBP) %RCX
-	movq	-56(%RBP) %RDX
+	movq	-40(%RBP) %RDX
 	movq	%RDX %RCX
 	movq	%RCX -32(%RBP)
 	movq	-32(%RBP) %RDX
 	movq	%RDX %RCX
-	movq	%RCX -64(%RBP)
+	movq	%RCX -48(%RBP)
 	leave
 	ret
+nullNOTHING

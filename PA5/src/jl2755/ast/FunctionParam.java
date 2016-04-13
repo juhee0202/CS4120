@@ -7,6 +7,9 @@ import java.util.Map;
 
 import edu.cornell.cs.cs4120.util.CodeWriterSExpPrinter;
 import jl2755.GlobalPrettyPrinter;
+import jl2755.Main;
+import jl2755.SemanticErrorObject;
+import jl2755.exceptions.SemanticError;
 import jl2755.visitor.ASTVisitor;
 
 /**
@@ -49,7 +52,15 @@ public class FunctionParam {
 		}
 		else if (index == 1) {
 			map.put(identifier.toString(), type);
-			map.putAll(functionParam.getParamsWithTypes());
+			Map<String,Type> newMap = functionParam.getParamsWithTypes();
+			if (newMap.containsKey(identifier.toString())) {
+				String s = identifier.toString() + " already defined";
+				SemanticErrorObject seo = new SemanticErrorObject(
+						identifier.getLineNumber(),
+						identifier.getColumnNumber(), s);
+				Main.handleSemanticError(seo);
+			}
+			map.putAll(newMap);
 		}
 		return map;
 	}	

@@ -286,7 +286,7 @@ public class Instruction {
 			return op.toString() + "\t" + dest.toString();
 		}
 		else {
-			return op.toString() + "\t" + src.toString() + " " + dest.toString();
+			return op.toString() + "\t" + src.toString() + ", " + dest.toString();
 		}
 	}
 }

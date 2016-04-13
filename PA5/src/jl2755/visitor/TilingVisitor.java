@@ -26,17 +26,17 @@ public class TilingVisitor implements IRTreeVisitor {
 	
 	/** list of first 6 function call arg registers */
 	private static final String[] ARG_REG_LIST = {
-			"RDI", "RSI", "RDX", "RCX", "R8", "R9"
+			"rdi", "rsi", "rdx", "rcx", "r8", "r9"
 	};
 	
 	/** list of callee-saved registers (except rbp) */
 	private static final String[] CALLEE_REG_LIST = {
-			"RDI", "RSI", "RBX", "R12", "R13", "R14", "R15"
+			"rdi", "rsi", "rbx", "r12", "r13", "r14", "r15"
 	};
 	
 	/** list of caller-saved registers */
 	private static final String[] CALLER_REG_LIST = {
-			"RAX", "RCX", "RDX", "R8", "R9", "R10", "R11"
+			"rax", "rcx", "rdx", "r8", "r9", "r10", "r11"
 	};
 	// shuttle regs: rcx, rdx, r11
 	
@@ -117,13 +117,13 @@ public class TilingVisitor implements IRTreeVisitor {
 				Label label = (Label) instr.getDest();
 				String labelString = label.toString();
 				// if it's a function label 
-				if (labelString.contains("FUNC(")) {
+				if (labelString.charAt(0) == '_') {
 					if (!isFirstFunction) {
 						assemblyString += "\n";
 					} else {
 						isFirstFunction = false;
 					}
-					assemblyString += "\t.global\t" + labelString + "\n";
+					assemblyString += "\t.globl\t" + labelString + "\n";
 					assemblyString += "\t.align\t4\n";
 				}
 				assemblyString += instr.toString() + ":\n";
@@ -502,7 +502,8 @@ public class TilingVisitor implements IRTreeVisitor {
 		
 		// "callq targetDest"
 		Label targetDest = (Label)targetTile.getDest();
-		targetDest.setLabelName("FUNC("+targetDest.toString().substring(1)+")");
+		targetDest.setLabelName(targetDest.toString());
+//		targetDest.setLabelName("FUNC("+targetDest.toString().substring(1)+")");
 		Instruction callInstruction = new Instruction(Operation.CALLQ, targetDest);
 		tempInstructions.add(callInstruction);
 	
@@ -749,41 +750,27 @@ public class TilingVisitor implements IRTreeVisitor {
 			} else {
 				superTile = Tile.mergeTiles(superTile, tileMap.get(fd));
 			}
-		}
-		
+		}		
 		tileMap.put(cu, superTile);
 		
-//		superTile = null;
-//		
-//		// Register/Stack allocation
-//		stackAllocation(cu);
-//		
-//		// Set parameters of all function decls
-//		for (Entry<IRNode, Tile> entry : tileMap.entrySet()) {
-//			if (entry.getKey() instanceof IRFuncDecl) {
-//				IRFuncDecl fd = (IRFuncDecl) entry.getKey();
-//				Tile fdTile = entry.getValue();
-//				Instruction enter = fdTile.getInstructions().get(1);
-//				// complete "enter 8*l, 0"
-//				Constant space = new Constant(8*(functionSpaceMap.get(fd.assemblyLabel())));
-//				enter.setSrc(space);
-//				fdTile.getInstructions().set(1,enter);
-//				tileMap.put(fd, fdTile);
-//			}
-//		}
-//		
-//		for (IRFuncDecl fd : cu.functions().values()) {
-//			if (superTile == null) {
-//				superTile = tileMap.get(fd);
-//			} else {
-//				superTile = Tile.mergeTiles(superTile, tileMap.get(fd));
-//			}
-//		}
-//		
-//		tileMap.put(cu, superTile);
-		
-		// TODO: REFACTOR TO PUT RIGHT TILE IN COMPUNIT AFTER EPILOGUE
-		// AND PROLOGUE STUFFFFFFFFFFFFFFF
+		// Register/Stack allocation
+		stackAllocation(cu);
+			
+		// Set parameters of all function decls
+		Tile cuTile = tileMap.get(cu);
+		List<Instruction> instructions = cuTile.getInstructions();
+		for (int i = 0; i < instructions.size(); i++) {
+			Instruction instr = instructions.get(i);
+			// if curr instr is a function label
+			if (instr.getOp() == Operation.LABEL && 
+				((Label)instr.getDest()).getLabelName().charAt(0) == '_') {
+				String fnName = ((Label)instr.getDest()).getLabelName();
+				Instruction enter = instructions.get(++i);
+				// complete "enter 8*l, 0"
+				Constant space = new Constant(8*(functionSpaceMap.get(fnName)));
+				enter.setSrc(space);
+			}
+		}
 	}
 
 	/**
@@ -817,7 +804,7 @@ public class TilingVisitor implements IRTreeVisitor {
 	public void visit(IRFuncDecl fd) {
 		List<Instruction> instructions = new ArrayList<Instruction>();
 		// Label
-		Label fnLabel = new Label(fd.assemblyLabel());
+		Label fnLabel = new Label(fd.name());
 		instructions.add(new Instruction(Operation.LABEL, fnLabel));
 		// Prologue
 		// TODO: replace enter with push/mov/sub for optimization
@@ -1263,7 +1250,8 @@ public class TilingVisitor implements IRTreeVisitor {
 				// dest is constant or label
 				Operation op = currentInstruction.getOp();
 				Operand label = currentInstruction.getDest();
-				if (op == Operation.LABEL && label.toString().contains("FUNC(")) {
+//				if (op == Operation.LABEL && label.toString().contains("FUNC(")) {
+				if (op == Operation.LABEL && label.toString().charAt(0) == '_') {
 					functionSpaceMap.put(currentFunction,stackCounter);
 					currentFunction = label.toString();
 					stackCounter = 0;
@@ -1339,6 +1327,7 @@ public class TilingVisitor implements IRTreeVisitor {
 						Instruction movToRegS = new Instruction(Operation.MOVQ,memS,rdx);
 						added.add(movToRegS);
 					} else {
+						System.out.println(currentInstruction);
 						System.out.println(regS);
 						System.out.println("Access a register that hasn't been set!");
 						assert(false);
@@ -1515,17 +1504,17 @@ public class TilingVisitor implements IRTreeVisitor {
 				Operand returnOperand;
 				Instruction shuttleInstruction = null;
 				if (regNum == 0) {
-					returnOperand = new Register("rax");
+					returnOperand = new Register(RegisterName.RAX);
 				} else if (regNum == 1) {
-					returnOperand = new Register("rdx");
+					returnOperand = new Register(RegisterName.RDX);
 				} else {
-					Register rdi = new Register("rdi");
+					Register rdi = new Register(RegisterName.RDI);
 					Constant offset = new Constant(8*(regNum-2));
 					returnOperand = new Memory(offset, rdi);
 					
 					Operand destOperand = instr.getSrc();
 					if (destOperand instanceof Memory) {
-						Register r11 = new Register("r11");
+						Register r11 = new Register(RegisterName.R11);
 						shuttleInstruction = new Instruction(Operation.MOVQ, returnOperand, r11);
 						returnOperand = r11;
 					}
@@ -1547,17 +1536,17 @@ public class TilingVisitor implements IRTreeVisitor {
 				Operand returnOperand;
 				Instruction shuttleInstruction = null;
 				if (regNum == 0) {
-					returnOperand = new Register("rax");
+					returnOperand = new Register(RegisterName.RAX);
 				} else if (regNum == 1) {
-					returnOperand = new Register("rdx");
+					returnOperand = new Register(RegisterName.RDX);
 				} else {
-					Register rdi = new Register("rdi");
+					Register rdi = new Register(RegisterName.RDI);
 					Constant offset = new Constant(8*(regNum-2));
 					returnOperand = new Memory(offset, rdi);
 					
 					Operand srcOperand = instr.getSrc();
 					if (srcOperand instanceof Memory) {
-						Register r11 = new Register("r11");
+						Register r11 = new Register(RegisterName.R11);
 						shuttleInstruction = new Instruction(Operation.MOVQ, srcOperand, r11);
 						instr.setSrc(r11);
 					}

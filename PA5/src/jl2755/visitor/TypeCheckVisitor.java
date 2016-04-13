@@ -1222,7 +1222,9 @@ public class TypeCheckVisitor implements ASTVisitor {
 										);
 			Main.handleSemanticError(seo);
 		}
-		System.out.println(vi.getType().toString());
+		
+		tempType = new VarType(vi.getType());	// set tempType to this varType
+		
 		vi.getType().accept(this);
 		VType tempLeftType = tempType;
 		vi.getExpr().accept(this);

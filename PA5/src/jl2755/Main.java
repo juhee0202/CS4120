@@ -297,6 +297,7 @@ public class Main {
         try {
             symbol = lexer.next_token();
         } catch (LexicalError error) {
+        	error.setFilename(filename);
             content += error.getMessage();
         } catch (IOException e) {
             // TODO: not too sure what kind of IOException would happen here (there are more in this function)
@@ -324,6 +325,7 @@ public class Main {
             try {
                 symbol = lexer.next_token();
             } catch (LexicalError error) {
+            	error.setFilename(filename);
                 content += error.getLine() + ":" + error.getColumn() + " error:" + error.getDescription();
                 break;
             } catch (IOException e) {
@@ -385,13 +387,15 @@ public class Main {
             bw.close();
             System.out.println("[xic] Parsing completed");
         } catch(LexicalError error) {
-            System.out.println("\t" + filename + "\n\t" + error.getMessage());
+        	error.setFilename(filename);
+            System.out.println("\t" + error.getMessage());
             System.out.println("[xic] Parsing failed");
         } catch(SyntaxError error) {
-            System.out.println("\t" + filename + "\n\t" + error.getMessage());
+        	error.setFilename(filename);
+            System.out.println("\t" + error.getMessage());
             System.out.println("[xic] Parsing failed");
         } catch(IOException e) {
-            System.out.println("\tFailed to write to output file " + filename);
+            System.out.println("\tFailed to write to output file " + outputFileName);
             System.out.println("[xic] Parsing failed");
         } catch(Exception e) {
             // TODO: not sure what kind of exceptions would happen here
@@ -430,13 +434,16 @@ public class Main {
             System.out.println("[xic] Typechecking completed");
 
         } catch(LexicalError error) {
-            System.out.println("\t" + filename + "\n\t" + error.getMessage());
+        	error.setFilename(filename);
+            System.out.println("\t" + error.getMessage());
             System.out.println("[xic] Typechecking failed");
         } catch(SyntaxError error) {
-            System.out.println("\t" + filename + "\n\t" + error.getMessage());
+        	error.setFilename(filename);
+            System.out.println("\t" + error.getMessage());
             System.out.println("[xic] Typechecking failed");
         } catch(SemanticError error) {
-            System.out.println("\t" + filename + "\n\t" + error.getMessage());
+        	error.setFilename(filename);
+            System.out.println("\t" + error.getMessage());
             System.out.println("[xic] Typechecking failed");
         } catch(IOException e) {
             System.out.println("\tFailed to write to output file " + outputFileName);
@@ -510,14 +517,17 @@ public class Main {
             return lir.program;
 
         } catch(LexicalError error) {
+        	error.setFilename(filename);
             System.out.println("[xic] Generating intermediate code failed");
-            System.out.println("\t" + filename + "\n\t" + error.getMessage());
+            System.out.println("\t" + error.getMessage());
         } catch(SyntaxError error) {
+        	error.setFilename(filename);
         	System.out.println("[xic] Generating intermediate code failed");
-            System.out.println("\t" + filename + "\n\t" + error.getMessage());
+            System.out.println("\t" + error.getMessage());
         } catch(SemanticError error) {
+        	error.setFilename(filename);
         	System.out.println("[xic] Generating intermediate code failed");
-            System.out.println("\t" + filename + "\n\t" + error.getMessage());
+            System.out.println("\t" + error.getMessage());
         } catch(IOException e) {
         	System.out.println("[xic] Generating intermediate code failed");
             System.out.println("Failed to write to output file " + outputFileName);
@@ -600,14 +610,17 @@ public class Main {
             System.out.println("[xic] Generating assembly code completed");
             
         } catch(LexicalError error) {
+        	error.setFilename(filename);
             System.out.println("[xic] Generating assembly code failed");
-            System.out.println("\t" + filename + "\n\t" + error.getMessage());
+            System.out.println("\t" + error.getMessage());
         } catch(SyntaxError error) {
+        	error.setFilename(filename);
             System.out.println("[xic] Generating assembly code failed");
-            System.out.println("\t" + filename + "\n\t" + error.getMessage());
+            System.out.println("\t" + error.getMessage());
         } catch(SemanticError error) {
+        	error.setFilename(filename);
             System.out.println("[xic] Generating assembly code failed");
-            System.out.println("\t" + filename + "\n\t" + error.getMessage());
+            System.out.println("\t" + error.getMessage());
         } catch(IOException e) {
             System.out.println("[xic] Generating assembly code failed");
             System.out.println("\tFailed to write to output file " + outputFileName);
@@ -694,12 +707,10 @@ public class Main {
                         new FunType(tempFuncs.get(i)));
             }  
         } catch(LexicalError error) {
-//        	System.out.println(error.getMessage());
-        	System.out.println("\t" + absPath);
+        	error.setFilename(absPath);
         	throw error;
         } catch(SyntaxError error) {
-//        	System.out.println(error.getMessage());
-        	System.out.println("\t" + absPath);
+        	error.setFilename(absPath);
         	throw error;
         } catch (FileNotFoundException e) {
         	System.out.println("\tFailed to read input file " + absPath);

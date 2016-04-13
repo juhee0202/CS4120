@@ -15,7 +15,9 @@ public class LexicalError extends RuntimeException {
 	}
 	
 	public void setFilename(String fn) {
-		filename = fn;
+		if (filename == null) {
+			filename = fn;
+		}
 	}
 	
     public String message() {

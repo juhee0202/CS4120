@@ -160,7 +160,10 @@ function_call ::= identifier:id OPEN_PAREN
                   LENGTH:l OPEN_PAREN expr:e CLOSE_PAREN            {: RESULT = new FunctionCall(e, lleft, lright); :}
                   ;
 
-function_decl ::= identifier:id OPEN_PAREN function_param:fp 
+function_decl ::= identifier:id OPEN_PAREN CLOSE_PAREN
+                  return_type:rt block_stmt:bs                      {: RESULT = new FunctionDecl(id, rt, bs); :}
+                  |
+                  identifier:id OPEN_PAREN function_param:fp 
                   CLOSE_PAREN return_type:rt block_stmt:bs          {: RESULT = new FunctionDecl(id, fp, rt, bs); :}
                   ;
 
@@ -173,8 +176,6 @@ function_param ::= identifier:id COLON type:t                       {: RESULT = 
                    |
                    identifier:id COLON type:t COMMA 
                    function_param:fp                                {: RESULT = new FunctionParam(id, t, fp); :}
-                   |
-                                                                    {: RESULT = new FunctionParam(); :}
                    ;
 
 identifier ::= IDENTIFIER:id                                        {: RESULT = new Identifier(id, idleft, idright); :}

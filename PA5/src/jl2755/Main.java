@@ -548,7 +548,6 @@ public class Main {
     }
 
     public static void assembly(String filename) throws FileNotFoundException {
-    	System.out.println(filename);
     	int index = filename.lastIndexOf('.');
         if (index == -1) {
             index = filename.length();

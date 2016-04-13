@@ -506,8 +506,16 @@ public class TilingVisitor implements IRTreeVisitor {
 					dest = t;
 				}
 			}
-
-			Instruction compare = new Instruction(Operation.CMPQ, src, dest);
+			Instruction compare;
+			if (dest instanceof Constant) {
+				Register cons = new Register(RegisterName.R9);
+				compare = new Instruction(Operation.MOVQ,dest,cons);
+				instrList.add(compare);
+				cost += compare.getCost();
+				compare = new Instruction(Operation.CMPQ,src,cons);
+			} else {
+				compare = new Instruction(Operation.CMPQ,src,dest);
+			}
 			instrList.add(compare);
 			cost++;
 			
@@ -816,7 +824,15 @@ public class TilingVisitor implements IRTreeVisitor {
 				break;
 			case XOR:
 				// cmp e1,e2
-				tempInst = new Instruction(Operation.CMPQ,tempSrc,tempDest);
+				if (tempDest instanceof Constant) {
+					Register cons = new Register(RegisterName.R9);
+					tempInst = new Instruction(Operation.MOVQ,tempDest,cons);
+					instructions.add(tempInst);
+					cost += tempInst.getCost();
+					tempInst = new Instruction(Operation.CMPQ,tempSrc,cons);
+				} else {
+					tempInst = new Instruction(Operation.CMPQ,tempSrc,tempDest);
+				}
 				instructions.add(tempInst);
 				cost += tempInst.getCost();
 				
@@ -829,7 +845,15 @@ public class TilingVisitor implements IRTreeVisitor {
 				break;
 			case EQ:
 				// cmp e1,e2
-				tempInst = new Instruction(Operation.CMPQ,tempSrc,tempDest);
+				if (tempDest instanceof Constant) {
+					Register cons = new Register(RegisterName.R9);
+					tempInst = new Instruction(Operation.MOVQ,tempDest,cons);
+					instructions.add(tempInst);
+					cost += tempInst.getCost();
+					tempInst = new Instruction(Operation.CMPQ,tempSrc,cons);
+				} else {
+					tempInst = new Instruction(Operation.CMPQ,tempSrc,tempDest);
+				}
 				instructions.add(tempInst);
 				cost += tempInst.getCost();
 				
@@ -842,7 +866,15 @@ public class TilingVisitor implements IRTreeVisitor {
 				break;
 			case NEQ:
 				// cmp e1,e2
-				tempInst = new Instruction(Operation.CMPQ,tempSrc,tempDest);
+				if (tempDest instanceof Constant) {
+					Register cons = new Register(RegisterName.R9);
+					tempInst = new Instruction(Operation.MOVQ,tempDest,cons);
+					instructions.add(tempInst);
+					cost += tempInst.getCost();
+					tempInst = new Instruction(Operation.CMPQ,tempSrc,cons);
+				} else {
+					tempInst = new Instruction(Operation.CMPQ,tempSrc,tempDest);
+				}
 				instructions.add(tempInst);
 				cost += tempInst.getCost();
 				
@@ -855,7 +887,15 @@ public class TilingVisitor implements IRTreeVisitor {
 				break;
 			case LT:
 				// cmp e2,e1
-				tempInst = new Instruction(Operation.CMPQ,tempDest,tempSrc);
+				if (tempSrc instanceof Constant) {
+					Register cons = new Register(RegisterName.R9);
+					tempInst = new Instruction(Operation.MOVQ,tempSrc,cons);
+					instructions.add(tempInst);
+					cost += tempInst.getCost();
+					tempInst = new Instruction(Operation.CMPQ,tempDest,cons);
+				} else {
+					tempInst = new Instruction(Operation.CMPQ,tempDest,tempSrc);
+				}
 				instructions.add(tempInst);
 				cost += tempInst.getCost();
 				
@@ -868,7 +908,15 @@ public class TilingVisitor implements IRTreeVisitor {
 				break;
 			case LEQ:
 				// cmp e2,e1
-				tempInst = new Instruction(Operation.CMPQ,tempDest,tempSrc);
+				if (tempSrc instanceof Constant) {
+					Register cons = new Register(RegisterName.R9);
+					tempInst = new Instruction(Operation.MOVQ,tempSrc,cons);
+					instructions.add(tempInst);
+					cost += tempInst.getCost();
+					tempInst = new Instruction(Operation.CMPQ,tempDest,cons);
+				} else {
+					tempInst = new Instruction(Operation.CMPQ,tempDest,tempSrc);
+				}
 				instructions.add(tempInst);
 				cost += tempInst.getCost();
 				
@@ -881,7 +929,15 @@ public class TilingVisitor implements IRTreeVisitor {
 				break;
 			case GT:
 				// cmp e2,e1
-				tempInst = new Instruction(Operation.CMPQ,tempDest,tempSrc);
+				if (tempSrc instanceof Constant) {
+					Register cons = new Register(RegisterName.R9);
+					tempInst = new Instruction(Operation.MOVQ,tempSrc,cons);
+					instructions.add(tempInst);
+					cost += tempInst.getCost();
+					tempInst = new Instruction(Operation.CMPQ,tempDest,cons);
+				} else {
+					tempInst = new Instruction(Operation.CMPQ,tempDest,tempSrc);
+				}
 				instructions.add(tempInst);
 				cost += tempInst.getCost();
 				
@@ -894,7 +950,15 @@ public class TilingVisitor implements IRTreeVisitor {
 				break;
 			case GEQ:
 				// cmp e2,e1
-				tempInst = new Instruction(Operation.CMPQ,tempDest,tempSrc);
+				if (tempSrc instanceof Constant) {
+					Register cons = new Register(RegisterName.R9);
+					tempInst = new Instruction(Operation.MOVQ,tempSrc,cons);
+					instructions.add(tempInst);
+					cost += tempInst.getCost();
+					tempInst = new Instruction(Operation.CMPQ,tempDest,cons);
+				} else {
+					tempInst = new Instruction(Operation.CMPQ,tempDest,tempSrc);
+				}
 				instructions.add(tempInst);
 				cost += tempInst.getCost();
 				
@@ -1081,8 +1145,8 @@ public class TilingVisitor implements IRTreeVisitor {
 		
 		// Fill in Tiles' Operands
 		
-		System.out.println(matchingTiles.size());
-		Thread.dumpStack();
+//		System.out.println(matchingTiles.size());
+//		Thread.dumpStack();
 		
 		for (int i = 0; i < matchingTiles.size(); i++) {
 			
@@ -1427,7 +1491,7 @@ public class TilingVisitor implements IRTreeVisitor {
 				added.add(currentInstruction);
 			}
 		} else {
-			// src is not null
+			// src is not null and is not constant
 			if (dest instanceof Memory && src instanceof Register) {
 				// src must be register that must be in stack
 				if (((Register) src).getType() == RegisterName.TEMP) {
@@ -1534,6 +1598,7 @@ public class TilingVisitor implements IRTreeVisitor {
 				
 				Instruction movToReg2 = null;
 				if (regBase.getType() == RegisterName.TEMP) {
+					assert(regBase != null);
 					int addr2 = regToStack.get(regBase.getName());
 					Memory mem2 = new Memory(new Constant(addr2),rbp);
 					movToReg2 = new Instruction(Operation.MOVQ,mem2,rcx);
@@ -1596,7 +1661,7 @@ public class TilingVisitor implements IRTreeVisitor {
 					currentInstruction.setSrc(newMem);
 				} else {
 					// src uses a built-in register
-					if (((Register) dest).getType() != RegisterName.TEMP) {
+					if (((Register) src).getType() != RegisterName.TEMP) {
 						added.add(currentInstruction);
 						added.addAll(addNecessaryInstruction(
 								instructions.subList(1,size),regToStack));

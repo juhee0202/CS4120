@@ -447,14 +447,15 @@ public class Main {
     }
 
     public static IRNode irgen(String filename) throws FileNotFoundException {
-        try {
-            int index = filename.lastIndexOf('.');
-            if (index == -1) {
-                index = filename.length();
-            }
+    	int index = filename.lastIndexOf('.');
+        if (index == -1) {
+            index = filename.length();
+        }
 
-            String rmExtension = filename.substring(0,index);
-            File file = new File(destDPath + rmExtension + ".ir");
+        String rmExtension = filename.substring(0,index);
+        String outputFileName = destDPath + rmExtension + ".ir";
+    	try {
+    		File file = new File(outputFileName);
             if (!file.exists()) {
                 file.createNewFile();
             }
@@ -509,13 +510,17 @@ public class Main {
             return lir.program;
 
         } catch(LexicalError error) {
-            System.out.println(error.getMessage());
+            System.out.println("[xic] Generating intermediate code failed");
+            System.out.println("\t" + filename + "\n\t" + error.getMessage());
         } catch(SyntaxError error) {
-            System.out.println(error.getMessage());
+        	System.out.println("[xic] Generating intermediate code failed");
+            System.out.println("\t" + filename + "\n\t" + error.getMessage());
         } catch(SemanticError error) {
-            System.out.println(error.getMessage());
+        	System.out.println("[xic] Generating intermediate code failed");
+            System.out.println("\t" + filename + "\n\t" + error.getMessage());
         } catch(IOException e) {
-            System.out.println("Failed to write to output file " + filename);
+        	System.out.println("[xic] Generating intermediate code failed");
+            System.out.println("Failed to write to output file " + outputFileName);
             e.printStackTrace();
         } catch (Exception e) {
             e.printStackTrace();
@@ -549,7 +554,7 @@ public class Main {
         }
         
         String rmExtension = filename.substring(0,index);
-        String outputFileName = destAPath + rmExtension + ".s";
+        String outputFileName = destAPath + rmExtension + ".S";
         try {
             File file = new File(outputFileName);
             if (!file.exists()) {
@@ -595,19 +600,20 @@ public class Main {
             System.out.println("[xic] Generating assembly code completed");
             
         } catch(LexicalError error) {
-            System.out.println("\t" + filename + "\n\t" + error.getMessage());
             System.out.println("[xic] Generating assembly code failed");
+            System.out.println("\t" + filename + "\n\t" + error.getMessage());
         } catch(SyntaxError error) {
-            System.out.println("\t" + filename + "\n\t" + error.getMessage());
             System.out.println("[xic] Generating assembly code failed");
+            System.out.println("\t" + filename + "\n\t" + error.getMessage());
         } catch(SemanticError error) {
+            System.out.println("[xic] Generating assembly code failed");
             System.out.println("\t" + filename + "\n\t" + error.getMessage());
-            System.out.println("[xic] Generating assembly code failed");
         } catch(IOException e) {
-            System.out.println("\tFailed to write to output file " + filename);
             System.out.println("[xic] Generating assembly code failed");
+            System.out.println("\tFailed to write to output file " + outputFileName);
             e.printStackTrace();
         } catch (Exception e) {
+            System.out.println("[xic] Generating assembly code failed");
             e.printStackTrace();
         }
     }

@@ -647,6 +647,7 @@ public class TypeCheckVisitor implements ASTVisitor {
 				
 		/* Update the function scope env */
 		Map<String, Type> paramToType = fd.getParamsWithTypes();
+		
 		for (Entry<String, Type> entry : paramToType.entrySet()) {
 			String id = entry.getKey();
 			VType type = new VarType(entry.getValue());
@@ -1222,10 +1223,13 @@ public class TypeCheckVisitor implements ASTVisitor {
 			Main.handleSemanticError(seo);
 		}
 		
+		tempType = new VarType(vi.getType());	// set tempType to this varType
+		
 		vi.getType().accept(this);
 		VType tempLeftType = tempType;
 		vi.getExpr().accept(this);
 		VType tempRightType = tempType;
+
 		if (!(tempLeftType.equals(tempRightType))){
 			String s = "Expected " + tempLeftType.toString() 
 						+ ", but found " + tempRightType.toString();

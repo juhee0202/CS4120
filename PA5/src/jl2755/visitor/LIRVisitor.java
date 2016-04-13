@@ -77,6 +77,8 @@ public class LIRVisitor implements IRTreeVisitor{
 		
 		IRTemp returnRegister = new IRTemp("temp" + globalTempCount++);
 		IRCall holyCall = new IRCall(holyTarget, holyTemps);
+		holyCall.setNumReturns(call.getNumReturns());
+		holyCall.setReturnBoolList(call.getReturnBoolList());
 		IRMove lastHolyMove = new IRMove(returnRegister, holyCall);
 		holySideEffects = combineTwoStmt(holySideEffects, lastHolyMove);
 		IRTemp returnRegister2 = new IRTemp(returnRegister.name());

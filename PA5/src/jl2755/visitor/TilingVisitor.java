@@ -106,7 +106,33 @@ public class TilingVisitor implements IRTreeVisitor {
 		tileMap = new HashMap<IRNode, Tile>();
 		argNode.accept(this);
 		Tile temp = tileMap.get(argNode);
-		return temp.toString();
+		List<Instruction> instructions = temp.getInstructions();
+		
+		/* Create assembly code */
+		String assemblyString = "\t.text\n";
+		boolean isFirstFunction = true;
+		for (int i = 0; i < instructions.size(); i++) {
+			Instruction instr = instructions.get(i);
+			if (instr.getOp() == Operation.LABEL) {
+				Label label = (Label) instr.getDest();
+				String labelString = label.toString();
+				// if it's a function label 
+				if (labelString.contains("FUNC(")) {
+					if (!isFirstFunction) {
+						assemblyString += "\n";
+					} else {
+						isFirstFunction = false;
+					}
+					assemblyString += "\t.global\t" + labelString + "\n";
+					assemblyString += "\t.align\t4\n";
+				}
+				assemblyString += instr.toString() + ":\n";
+			} else {
+				assemblyString += "\t" + instr.toString() + "\n";
+			}
+		}
+		
+		return assemblyString;
 	}
 
 	/**
@@ -423,7 +449,7 @@ public class TilingVisitor implements IRTreeVisitor {
 		
 		/* Push argn...arg7 (or arg6 if m > 2) */
 		if (numArgs > numArgRegs) {
-			for (int i = numArgs-1; i > numArgRegs; i--) {
+			for (int i = numArgs-1; i >= numArgRegs; i--) {
 				// tile the expression
 				IRExpr expr = args.get(i); 
 				expr.accept(this);
@@ -470,8 +496,9 @@ public class TilingVisitor implements IRTreeVisitor {
 			Register rsp = new Register(RegisterName.RSP);
 			Instruction extraSpace = new Instruction(Operation.SUBQ, c, rsp);
 			tempInstructions.add(extraSpace);
-			call.setNum8ByteSpace(num8ByteSpace+1);
+			num8ByteSpace++;
 		}
+		call.setNum8ByteSpace(num8ByteSpace);
 		
 		// "callq targetDest"
 		Label targetDest = (Label)targetTile.getDest();
@@ -1033,14 +1060,22 @@ public class TilingVisitor implements IRTreeVisitor {
 			if (stmt instanceof IRExp) {
 				// EXP(CALL(...)) [MOV(dest, REG)]
 				IRCall call = (IRCall) ((IRExp) stmt).expr();
+				boolean[] returnBoolList = call.getReturnBoolList();
 				int numReturns = call.getNumReturns();
+				int numSkips = 0;
+				
 				Tile masterTile = new Tile(new ArrayList<Instruction>(), 0);
 				
 				// move return values to the variable registers
 				// temp Instruction list to be added to the masterTile later
 				List<Instruction> tempInstructions = new ArrayList<Instruction>();
 				for (int j = 0; j < numReturns; j++) {
-					IRMove move = (IRMove) stmtList.get(i+j+1);
+					// skip _
+					if (!returnBoolList[j]) {
+						numSkips++;
+						continue;
+					}
+					IRMove move = (IRMove) stmtList.get(i+j+1-numSkips);
 					IRExpr target = move.target();
 					target.accept(this);
 					Tile exprTile = tileMap.get(target);

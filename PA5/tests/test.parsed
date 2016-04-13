@@ -1,0 +1,3 @@
+(()
+ ((fail_on_bad_decl () () ((= (x ([] int)) (1 2 3)))) (foo () () ())
+  (f2 () (int) ((return 2))) (f3 ((x int)) (int) ((return 2)))))

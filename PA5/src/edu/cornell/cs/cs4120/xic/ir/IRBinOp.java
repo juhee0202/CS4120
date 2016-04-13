@@ -61,7 +61,7 @@ public class IRBinOp extends IRExpr {
     @Override
     public void printSExp(SExpPrinter p) {
         p.startList();
-//        p.printAtom(type.toString());
+        p.printAtom(type.toString());
         if (left == null) {
         	p.printAtom("null");
         } else {

@@ -19,141 +19,141 @@ public class Register implements Operand {
 
 		public static RegisterName convertToName(String name) {
 			switch(name) {
-			case "AH":
+			case "ah":
 				return AH;
-			case "AL":
+			case "al":
 				return AL;
-			case "AX":
+			case "ax":
 				return AX;
-			case "BH":
+			case "bh":
 				return BH;
-			case "BL":
+			case "bl":
 				return BL;
-			case "BP":
+			case "bp":
 				return BP;
-			case "BPL":
-				return BP;
-			case "BX":
+			case "bpl":
+				return BPL;
+			case "bx":
 				return BX;
-			case "CH":
+			case "ch":
 				return CH;
-			case "CL":
+			case "cl":
 				return CL;
-			case "CX":
+			case "cx":
 				return CX;
-			case "DH":
+			case "dh":
 				return DH;
-			case "DI":
+			case "di":
 				return DI;
-			case "DIL":
+			case "dil":
 				return DIL;
-			case "DL":
+			case "dl":
 				return DL;
-			case "DX":
+			case "dx":
 				return DX;
-			case "EAX":
+			case "eax":
 				return EAX;
-			case "EBP":
+			case "ebp":
 				return EBP;
-			case "EBX":
+			case "ebx":
 				return EBX;
-			case "ECX":
+			case "ecx":
 				return ECX;
-			case "EDI":
+			case "edi":
 				return EDI;
-			case "EDX":
+			case "edx":
 				return EDX;
-			case "ESI":
+			case "esi":
 				return ESI;
-			case "ESP":
+			case "esp":
 				return ESP;
-			case "R8":
+			case "r8":
 				return R8;
-			case "R8B":
+			case "r8b":
 				return R8B;
-			case "R8D":
+			case "r8d":
 				return R8D;
-			case "R8W":
+			case "r8w":
 				return R8W;
-			case "R9":
+			case "r9":
 				return R9;
-			case "R9B":
+			case "r9b":
 				return R9B;
-			case "R9D":
+			case "r9d":
 				return R9D;
-			case "R9W":
+			case "r9w":
 				return R9W;
-			case "R10":
+			case "r10":
 				return R10;
-			case "R10B":
+			case "r10b":
 				return R10B;
-			case "R10D":
+			case "r10d":
 				return R10D;
-			case "R10W":
+			case "r10w":
 				return R10W;
-			case "R11":
+			case "r11":
 				return R11;
-			case "R11B":
+			case "r11b":
 				return R11B;
-			case "R11D":
+			case "r11d":
 				return R11D;
-			case "R11W":
+			case "r11w":
 				return R11W;
-			case "R12":
+			case "r12":
 				return R12;
-			case "R12B":
+			case "r12b":
 				return R12B;
-			case "R12D":
+			case "r12d":
 				return R12D;
-			case "R12W":
+			case "r12w":
 				return R12W;
-			case "R13":
+			case "r13":
 				return R13;
-			case "R13B":
+			case "r13b":
 				return R13B;
-			case "R13D":
+			case "r13d":
 				return R13D;
-			case "R13W":
+			case "r13w":
 				return R13W;
-			case "R14":
+			case "r14":
 				return R14;
-			case "R14B":
+			case "r14b":
 				return R14B;
-			case "R14D":
+			case "r14d":
 				return R14D;
-			case "R14W":
+			case "r14w":
 				return R14W;
-			case "R15":
+			case "r15":
 				return R15;
-			case "R15B":
+			case "r15b":
 				return R15B;
-			case "R15D":
+			case "r15d":
 				return R15D;
-			case "R15W":
+			case "r15w":
 				return R15W;
-			case "RAX":
+			case "rax":
 				return RAX;
-			case "RBP":
+			case "rbp":
 				return RBP;
-			case "RBX":
+			case "rbx":
 				return RBX;
-			case "RCX":
+			case "rcx":
 				return RCX;
-			case "RDI":
+			case "rdi":
 				return RDI;
-			case "RDX":
+			case "rdx":
 				return RDX;
-			case "RSI":
+			case "rsi":
 				return RSI;
-			case "RSP":
+			case "rsp":
 				return RSP;
-			case "SI":
+			case "si":
 				return SI;
-			case "SIL":
+			case "sil":
 				return SIL;
-			case "SP":
+			case "sp":
 				return SP;
-			case "SPL":
+			case "spl":
 				return SPL;
 			default:
 				return TEMP;
@@ -164,143 +164,143 @@ public class Register implements Operand {
 		public String toString() {
 			switch(this) {
 			case AH:
-				return "AH";
+				return "ah";
 			case AL:
-				return "AL";
+				return "al";
 			case AX:
-				return "AX";
+				return "ax";
 			case BH:
-				return "BH";
+				return "bh";
 			case BL:
-				return "BL";
+				return "bl";
 			case BP:
-				return "BP";
+				return "bp";
 			case BPL:
-				return "BPL";
+				return "bpl";
 			case BX:
-				return "BX";
+				return "bx";
 			case CH:
-				return "CH";
+				return "ch";
 			case CL:
-				return "CL";
+				return "cl";
 			case CX:
-				return "CX";
+				return "cx";
 			case DH:
-				return "DH";
+				return "dh";
 			case DI:
-				return "DI";
+				return "di";
 			case DIL:
-				return "DIL";
+				return "dil";
 			case DL:
-				return "DL";
+				return "dl";
 			case DX:
-				return "DX";
+				return "dx";
 			case EAX:
-				return "EAX";
+				return "eax";
 			case EBP:
-				return "EBP";
+				return "ebp";
 			case EBX:
-				return "EBX";
+				return "ebx";
 			case ECX:
-				return "ECX";
+				return "ecx";
 			case EDI:
-				return "EDI";
+				return "edi";
 			case EDX:
-				return "EDX";
+				return "edx";
 			case ESI:
-				return "ESI";
+				return "esi";
 			case ESP:
-				return "ESP";
+				return "esp";
 			case R8:
-				return "R8";
+				return "r8";
 			case R8B:
-				return "R8B";
+				return "r8b";
 			case R8D:
-				return "R8D";
+				return "r8d";
 			case R8W:
-				return "R8W";
+				return "r8w";
 			case R9:
-				return "R9";
+				return "r9";
 			case R9B:
-				return "R9B";
+				return "r9b";
 			case R9D:
-				return "R9D";
+				return "r9d";
 			case R9W:
-				return "R9W";
+				return "r9w";
 			case R10:
-				return "R10";
+				return "r10";
 			case R10B:
-				return "R10B";
+				return "r10b";
 			case R10D:
-				return "R10D";
+				return "r10d";
 			case R10W:
-				return "R10W";
+				return "r10w";
 			case R11:
-				return "R11";
+				return "r11";
 			case R11B:
-				return "R11B";
+				return "r11b";
 			case R11D:
-				return "R11D";
+				return "r11d";
 			case R11W:
-				return "R11W";
+				return "r11w";
 			case R12:
-				return "R12";
+				return "r12";
 			case R12B:
-				return "R12B";
+				return "r12b";
 			case R12D:
-				return "R12D";
+				return "r12d";
 			case R12W:
-				return "R12W";
+				return "r12w";
 			case R13:
-				return "R13";
+				return "r13";
 			case R13B:
-				return "R13B";
+				return "r13b";
 			case R13D:
-				return "R13D";
+				return "r13d";
 			case R13W:
-				return "R13W";
+				return "r13w";
 			case R14:
-				return "R14";
+				return "r14";
 			case R14B:
-				return "R14B";
+				return "r14b";
 			case R14D:
-				return "R14D";
+				return "r14d";
 			case R14W:
-				return "R14W";
+				return "r14w";
 			case R15:
-				return "R15";
+				return "r15";
 			case R15B:
-				return "R15B";
+				return "r15b";
 			case R15D:
-				return "R15D";
+				return "r15d";
 			case R15W:
-				return "R15W";
+				return "r15w";
 			case RAX:
-				return "RAX";
+				return "rax";
 			case RBP:
-				return "RBP";
+				return "rbp";
 			case RBX:
-				return "RBX";
+				return "rbx";
 			case RCX:
-				return "RCX";
+				return "rcx";
 			case RDI:
-				return "RDI";
+				return "rdi";
 			case RDX:
-				return "RDX";
+				return "rdx";
 			case RSI:
-				return "RSI";
+				return "rsi";
 			case RSP:
-				return "RSP";
+				return "rsp";
 			case SI:
-				return "SI";
+				return "si";
 			case SIL:
-				return "SIL";
+				return "sil";
 			case SP:
-				return "SP";
+				return "sp";
 			case SPL:
-				return "SPL";
+				return "spl";
 			case TEMP:
-				return "TEMP";
+				return "temp";
 			}
 			System.out.println("Invalid register name!");
 			return null;

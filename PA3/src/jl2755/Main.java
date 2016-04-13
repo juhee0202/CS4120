@@ -199,9 +199,8 @@ public class Main {
 					System.out.println(srcPath + files[i] + " is not found.");
 				} catch (IOException e) {
 					System.out.println("Failed to write to output file");
-//					e.printStackTrace();
 				} catch (Exception e) {
-					System.out.println("Missing argument for option: --lex");
+					System.out.println("[xic] Parsing Failed.");
 				}
 			}
 		}
@@ -349,6 +348,7 @@ public class Main {
 			bw.close();
 			System.out.println("[xic] Parsing completed");
 		} catch (Exception e) {
+//			throw new Error(e);
 			e.printStackTrace();
 		}
 	}
@@ -395,6 +395,7 @@ public class Main {
 		} catch (RuntimeException e) {
 //			e.printStackTrace();
 			String msg = e.getMessage();
+			// TODO: what is this..?
 			if (msg != null 
 					&& !msg.equals("[xic] Typecheck Failed.") 
 					&& !msg.equals("[xic] Parsing Failed.")

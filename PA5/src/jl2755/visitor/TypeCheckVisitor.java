@@ -278,6 +278,22 @@ public class TypeCheckVisitor implements ASTVisitor {
 			
 			VType elementType = new VarType(idType,as.getIndexedBrackets(),as.getIdentifier());
 
+			// check that all the indices inside indexedBrackets are ints
+			List<Expr> exprs = as.getIndexedBrackets().getContent();
+			for (Expr e: exprs) {
+				e.accept(this);
+				VarType exprType = (VarType) tempType;
+				if (!exprType.isInt()) {
+					String s = "Expected an int, but found " + 
+							exprType.toString();
+					SemanticErrorObject seo = new SemanticErrorObject(
+							e.getLineNumber(),
+							e.getColumnNumber(), 
+							s
+							);
+					Main.handleSemanticError(seo);
+				}
+			}
 			
 			as.getExpr().accept(this);
 			VType exprType = tempType;
@@ -631,6 +647,7 @@ public class TypeCheckVisitor implements ASTVisitor {
 				
 		/* Update the function scope env */
 		Map<String, Type> paramToType = fd.getParamsWithTypes();
+		
 		for (Entry<String, Type> entry : paramToType.entrySet()) {
 			String id = entry.getKey();
 			VType type = new VarType(entry.getValue());
@@ -754,7 +771,21 @@ public class TypeCheckVisitor implements ASTVisitor {
 	
 	@Override
 	public void visit(IndexedBrackets ib) {
-		return;
+		List<Expr> exprs = ib.getContent();
+		for (Expr e: exprs) {
+			e.accept(this);
+			VarType exprType = (VarType) tempType;
+			if (!exprType.isInt()) {
+				String s = "Expected an int, but found " + 
+						exprType.toString();
+				SemanticErrorObject seo = new SemanticErrorObject(
+						e.getLineNumber(),
+						e.getColumnNumber(), 
+						s
+						);
+				Main.handleSemanticError(seo);
+			}
+		}
 	}
 
 	/** 
@@ -804,12 +835,15 @@ public class TypeCheckVisitor implements ASTVisitor {
 		for (FunctionDecl fd : functionDecls) {
 			String id = fd.getIdentifier().toString();
 			FunType funType = new FunType(fd);
+			
 			// if the function was declared in interface files
 			// OK if same FunType
 			if (if_env.containsKey(id)) {
 				FunType ifFunType = (FunType) if_env.get(id); // safe
 				if (!funType.equals(ifFunType)) {
-					String s = "Multiple declaration found for function " + id;
+					String s = "Conflicting declarations on " + id + ": " 
+							+ "trying to add " + funType.toString() + " when "
+							+ ifFunType.toString() + " already exists.";
 					SemanticErrorObject seo = new SemanticErrorObject(
 							fd.getIdentifier_line(), fd.getIdentifier_col(), s);
 					Main.handleSemanticError(seo);
@@ -826,6 +860,28 @@ public class TypeCheckVisitor implements ASTVisitor {
 			stack.push(id);
 		}
 		
+//		// if multiple function declarations, then check that
+//		// the types are the same
+//		if (if_env.containsKey(funcName)) {
+//			VType existingType = if_env.get(funcName);
+//			VType newType = tempMap.get(funcName);
+//
+//			if (!(existingType.equals(newType))) {
+//				String s = "Conflicting declarations on " + funcName + ": "
+//						+ "trying to add " + newType.toString() + " when "
+//						+ existingType.toString() + " already exists.";
+//				SemanticErrorObject seo = new SemanticErrorObject(
+//						ui.getIdentifier().getLineNumber(), 
+//						ui.getIdentifier().getColumnNumber(),
+//						s);
+//				Main.handleSemanticError(seo);
+//			}
+//		}
+//		// no multiple declarations: add function to env
+//		else{
+//			if_env.put(funcName, tempMap.get(funcName));
+//		}
+		
 		/* Merge if_env with env */
 		env.putAll(if_env);
 		
@@ -837,10 +893,13 @@ public class TypeCheckVisitor implements ASTVisitor {
 
 	/**
 	 * DIRTIES tempType to the return type
+	 * 
 	 */
 	@Override
 	public void visit(ReturnStmt rs) {
 		VType returnType;
+		
+		 // index = 1: function call
 		if (rs.getIndex() == 1) {
 			List<Expr> returnExprs = rs.getReturnList().getListOfExpr();
 			if (returnExprs.size() == 1) {
@@ -855,6 +914,7 @@ public class TypeCheckVisitor implements ASTVisitor {
 				}	
 			}
 		}
+		// index = 0: function call
 		else {
 			returnType = new UnitType();
 		}
@@ -865,6 +925,21 @@ public class TypeCheckVisitor implements ASTVisitor {
 	@Override
 	public void visit(Stmt s) {
 		(s.getNakedStmt()).accept(this);
+		
+		/* check that the statement is not a function call with return value
+		 * only allow procedure call statements */
+		if (s.getNakedStmt() instanceof FunctionCall) {
+			FunctionCall fc = (FunctionCall) s.getNakedStmt();
+
+			if (!tempType.toString().equals("unit")) {
+				String errMsg = fc.getIdentifier().toString() + " is not a procedure";
+				SemanticErrorObject seo = new SemanticErrorObject(
+						fc.getIdentifier_line(), 
+						fc.getIdentifier_col(),
+						errMsg);
+				Main.handleSemanticError(seo);	
+			}
+		}
 	}
 
 	@Override
@@ -1055,13 +1130,20 @@ public class TypeCheckVisitor implements ASTVisitor {
 		for (int i = 0; i < listOfUses.size(); i++){
 			String fileName = listOfUses.get(i);
 			Map<String, VType> tempMap = Main.checkInterface(fileName);
-			Iterator<String> itFuncNames = tempMap.keySet().iterator();
-			while (itFuncNames.hasNext()){
-				String tempFuncNames = itFuncNames.next();
-				if (if_env.containsKey(tempFuncNames)) {
-					VType existingType = if_env.get(tempFuncNames);
-					if (!(existingType.equals(tempMap.get(tempFuncNames)))){
-						String s = tempFuncNames + "is already declared";
+			Iterator<String> funcNameIter = tempMap.keySet().iterator();
+			while (funcNameIter.hasNext()){
+				String funcName = funcNameIter.next();
+				
+				// if multiple function declarations, then check that
+				// the types are the same
+				if (if_env.containsKey(funcName)) {
+					VType existingType = if_env.get(funcName);
+					VType newType = tempMap.get(funcName);
+
+					if (!(existingType.equals(newType))) {
+						String s = "Conflicting declarations on " + funcName + ": "
+								+ "trying to add " + newType.toString() + " when "
+								+ existingType.toString() + " already exists.";
 						SemanticErrorObject seo = new SemanticErrorObject(
 								ui.getIdentifier().getLineNumber(), 
 								ui.getIdentifier().getColumnNumber(),
@@ -1069,8 +1151,9 @@ public class TypeCheckVisitor implements ASTVisitor {
 						Main.handleSemanticError(seo);
 					}
 				}
+				// no multiple declarations: add function to env
 				else{
-					if_env.put(tempFuncNames, tempMap.get(tempFuncNames));
+					if_env.put(funcName, tempMap.get(funcName));
 				}
 			}
 		}
@@ -1139,17 +1222,14 @@ public class TypeCheckVisitor implements ASTVisitor {
 										);
 			Main.handleSemanticError(seo);
 		}
-		else {
-			String id = vi.getId().toString();
-			env.put(id, new VarType(vi.getType()));
-			tempType = env.get(id);
-			stack.push(id);
-		}
+		
+		tempType = new VarType(vi.getType());	// set tempType to this varType
 		
 		vi.getType().accept(this);
 		VType tempLeftType = tempType;
 		vi.getExpr().accept(this);
 		VType tempRightType = tempType;
+
 		if (!(tempLeftType.equals(tempRightType))){
 			String s = "Expected " + tempLeftType.toString() 
 						+ ", but found " + tempRightType.toString();
@@ -1159,7 +1239,13 @@ public class TypeCheckVisitor implements ASTVisitor {
 										s
 										);
 			Main.handleSemanticError(seo);
-		}	
+		}
+		
+		// add variable to the env
+		String id = vi.getId().toString();
+		env.put(id, new VarType(vi.getType()));
+		tempType = env.get(id);
+		stack.push(id);
 	}
 
 	/**

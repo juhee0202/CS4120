@@ -46,27 +46,27 @@ public class TilingVisitor implements IRTreeVisitor {
 	// TODO: put all these in a json file and read the json file to populate patternMap
 
 	// BINOP
-	private static final List<String> BINOP_PRE = new ArrayList<String>(
+	private final List<String> BINOP_PRE = new ArrayList<String>(
 			Arrays.asList(
 					"BinOp"
 					));
-	private static final List<String> BINOP_IN = new ArrayList<String>(
+	private final List<String> BINOP_IN = new ArrayList<String>(
 			Arrays.asList(
 					"BinOp"
 					));
 	
 	// Mem
-	private static final List<String> MEM_PRE = new ArrayList<String>(
+	private final List<String> MEM_PRE = new ArrayList<String>(
 			Arrays.asList(
 					"Mem"
 					));
-	private static final List<String> MEM_IN = new ArrayList<String>(
+	private final List<String> MEM_IN = new ArrayList<String>(
 			Arrays.asList(
 					"Mem"
 					));
 	
 	/** Case of just Add between register and constant of the form k(r1)*/
-	private static final List<String> MEMBASEANDOFFSET_PRE = new ArrayList<String>(
+	private final List<String> MEMBASEANDOFFSET_PRE = new ArrayList<String>(
 			Arrays.asList(
 					"Mem",
 					"BinOpAddRightConstantOffsetLeftRegisterBase1",
@@ -74,7 +74,7 @@ public class TilingVisitor implements IRTreeVisitor {
 					"Const"
 					));
 	
-	private static final List<String> MEMBASEANDOFFSET_IN = new ArrayList<String>(
+	private final List<String> MEMBASEANDOFFSET_IN = new ArrayList<String>(
 			Arrays.asList(
 					"null",
 					"BinOpAddRightConstantOffsetLeftRegisterBase1",
@@ -83,7 +83,7 @@ public class TilingVisitor implements IRTreeVisitor {
 					));
 
 	/** Case of Add between 2 Registers and a Constant of the form k(r1,r2) */
-	private static final List<String> MEMBASEANDREGISTEROFFSET_PRE1 = new ArrayList<String>(
+	private final List<String> MEMBASEANDREGISTEROFFSET_PRE1 = new ArrayList<String>(
 			Arrays.asList(
 					"Mem",
 					"BinOpAddLeftConstantOffset1",
@@ -93,7 +93,7 @@ public class TilingVisitor implements IRTreeVisitor {
 					"null2"
 					));
 	
-	private static final List<String> MEMBASEANDREGISTEROFFSET_IN1 = new ArrayList<String>(
+	private final List<String> MEMBASEANDREGISTEROFFSET_IN1 = new ArrayList<String>(
 			Arrays.asList(
 					"Const",
 					"BinOpAddLeftConstantOffset1",
@@ -104,7 +104,7 @@ public class TilingVisitor implements IRTreeVisitor {
 					));
 	
 	/** Same case as above but in different order */
-	private static final List<String> MEMBASEANDREGISTEROFFSET_PRE2 = new ArrayList<String>(
+	private final List<String> MEMBASEANDREGISTEROFFSET_PRE2 = new ArrayList<String>(
 			Arrays.asList(
 					"Mem",
 					"BinOpAddLeftRegisterBase",
@@ -113,7 +113,7 @@ public class TilingVisitor implements IRTreeVisitor {
 					"Const",
 					"null2"));
 	
-	private static final List<String> MEMBASEANDREGISTEROFFSET_IN2 = new ArrayList<String>(
+	private final List<String> MEMBASEANDREGISTEROFFSET_IN2 = new ArrayList<String>(
 			Arrays.asList(
 					"null1",
 					"BinOpAddLeftRegisterBase",
@@ -126,7 +126,7 @@ public class TilingVisitor implements IRTreeVisitor {
 	/** Case of Add between a Register and a Mult between a Register and ConstantFactor
 	 * of the form (r1,r2,i)
 	 */
-	private static final List<String> MEMBASEANDREGISTERFACTOR_PRE = new ArrayList<String>(
+	private final List<String> MEMBASEANDREGISTERFACTOR_PRE = new ArrayList<String>(
 			Arrays.asList(
 					"Mem",
 					"BinOpAddLeftRegisterBase",
@@ -136,7 +136,7 @@ public class TilingVisitor implements IRTreeVisitor {
 					"Const"
 					));
 	
-	private static final List<String> MEMBASEANDREGISTERFACTOR_IN = new ArrayList<String>(
+	private final List<String> MEMBASEANDREGISTERFACTOR_IN = new ArrayList<String>(
 			Arrays.asList(
 					"null1",
 					"BinOpAddLeftRegisterBase",
@@ -149,7 +149,7 @@ public class TilingVisitor implements IRTreeVisitor {
 	/** Case of Add between a Constant, Register, and a Mult between a Register
 	 * and ConstantFactor of the form k(r1,r2,i)
 	 */
-	private static final List<String> MEMEVERYTHING_PRE1 = new ArrayList<String>(
+	private final List<String> MEMEVERYTHING_PRE1 = new ArrayList<String>(
 			Arrays.asList(
 					"Mem",
 					"BinOpAddLeftConstantOffset",
@@ -161,7 +161,7 @@ public class TilingVisitor implements IRTreeVisitor {
 					"Const2"
 					));
 	
-	private static final List<String> MEMEVERYTHING_IN1 = new ArrayList<String>(
+	private final List<String> MEMEVERYTHING_IN1 = new ArrayList<String>(
 			Arrays.asList(
 					"Const1",
 					"BinOpAddLeftConstantOffset",
@@ -174,7 +174,7 @@ public class TilingVisitor implements IRTreeVisitor {
 					));
 	
 	/** Same case as above in different order */
-	private static final List<String> MEMEVERYTHING_PRE2 = new ArrayList<String>(
+	private final List<String> MEMEVERYTHING_PRE2 = new ArrayList<String>(
 			Arrays.asList(
 					"Mem",
 					"BinOpAddLeftRegisterBase",
@@ -186,7 +186,7 @@ public class TilingVisitor implements IRTreeVisitor {
 					"Const2"
 					));
 	
-	private static final List<String> MEMEVERYTHING_IN2 = new ArrayList<String>(
+	private final List<String> MEMEVERYTHING_IN2 = new ArrayList<String>(
 			Arrays.asList(
 					"null1",
 					"BinOpAddLeftRegisterBase",
@@ -199,7 +199,7 @@ public class TilingVisitor implements IRTreeVisitor {
 					));
 	
 	/** Same case as above in different order */
-	private static final List<String> MEMEVERYTHING_PRE3 = new ArrayList<String>(
+	private final List<String> MEMEVERYTHING_PRE3 = new ArrayList<String>(
 			Arrays.asList(
 					"Mem",
 					"BinOpAdd",
@@ -211,7 +211,7 @@ public class TilingVisitor implements IRTreeVisitor {
 					"null2"
 					));
 	
-	private static final List<String> MEMEVERYTHING_IN3 = new ArrayList<String>(
+	private final List<String> MEMEVERYTHING_IN3 = new ArrayList<String>(
 			Arrays.asList(
 					"null1",
 					"BinOpMultLeftRegisterOffsetRightConstantFactor",
@@ -1071,29 +1071,21 @@ public class TilingVisitor implements IRTreeVisitor {
 		for (int i = 0; i < tileLibrary.size(); i++) {
 			if (cmpTreeVisitor.equalTrees(tileLibrary.get(i).getRootOfSubtree(), 
 					mem)) {
-				System.out.println("Printing library tile " + tileLibrary.get(i));
 				matchingTiles.add(new Tile(mem,tileLibrary.get(i)));
+//				System.out.println(mem);
+//				System.out.println("Last added Tile " + matchingTiles.get(matchingTiles.size()-1).getDest());
 				childrenOfEachTile.add((ArrayList<IRNode>) cmpTreeVisitor.getAllChildrenNode());
 				operandOfEachChildren.add((ArrayList<Operand>) cmpTreeVisitor.getOperandOfNodesInTile());
 			}
 		}
 		
-		// Iterate through, call accept for each child, and 
-		// populate the Operand list.
-		for (int i = 0; i < childrenOfEachTile.size(); i++) {
-			operandOfEachChildren.add(new ArrayList<Operand>());
-			for (int j = 0; j < childrenOfEachTile.get(i).size(); j++) {
-				IRNode currentNode = childrenOfEachTile.get(i).get(j);
-				currentNode.accept(this);
-			}
-		}
-		
 		// Fill in Tiles' Operands
 		
-		// TODO: Fill in Tiles correctly (Mem doesn't fill Instructions
-		// with Operands, only the dest Operand). Create more methods.
+		System.out.println(matchingTiles.size());
+		Thread.dumpStack();
 		
 		for (int i = 0; i < matchingTiles.size(); i++) {
+			
 			matchingTiles.get(i).fillInOperands(operandOfEachChildren.get(i));
 		}
 		
@@ -1172,7 +1164,7 @@ public class TilingVisitor implements IRTreeVisitor {
 			// delete later
 			IRCall callVersion = (IRCall) mov.expr();
 			int numReturns  = callVersion.getNumReturns();
-			assert(numReturns == 1);
+			assert(numReturns <= 1);
 			
 			Tile epilogueTile = createEndCallTile((IRCall)mov.expr());
 			finalTile = Tile.mergeTiles(finalTile, epilogueTile); 

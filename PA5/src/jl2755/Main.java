@@ -509,7 +509,8 @@ public class Main {
             return lir.program;
 
         } catch(LexicalError error) {
-            System.out.println(error.getMessage());
+            System.out.println("[xic] Generating intermediate code failed");
+            System.out.println("\t" + filename + "\n\t" + error.getMessage());
         } catch(SyntaxError error) {
             System.out.println(error.getMessage());
         } catch(SemanticError error) {
@@ -543,6 +544,7 @@ public class Main {
     }
 
     public static void assembly(String filename) throws FileNotFoundException {
+    	System.out.println(filename);
     	int index = filename.lastIndexOf('.');
         if (index == -1) {
             index = filename.length();
@@ -595,19 +597,20 @@ public class Main {
             System.out.println("[xic] Generating assembly code completed");
             
         } catch(LexicalError error) {
-            System.out.println("\t" + filename + "\n\t" + error.getMessage());
             System.out.println("[xic] Generating assembly code failed");
+            System.out.println("\t" + filename + "\n\t" + error.getMessage());
         } catch(SyntaxError error) {
-            System.out.println("\t" + filename + "\n\t" + error.getMessage());
             System.out.println("[xic] Generating assembly code failed");
+            System.out.println("\t" + filename + "\n\t" + error.getMessage());
         } catch(SemanticError error) {
+            System.out.println("[xic] Generating assembly code failed");
             System.out.println("\t" + filename + "\n\t" + error.getMessage());
-            System.out.println("[xic] Generating assembly code failed");
         } catch(IOException e) {
-            System.out.println("\tFailed to write to output file " + filename);
             System.out.println("[xic] Generating assembly code failed");
+            System.out.println("\tFailed to write to output file " + filename);
             e.printStackTrace();
         } catch (Exception e) {
+            System.out.println("[xic] Generating assembly code failed");
             e.printStackTrace();
         }
     }

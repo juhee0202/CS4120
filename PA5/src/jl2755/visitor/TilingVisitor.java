@@ -483,6 +483,7 @@ public class TilingVisitor implements IRTreeVisitor {
 			Operand src = leftOperand;
 			Operand dest = rightOperand;
 			
+			
 			if (leftOperand instanceof Constant) {
 				if (rightOperand instanceof Register || 
 				    rightOperand instanceof Memory) {
@@ -565,11 +566,12 @@ public class TilingVisitor implements IRTreeVisitor {
 			}
 			argDest = result;
 		}
-
+		
 		// create tile and put into tileMap
 		Tile currTile = new Tile(instrList, cost, argDest);
 		Tile mergeChildren = Tile.mergeTiles(leftTile, rightTile);
 		Tile tile = Tile.mergeTiles(mergeChildren, currTile);
+		
 		tileMap.put(bo, tile);
 	}
 	
@@ -789,6 +791,8 @@ public class TilingVisitor implements IRTreeVisitor {
 			cost = leftTile.getCost() + rightTile.getCost();
 			tempSrc = leftTile.getDest();
 			tempDest = rightTile.getDest();
+			instructions.addAll(leftTile.getInstructions());
+			instructions.addAll(rightTile.getInstructions());
 			switch (op) {
 			case AND:
 				// test e1,e2 = AND
@@ -1133,18 +1137,21 @@ public class TilingVisitor implements IRTreeVisitor {
 		Operand childDest = childTile.getDest();
 		assert(childDest != null && !(childDest instanceof Constant));
 		
-		Tile clonedTile = new Tile(mem,childTile);
-		
-		if (childDest instanceof Memory) {
+		List<Instruction> newInstructions = new ArrayList<Instruction>();
+		Operand newDest = null;
+		int cost = 0;
+		if (childDest instanceof Memory || childDest instanceof Constant) {
 			Instruction movPart = new Instruction(Operation.MOVQ,childDest,new Register("rcx"));
-			clonedTile.addInstruction(movPart);
-			clonedTile.setDest(new Memory(new Register("rcx")));
+			newInstructions.add(movPart);
+			newDest = new Memory(new Register("rcx"));
+			cost++;
 		}
-		
 		else {
-			clonedTile.setDest(childDest);
+			newDest = new Memory((Register) childDest);
 		}
-		tileMap.put(mem, clonedTile);
+		Tile newTile = new Tile(newInstructions,cost,newDest);
+		Tile finalTile = Tile.mergeTiles(childTile, newTile);
+		tileMap.put(mem, finalTile);
 	}
 
 	@Override

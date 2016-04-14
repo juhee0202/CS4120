@@ -483,6 +483,7 @@ public class TilingVisitor implements IRTreeVisitor {
 			Operand src = leftOperand;
 			Operand dest = rightOperand;
 			
+			
 			if (leftOperand instanceof Constant) {
 				if (rightOperand instanceof Register || 
 				    rightOperand instanceof Memory) {
@@ -509,9 +510,9 @@ public class TilingVisitor implements IRTreeVisitor {
 			Instruction compare;
 			if (dest instanceof Constant) {
 				Register cons = new Register(RegisterName.R9);
-				compare = new Instruction(Operation.MOVQ,dest,cons);
-				instrList.add(compare);
-				cost += compare.getCost();
+				Instruction move = new Instruction(Operation.MOVQ,dest,cons);
+				instrList.add(move);
+				cost += move.getCost();
 				compare = new Instruction(Operation.CMPQ,src,cons);
 			} else {
 				compare = new Instruction(Operation.CMPQ,src,dest);
@@ -565,11 +566,12 @@ public class TilingVisitor implements IRTreeVisitor {
 			}
 			argDest = result;
 		}
-
+		
 		// create tile and put into tileMap
 		Tile currTile = new Tile(instrList, cost, argDest);
 		Tile mergeChildren = Tile.mergeTiles(leftTile, rightTile);
 		Tile tile = Tile.mergeTiles(mergeChildren, currTile);
+		
 		tileMap.put(bo, tile);
 	}
 	
@@ -789,6 +791,15 @@ public class TilingVisitor implements IRTreeVisitor {
 			cost = leftTile.getCost() + rightTile.getCost();
 			tempSrc = leftTile.getDest();
 			tempDest = rightTile.getDest();
+			instructions.addAll(leftTile.getInstructions());
+			instructions.addAll(rightTile.getInstructions());
+			if (tempDest instanceof Memory) {
+				Register tempDestRegister = new Register("tileRegister" + registerCount++);
+				Instruction moveMemory = new Instruction(Operation.MOVQ,tempDest, tempDestRegister);
+				instructions.add(moveMemory);
+				tempDest = tempDestRegister;
+			}
+			
 			switch (op) {
 			case AND:
 				// test e1,e2 = AND
@@ -1128,50 +1139,26 @@ public class TilingVisitor implements IRTreeVisitor {
 		if (tileMap.containsKey(mem)) {
 			return;
 		}
-		// Initialize list of matching tiles
-		List<Tile> matchingTiles = new ArrayList<Tile>();
-		ArrayList<ArrayList<IRNode>> childrenOfEachTile = new ArrayList<ArrayList<IRNode>>();
-		ArrayList<ArrayList<Operand>> operandOfEachChildren = new ArrayList<ArrayList<Operand>>();
-		for (int i = 0; i < tileLibrary.size(); i++) {
-			if (cmpTreeVisitor.equalTrees(tileLibrary.get(i).getRootOfSubtree(), 
-					mem)) {
-				matchingTiles.add(new Tile(mem,tileLibrary.get(i)));
-//				System.out.println(mem);
-//				System.out.println("Last added Tile " + matchingTiles.get(matchingTiles.size()-1).getDest());
-				childrenOfEachTile.add((ArrayList<IRNode>) cmpTreeVisitor.getAllChildrenNode());
-				operandOfEachChildren.add((ArrayList<Operand>) cmpTreeVisitor.getOperandOfNodesInTile());
-			}
+		mem.expr().accept(this);
+		Tile childTile = tileMap.get(mem.expr());
+		Operand childDest = childTile.getDest();
+		assert(childDest != null && !(childDest instanceof Constant));
+		
+		List<Instruction> newInstructions = new ArrayList<Instruction>();
+		Operand newDest = null;
+		int cost = 0;
+		if (childDest instanceof Memory || childDest instanceof Constant) {
+			Instruction movPart = new Instruction(Operation.MOVQ,childDest,new Register("rcx"));
+			newInstructions.add(movPart);
+			newDest = new Memory(new Register("rcx"));
+			cost++;
 		}
-		
-		// Fill in Tiles' Operands
-		
-//		System.out.println(matchingTiles.size());
-//		Thread.dumpStack();
-		
-		for (int i = 0; i < matchingTiles.size(); i++) {
-			
-			matchingTiles.get(i).fillInOperands(operandOfEachChildren.get(i));
+		else {
+			newDest = new Memory((Register) childDest);
 		}
-		
-		// Second pass to merge Tiles. Do not do this in the first pass, otherwise
-		// filling in Operands of instructions will get messed up
-		for (int i = 0; i < childrenOfEachTile.size(); i++) {
-			for (int j = 0; j < childrenOfEachTile.get(i).size(); j++) {
-				Tile currentTile = tileMap.get(childrenOfEachTile.get(i).get(j));
-				matchingTiles.set(i,Tile.mergeTiles(currentTile,matchingTiles.get(i)));
-			}
-		}
-		
-		// Third pass through matchingTiles to get a minimum cost Tile
-		int minimumCost = Integer.MAX_VALUE;
-		int indexOfSmallest = -1;
-		for (int i = 0; i < matchingTiles.size(); i++) {
-			if (matchingTiles.get(i).getCost() < minimumCost) {
-				minimumCost = matchingTiles.get(i).getCost();
-				indexOfSmallest = i;
-			}
-		}
-		tileMap.put(mem, matchingTiles.get(indexOfSmallest));
+		Tile newTile = new Tile(newInstructions,cost,newDest);
+		Tile finalTile = Tile.mergeTiles(childTile, newTile);
+		tileMap.put(mem, finalTile);
 	}
 
 	@Override
@@ -1482,11 +1469,11 @@ public class TilingVisitor implements IRTreeVisitor {
 				// dest is constant or label
 				Operation op = currentInstruction.getOp();
 				Operand label = currentInstruction.getDest();
-//				if (op == Operation.LABEL && label.toString().contains("FUNC(")) {
 				if (op == Operation.LABEL && label.toString().charAt(0) == '_') {
 					functionSpaceMap.put(currentFunction,stackCounter);
 					currentFunction = label.toString();
 					stackCounter = 0;
+					regToStack.clear();
 				}
 				added.add(currentInstruction);
 			}
@@ -1561,6 +1548,7 @@ public class TilingVisitor implements IRTreeVisitor {
 					} else {
 						System.out.println(currentInstruction);
 						System.out.println(regS);
+						System.out.println(regToStack);
 						System.out.println("Access a register that hasn't been set!");
 						assert(false);
 					}

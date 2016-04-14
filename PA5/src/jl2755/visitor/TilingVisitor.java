@@ -1469,11 +1469,11 @@ public class TilingVisitor implements IRTreeVisitor {
 				// dest is constant or label
 				Operation op = currentInstruction.getOp();
 				Operand label = currentInstruction.getDest();
-//				if (op == Operation.LABEL && label.toString().contains("FUNC(")) {
 				if (op == Operation.LABEL && label.toString().charAt(0) == '_') {
 					functionSpaceMap.put(currentFunction,stackCounter);
 					currentFunction = label.toString();
 					stackCounter = 0;
+					regToStack.clear();
 				}
 				added.add(currentInstruction);
 			}

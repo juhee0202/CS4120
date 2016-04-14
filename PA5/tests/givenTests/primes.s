@@ -329,7 +329,7 @@ _Imain_paai:
 	movq	-312(%rbp), %rcx
 	movq	0(%rcx), %r11
 	movq	%r11, -320(%rbp)
-	movq	$1000, %rcx
+	movq	$10, %rcx
 	movq	%rcx, -328(%rbp)
 	pushq	%rax
 	pushq	%rcx
@@ -437,7 +437,7 @@ _Imain_paai:
 	movq	-416(%rbp), %rcx
 	movq	0(%rcx), %r11
 	movq	%r11, -424(%rbp)
-	movq	$1000, %rcx
+	movq	$10, %rcx
 	movq	%rcx, -432(%rbp)
 	pushq	%rax
 	pushq	%rcx
@@ -543,7 +543,7 @@ l3:
 	movq	-512(%rbp), %rdx
 	movq	%rdx, %rcx
 	movq	%rcx, -536(%rbp)
-	movq	$1000, %rcx
+	movq	$10, %rcx
 	movq	%rcx, -544(%rbp)
 	pushq	%rax
 	pushq	%rcx
@@ -672,7 +672,7 @@ l1:
 	movq	%rcx, -488(%rbp)
 	jmp	l0
 l4:
-	movq	$1000, %rcx
+	movq	$10, %rcx
 	movq	%rcx, -640(%rbp)
 	pushq	%rax
 	pushq	%rcx
@@ -783,15 +783,14 @@ _Iisprime_bi:
 	.globl	_Ilargestprime_ii
 	.align	4
 _Ilargestprime_ii:
-	enter	$16, $0
+	enter	$24, $0
 	movq	%rdi, %rcx
-	movq	%rcx, -8(%rbp)
-	movq	-8(%rbp), %rcx
-	movq	$1, %rcx
 	movq	%rcx, -8(%rbp)
 	movq	$1, %rcx
 	movq	%rcx, -16(%rbp)
-	movq	-16(%rbp), %rdx
+	movq	$1, %rcx
+	movq	%rcx, -24(%rbp)
+	movq	-24(%rbp), %rdx
 	movq	%rdx, %rax
 	leave
 	ret

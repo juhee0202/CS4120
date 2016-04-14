@@ -89,7 +89,7 @@ public class IRTreeEqualsVisitor implements IRTreeVisitor{
 					rootOfRealInstance.accept(tilingVisitor);
 //					System.out.println(rootOfRealInstance);
 //					System.out.println(tilingVisitor.getTileOfNode(rootOfRealInstance).getDest());
-					System.out.println("GETTING HERE");
+//					System.out.println("GETTING HERE");
 					operandOfNodesInTile.add(tilingVisitor.getTileOfNode(rootOfRealInstance).getDest());
 //				}
 			}
@@ -98,12 +98,12 @@ public class IRTreeEqualsVisitor implements IRTreeVisitor{
 	}
 	
 	public List<IRNode> getAllChildrenNode() {
-		System.out.println("ALL CHILDREN " + allChildrenNode);
+//		System.out.println("ALL CHILDREN " + allChildrenNode);
 		return allChildrenNode;
 	}
 
 	public List<Operand> getOperandOfNodesInTile() {
-		System.out.println("IRTREE " + operandOfNodesInTile);
+//		System.out.println("IRTREE " + operandOfNodesInTile);
 		return operandOfNodesInTile;
 	}
 	

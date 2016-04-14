@@ -793,6 +793,13 @@ public class TilingVisitor implements IRTreeVisitor {
 			tempDest = rightTile.getDest();
 			instructions.addAll(leftTile.getInstructions());
 			instructions.addAll(rightTile.getInstructions());
+			if (tempDest instanceof Memory) {
+				Register tempDestRegister = new Register("tileRegister" + registerCount++);
+				Instruction moveMemory = new Instruction(Operation.MOVQ,tempDest, tempDestRegister);
+				instructions.add(moveMemory);
+				tempDest = tempDestRegister;
+			}
+			
 			switch (op) {
 			case AND:
 				// test e1,e2 = AND

@@ -287,7 +287,7 @@ public class Tile {
 			Register theBase = null;
 			Register registerOffset = null;
 			Constant constantOffset = null;
-			System.out.println("TILE " + rootOfSubtree);
+//			System.out.println("TILE " + rootOfSubtree);
 			assert(argOperands.size() == 3);
 			for (int i = 0; i < argOperands.size(); i++) {
 				if (argOperands.get(i).isRegBase()) {
@@ -383,6 +383,10 @@ public class Tile {
 
 	public void setInstructions(List<Instruction> instructions) {
 		this.instructions = instructions;
+	}
+	
+	public void addInstruction(Instruction argInstruction) {
+		instructions.add(argInstruction);
 	}
 
 	public Operand getDest() {

@@ -20,6 +20,9 @@ public class dohMyGod {
 
 	@Test
 	public void test() {
+		int[] array = {1, 2, 3};
+		System.out.println(array[-1]);
+		
 		int a = 'H';
 		System.out.println(a);
 		int x = 5&10;
@@ -148,5 +151,6 @@ public class dohMyGod {
 //		System.out.println("Subtree result is " + temp.equalTrees(tree1, tree2));
 //	}
 	
+
 
 }

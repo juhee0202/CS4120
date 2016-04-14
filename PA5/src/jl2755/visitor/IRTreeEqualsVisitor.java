@@ -85,21 +85,25 @@ public class IRTreeEqualsVisitor implements IRTreeVisitor{
 				rootOfFakeInstance.accept(this);
 			} else {
 				allChildrenNode.add(rootOfRealInstance);
-				if (currentChildTypeOfFake == null) {
+//				if (currentChildTypeOfFake == null) {
 					rootOfRealInstance.accept(tilingVisitor);
+//					System.out.println(rootOfRealInstance);
+//					System.out.println(tilingVisitor.getTileOfNode(rootOfRealInstance).getDest());
+					System.out.println("GETTING HERE");
 					operandOfNodesInTile.add(tilingVisitor.getTileOfNode(rootOfRealInstance).getDest());
-				}
+//				}
 			}
 		}
 		return temp;
 	}
 	
 	public List<IRNode> getAllChildrenNode() {
+		System.out.println("ALL CHILDREN " + allChildrenNode);
 		return allChildrenNode;
 	}
 
 	public List<Operand> getOperandOfNodesInTile() {
-//		System.out.println("IRTREE " + operandOfNodesInTile);
+		System.out.println("IRTREE " + operandOfNodesInTile);
 		return operandOfNodesInTile;
 	}
 	
@@ -276,7 +280,6 @@ public class IRTreeEqualsVisitor implements IRTreeVisitor{
 	public void visit(IRMem mem) {
 		IRMem tempCurrent = (IRMem) currentNode;
 //		System.out.println("BEFORE: " + currentBool);
-		boolean tempBool = currentBool;
 		currentBool = equalSubTrees(mem.expr(), tempCurrent.expr()) && currentBool;
 
 //		System.out.println("AFTER: " + currentBool);

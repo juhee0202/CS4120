@@ -238,40 +238,40 @@ public class TilingVisitor implements IRTreeVisitor {
 		Tile tile2 = new Tile(MEMBASEANDOFFSET_PRE,MEMBASEANDOFFSET_IN,emptyInstructions2,0,
 				tileEnum.BASEWITHCONSTANTOFFSET);
 		
-		List<Instruction> emptyInstructions3 = new ArrayList<Instruction>();
-		Tile tile3 = new Tile(MEMBASEANDREGISTEROFFSET_PRE1,MEMBASEANDREGISTEROFFSET_IN1,
-				emptyInstructions3,0,tileEnum.BASEWITHBOTHOFFSET);
-		
-		List<Instruction> emptyInstructions4 = new ArrayList<Instruction>();
-		Tile tile4 = new Tile(MEMBASEANDREGISTEROFFSET_PRE2,MEMBASEANDREGISTEROFFSET_IN2,
-				emptyInstructions4,0,tileEnum.BASEWITHBOTHOFFSET);
-		
-		List<Instruction> emptyInstruction5 = new ArrayList<Instruction>();
-		Tile tile5 = new Tile(MEMBASEANDREGISTERFACTOR_PRE,MEMBASEANDREGISTERFACTOR_IN,
-				emptyInstruction5,0,tileEnum.BASEWITHREGISTEROFFSETANDFACTOR);
-		
-		List<Instruction> emptyInstruction6 = new ArrayList<Instruction>();
-		Tile tile6 = new Tile(MEMEVERYTHING_PRE1,MEMEVERYTHING_IN1,
-				emptyInstruction6,0,tileEnum.EVERYTHING);
-		
-		List<Instruction> emptyInstruction7 = new ArrayList<Instruction>();
-		Tile tile7 = new Tile(MEMEVERYTHING_PRE2,MEMEVERYTHING_IN2,
-				emptyInstruction7,0,tileEnum.EVERYTHING);
-		
-		List<Instruction> emptyInstruction8 = new ArrayList<Instruction>();
-		Tile tile8 = new Tile(MEMEVERYTHING_PRE3,MEMEVERYTHING_IN3,
-				emptyInstruction8,0,tileEnum.EVERYTHING);
+//		List<Instruction> emptyInstructions3 = new ArrayList<Instruction>();
+//		Tile tile3 = new Tile(MEMBASEANDREGISTEROFFSET_PRE1,MEMBASEANDREGISTEROFFSET_IN1,
+//				emptyInstructions3,0,tileEnum.BASEWITHBOTHOFFSET);
+//		
+//		List<Instruction> emptyInstructions4 = new ArrayList<Instruction>();
+//		Tile tile4 = new Tile(MEMBASEANDREGISTEROFFSET_PRE2,MEMBASEANDREGISTEROFFSET_IN2,
+//				emptyInstructions4,0,tileEnum.BASEWITHBOTHOFFSET);
+//		
+//		List<Instruction> emptyInstruction5 = new ArrayList<Instruction>();
+//		Tile tile5 = new Tile(MEMBASEANDREGISTERFACTOR_PRE,MEMBASEANDREGISTERFACTOR_IN,
+//				emptyInstruction5,0,tileEnum.BASEWITHREGISTEROFFSETANDFACTOR);
+//		
+//		List<Instruction> emptyInstruction6 = new ArrayList<Instruction>();
+//		Tile tile6 = new Tile(MEMEVERYTHING_PRE1,MEMEVERYTHING_IN1,
+//				emptyInstruction6,0,tileEnum.EVERYTHING);
+//		
+//		List<Instruction> emptyInstruction7 = new ArrayList<Instruction>();
+//		Tile tile7 = new Tile(MEMEVERYTHING_PRE2,MEMEVERYTHING_IN2,
+//				emptyInstruction7,0,tileEnum.EVERYTHING);
+//		
+//		List<Instruction> emptyInstruction8 = new ArrayList<Instruction>();
+//		Tile tile8 = new Tile(MEMEVERYTHING_PRE3,MEMEVERYTHING_IN3,
+//				emptyInstruction8,0,tileEnum.EVERYTHING);
 		
 		
 		tileLibrary = new ArrayList<Tile>();
 		tileLibrary.add(tile1);
 		tileLibrary.add(tile2);
-		tileLibrary.add(tile3);
-		tileLibrary.add(tile4);
-		tileLibrary.add(tile5);
-		tileLibrary.add(tile6);
-		tileLibrary.add(tile7);
-		tileLibrary.add(tile8);
+//		tileLibrary.add(tile3);
+//		tileLibrary.add(tile4);
+//		tileLibrary.add(tile5);
+//		tileLibrary.add(tile6);
+//		tileLibrary.add(tile7);
+//		tileLibrary.add(tile8);
 	}
 	
 	public String parseTiles(IRNode argNode) {
@@ -789,6 +789,9 @@ public class TilingVisitor implements IRTreeVisitor {
 			cost = leftTile.getCost() + rightTile.getCost();
 			tempSrc = leftTile.getDest();
 			tempDest = rightTile.getDest();
+			
+			instructions.addAll(leftTile.getInstructions());
+			instructions.addAll(rightTile.getInstructions());
 			switch (op) {
 			case AND:
 				// test e1,e2 = AND
@@ -1139,6 +1142,7 @@ public class TilingVisitor implements IRTreeVisitor {
 //				System.out.println(mem);
 //				System.out.println("Last added Tile " + matchingTiles.get(matchingTiles.size()-1).getDest());
 				childrenOfEachTile.add((ArrayList<IRNode>) cmpTreeVisitor.getAllChildrenNode());
+//				System.out.println(childrenOfEachTile);
 				operandOfEachChildren.add((ArrayList<Operand>) cmpTreeVisitor.getOperandOfNodesInTile());
 			}
 		}

@@ -265,6 +265,8 @@ public class Tile {
 		
 		
 		if (theEnum == tileEnum.BASEONLY) {
+			System.out.println(argOperands);
+			assert(argOperands.size() == 1);
 			Register registerView = (Register) argOperands.get(0);
 			dest = new Memory(registerView);
 		}
@@ -306,18 +308,22 @@ public class Tile {
 			Register theBase = null;
 			Register registerOffset = null;
 			Constant constantFactor = null;
-			assert(argOperands.size() == 3);
+			System.out.println(argOperands);
 			for (int i = 0; i < argOperands.size(); i++) {
 				if (argOperands.get(i).isRegBase()) {
 					theBase = (Register) argOperands.get(i);
+					System.out.println(theBase);
 				}
 				if (argOperands.get(i).isRegFactorOffset()) {
 					registerOffset = (Register) argOperands.get(i);
+					System.out.println(registerOffset);
 				}
 				if (argOperands.get(i).isConstFactor()) {
 					constantFactor = (Constant) argOperands.get(i);
+					System.out.println(constantFactor);
 				}
 			}
+			assert(argOperands.size() == 3);
 			dest = new Memory(theBase,registerOffset,constantFactor);
 		}
 		if (theEnum == tileEnum.EVERYTHING) {

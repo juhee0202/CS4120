@@ -54,7 +54,7 @@ l9:
 	.globl	_Ifoo_p
 	.align	4
 _Ifoo_p:
-	enter	$144, $0
+	enter	$152, $0
 	movq	$10, %rcx
 	movq	%rcx, -8(%rbp)
 	movq	$2, %rcx
@@ -88,18 +88,21 @@ _Ifoo_p:
 	movq	-32(%rbp), %rdx
 	movq	%rdx, %rcx
 	movq	%rcx, -40(%rbp)
-	movq	-40(%rbp), %rcx
-	addq	$1, %rcx
-	movq	%rcx, -40(%rbp)
 	movq	-40(%rbp), %rdx
 	movq	%rdx, %rcx
 	movq	%rcx, -48(%rbp)
 	movq	-48(%rbp), %rcx
-	imulq	$8, %rcx
+	addq	$1, %rcx
 	movq	%rcx, -48(%rbp)
 	movq	-48(%rbp), %rdx
 	movq	%rdx, %rcx
 	movq	%rcx, -56(%rbp)
+	movq	-56(%rbp), %rcx
+	imulq	$8, %rcx
+	movq	%rcx, -56(%rbp)
+	movq	-56(%rbp), %rdx
+	movq	%rdx, %rcx
+	movq	%rcx, -64(%rbp)
 	pushq	%rax
 	pushq	%rcx
 	pushq	%rdx
@@ -107,12 +110,12 @@ _Ifoo_p:
 	pushq	%r9
 	pushq	%r10
 	pushq	%r11
-	movq	-56(%rbp), %rdx
+	movq	-64(%rbp), %rdx
 	movq	%rdx, %rdi
 	subq	$8, %rsp
 	callq	_I_alloc_i
 	movq	%rax, %rcx
-	movq	%rcx, -64(%rbp)
+	movq	%rcx, -72(%rbp)
 	movq	48(%rsp), %rax
 	movq	40(%rsp), %rcx
 	movq	32(%rsp), %rdx
@@ -121,34 +124,34 @@ _Ifoo_p:
 	movq	8(%rsp), %r10
 	movq	0(%rsp), %r11
 	addq	$64, %rsp
-	movq	-64(%rbp), %rdx
-	movq	%rdx, %rcx
-	movq	%rcx, -72(%rbp)
-	movq	-32(%rbp), %r11
-	movq	-72(%rbp), %rcx
-	movq	%r11, 0(%rcx)
 	movq	-72(%rbp), %rdx
 	movq	%rdx, %rcx
 	movq	%rcx, -80(%rbp)
+	movq	-40(%rbp), %r11
 	movq	-80(%rbp), %rcx
-	addq	$8, %rcx
-	movq	%rcx, -80(%rbp)
-	movq	-72(%rbp), %rcx
+	movq	%r11, 0(%rcx)
 	movq	-80(%rbp), %rdx
 	movq	%rdx, %rcx
-	movq	%rcx, -72(%rbp)
-	movq	$0, %rcx
 	movq	%rcx, -88(%rbp)
-l0:
 	movq	-88(%rbp), %rcx
-	movq	-32(%rbp), %rdx
-	cmpq	%rdx, %rcx
+	addq	$8, %rcx
 	movq	%rcx, -88(%rbp)
+	movq	-80(%rbp), %rcx
+	movq	-88(%rbp), %rdx
+	movq	%rdx, %rcx
+	movq	%rcx, -80(%rbp)
+	movq	$0, %rcx
+	movq	%rcx, -96(%rbp)
+l0:
+	movq	-96(%rbp), %rcx
+	movq	-40(%rbp), %rdx
+	cmpq	%rdx, %rcx
+	movq	%rcx, -96(%rbp)
 	jl	l1
 l2:
-	movq	-72(%rbp), %rdx
+	movq	-80(%rbp), %rdx
 	movq	%rdx, %rcx
-	movq	%rcx, -96(%rbp)
+	movq	%rcx, -104(%rbp)
 l3:
 	movq	-32(%rbp), %rcx
 	cmpq	$0, %rcx
@@ -158,57 +161,57 @@ l5:
 	leave
 	ret
 l1:
-	movq	-88(%rbp), %rdx
+	movq	-96(%rbp), %rdx
 	movq	%rdx, %rcx
-	movq	%rcx, -104(%rbp)
-	movq	-104(%rbp), %rcx
+	movq	%rcx, -112(%rbp)
+	movq	-112(%rbp), %rcx
 	imulq	$8, %rcx
-	movq	%rcx, -104(%rbp)
-	movq	-72(%rbp), %rdx
-	movq	%rdx, %rcx
 	movq	%rcx, -112(%rbp)
-	movq	-112(%rbp), %rcx
-	movq	-104(%rbp), %rdx
-	addq	%rdx, %rcx
-	movq	%rcx, -112(%rbp)
-	movq	-112(%rbp), %rcx
-	movq	$97, 0(%rcx)
-	movq	-88(%rbp), %rdx
+	movq	-80(%rbp), %rdx
 	movq	%rdx, %rcx
 	movq	%rcx, -120(%rbp)
 	movq	-120(%rbp), %rcx
-	addq	$1, %rcx
+	movq	-112(%rbp), %rdx
+	addq	%rdx, %rcx
 	movq	%rcx, -120(%rbp)
-	movq	-88(%rbp), %rcx
-	movq	-120(%rbp), %rdx
+	movq	-120(%rbp), %rcx
+	movq	$97, 0(%rcx)
+	movq	-96(%rbp), %rdx
 	movq	%rdx, %rcx
-	movq	%rcx, -88(%rbp)
+	movq	%rcx, -128(%rbp)
+	movq	-128(%rbp), %rcx
+	addq	$1, %rcx
+	movq	%rcx, -128(%rbp)
+	movq	-96(%rbp), %rcx
+	movq	-128(%rbp), %rdx
+	movq	%rdx, %rcx
+	movq	%rcx, -96(%rbp)
 	jmp	l0
 l4:
 	movq	-32(%rbp), %rdx
 	movq	%rdx, %rcx
-	movq	%rcx, -128(%rbp)
-	movq	-128(%rbp), %rcx
+	movq	%rcx, -136(%rbp)
+	movq	-136(%rbp), %rcx
 	subq	$1, %rcx
-	movq	%rcx, -128(%rbp)
+	movq	%rcx, -136(%rbp)
 	movq	-32(%rbp), %rcx
-	movq	-128(%rbp), %rdx
+	movq	-136(%rbp), %rdx
 	movq	%rdx, %rcx
 	movq	%rcx, -32(%rbp)
 	movq	$8, %rcx
-	movq	%rcx, -136(%rbp)
-	movq	-136(%rbp), %rcx
+	movq	%rcx, -144(%rbp)
+	movq	-144(%rbp), %rcx
 	movq	-32(%rbp), %rdx
 	imulq	%rdx, %rcx
-	movq	%rcx, -136(%rbp)
-	movq	-96(%rbp), %rdx
+	movq	%rcx, -144(%rbp)
+	movq	-104(%rbp), %rdx
 	movq	%rdx, %rcx
-	movq	%rcx, -144(%rbp)
-	movq	-144(%rbp), %rcx
-	movq	-136(%rbp), %rdx
+	movq	%rcx, -152(%rbp)
+	movq	-152(%rbp), %rcx
+	movq	-144(%rbp), %rdx
 	addq	%rdx, %rcx
-	movq	%rcx, -144(%rbp)
+	movq	%rcx, -152(%rbp)
 	movq	-32(%rbp), %r11
-	movq	-144(%rbp), %rcx
+	movq	-152(%rbp), %rcx
 	movq	%r11, 0(%rcx)
 	jmp	l3

@@ -8,10 +8,6 @@ init:
 
 build-project:
      [echo] PA1: /home/vagrant/shared/cs4120/pa5/build.xml
-    [javac] Warning: dohMyGod.java modified in the future.
-    [javac] Warning: jl2755/assembly/Tile.java modified in the future.
-    [javac] Warning: jl2755/visitor/IRTreeEqualsVisitor.java modified in the future.
-    [javac] Warning: jl2755/visitor/TilingVisitor.java modified in the future.
 
 build:
 
@@ -47,112 +43,71 @@ OK
     [Compiler's standard output:
     [xic] Lexing
 [xic] Lexing completed
-[xic] Generating assembly code
-	Failed to read input file io.ixi
-[xic] Generating assembly code failed
-	Semantic error at ex1.xi:4:3: Name print cannot be resolved
 ]
     ex2.xi: OK
     [Compiler's standard output:
     [xic] Lexing
 [xic] Lexing completed
-[xic] Generating assembly code
-[xic] Generating assembly code failed
-	Syntactic error at ex2.xi:1:2: Syntax error: unexpected :
 ]
     spec1.xi: OK
     [Compiler's standard output:
     [xic] Lexing
 [xic] Lexing completed
-[xic] Generating assembly code
-[xic] Generating assembly code failed
-	Syntactic error at spec1.xi:1:2: Syntax error: unexpected :
 ]
     spec2.xi: OK
     [Compiler's standard output:
     [xic] Lexing
 [xic] Lexing completed
-[xic] Generating assembly code
-[xic] Generating assembly code failed
-	Syntactic error at spec2.xi:1:5: Syntax error: unexpected =
 ]
     spec3.xi: OK
     [Compiler's standard output:
     [xic] Lexing
 [xic] Lexing completed
-[xic] Generating assembly code
-[xic] Generating assembly code failed
-	Syntactic error at spec3.xi:1:2: Syntax error: unexpected :
 ]
     gcd.xi: OK
     [Compiler's standard output:
     [xic] Lexing
 [xic] Lexing completed
-[xic] Generating assembly code
-[xic] Generating assembly code completed
 ]
     ratadd.xi: OK
     [Compiler's standard output:
     [xic] Lexing
 [xic] Lexing completed
-[xic] Generating assembly code
-[xic] Generating assembly code failed
-	Syntactic error at ratadd.xi:3:42: Syntax error: unexpected (
 ]
     ratadduse.xi: OK
     [Compiler's standard output:
     [xic] Lexing
 [xic] Lexing completed
-[xic] Generating assembly code
-[xic] Generating assembly code failed
-	Syntactic error at ratadduse.xi:1:1: Syntax error: unexpected (
 ]
     insertionsort.xi: OK
     [Compiler's standard output:
     [xic] Lexing
 [xic] Lexing completed
-[xic] Generating assembly code
-[xic] Generating assembly code completed
 ]
     arrayinit.xi: OK
     [Compiler's standard output:
     [xic] Lexing
 [xic] Lexing completed
-[xic] Generating assembly code
-[xic] Generating assembly code failed
-	Syntactic error at arrayinit.xi:1:2: Syntax error: unexpected :
 ]
     arrayinit2.xi: OK
     [Compiler's standard output:
     [xic] Lexing
 [xic] Lexing completed
-[xic] Generating assembly code
-[xic] Generating assembly code failed
-	Syntactic error at arrayinit2.xi:1:2: Syntax error: unexpected :
 ]
     mdarrays.xi: OK
     [Compiler's standard output:
     [xic] Lexing
 [xic] Lexing completed
-[xic] Generating assembly code
-[xic] Generating assembly code failed
-	Syntactic error at mdarrays.xi:1:2: Syntax error: unexpected :
 ]
     add.xi: OK
     [Compiler's standard output:
     [xic] Lexing
 [xic] Lexing completed
-[xic] Generating assembly code
-[xic] Generating assembly code failed
-	Syntactic error at add.xi:1:1: Syntax error: unexpected +
 ]
     beauty.xi: OK
     [Compiler's standard output:
     [xic] Lexing
 [xic] Lexing completed
-[xic] Generating assembly code
-[xic] Generating assembly code failed
-	Syntactic error at beauty.xi:1:1: Syntax error: unexpected ==
 ]
   xic (Test --lex): 14 out of 14 tests succeeded.
   Test collection: xic (Test --parse)
@@ -160,138 +115,79 @@ OK
     [Compiler's standard output:
     [xic] Parsing
 [xic] Parsing completed
-[xic] Generating assembly code
-	Failed to read input file io.ixi
-[xic] Generating assembly code failed
-	Semantic error at ex1.xi:4:3: Name print cannot be resolved
 ]
     ex2.xi: OK
     [Compiler's standard output:
     [xic] Parsing
 [xic] Parsing completed
-[xic] Generating assembly code
-[xic] Generating assembly code failed
-]
-    [Compiler's standard error:
-    java.lang.NullPointerException
-	at jl2755.visitor.LIRVisitor.visit(LIRVisitor.java:238)
-	at edu.cornell.cs.cs4120.xic.ir.IRSeq.accept(IRSeq.java:90)
-	at jl2755.visitor.LIRVisitor.visit(LIRVisitor.java:238)
-	at edu.cornell.cs.cs4120.xic.ir.IRSeq.accept(IRSeq.java:90)
-	at jl2755.visitor.LIRVisitor.visit(LIRVisitor.java:167)
-	at edu.cornell.cs.cs4120.xic.ir.IRFuncDecl.accept(IRFuncDecl.java:80)
-	at jl2755.visitor.LIRVisitor.visit(LIRVisitor.java:103)
-	at edu.cornell.cs.cs4120.xic.ir.IRCompUnit.accept(IRCompUnit.java:85)
-	at jl2755.Main.assembly(Main.java:594)
-	at jl2755.Main.main(Main.java:281)
-	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
-	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
-	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
-	at java.lang.reflect.Method.invoke(Method.java:498)
-	at org.eclipse.jdt.internal.jarinjarloader.JarRsrcLoader.main(JarRsrcLoader.java:58)
 ]
     ex3.xi: OK
     [Compiler's standard output:
     [xic] Parsing
 	Syntactic error at ex3.xi:1:1: Syntax error: unexpected +
 [xic] Parsing failed
-[xic] Generating assembly code
-[xic] Generating assembly code failed
-	Syntactic error at ex3.xi:1:1: Syntax error: unexpected +
 ]
     spec1.xi: OK
     [Compiler's standard output:
     [xic] Parsing
 [xic] Parsing completed
-[xic] Generating assembly code
-[xic] Generating assembly code failed
-	Semantic error at spec1.xi:4:22: Name f cannot be resolved
 ]
     spec2.xi: OK
     [Compiler's standard output:
     [xic] Parsing
 [xic] Parsing completed
-[xic] Generating assembly code
-[xic] Generating assembly code failed
-	Semantic error at spec2.xi:2:3: Name x cannot be resolved
 ]
     spec3.xi: OK
     [Compiler's standard output:
     [xic] Parsing
 [xic] Parsing completed
-[xic] Generating assembly code
-[xic] Generating assembly code completed
 ]
     gcd.xi: OK
     [Compiler's standard output:
     [xic] Parsing
 [xic] Parsing completed
-[xic] Generating assembly code
-[xic] Generating assembly code completed
 ]
     ratadd.xi: OK
     [Compiler's standard output:
     [xic] Parsing
 [xic] Parsing completed
-[xic] Generating assembly code
-[xic] Generating assembly code failed
-	Semantic error at ratadd.xi:4:13: Name gcd cannot be resolved
 ]
     ratadduse.xi: OK
     [Compiler's standard output:
     [xic] Parsing
 [xic] Parsing completed
-[xic] Generating assembly code
-[xic] Generating assembly code failed
-	Semantic error at ratadduse.xi:2:20: Name ratadd cannot be resolved
 ]
     insertionsort.xi: OK
     [Compiler's standard output:
     [xic] Parsing
 [xic] Parsing completed
-[xic] Generating assembly code
-[xic] Generating assembly code completed
 ]
     arrayinit.xi: OK
     [Compiler's standard output:
     [xic] Parsing
 [xic] Parsing completed
-[xic] Generating assembly code
-[xic] Generating assembly code failed
-	Semantic error at arrayinit.xi:3:5: a is already declared
 ]
     arrayinit2.xi: OK
     [Compiler's standard output:
     [xic] Parsing
 [xic] Parsing completed
-[xic] Generating assembly code
-[xic] Generating assembly code failed
-	Semantic error at arrayinit2.xi:2:14: Name gcd cannot be resolved
 ]
     mdarrays.xi: OK
     [Compiler's standard output:
     [xic] Parsing
 [xic] Parsing completed
-[xic] Generating assembly code
-[xic] Generating assembly code completed
 ]
     add.xi: OK
     [Compiler's standard output:
     [xic] Parsing
 	Syntactic error at add.xi:1:1: Syntax error: unexpected +
 [xic] Parsing failed
-[xic] Generating assembly code
-[xic] Generating assembly code failed
-	Syntactic error at add.xi:1:1: Syntax error: unexpected +
 ]
     beauty.xi: OK
     [Compiler's standard output:
     [xic] Parsing
 	Syntactic error at beauty.xi:1:1: Syntax error: unexpected ==
 [xic] Parsing failed
-[xic] Generating assembly code
-[xic] Generating assembly code failed
-	Syntactic error at beauty.xi:1:1: Syntax error: unexpected ==
 ]
   xic (Test --parse): 15 out of 15 tests succeeded.
   Test collection: xic (Test --typecheck)
@@ -299,231 +195,146 @@ OK
     [Compiler's standard output:
     [xic] Typechecking
 [xic] Typechecking completed
-[xic] Generating assembly code
-[xic] Generating assembly code completed
 ]
     ex02.xi: OK
     [Compiler's standard output:
     [xic] Typechecking
 [xic] Typechecking completed
-[xic] Generating assembly code
-[xic] Generating assembly code failed
-]
-    [Compiler's standard error:
-    java.lang.NullPointerException
-	at jl2755.visitor.LIRVisitor.visit(LIRVisitor.java:238)
-	at edu.cornell.cs.cs4120.xic.ir.IRSeq.accept(IRSeq.java:90)
-	at jl2755.visitor.LIRVisitor.visit(LIRVisitor.java:238)
-	at edu.cornell.cs.cs4120.xic.ir.IRSeq.accept(IRSeq.java:90)
-	at jl2755.visitor.LIRVisitor.visit(LIRVisitor.java:167)
-	at edu.cornell.cs.cs4120.xic.ir.IRFuncDecl.accept(IRFuncDecl.java:80)
-	at jl2755.visitor.LIRVisitor.visit(LIRVisitor.java:103)
-	at edu.cornell.cs.cs4120.xic.ir.IRCompUnit.accept(IRCompUnit.java:85)
-	at jl2755.Main.assembly(Main.java:594)
-	at jl2755.Main.main(Main.java:281)
-	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
-	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
-	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
-	at java.lang.reflect.Method.invoke(Method.java:498)
-	at org.eclipse.jdt.internal.jarinjarloader.JarRsrcLoader.main(JarRsrcLoader.java:58)
 ]
     ex03.xi: OK
     [Compiler's standard output:
     [xic] Typechecking
 [xic] Typechecking completed
-[xic] Generating assembly code
-[xic] Generating assembly code completed
 ]
     ex04.xi: OK
     [Compiler's standard output:
     [xic] Typechecking
 	Semantic error at ex04.xi:2:12: Expected bool, but found int
 [xic] Typechecking failed
-[xic] Generating assembly code
-[xic] Generating assembly code failed
-	Semantic error at ex04.xi:2:12: Expected bool, but found int
 ]
     ex05.xi: OK
     [Compiler's standard output:
     [xic] Typechecking
 	Semantic error at ex05.xi:2:18: Mismatched types for binary operation &
 [xic] Typechecking failed
-[xic] Generating assembly code
-[xic] Generating assembly code failed
-	Semantic error at ex05.xi:2:18: Mismatched types for binary operation &
 ]
     ex06.xi: OK
     [Compiler's standard output:
     [xic] Typechecking
 	Semantic error at ex06.xi:1:22: Name baz cannot be resolved
 [xic] Typechecking failed
-[xic] Generating assembly code
-[xic] Generating assembly code failed
-	Semantic error at ex06.xi:1:22: Name baz cannot be resolved
 ]
     ex07.xi: OK
     [Compiler's standard output:
     [xic] Typechecking
 	Semantic error at ex07.xi:4:3: Expected bool[], but found int[]
 [xic] Typechecking failed
-[xic] Generating assembly code
-[xic] Generating assembly code failed
-	Semantic error at ex07.xi:4:3: Expected bool[], but found int[]
 ]
     ex08.xi: OK
     [Compiler's standard output:
     [xic] Typechecking
 	Semantic error at ex08.xi:1:1: Expected bool, but found unit
 [xic] Typechecking failed
-[xic] Generating assembly code
-[xic] Generating assembly code failed
-	Semantic error at ex08.xi:1:1: Expected bool, but found unit
 ]
     ex09.xi: OK
     [Compiler's standard output:
     [xic] Typechecking
 	Syntactic error at ex09.xi:1:13: Syntax error: unexpected 2
 [xic] Typechecking failed
-[xic] Generating assembly code
-[xic] Generating assembly code failed
-	Syntactic error at ex09.xi:1:13: Syntax error: unexpected 2
 ]
     ex10.xi: OK
     [Compiler's standard output:
     [xic] Typechecking
 	Semantic error at ex10.xi:2:9: Mismatched number of values
 [xic] Typechecking failed
-[xic] Generating assembly code
-[xic] Generating assembly code failed
-	Semantic error at ex10.xi:2:9: Mismatched number of values
 ]
     ex11.xi: OK
     [Compiler's standard output:
     [xic] Typechecking
 	Semantic error at ex11.xi:2:9: Mismatched number of values
 [xic] Typechecking failed
-[xic] Generating assembly code
-[xic] Generating assembly code failed
-	Semantic error at ex11.xi:2:9: Mismatched number of values
 ]
     ex12.xi: OK
     [Compiler's standard output:
     [xic] Typechecking
 	Semantic error at ex12.xi:2:17: Expected int, but found unit
 [xic] Typechecking failed
-[xic] Generating assembly code
-[xic] Generating assembly code failed
-	Semantic error at ex12.xi:2:17: Expected int, but found unit
 ]
     spec1-full.xi: OK
     [Compiler's standard output:
     [xic] Typechecking
 [xic] Typechecking completed
-[xic] Generating assembly code
-[xic] Generating assembly code completed
 ]
     spec1.xi: OK
     [Compiler's standard output:
     [xic] Typechecking
 	Semantic error at spec1.xi:4:22: Name f cannot be resolved
 [xic] Typechecking failed
-[xic] Generating assembly code
-[xic] Generating assembly code failed
-	Semantic error at spec1.xi:4:22: Name f cannot be resolved
 ]
     spec2.xi: OK
     [Compiler's standard output:
     [xic] Typechecking
 	Semantic error at spec2.xi:2:3: Name x cannot be resolved
 [xic] Typechecking failed
-[xic] Generating assembly code
-[xic] Generating assembly code failed
-	Semantic error at spec2.xi:2:3: Name x cannot be resolved
 ]
     spec3.xi: OK
     [Compiler's standard output:
     [xic] Typechecking
 [xic] Typechecking completed
-[xic] Generating assembly code
-[xic] Generating assembly code completed
 ]
     gcd.xi: OK
     [Compiler's standard output:
     [xic] Typechecking
 [xic] Typechecking completed
-[xic] Generating assembly code
-[xic] Generating assembly code completed
 ]
     ratadd-full.xi: OK
     [Compiler's standard output:
     [xic] Typechecking
 [xic] Typechecking completed
-[xic] Generating assembly code
-[xic] Generating assembly code completed
 ]
     ratadd.xi: OK
     [Compiler's standard output:
     [xic] Typechecking
 	Semantic error at ratadd.xi:4:13: Name gcd cannot be resolved
 [xic] Typechecking failed
-[xic] Generating assembly code
-[xic] Generating assembly code failed
-	Semantic error at ratadd.xi:4:13: Name gcd cannot be resolved
 ]
     ratadduse-full.xi: OK
     [Compiler's standard output:
     [xic] Typechecking
 [xic] Typechecking completed
-[xic] Generating assembly code
-[xic] Generating assembly code completed
 ]
     ratadduse.xi: OK
     [Compiler's standard output:
     [xic] Typechecking
 	Semantic error at ratadduse.xi:2:20: Name ratadd cannot be resolved
 [xic] Typechecking failed
-[xic] Generating assembly code
-[xic] Generating assembly code failed
-	Semantic error at ratadduse.xi:2:20: Name ratadd cannot be resolved
 ]
     insertionsort.xi: OK
     [Compiler's standard output:
     [xic] Typechecking
 [xic] Typechecking completed
-[xic] Generating assembly code
-[xic] Generating assembly code completed
 ]
     arrayinit.xi: OK
     [Compiler's standard output:
     [xic] Typechecking
 	Semantic error at arrayinit.xi:3:5: a is already declared
 [xic] Typechecking failed
-[xic] Generating assembly code
-[xic] Generating assembly code failed
-	Semantic error at arrayinit.xi:3:5: a is already declared
 ]
     arrayinit2-full.xi: OK
     [Compiler's standard output:
     [xic] Typechecking
 [xic] Typechecking completed
-[xic] Generating assembly code
-[xic] Generating assembly code completed
 ]
     arrayinit2.xi: OK
     [Compiler's standard output:
     [xic] Typechecking
 	Semantic error at arrayinit2.xi:2:14: Name gcd cannot be resolved
 [xic] Typechecking failed
-[xic] Generating assembly code
-[xic] Generating assembly code failed
-	Semantic error at arrayinit2.xi:2:14: Name gcd cannot be resolved
 ]
     mdarrays.xi: OK
     [Compiler's standard output:
     [xic] Typechecking
 [xic] Typechecking completed
-[xic] Generating assembly code
-[xic] Generating assembly code completed
 ]
   xic (Test --typecheck): 26 out of 26 tests succeeded.
   Test collection: xic (Test --irgen)
@@ -531,90 +342,98 @@ OK
     [Compiler's standard output:
     [xic] Generating intermediate code
 [xic] Generating intermediate code completed
-[xic] Generating assembly code
-[xic] Generating assembly code completed
 ]
     ack.xi: OK
     [Compiler's standard output:
     [xic] Generating intermediate code
 [xic] Generating intermediate code completed
-[xic] Generating assembly code
-[xic] Generating assembly code completed
 ]
-    primes.xi: OK
+    primes.xi: Syntax error for input symbol "NUMBER" spanning from 1:1 to 1:3
+instead expected token classes are []
+Couldn't repair and continue parse for input symbol "NUMBER" spanning from 1:1 to 1:3
+
+IR syntax error: Can't recover from previous error(s)
     [Compiler's standard output:
     [xic] Generating intermediate code
-[xic] Generating intermediate code completed
-[xic] Generating assembly code
-[xic] Generating assembly code completed
+[xic] Generating intermediate code failed
+	Semantic error at primes.xi:20:15: Unreachable code
 ]
-  xic (Test --irgen): 3 out of 3 tests succeeded.
-Number of IRs: 3
-Number of canonical IRs: 3
-Number of constant-folded IRs: 3
-Number of correct IRs: 3
+  xic (Test --irgen): 2 out of 3 tests succeeded.
+Number of IRs: 2
+Number of canonical IRs: 2
+Number of constant-folded IRs: 2
+Number of correct IRs: 2
   Test collection: xic (Test --irgen -O)
     ex01.xi: OK
     [Compiler's standard output:
     [xic] Generating intermediate code
 [xic] Generating intermediate code completed
-[xic] Generating assembly code
-[xic] Generating assembly code completed
 ]
     ack.xi: OK
     [Compiler's standard output:
     [xic] Generating intermediate code
 [xic] Generating intermediate code completed
-[xic] Generating assembly code
-[xic] Generating assembly code completed
 ]
-    primes.xi: OK
+    primes.xi: Syntax error for input symbol "NUMBER" spanning from 1:1 to 1:3
+instead expected token classes are []
+Couldn't repair and continue parse for input symbol "NUMBER" spanning from 1:1 to 1:3
+
+IR syntax error: Can't recover from previous error(s)
     [Compiler's standard output:
     [xic] Generating intermediate code
-[xic] Generating intermediate code completed
-[xic] Generating assembly code
-[xic] Generating assembly code completed
+[xic] Generating intermediate code failed
+	Semantic error at primes.xi:20:15: Unreachable code
 ]
-  xic (Test --irgen -O): 3 out of 3 tests succeeded.
-Number of IRs: 3
-Number of canonical IRs: 3
-Number of correct IRs: 3
+  xic (Test --irgen -O): 2 out of 3 tests succeeded.
+Number of IRs: 2
+Number of canonical IRs: 2
+Number of correct IRs: 2
   Test collection: xic (Test -target linux)
     ex01.xi: OK
     [Compiler's standard output:
     [xic] Generating assembly code
 [xic] Generating assembly code completed
 ]
-    ack.xi: Failed to execute: ack exit code 139
+    ack.xi: OK
     [Compiler's standard output:
     [xic] Generating assembly code
 [xic] Generating assembly code completed
 ]
-    primes.xi: Mismatch detected at line 1 of file primes.s.nml
-expected: Largest prime less than 1,000 is 997
-found   : ���������������  (08@HPX`hpx���
+    primes.xi: [Linker's standard output:
+/home/vagrant/./primes.s: Assembler messages:
+/home/vagrant/./primes.s: Warning: end of file not at end of a line; newline inserted
+/home/vagrant/./primes.s:1: Error: junk at end of line, first unrecognized character is `1'
+
+]
+    File primes does not exist in directory .
     [Compiler's standard output:
     [xic] Generating assembly code
-[xic] Generating assembly code completed
+[xic] Generating assembly code failed
+	Semantic error at primes.xi:20:15: Unreachable code
 ]
-  xic (Test -target linux): 1 out of 3 tests succeeded.
+  xic (Test -target linux): 2 out of 3 tests succeeded.
   Test collection: xic (Test -target linux -O)
     ex01.xi: OK
     [Compiler's standard output:
     [xic] Generating assembly code
 [xic] Generating assembly code completed
 ]
-    ack.xi: Failed to execute: ack exit code 139
+    ack.xi: OK
     [Compiler's standard output:
     [xic] Generating assembly code
 [xic] Generating assembly code completed
 ]
-    primes.xi: Mismatch detected at line 1 of file primes.s.nml
-expected: Largest prime less than 1,000 is 997
-found   : ���������������  (08@HPX`hpx���
+    primes.xi: [Linker's standard output:
+/home/vagrant/./primes.s: Assembler messages:
+/home/vagrant/./primes.s: Warning: end of file not at end of a line; newline inserted
+/home/vagrant/./primes.s:1: Error: junk at end of line, first unrecognized character is `1'
+
+]
+    File primes does not exist in directory .
     [Compiler's standard output:
     [xic] Generating assembly code
-[xic] Generating assembly code completed
+[xic] Generating assembly code failed
+	Semantic error at primes.xi:20:15: Unreachable code
 ]
-  xic (Test -target linux -O): 1 out of 3 tests succeeded.
+  xic (Test -target linux -O): 2 out of 3 tests succeeded.
 xthScript: 65 out of 69 tests succeeded.

@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import edu.cornell.cs.cs4120.xic.ir.*;
+import edu.cornell.cs.cs4120.xic.ir.OpType;
 import edu.cornell.cs.cs4120.xic.ir.interpret.Configuration;
 import jl2755.ast.*;
 import jl2755.type.VarType;
@@ -111,7 +112,7 @@ public class MIRVisitor implements ASTVisitor{
 			as.getIdentifier().accept(this);
 			IRTemp base = (IRTemp) tempNode;
 			IndexedBrackets ib = as.getIndexedBrackets();
-			IRBinOp addr = (IRBinOp) createIRExprForBrackets(base,ib); //accepting indices here
+			IRBinOp addr = (IRBinOp) createIRExprForBrackets(base,ib);
 			IRMem mem = new IRMem(addr);
 			as.getExpr().accept(this);
 			IRExpr e = (IRExpr) tempNode;
@@ -708,22 +709,7 @@ public class MIRVisitor implements ASTVisitor{
 				// (stmt, expr) 
 				// stmt: allocating,moving,assigning value stuff
 				// expr: base address of the array
-				// create a new arraylist for createArray
-				List<IRStmt> preamble = new ArrayList<IRStmt>();
-				List<IRTemp> sizes = new ArrayList<IRTemp>();
-				for (int i = 0; i < exprList.size(); i++) {
-					exprList.get(i).accept(this);
-					IRTemp exprTemp = new IRTemp("t" + tempCount++);
-					IRMove moveExprToTemp = new IRMove(exprTemp,(IRExpr) tempNode);
-					sizes.add(exprTemp);
-					preamble.add(moveExprToTemp);
-				}
-				IRESeq arrayGenesis = (IRESeq) createArray(exprList,0,sizes);
-				List<IRStmt> preambleAndArray = new ArrayList<IRStmt>();
-				preambleAndArray.addAll(preamble);
-				preambleAndArray.addAll(((IRSeq) arrayGenesis.stmt()).stmts());
-				IRSeq stmts = new IRSeq(preambleAndArray);
-				arrayGenesis = new IRESeq(stmts,arrayGenesis.expr());
+				IRESeq arrayGenesis = (IRESeq) createArray(exprList,0);
 				IRMove moveAddrToTemp = new IRMove(tempOfArray,arrayGenesis.expr());
 				IRSeq stmt = (IRSeq) arrayGenesis.stmt();
 				List<IRStmt> newList = stmt.stmts();
@@ -842,39 +828,32 @@ public class MIRVisitor implements ASTVisitor{
 	
 	/**
 	 * Helper function to create an array
-	 * index: the current bracket of varDecl that we're curretly allocating memory for
-	 * 		ex: x: int[5][6][] -> 
-	 * 			first call would be createArray(exprList, 0) 
-	 * 			second call would be createArray(exprList, 1)
-	 * 			third: reaches base case because exprList.size == 2 and index == 2
-	 * @param sizes: list of the contents inside the brackets that represents the array dim
 	 */
-	private IRExpr createArray(List<Expr> exprList, int index, List<IRTemp> sizes) {
+	private IRExpr createArray(List<Expr> exprList, int index) {		
 		// Base case
 		if (index == exprList.size()) {
-			// ask jeff if this is correct base case... He says its ok
 			return new IRConst(97);
+			// TODO: change to this
+			// return new IRConst(0);
 		}
 		List<IRStmt> stmts = new ArrayList<IRStmt>();
 		
 		// Make call to malloc for exprList.get(index)
 		IRName nameOfAlloc = new IRName("_I_alloc_i");
-		IRTemp lengthTemp = sizes.get(index);
-		IRTemp lengthTemp2 = new IRTemp(lengthTemp.name());
-		IRBinOp sizeOfArray = new IRBinOp(OpType.ADD, lengthTemp2, new IRConst(1));	//add 1 to store length of array
+		exprList.get(index).accept(this);
+		IRExpr length = (IRExpr) tempNode;
+		IRBinOp sizeOfArray = new IRBinOp(OpType.ADD,length,new IRConst(1));
 		sizeOfArray = new IRBinOp(OpType.MUL, sizeOfArray, new IRConst(Configuration.WORD_SIZE));
-	
 		IRCall callToAlloc = new IRCall(nameOfAlloc,sizeOfArray);
 		IRTemp freshArray = new IRTemp("t"+tempCount++);
 		IRMove moveAddrToTemp = new IRMove(freshArray,callToAlloc);
 		stmts.add(moveAddrToTemp);
-		
 		// insert length
 		IRTemp freshArray2 = new IRTemp(freshArray.name());
-		IRTemp lengthTemp3 = new IRTemp(lengthTemp.name());
-		IRMove moveLength = new IRMove(new IRMem(freshArray2), lengthTemp3);
+		exprList.get(index).accept(this);
+		IRExpr length2 = (IRExpr) tempNode;
+		IRMove moveLength = new IRMove(new IRMem(freshArray2),length2);
 		stmts.add(moveLength);
-		
 		// move base address up
 		IRTemp freshArray3 = new IRTemp(freshArray.name());
 		IRConst wordSize = new IRConst(Configuration.WORD_SIZE);
@@ -884,33 +863,31 @@ public class MIRVisitor implements ASTVisitor{
 		stmts.add(moveBaseUp);
 		
 		// while loop
-		IRTemp loopCounter = new IRTemp("t" + tempCount++);
-		IRMove initializeCounter = new IRMove(loopCounter, new IRConst(0));
-	
-		IRLabel startOfLoop = new IRLabel("l" + labelCount++);
-		
-		IRTemp loopCounter2 = new IRTemp(loopCounter.name());		
-		IRTemp lengthTemp4 = new IRTemp(lengthTemp.name());
-		IRBinOp loopCondition = new IRBinOp(OpType.LT, loopCounter2, lengthTemp4);
-		IRLabel trueLabel = new IRLabel("l" + labelCount++);
-		IRLabel falseLabel = new IRLabel("l" + labelCount++);
-		IRCJump whileJump = new IRCJump(loopCondition, trueLabel.name(), falseLabel.name());
-		
+		IRTemp loopCounter = new IRTemp("t"+tempCount++);
+		IRMove initializeCounter = new IRMove(loopCounter,new IRConst(0));
+		IRLabel startOfLoop = new IRLabel("l"+labelCount++);
+		IRTemp loopCounter2 = new IRTemp(loopCounter.name());
+		exprList.get(index).accept(this);
+		IRExpr length3 = (IRExpr) tempNode;
+		IRBinOp loopCondition = new IRBinOp(OpType.LT,loopCounter2,length3);
+		IRLabel trueLabel = new IRLabel("l"+labelCount++);
+		IRLabel falseLabel = new IRLabel("l"+labelCount++);
+		IRCJump whileJump = new IRCJump(loopCondition,trueLabel.name(),falseLabel.name());
 		IRTemp freshArray5 = new IRTemp(freshArray.name());
 		IRTemp loopCounter3 = new IRTemp(loopCounter.name());
 		IRConst wordSize2 = new IRConst(Configuration.WORD_SIZE);
-		IRBinOp baseOffset = new IRBinOp(OpType.MUL, loopCounter3, wordSize2);
-		IRBinOp currAddr = new IRBinOp(OpType.ADD, freshArray5, baseOffset);
-		IRMove assignValue = new IRMove(new IRMem(currAddr), createArray(exprList,index+1,sizes));
+		IRBinOp baseOffset = new IRBinOp(OpType.MUL,loopCounter3,wordSize2);
+		IRBinOp currAddr = new IRBinOp(OpType.ADD,freshArray5,baseOffset);
+		IRMove assignValue = new IRMove(new IRMem(currAddr),createArray(exprList,index+1));
 		IRTemp loopCounter4 = new IRTemp(loopCounter.name());
 		IRBinOp incrementedValue = new IRBinOp(OpType.ADD, loopCounter4, new IRConst(1));
 		IRTemp loopCounter5 = new IRTemp(loopCounter.name());
-		IRMove incrementCounter = new IRMove(loopCounter5, incrementedValue);
+		IRMove incrementCounter = new IRMove(loopCounter5,incrementedValue);
 		IRJump jumpToStart = new IRJump(new IRName(startOfLoop.name()));
-		List<IRStmt> whileLoop = Arrays.asList(initializeCounter, startOfLoop, whileJump,
-				trueLabel, assignValue, incrementCounter, jumpToStart, falseLabel);
+		List<IRStmt> whileLoop = Arrays.asList(initializeCounter,startOfLoop,whileJump,
+				trueLabel,assignValue,incrementCounter,jumpToStart,falseLabel);
 		stmts.addAll(whileLoop);
 		IRTemp freshArray6 = new IRTemp(freshArray.name());
-		return new IRESeq(new IRSeq(stmts), freshArray6);
+		return new IRESeq(new IRSeq(stmts),freshArray6);
 	}
 }

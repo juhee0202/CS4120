@@ -26,6 +26,9 @@ public class TypeCheckVisitor implements ASTVisitor {
 	private Stack<String> stack;	// "_": special marker
 	private VType tempType;
 	private VType stmtType;
+	private Stmt nextStmt;
+	private boolean unreachableCodeFlag = false;
+	private boolean inFunctionDecl = false;
 	private boolean negativeNumber = false; // needed for UnaryExpr, Literal
 	private boolean returnIsLast; // True iff last statement is RETURNNN
 	
@@ -669,6 +672,17 @@ public class TypeCheckVisitor implements ASTVisitor {
 		/* Typecheck function body */
 		fd.getBlockStmt().accept(this);
 		VType bodyReturnType = tempType;
+		if (tempType instanceof UnitType && unreachableCodeFlag) {
+			String errMsg = "Unreachable code";
+			SemanticErrorObject seo = new SemanticErrorObject(
+					nextStmt.getLine(),
+					nextStmt.getColumn(),
+					errMsg);
+			Main.handleSemanticError(seo);	
+		}
+		unreachableCodeFlag = false;
+		inFunctionDecl = false;
+		nextStmt = null;
 		
 		String id = fd.getIdentifier().toString();
 		funType = (FunType) env.get(id);	// safe
@@ -985,21 +999,28 @@ public class TypeCheckVisitor implements ASTVisitor {
 
 	@Override
 	public void visit(StmtList sl) {
+//		List<Stmt> stmtList = sl.getAllStmt();
+//		for (Stmt s : stmtList) {
+//			s.accept(this);
+//		}
 		List<Stmt> stmtList = sl.getAllStmt();
 		int n = stmtList.size();
 		
 		for (int i = 0; i < n; i++) {
 			Stmt stmt = stmtList.get(i);
 			stmt.accept(this);
-			if (i < n-1 && stmtType instanceof VoidType) {
-				Stmt nextStmt = stmtList.get(i+1);
-				
-				String errMsg = "Unreachable code";
-				SemanticErrorObject seo = new SemanticErrorObject(
-						nextStmt.getLine(),
-						nextStmt.getColumn(),
-						errMsg);
-				Main.handleSemanticError(seo);	
+			if (i < n-1 && stmtType instanceof VoidType && inFunctionDecl) {
+				unreachableCodeFlag = true;
+				nextStmt = stmtList.get(i+1);
+				inFunctionDecl = false;
+//				Stmt nextStmt = stmtList.get(i+1);
+//				
+//				String errMsg = "Unreachable code";
+//				SemanticErrorObject seo = new SemanticErrorObject(
+//						nextStmt.getLine(),
+//						nextStmt.getColumn(),
+//						errMsg);
+//				Main.handleSemanticError(seo);	
 			}
 		}		
 	}

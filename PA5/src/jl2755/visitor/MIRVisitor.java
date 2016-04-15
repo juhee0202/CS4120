@@ -2,6 +2,7 @@ package jl2755.visitor;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -111,7 +112,7 @@ public class MIRVisitor implements ASTVisitor{
 			as.getIdentifier().accept(this);
 			IRTemp base = (IRTemp) tempNode;
 			IndexedBrackets ib = as.getIndexedBrackets();
-			IRBinOp addr = (IRBinOp) createIRExprForBrackets(base,ib);
+			IRBinOp addr = (IRBinOp) createIRExprForBrackets(base,ib); //accepting indices here
 			IRMem mem = new IRMem(addr);
 			as.getExpr().accept(this);
 			IRExpr e = (IRExpr) tempNode;
@@ -842,6 +843,7 @@ public class MIRVisitor implements ASTVisitor{
 	
 	/**
 	 * Helper function to create an array
+<<<<<<< HEAD
 	 * 
 	 * @param sizes		list of the contents inside the brackets that represents the array dim
 	 * @param index		the current bracket of varDecl that we're curretly allocating memory for
@@ -853,19 +855,18 @@ public class MIRVisitor implements ASTVisitor{
 	private IRExpr createArray(List<Expr> exprList, int index, List<IRTemp> sizes) {		
 		// Base case
 		if (index == exprList.size()) {
+			// ask jeff if this is correct base case... He says its ok
 			return new IRConst(97);
-			// TODO: change to this
-			// return new IRConst(0);
 		}
 		List<IRStmt> stmts = new ArrayList<IRStmt>();
 		
 		// Make call to malloc for exprList.get(index)
 		IRName nameOfAlloc = new IRName("_I_alloc_i");
 		IRTemp lengthTemp = sizes.get(index);
-		 		IRTemp lengthTemp2 = new IRTemp(lengthTemp.name());
-		 		IRBinOp sizeOfArray = new IRBinOp(OpType.ADD, lengthTemp2, new IRConst(1));	//add 1 to store length of array
+		IRTemp lengthTemp2 = new IRTemp(lengthTemp.name());
+		IRBinOp sizeOfArray = new IRBinOp(OpType.ADD, lengthTemp2, new IRConst(1));	//add 1 to store length of array
 		sizeOfArray = new IRBinOp(OpType.MUL, sizeOfArray, new IRConst(Configuration.WORD_SIZE));
-		
+	
 		IRCall callToAlloc = new IRCall(nameOfAlloc,sizeOfArray);
 		IRTemp freshArray = new IRTemp("t"+tempCount++);
 		IRMove moveAddrToTemp = new IRMove(freshArray,callToAlloc);
@@ -874,7 +875,7 @@ public class MIRVisitor implements ASTVisitor{
 		// insert length
 		IRTemp freshArray2 = new IRTemp(freshArray.name());
 		IRTemp lengthTemp3 = new IRTemp(lengthTemp.name());
-		 		IRMove moveLength = new IRMove(new IRMem(freshArray2), lengthTemp3);
+		IRMove moveLength = new IRMove(new IRMem(freshArray2), lengthTemp3);
 		stmts.add(moveLength);
 		
 		// move base address up
@@ -887,29 +888,29 @@ public class MIRVisitor implements ASTVisitor{
 		
 		// while loop
 		IRTemp loopCounter = new IRTemp("t" + tempCount++);
-		 		IRMove initializeCounter = new IRMove(loopCounter, new IRConst(0));
-		 	
-		 		IRLabel startOfLoop = new IRLabel("l" + labelCount++);
-		 		
-		 		IRTemp loopCounter2 = new IRTemp(loopCounter.name());		
-		 		IRTemp lengthTemp4 = new IRTemp(lengthTemp.name());
-		 		IRBinOp loopCondition = new IRBinOp(OpType.LT, loopCounter2, lengthTemp4);
-		 		IRLabel trueLabel = new IRLabel("l" + labelCount++);
-		 		IRLabel falseLabel = new IRLabel("l" + labelCount++);
-		 		IRCJump whileJump = new IRCJump(loopCondition, trueLabel.name(), falseLabel.name());
+		IRMove initializeCounter = new IRMove(loopCounter, new IRConst(0));
+	
+		IRLabel startOfLoop = new IRLabel("l" + labelCount++);
+		
+		IRTemp loopCounter2 = new IRTemp(loopCounter.name());		
+		IRTemp lengthTemp4 = new IRTemp(lengthTemp.name());
+		IRBinOp loopCondition = new IRBinOp(OpType.LT, loopCounter2, lengthTemp4);
+		IRLabel trueLabel = new IRLabel("l" + labelCount++);
+		IRLabel falseLabel = new IRLabel("l" + labelCount++);
+		IRCJump whileJump = new IRCJump(loopCondition, trueLabel.name(), falseLabel.name());
 		IRTemp freshArray5 = new IRTemp(freshArray.name());
 		IRTemp loopCounter3 = new IRTemp(loopCounter.name());
 		IRConst wordSize2 = new IRConst(Configuration.WORD_SIZE);
 		IRBinOp baseOffset = new IRBinOp(OpType.MUL, loopCounter3, wordSize2);
-		 		IRBinOp currAddr = new IRBinOp(OpType.ADD, freshArray5, baseOffset);
-		 		IRMove assignValue = new IRMove(new IRMem(currAddr), createArray(exprList,index+1,sizes));
+		IRBinOp currAddr = new IRBinOp(OpType.ADD, freshArray5, baseOffset);
+		IRMove assignValue = new IRMove(new IRMem(currAddr), createArray(exprList,index+1,sizes));
 		IRTemp loopCounter4 = new IRTemp(loopCounter.name());
 		IRBinOp incrementedValue = new IRBinOp(OpType.ADD, loopCounter4, new IRConst(1));
 		IRTemp loopCounter5 = new IRTemp(loopCounter.name());
 		IRMove incrementCounter = new IRMove(loopCounter5, incrementedValue);
 		IRJump jumpToStart = new IRJump(new IRName(startOfLoop.name()));
 		List<IRStmt> whileLoop = Arrays.asList(initializeCounter, startOfLoop, whileJump,
-				 				trueLabel, assignValue, incrementCounter, jumpToStart, falseLabel);
+				trueLabel, assignValue, incrementCounter, jumpToStart, falseLabel);
 		stmts.addAll(whileLoop);
 		IRTemp freshArray6 = new IRTemp(freshArray.name());
 		return new IRESeq(new IRSeq(stmts), freshArray6);

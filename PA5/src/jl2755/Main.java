@@ -287,7 +287,6 @@ public class Main {
                 }
             }
         }
-
     }
 
     public static void lex(String filename) throws FileNotFoundException {

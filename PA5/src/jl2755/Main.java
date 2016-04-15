@@ -287,7 +287,6 @@ public class Main {
                 }
             }
         }
-
     }
 
     public static void lex(String filename) throws FileNotFoundException {
@@ -489,12 +488,12 @@ public class Main {
             /* Translate to MIR */
             MIRVisitor mir = new MIRVisitor();
             program.accept(mir);
-            //			StringWriter sww = new StringWriter();
-            //	        try (PrintWriter pw = new PrintWriter(sww);
-            //		             SExpPrinter sp = new CodeWriterSExpPrinter(pw)) {
-            //				mir.program.printSExp(sp);
-            //		        }
-            //	        bw.write(sww.toString());
+            			StringWriter sww = new StringWriter();
+            	        try (PrintWriter pw = new PrintWriter(sww);
+            		             SExpPrinter sp = new CodeWriterSExpPrinter(pw)) {
+            				mir.program.printSExp(sp);
+            		        }
+            	        bw.write(sww.toString());
 
             /* Lower to LIR */
             LIRVisitor lir = new LIRVisitor();

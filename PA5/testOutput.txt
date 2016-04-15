@@ -8,10 +8,12 @@ init:
 
 build-project:
      [echo] PA1: /home/vagrant/shared/cs4120/pa5/build.xml
-    [javac] Warning: dohMyGod.java modified in the future.
-    [javac] Warning: jl2755/assembly/Tile.java modified in the future.
-    [javac] Warning: jl2755/visitor/IRTreeEqualsVisitor.java modified in the future.
-    [javac] Warning: jl2755/visitor/TilingVisitor.java modified in the future.
+    [javac] Warning: jl2755/Main.java modified in the future.
+    [javac] Warning: jl2755/ast/Stmt.java modified in the future.
+    [javac] Warning: jl2755/parser.java modified in the future.
+    [javac] Warning: jl2755/visitor/LIRVisitor.java modified in the future.
+    [javac] Warning: jl2755/visitor/MIRVisitor.java modified in the future.
+    [javac] Warning: jl2755/visitor/TypeCheckVisitor.java modified in the future.
 
 build:
 
@@ -585,36 +587,36 @@ Number of correct IRs: 3
     [xic] Generating assembly code
 [xic] Generating assembly code completed
 ]
-    ack.xi: Failed to execute: ack exit code 139
+    ack.xi: OK
     [Compiler's standard output:
     [xic] Generating assembly code
 [xic] Generating assembly code completed
 ]
     primes.xi: Mismatch detected at line 1 of file primes.s.nml
 expected: Largest prime less than 1,000 is 997
-found   : ���������������  (08@HPX`hpx���
+found   : HPX`hpx����������������  (08@HPX`
     [Compiler's standard output:
     [xic] Generating assembly code
 [xic] Generating assembly code completed
 ]
-  xic (Test -target linux): 1 out of 3 tests succeeded.
+  xic (Test -target linux): 2 out of 3 tests succeeded.
   Test collection: xic (Test -target linux -O)
     ex01.xi: OK
     [Compiler's standard output:
     [xic] Generating assembly code
 [xic] Generating assembly code completed
 ]
-    ack.xi: Failed to execute: ack exit code 139
+    ack.xi: OK
     [Compiler's standard output:
     [xic] Generating assembly code
 [xic] Generating assembly code completed
 ]
     primes.xi: Mismatch detected at line 1 of file primes.s.nml
 expected: Largest prime less than 1,000 is 997
-found   : ���������������  (08@HPX`hpx���
+found   : HPX`hpx����������������  (08@HPX`
     [Compiler's standard output:
     [xic] Generating assembly code
 [xic] Generating assembly code completed
 ]
-  xic (Test -target linux -O): 1 out of 3 tests succeeded.
-xthScript: 65 out of 69 tests succeeded.
+  xic (Test -target linux -O): 2 out of 3 tests succeeded.
+xthScript: 67 out of 69 tests succeeded.

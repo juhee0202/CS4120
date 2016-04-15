@@ -221,7 +221,7 @@ public class LIRVisitor implements IRTreeVisitor{
 	public void visit(IRName name) {
 		List<IRStmt> emptyIRStmt = new ArrayList<IRStmt>();
 		IRSeq emptySeq = new IRSeq(emptyIRStmt);
-		tempSeq = new Pair<IRSeq, IRNode>(emptySeq, name);
+		tempSeq = new Pair<IRSeq, IRNode>(emptySeq, new IRName(name.name()));
 	}
 	
 	public void visit(IRReturn ret) {

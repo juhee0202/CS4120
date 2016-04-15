@@ -270,22 +270,23 @@ public class Main {
         }
         
         /* ASSEMBLY */
-        files = concat(lexFiles, 
-                parseFiles, 
-                typecheckFiles, 
-                irgenFiles, 
-                irrunFiles,
-                leftoverFiles);
-        for (String file: files) {
-            try { 
-                assembly(file);
-            } catch (FileNotFoundException e) {
-                System.out.println(srcPath + file + " is not found.");
-            } catch (Exception e) {
-                System.out.println("Missing argument for option: --typecheck");
+        if (cmd.hasOption("-target")) {
+        	files = concat(lexFiles, 
+                    parseFiles, 
+                    typecheckFiles, 
+                    irgenFiles, 
+                    irrunFiles,
+                    leftoverFiles);
+            for (String file: files) {
+                try { 
+                    assembly(file);
+                } catch (FileNotFoundException e) {
+                    System.out.println(srcPath + file + " is not found.");
+                } catch (Exception e) {
+                    System.out.println("Missing argument for option: --typecheck");
+                }
             }
         }
-
     }
 
     public static void lex(String filename) throws FileNotFoundException {
@@ -487,12 +488,12 @@ public class Main {
             /* Translate to MIR */
             MIRVisitor mir = new MIRVisitor();
             program.accept(mir);
-            //			StringWriter sww = new StringWriter();
-            //	        try (PrintWriter pw = new PrintWriter(sww);
-            //		             SExpPrinter sp = new CodeWriterSExpPrinter(pw)) {
-            //				mir.program.printSExp(sp);
-            //		        }
-            //	        bw.write(sww.toString());
+            			StringWriter sww = new StringWriter();
+            	        try (PrintWriter pw = new PrintWriter(sww);
+            		             SExpPrinter sp = new CodeWriterSExpPrinter(pw)) {
+            				mir.program.printSExp(sp);
+            		        }
+            	        bw.write(sww.toString());
 
             /* Lower to LIR */
             LIRVisitor lir = new LIRVisitor();
@@ -553,7 +554,7 @@ public class Main {
             sim.call("_Imain_paai", 0);
             System.out.println("[xic] Interpreting intermediate code completed");
         } catch (Exception e) {
-//            e.printStackTrace();
+            e.printStackTrace();
         }
 
     }

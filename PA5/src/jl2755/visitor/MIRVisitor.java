@@ -793,8 +793,8 @@ public class MIRVisitor implements ASTVisitor{
 			return new IRESeq(boundCheckStmt, arrayAddr);
 		}
 		
-		IRESeq arrayValueESeq = new IRESeq(boundCheckStmt, new IRMem(arrayAddr));
-		return createIRExprForBrackets(arrayValueESeq, ib.getIndexedBrackets());
+		IRExpr bracketsIRExpr = createIRExprForBrackets(new IRMem(arrayAddr), ib.getIndexedBrackets());
+		return new IRESeq(boundCheckStmt, bracketsIRExpr);		
 	}
 	
 	/**

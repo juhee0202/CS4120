@@ -773,6 +773,7 @@ public class MIRVisitor implements ASTVisitor{
 	 * there are indices to be put into a IRMem and IRBinOp node.
 	 * 
 	 * @param ib is the rest of the indexed brackets to parse
+	 * @param ire is the base address
 	 * @return an IRExpr that points to the memory location pointed
 	 * from IRExpr and IndexedBrackets
 	 */
@@ -780,13 +781,68 @@ public class MIRVisitor implements ASTVisitor{
 	private IRExpr createIRExprForBrackets(IRExpr ire, IndexedBrackets ib) {
 		Expr exprInBracket = ib.getExpression();
 		exprInBracket.accept(this);
+		IRExpr indexExpr = (IRExpr) tempNode;
 		IRConst byteOffset = new IRConst(Configuration.WORD_SIZE);
-		IRBinOp byteMult = new IRBinOp(OpType.MUL, byteOffset, (IRExpr) tempNode);
+		IRBinOp byteMult = new IRBinOp(OpType.MUL, byteOffset, indexExpr);
 		IRBinOp arrayAddr = new IRBinOp(OpType.ADD, ire, byteMult);
+		// clone arrayAddr and indexExpr
+		IRExpr cloneArrayAddr = (IRExpr)ire.copy();
+		IRExpr cloneIndexExpr = (IRExpr)indexExpr.copy();
+		IRStmt boundCheckStmt = createIRStmtForArrayBoundCheck(cloneArrayAddr, cloneIndexExpr);
 		if (ib.getIndex() == 0) {
-			return arrayAddr;
+			return new IRESeq(boundCheckStmt, arrayAddr);
 		}
-		return createIRExprForBrackets(new IRMem(arrayAddr), ib.getIndexedBrackets());
+		
+		IRESeq arrayValueESeq = new IRESeq(boundCheckStmt, new IRMem(arrayAddr));
+		return createIRExprForBrackets(arrayValueESeq, ib.getIndexedBrackets());
+	}
+	
+	/**
+	 * Creates an IRStmt that performs array index out of bound check
+	 * 
+	 * a[i]
+	 * @param baseAddr(a) is the base address of the array
+	 * @param arrayIndex(i) is the index of the array in which you are trying to access 
+	 * @return IRStmt that performs array index out of bound check
+	 */
+	private IRStmt createIRStmtForArrayBoundCheck(IRExpr baseAddr, IRExpr arrayIndex) {
+		// master stmt list
+		List<IRStmt> stmtList = new ArrayList<IRStmt>();
+		
+		/* Get array length */
+		IRTemp length = new IRTemp("t" + tempCount++);
+		IRConst offset = new IRConst(Configuration.WORD_SIZE);
+		IRBinOp arrayLengthAddr = new IRBinOp(OpType.SUB, baseAddr, offset);
+		IRMem arrayLength = new IRMem(arrayLengthAddr);
+		IRMove moveLength = new IRMove(length, arrayLength);
+		stmtList.add(moveLength);
+
+		/* Check bounds */
+		// i < 0
+		IRLabel label1 = new IRLabel("l"+labelCount++);
+		IRLabel label2 = new IRLabel("l"+labelCount++);
+		IRConst zero = new IRConst(0);
+		IRBinOp lessThanZero = new IRBinOp(OpType.LT, arrayIndex, zero);
+		IRCJump cond1 = new IRCJump(lessThanZero, label2.name(), label1.name()); 
+		stmtList.add(cond1);
+		stmtList.add(label1);
+		// i < length
+		IRLabel label3 = new IRLabel("l"+labelCount++);
+		length = new IRTemp(length.name());
+		arrayIndex = (IRExpr)arrayIndex.copy();
+		IRBinOp lessThanLength = new IRBinOp(OpType.LT, arrayIndex, length);
+		IRCJump cond2 = new IRCJump(lessThanLength, label3.name(), label2.name());
+		stmtList.add(cond2);
+		stmtList.add(label2);
+		
+		/* Call _I_outOfBounds_p */
+		IRName nameOfOob = new IRName("_I_outOfBounds_p");
+		IRCall oobCall = new IRCall(nameOfOob);
+		IRExp oobExp = new IRExp(oobCall);
+		stmtList.add(oobExp);
+		stmtList.add(label3);
+		
+		return new IRSeq(stmtList);
 	}
 	
 	/**
@@ -842,7 +898,6 @@ public class MIRVisitor implements ASTVisitor{
 	
 	/**
 	 * Helper function to create an array
-<<<<<<< HEAD
 	 * 
 	 * @param sizes		list of the contents inside the brackets that represents the array dim
 	 * @param index		the current bracket of varDecl that we're curretly allocating memory for

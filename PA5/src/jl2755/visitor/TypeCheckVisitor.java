@@ -508,6 +508,12 @@ public class TypeCheckVisitor implements ASTVisitor {
 		
 	@Override
 	public void visit(BlockStmt bs) {		
+		if (bs.getIndex() == 0) {
+			tempType = new UnitType();
+			stmtType = new UnitType();
+			return;
+		}
+		
 		// Start of scope
 		stack.add("_");
 		
@@ -520,14 +526,15 @@ public class TypeCheckVisitor implements ASTVisitor {
 		if (bs.getIndex() >= 2) {
 			(bs.getReturnStmt()).accept(this);
 		} 
-//		else {
-//		// Set tempType to unit
-//			if (!returnIsLast) {
-//				tempType = new UnitType();
-//			}
-//			returnIsLast = false;
+		
+		else {
+		// Set tempType to unit
+			if (!returnIsLast) {
+				tempType = new UnitType();
+			}
+			returnIsLast = false;
 			
-//		}
+		}
 		
 		// Pop out of scope
 		String id = stack.pop();
@@ -672,7 +679,7 @@ public class TypeCheckVisitor implements ASTVisitor {
 		/* Typecheck function body */
 		fd.getBlockStmt().accept(this);
 		VType bodyReturnType = tempType;
-		if (tempType instanceof UnitType && unreachableCodeFlag) {
+		if (bodyReturnType instanceof UnitType && unreachableCodeFlag) {
 			String errMsg = "Unreachable code";
 			SemanticErrorObject seo = new SemanticErrorObject(
 					nextStmt.getLine(),
@@ -691,6 +698,8 @@ public class TypeCheckVisitor implements ASTVisitor {
 		if (!returnTypes.equals(bodyReturnType)) {
 			String s = "Expected " + returnTypes.toString() 
 						+ ", but found " + bodyReturnType.toString();
+			System.out.println("*here*");
+			System.out.println(s);
 			ReturnStmt rs = fd.getBlockStmt().getReturnStmt();
 			SemanticErrorObject seo;
 			if (fd.getBlockStmt().getIndex() < 2) {
@@ -784,7 +793,7 @@ public class TypeCheckVisitor implements ASTVisitor {
 					id = stack.pop();
 				}
 			}
-//			returnIsLast = true;
+			returnIsLast = true;
 		}
 		
 //		VType elseStmtType = stmtType;
@@ -1004,8 +1013,7 @@ public class TypeCheckVisitor implements ASTVisitor {
 //			s.accept(this);
 //		}
 		List<Stmt> stmtList = sl.getAllStmt();
-		int n = stmtList.size();
-		
+		int n = stmtList.size();		
 		for (int i = 0; i < n; i++) {
 			Stmt stmt = stmtList.get(i);
 			stmt.accept(this);
@@ -1013,7 +1021,7 @@ public class TypeCheckVisitor implements ASTVisitor {
 				unreachableCodeFlag = true;
 				nextStmt = stmtList.get(i+1);
 				inFunctionDecl = false;
-//				Stmt nextStmt = stmtList.get(i+1);
+				Stmt nextStmt = stmtList.get(i+1);
 //				
 //				String errMsg = "Unreachable code";
 //				SemanticErrorObject seo = new SemanticErrorObject(

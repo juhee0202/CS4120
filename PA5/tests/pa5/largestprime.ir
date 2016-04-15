@@ -1,1 +1,130 @@
-35:1 error:Expected unit, but found int
+(COMPUNIT
+ Program
+ (FUNC
+  _Igcd_iii
+  (SEQ
+   (MOVE (TEMP a) (TEMP _ARG0))
+   (MOVE (TEMP b) (TEMP _ARG1))
+   (SEQ
+    (LABEL l0)
+    (CJUMP (NEQ (TEMP a) (CONST 0)) l1 l2)
+    (LABEL l1)
+    (SEQ
+     (SEQ
+      (CJUMP (LT (TEMP a) (TEMP b)) l3 l4)
+      (LABEL l3)
+      (MOVE (TEMP b) (SUB (TEMP b) (TEMP a)))
+      (JUMP (NAME l5))
+      (LABEL l4)
+      (MOVE (TEMP a) (SUB (TEMP a) (TEMP b)))
+      (LABEL l5)))
+    (JUMP (NAME l0))
+    (LABEL l2))
+   (MOVE (TEMP _RET0) (TEMP b))
+   (RETURN)))
+ (FUNC _Imain_paai (SEQ (MOVE (TEMP args) (TEMP _ARG0)) (RETURN)))
+ (FUNC
+  _Iisprime_bi
+  (SEQ
+   (MOVE (TEMP n) (TEMP _ARG0))
+   (MOVE (TEMP i) (CONST 2))
+   (SEQ
+    (LABEL l6)
+    (CJUMP (LEQ (MUL (TEMP i) (TEMP i)) (TEMP n)) l7 l8)
+    (LABEL l7)
+    (SEQ
+     (SEQ
+      (CJUMP (NEQ (CALL (NAME _Igcd_iii) (TEMP i) (TEMP n)) (CONST 1)) l9 l10)
+      (LABEL l9)
+      (SEQ (MOVE (TEMP _RET0) (CONST 0)) (RETURN))
+      (LABEL l10))
+     (MOVE (TEMP i) (ADD (TEMP i) (CONST 1))))
+    (JUMP (NAME l6))
+    (LABEL l8))
+   (MOVE (TEMP _RET0) (CONST 1))
+   (RETURN)))
+ (FUNC
+  _Ilargestprime_ii
+  (SEQ
+   (MOVE (TEMP max) (TEMP _ARG0))
+   (MOVE (TEMP a) (CONST 1))
+   (MOVE (TEMP largest) (CONST 1))
+   (SEQ
+    (LABEL l11)
+    (CJUMP (LT (TEMP a) (TEMP max)) l12 l13)
+    (LABEL l12)
+    (SEQ
+     (SEQ
+      (CJUMP (CALL (NAME _Iisprime_bi) (TEMP a)) l14 l15)
+      (LABEL l14)
+      (MOVE (TEMP largest) (TEMP a))
+      (LABEL l15))
+     (MOVE (TEMP a) (ADD (TEMP a) (CONST 1))))
+    (JUMP (NAME l11))
+    (LABEL l13))
+   (MOVE (TEMP _RET0) (TEMP largest))
+   (RETURN))))
+(COMPUNIT
+ Program
+ (FUNC
+  _Igcd_iii
+  (SEQ
+   (MOVE (TEMP a) (TEMP _ARG0))
+   (MOVE (TEMP b) (TEMP _ARG1))
+   (LABEL l0)
+   (CJUMP (NEQ (TEMP a) (CONST 0)) l1)
+   (LABEL l2)
+   (MOVE (TEMP _RET0) (TEMP b))
+   (RETURN)
+   (LABEL l1)
+   (CJUMP (LT (TEMP a) (TEMP b)) l3)
+   (LABEL l4)
+   (MOVE (TEMP a) (SUB (TEMP a) (TEMP b)))
+   (LABEL l5)
+   (JUMP (NAME l0))
+   (LABEL l3)
+   (MOVE (TEMP b) (SUB (TEMP b) (TEMP a)))
+   (JUMP (NAME l5))))
+ (FUNC _Imain_paai (SEQ (MOVE (TEMP args) (TEMP _ARG0)) (RETURN)))
+ (FUNC
+  _Iisprime_bi
+  (SEQ
+   (MOVE (TEMP n) (TEMP _ARG0))
+   (MOVE (TEMP i) (CONST 2))
+   (LABEL l6)
+   (CJUMP (LEQ (MUL (TEMP i) (TEMP i)) (TEMP n)) l7)
+   (LABEL l8)
+   (MOVE (TEMP _RET0) (CONST 1))
+   (RETURN)
+   (LABEL l7)
+   (MOVE (TEMP temp0) (TEMP i))
+   (MOVE (TEMP temp1) (TEMP n))
+   (MOVE (TEMP temp2) (CALL (NAME _Igcd_iii) (TEMP temp0) (TEMP temp1)))
+   (CJUMP (NEQ (TEMP temp2) (CONST 1)) l9)
+   (LABEL l10)
+   (MOVE (TEMP i) (ADD (TEMP i) (CONST 1)))
+   (JUMP (NAME l6))
+   (LABEL l9)
+   (MOVE (TEMP _RET0) (CONST 0))
+   (RETURN)))
+ (FUNC
+  _Ilargestprime_ii
+  (SEQ
+   (MOVE (TEMP max) (TEMP _ARG0))
+   (MOVE (TEMP a) (CONST 1))
+   (MOVE (TEMP largest) (CONST 1))
+   (LABEL l11)
+   (CJUMP (LT (TEMP a) (TEMP max)) l12)
+   (LABEL l13)
+   (MOVE (TEMP _RET0) (TEMP largest))
+   (RETURN)
+   (LABEL l12)
+   (MOVE (TEMP temp3) (TEMP a))
+   (MOVE (TEMP temp4) (CALL (NAME _Iisprime_bi) (TEMP temp3)))
+   (CJUMP (TEMP temp4) l14)
+   (LABEL l15)
+   (MOVE (TEMP a) (ADD (TEMP a) (CONST 1)))
+   (JUMP (NAME l11))
+   (LABEL l14)
+   (MOVE (TEMP largest) (TEMP a))
+   (JUMP (NAME l15)))))

@@ -117,4 +117,9 @@ public class IRMem extends IRExpr {
 		// TODO Auto-generated method stub
 		
 	}
+
+	@Override
+	public IRNode copy() {
+		return new IRMem((IRExpr)expr.copy(), memType);
+	}
 }

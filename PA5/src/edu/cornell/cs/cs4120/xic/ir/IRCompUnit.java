@@ -1,7 +1,9 @@
 package edu.cornell.cs.cs4120.xic.ir;
 
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import edu.cornell.cs.cs4120.util.SExpPrinter;
 import edu.cornell.cs.cs4120.xic.ir.visit.AggregateVisitor;
@@ -117,5 +119,16 @@ public class IRCompUnit extends IRNode {
 	public void setRightChildEnumType(ChildType argEnum) {
 		// TODO Auto-generated method stub
 		
+	}
+
+	@Override
+	public IRNode copy() {
+		Map<String, IRFuncDecl> cloneFunctions = new HashMap<String, IRFuncDecl>();
+		for (Entry<String, IRFuncDecl> entry : functions.entrySet()) {
+			String n = entry.getKey();
+			IRFuncDecl cloneIRFuncDecl = (IRFuncDecl) entry.getValue().copy();
+			cloneFunctions.put(n, cloneIRFuncDecl);
+		}
+		return new IRCompUnit(name, cloneFunctions);
 	}
 }

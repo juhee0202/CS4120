@@ -129,4 +129,9 @@ public class IRCJump extends IRStmt {
 		// TODO Auto-generated method stub
 		
 	}
+
+	@Override
+	public IRNode copy() {
+		return new IRCJump((IRExpr) expr.copy(), trueLabel, falseLabel);
+	}
 }

@@ -291,6 +291,7 @@ public class Main {
                 }
             }
         }
+
     }
 
     public static void lex(String filename) throws FileNotFoundException {
@@ -549,6 +550,7 @@ public class Main {
             sim.call("_Imain_paai", 0);
             System.out.println("[xic] Interpreting intermediate code completed");
         } catch (Exception e) {
+            System.out.println("[xic] Interpreting intermediate code failed");
             e.printStackTrace();
         }
 

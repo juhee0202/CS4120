@@ -73,4 +73,9 @@ public class IRName extends IRExpr {
 		// TODO Auto-generated method stub
 		
 	}
+
+	@Override
+	public IRNode copy() {
+		return new IRName(name);
+	}
 }

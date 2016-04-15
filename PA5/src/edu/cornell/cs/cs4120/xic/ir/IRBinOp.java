@@ -108,4 +108,10 @@ public class IRBinOp extends IRExpr {
 	public void setRightChildEnumType(ChildType argEnum) {
 		rightType = argEnum;
 	}
+
+	@Override
+	public IRNode copy() {
+		// TODO Auto-generated method stub
+		return new IRBinOp(type, (IRExpr)left.copy(), (IRExpr)right.copy());
+	}
 }

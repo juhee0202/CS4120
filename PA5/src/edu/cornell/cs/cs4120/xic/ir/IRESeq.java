@@ -109,4 +109,9 @@ public class IRESeq extends IRExpr {
 		// TODO Auto-generated method stub
 		
 	}
+
+	@Override
+	public IRNode copy() {
+		return new IRESeq((IRStmt)stmt.copy(), (IRExpr)expr.copy());
+	}
 }

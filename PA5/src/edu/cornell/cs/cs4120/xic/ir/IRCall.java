@@ -163,4 +163,17 @@ public class IRCall extends IRExpr {
 		// TODO Auto-generated method stub
 		
 	}
+
+	@Override
+	public IRNode copy() {
+		List<IRExpr> cloneArgs = new ArrayList<IRExpr>();
+		for (int i = 0; i < args.size(); i++) {
+			cloneArgs.add((IRExpr) args.get(i).copy());
+		}
+		IRCall clone = new IRCall((IRExpr)target.copy(), cloneArgs);
+		clone.setNumReturns(numReturns);
+		clone.setNum8ByteSpace(num8ByteSpace);
+		clone.setReturnBoolList(returnBoolList);
+		return clone;
+	}
 }

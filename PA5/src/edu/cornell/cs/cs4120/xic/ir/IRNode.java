@@ -4,6 +4,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 
 import edu.cornell.cs.cs4120.util.CodeWriterSExpPrinter;
+import edu.cornell.cs.cs4120.util.Copy;
 import edu.cornell.cs.cs4120.util.SExpPrinter;
 import edu.cornell.cs.cs4120.xic.ir.visit.AggregateVisitor;
 import edu.cornell.cs.cs4120.xic.ir.visit.CheckCanonicalIRVisitor;
@@ -16,7 +17,7 @@ import jl2755.visitor.LIRVisitor;
 /**
  * A node in an intermediate-representation abstract syntax tree.
  */
-public abstract class IRNode {
+public abstract class IRNode implements Copy<IRNode> {
 
     /**
      * Visit the children of this IR node.

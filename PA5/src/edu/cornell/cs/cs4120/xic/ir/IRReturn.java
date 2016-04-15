@@ -56,4 +56,9 @@ public class IRReturn extends IRStmt {
 		// TODO Auto-generated method stub
 		
 	}
+
+	@Override
+	public IRNode copy() {
+		return new IRReturn();
+	}
 }

@@ -26,6 +26,9 @@ public class TypeCheckVisitor implements ASTVisitor {
 	private Stack<String> stack;	// "_": special marker
 	private VType tempType;
 	private VType stmtType;
+	private Stmt nextStmt;
+	private boolean unreachableCodeFlag = false;
+	private boolean inFunctionDecl = false;
 	private boolean negativeNumber = false; // needed for UnaryExpr, Literal
 	private boolean returnIsLast; // True iff last statement is RETURNNN
 	
@@ -349,7 +352,6 @@ public class TypeCheckVisitor implements ASTVisitor {
 				Main.handleSemanticError(seo);
 			}
 		}
-		
 		stmtType = new UnitType();
 	}
 
@@ -506,6 +508,12 @@ public class TypeCheckVisitor implements ASTVisitor {
 		
 	@Override
 	public void visit(BlockStmt bs) {		
+		if (bs.getIndex() == 0) {
+			tempType = new UnitType();
+			stmtType = new UnitType();
+			return;
+		}
+		
 		// Start of scope
 		stack.add("_");
 		
@@ -517,12 +525,15 @@ public class TypeCheckVisitor implements ASTVisitor {
 		// Check return stmt
 		if (bs.getIndex() >= 2) {
 			(bs.getReturnStmt()).accept(this);
-		} else {
+		} 
+		
+		else {
 		// Set tempType to unit
 			if (!returnIsLast) {
 				tempType = new UnitType();
 			}
 			returnIsLast = false;
+			
 		}
 		
 		// Pop out of scope
@@ -668,6 +679,17 @@ public class TypeCheckVisitor implements ASTVisitor {
 		/* Typecheck function body */
 		fd.getBlockStmt().accept(this);
 		VType bodyReturnType = tempType;
+		if (bodyReturnType instanceof UnitType && unreachableCodeFlag) {
+			String errMsg = "Unreachable code";
+			SemanticErrorObject seo = new SemanticErrorObject(
+					nextStmt.getLine(),
+					nextStmt.getColumn(),
+					errMsg);
+			Main.handleSemanticError(seo);	
+		}
+		unreachableCodeFlag = false;
+		inFunctionDecl = false;
+		nextStmt = null;
 		
 		String id = fd.getIdentifier().toString();
 		funType = (FunType) env.get(id);	// safe
@@ -676,6 +698,8 @@ public class TypeCheckVisitor implements ASTVisitor {
 		if (!returnTypes.equals(bodyReturnType)) {
 			String s = "Expected " + returnTypes.toString() 
 						+ ", but found " + bodyReturnType.toString();
+			System.out.println("*here*");
+			System.out.println(s);
 			ReturnStmt rs = fd.getBlockStmt().getReturnStmt();
 			SemanticErrorObject seo;
 			if (fd.getBlockStmt().getIndex() < 2) {
@@ -714,6 +738,7 @@ public class TypeCheckVisitor implements ASTVisitor {
 	
 	/**
 	 * Dirties tempType
+	 * IfStmt's stmtType is set by its children stmt
 	 */
 	@Override
 	public void visit(IfStmt is) {
@@ -902,7 +927,7 @@ public class TypeCheckVisitor implements ASTVisitor {
 
 	/**
 	 * DIRTIES tempType to the return type
-	 * 
+	 * stmtType is UnitType if no return value and VoidType otherwise
 	 */
 	@Override
 	public void visit(ReturnStmt rs) {
@@ -952,7 +977,6 @@ public class TypeCheckVisitor implements ASTVisitor {
 				}	
 			}
 		}
-		
 		// index = 0: return type is void
 		else {
 			returnType = new UnitType();
@@ -984,21 +1008,27 @@ public class TypeCheckVisitor implements ASTVisitor {
 
 	@Override
 	public void visit(StmtList sl) {
+//		List<Stmt> stmtList = sl.getAllStmt();
+//		for (Stmt s : stmtList) {
+//			s.accept(this);
+//		}
 		List<Stmt> stmtList = sl.getAllStmt();
-		int n = stmtList.size();
-		
+		int n = stmtList.size();		
 		for (int i = 0; i < n; i++) {
 			Stmt stmt = stmtList.get(i);
 			stmt.accept(this);
-			if (i < n-1 && stmtType instanceof VoidType) {
+			if (i < n-1 && stmtType instanceof VoidType && inFunctionDecl) {
+				unreachableCodeFlag = true;
+				nextStmt = stmtList.get(i+1);
+				inFunctionDecl = false;
 				Stmt nextStmt = stmtList.get(i+1);
-				
-				String errMsg = "Unreachable code";
-				SemanticErrorObject seo = new SemanticErrorObject(
-						nextStmt.getLine(),
-						nextStmt.getColumn(),
-						errMsg);
-				Main.handleSemanticError(seo);	
+//				
+//				String errMsg = "Unreachable code";
+//				SemanticErrorObject seo = new SemanticErrorObject(
+//						nextStmt.getLine(),
+//						nextStmt.getColumn(),
+//						errMsg);
+//				Main.handleSemanticError(seo);	
 			}
 		}		
 	}
@@ -1304,6 +1334,7 @@ public class TypeCheckVisitor implements ASTVisitor {
 
 	/**
 	 * Dirties tempType
+	 * stmtType is set by the children stmt
 	 */
 	@Override
 	public void visit(WhileStmt ws) {

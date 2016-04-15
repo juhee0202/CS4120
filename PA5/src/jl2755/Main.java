@@ -478,7 +478,7 @@ public class Main {
             bw = new BufferedWriter(fw);
 
             System.out.println("[xic] Generating intermediate code");
-            System.out.println(srcPath + filename);
+            
             parser p = new parser(new Scanner(new FileReader(srcPath + filename)));
             Symbol s = p.parse();
             Program program = (Program) s.value;

@@ -349,7 +349,6 @@ public class TypeCheckVisitor implements ASTVisitor {
 				Main.handleSemanticError(seo);
 			}
 		}
-		// set stmtType to UnitType
 		stmtType = new UnitType();
 	}
 
@@ -633,6 +632,8 @@ public class TypeCheckVisitor implements ASTVisitor {
 		
 		tempType = funType.getReturnTypes();
 		fc.setType(tempType);
+		
+		stmtType = new UnitType();
 	}
 
 	/**
@@ -750,7 +751,7 @@ public class TypeCheckVisitor implements ASTVisitor {
 			}
 		}
 		
-
+//		VType ifStmtType = stmtType;
 		
 		// Check else stmt
 		if (is.getIndex() == 1) {
@@ -771,6 +772,12 @@ public class TypeCheckVisitor implements ASTVisitor {
 			}
 //			returnIsLast = true;
 		}
+		
+//		VType elseStmtType = stmtType;
+		
+//		if (ifStmtType.equals(elseStmtType)) {
+//			
+//		}
 	}
 	
 	@Override
@@ -980,29 +987,21 @@ public class TypeCheckVisitor implements ASTVisitor {
 	public void visit(StmtList sl) {
 		List<Stmt> stmtList = sl.getAllStmt();
 		int n = stmtList.size();
+		
 		for (int i = 0; i < n; i++) {
 			Stmt stmt = stmtList.get(i);
-			stmt.accept(this); // stmtType should be set here
-			if (i != n-1 && stmtType instanceof VoidType) {
-				// raise an error for the next stmt
+			stmt.accept(this);
+			if (i < n-1 && stmtType instanceof VoidType) {
 				Stmt nextStmt = stmtList.get(i+1);
-				String errMsg = "Unreachable statement";
-				// TODO: currently the col number is the end of the line
+				
+				String errMsg = "Unreachable code";
 				SemanticErrorObject seo = new SemanticErrorObject(
 						nextStmt.getLine(),
-						nextStmt.getCol(),
+						nextStmt.getColumn(),
 						errMsg);
-				Main.handleSemanticError(seo);
+				Main.handleSemanticError(seo);	
 			}
-		}
-		
-//		// Check stmt
-//		(sl.getStmt()).accept(this);
-//		
-//		// Check stmt list
-//		if (sl.getIndex() == 1) {
-//			(sl.getStmtList()).accept(this);
-//		}		
+		}		
 	}
 	
 	/**

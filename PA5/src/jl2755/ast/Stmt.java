@@ -9,14 +9,14 @@ import jl2755.visitor.ASTVisitor;
 public class Stmt {
 	private NakedStmt nakedStmt;
 	private boolean hasSemicolon;
-	private int col;
+	private int column;
 	private int line;
 	
 	public Stmt(NakedStmt ns, boolean b, int nsleft, int nsright) {
 		nakedStmt = ns;
 		setHasSemicolon(b);
+		column = nsright;
 		line = nsleft;
-		col = nsright;
 	}
 	
 	public void prettyPrintNode() {
@@ -45,12 +45,12 @@ public class Stmt {
 		this.nakedStmt = nakedStmt;
 	}
 	
-	public int getCol() {
-		return col;
+	public int getColumn() {
+		return column;
 	}
 
-	public void setCol(int col) {
-		this.col = col;
+	public void setColumn(int column) {
+		this.column = column;
 	}
 
 	public int getLine() {

@@ -16,6 +16,7 @@ import jl2755.type.TupleType;
 import jl2755.type.UnitType;
 import jl2755.type.VType;
 import jl2755.type.VarType;
+import jl2755.type.VoidType;
 
 public class TypeCheckVisitor implements ASTVisitor {
 
@@ -24,6 +25,7 @@ public class TypeCheckVisitor implements ASTVisitor {
 	private HashMap<String, VType> if_env;
 	private Stack<String> stack;	// "_": special marker
 	private VType tempType;
+	private VType stmtType;
 	private boolean negativeNumber = false; // needed for UnaryExpr, Literal
 	private boolean returnIsLast; // True iff last statement is RETURNNN
 	
@@ -347,6 +349,8 @@ public class TypeCheckVisitor implements ASTVisitor {
 				Main.handleSemanticError(seo);
 			}
 		}
+		
+		stmtType = new UnitType();
 	}
 
 	@Override
@@ -508,9 +512,6 @@ public class TypeCheckVisitor implements ASTVisitor {
 		if (bs.getIndex() != 0 && bs.getIndex() != 3) { 
 			// Check stmt list
 			(bs.getStmtList()).accept(this);
-			
-			
-			
 		}
 		
 		// Check return stmt
@@ -630,6 +631,8 @@ public class TypeCheckVisitor implements ASTVisitor {
 		
 		tempType = funType.getReturnTypes();
 		fc.setType(tempType);
+		
+		stmtType = new UnitType();
 	}
 
 	/**
@@ -746,7 +749,7 @@ public class TypeCheckVisitor implements ASTVisitor {
 			}
 		}
 		
-
+//		VType ifStmtType = stmtType;
 		
 		// Check else stmt
 		if (is.getIndex() == 1) {
@@ -767,6 +770,12 @@ public class TypeCheckVisitor implements ASTVisitor {
 			}
 			returnIsLast = true;
 		}
+		
+//		VType elseStmtType = stmtType;
+		
+//		if (ifStmtType.equals(elseStmtType)) {
+//			
+//		}
 	}
 	
 	@Override
@@ -950,6 +959,7 @@ public class TypeCheckVisitor implements ASTVisitor {
 		}
 		
 		tempType = returnType;
+		stmtType = new VoidType();
 	}
 
 	@Override
@@ -974,15 +984,23 @@ public class TypeCheckVisitor implements ASTVisitor {
 
 	@Override
 	public void visit(StmtList sl) {
-		// Check stmt
-		(sl.getStmt()).accept(this);
+		List<Stmt> stmtList = sl.getAllStmt();
+		int n = stmtList.size();
 		
-		
-		// Check stmt list
-		if (sl.getIndex() == 1) {
-			(sl.getStmtList()).accept(this);
-		}
-		
+		for (int i = 0; i < n; i++) {
+			Stmt stmt = stmtList.get(i);
+			stmt.accept(this);
+			if (i < n-1 && stmtType instanceof VoidType) {
+				Stmt nextStmt = stmtList.get(i+1);
+				
+				String errMsg = "Unreachable code";
+				SemanticErrorObject seo = new SemanticErrorObject(
+						nextStmt.getLine(),
+						nextStmt.getColumn(),
+						errMsg);
+				Main.handleSemanticError(seo);	
+			}
+		}		
 	}
 	
 	/**
@@ -1090,6 +1108,8 @@ public class TypeCheckVisitor implements ASTVisitor {
 				stack.push(id);
 			}
 		}
+		
+		stmtType = new UnitType();
 	}
 
 	@Override
@@ -1238,6 +1258,8 @@ public class TypeCheckVisitor implements ASTVisitor {
 			vd.getPrimitiveType().accept(this);
 			env.put(vd.getIdentifier().toString(), tempType);
 		}
+		
+		stmtType = new UnitType();
 	}
 	
 	@Override
@@ -1276,6 +1298,8 @@ public class TypeCheckVisitor implements ASTVisitor {
 		env.put(id, new VarType(vi.getType()));
 		tempType = env.get(id);
 		stack.push(id);
+		
+		stmtType = new UnitType();
 	}
 
 	/**

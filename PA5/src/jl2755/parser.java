@@ -1879,7 +1879,7 @@ class CUP$parser$actions {
                 int nsleft = CUP$parser$stack.elementAt(CUP$parser$top-1).left;
                 int nsright = CUP$parser$stack.elementAt(CUP$parser$top-1).right;
                 NakedStmt ns = CUP$parser$stack.elementAt(CUP$parser$top-1).<NakedStmt> value();
-                 RESULT = new Stmt(ns, true); 
+                 RESULT = new Stmt(ns, true, nsleft, nsright); 
                 CUP$parser$result = parser.getSymbolFactory().newSymbol("stmt",27, CUP$parser$stack.elementAt(CUP$parser$top-1), CUP$parser$stack.peek(), RESULT);
             }
             return CUP$parser$result;
@@ -1891,7 +1891,7 @@ class CUP$parser$actions {
                 int nsleft = CUP$parser$stack.peek().left;
                 int nsright = CUP$parser$stack.peek().right;
                 NakedStmt ns = CUP$parser$stack.peek().<NakedStmt> value();
-                 RESULT = new Stmt(ns, false); 
+                 RESULT = new Stmt(ns, false, nsleft, nsright); 
                 CUP$parser$result = parser.getSymbolFactory().newSymbol("stmt",27, CUP$parser$stack.peek(), CUP$parser$stack.peek(), RESULT);
             }
             return CUP$parser$result;

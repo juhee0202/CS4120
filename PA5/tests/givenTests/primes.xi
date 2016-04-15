@@ -12,13 +12,15 @@ use conv
 //     return true
 // }
 
-// largestprime(max:int):int {
-//     a:int = 1
-//     largest:int = 1
-//     return largest
-// }
+largestprime(max:int):int {
+    a:int = 1
+    largest:int = 1
+    return largest
+}
 
 main(args:int[][]) {
-    // print("Largest prime less than 1,000 is " + unparseInt(largestprime(10)))
-    x:int[] = "hi" + " world"
+    x:int = 10
+    print("Largest prime less than 1,000 is " + unparseInt(largestprime(x)))
+    // x:int[] = "hi" + " world"
+    // print(x)
 }

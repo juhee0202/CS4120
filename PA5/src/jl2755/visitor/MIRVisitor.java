@@ -843,14 +843,16 @@ public class MIRVisitor implements ASTVisitor{
 	
 	/**
 	 * Helper function to create an array
-	 * index: the current bracket of varDecl that we're curretly allocating memory for
-	 * 		ex: x: int[5][6][] -> 
-	 * 			first call would be createArray(exprList, 0) 
-	 * 			second call would be createArray(exprList, 1)
-	 * 			third: reaches base case because exprList.size == 2 and index == 2
-	 * @param sizes: list of the contents inside the brackets that represents the array dim
+<<<<<<< HEAD
+	 * 
+	 * @param sizes		list of the contents inside the brackets that represents the array dim
+	 * @param index		the current bracket of varDecl that we're curretly allocating memory for
+ 	 * 		ex: x: int[5][6][] -> 
+ 	 * 			first call would be createArray(exprList, 0) 
+ 	 * 			second call would be createArray(exprList, 1)
+ 	 * 			third: reaches base case because exprList.size == 2 and index == 2
 	 */
-	private IRExpr createArray(List<Expr> exprList, int index, List<IRTemp> sizes) {
+	private IRExpr createArray(List<Expr> exprList, int index, List<IRTemp> sizes) {		
 		// Base case
 		if (index == exprList.size()) {
 			// ask jeff if this is correct base case... He says its ok
@@ -896,7 +898,6 @@ public class MIRVisitor implements ASTVisitor{
 		IRLabel trueLabel = new IRLabel("l" + labelCount++);
 		IRLabel falseLabel = new IRLabel("l" + labelCount++);
 		IRCJump whileJump = new IRCJump(loopCondition, trueLabel.name(), falseLabel.name());
-		
 		IRTemp freshArray5 = new IRTemp(freshArray.name());
 		IRTemp loopCounter3 = new IRTemp(loopCounter.name());
 		IRConst wordSize2 = new IRConst(Configuration.WORD_SIZE);

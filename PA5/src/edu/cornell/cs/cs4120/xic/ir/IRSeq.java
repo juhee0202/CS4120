@@ -123,4 +123,13 @@ public class IRSeq extends IRStmt {
 		// TODO Auto-generated method stub
 		
 	}
+
+	@Override
+	public IRNode copy() {
+		List<IRStmt> cloneStmts = new ArrayList<IRStmt>();
+		for (int i = 0; i < stmts.size(); i++) {
+			cloneStmts.add((IRStmt) stmts.get(i).copy());
+		}
+		return new IRSeq(cloneStmts);
+	}
 }

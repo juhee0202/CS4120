@@ -79,4 +79,9 @@ public class IRLabel extends IRStmt {
 		// TODO Auto-generated method stub
 		
 	}
+
+	@Override
+	public IRNode copy() {
+		return new IRLabel(name);
+	}
 }

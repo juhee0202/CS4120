@@ -92,4 +92,9 @@ public class IRExp extends IRStmt {
 		// TODO Auto-generated method stub
 		
 	}
+
+	@Override
+	public IRNode copy() {
+		return new IRExp((IRExpr)expr.copy());
+	}
 }

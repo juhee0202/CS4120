@@ -102,4 +102,9 @@ public class IRMove extends IRStmt {
 		// TODO Auto-generated method stub
 		
 	}
+
+	@Override
+	public IRNode copy() {
+		return new IRMove((IRExpr)target.copy(), (IRExpr)expr.copy());
+	}
 }

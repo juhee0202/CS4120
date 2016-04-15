@@ -137,4 +137,13 @@ public class IRFuncDecl extends IRNode {
 		// TODO Auto-generated method stub
 		
 	}
+
+	@Override
+	public IRNode copy() {
+		IRFuncDecl clone = new IRFuncDecl(name, (IRStmt)body.copy());
+		clone.setParamList(paramList);
+		clone.setNumArgs(numArgs);
+		clone.setNumReturns(numReturns);
+		return clone;
+	}
 }

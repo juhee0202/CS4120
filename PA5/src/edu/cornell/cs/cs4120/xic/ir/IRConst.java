@@ -73,4 +73,9 @@ public class IRConst extends IRExpr {
 		// TODO Auto-generated method stub
 		
 	}
+
+	@Override
+	public IRNode copy() {
+		return new IRConst(value);
+	}
 }

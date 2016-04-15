@@ -270,19 +270,21 @@ public class Main {
         }
         
         /* ASSEMBLY */
-        files = concat(lexFiles, 
-                parseFiles, 
-                typecheckFiles, 
-                irgenFiles, 
-                irrunFiles,
-                leftoverFiles);
-        for (String file: files) {
-            try { 
-                assembly(file);
-            } catch (FileNotFoundException e) {
-                System.out.println(srcPath + file + " is not found.");
-            } catch (Exception e) {
-                System.out.println("Missing argument for option: --typecheck");
+        if (cmd.hasOption("-target")) {
+        	files = concat(lexFiles, 
+                    parseFiles, 
+                    typecheckFiles, 
+                    irgenFiles, 
+                    irrunFiles,
+                    leftoverFiles);
+            for (String file: files) {
+                try { 
+                    assembly(file);
+                } catch (FileNotFoundException e) {
+                    System.out.println(srcPath + file + " is not found.");
+                } catch (Exception e) {
+                    System.out.println("Missing argument for option: --typecheck");
+                }
             }
         }
 
@@ -553,7 +555,7 @@ public class Main {
             sim.call("_Imain_paai", 0);
             System.out.println("[xic] Interpreting intermediate code completed");
         } catch (Exception e) {
-//            e.printStackTrace();
+            e.printStackTrace();
         }
 
     }

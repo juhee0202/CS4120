@@ -153,7 +153,7 @@ public class MIRVisitor implements ASTVisitor{
 				leftNode = leftESeq.expr();
 			}
 			IRConst oneCell = new IRConst(Configuration.WORD_SIZE);
-			IRBinOp leftLengthCell = new IRBinOp(OpType.SUB, (IRExpr)leftNode.copy(), oneCell);
+			IRBinOp leftLengthCell = new IRBinOp(OpType.SUB, leftNode, oneCell);
 			
 			// Right expression
 			// Array literal
@@ -163,7 +163,7 @@ public class MIRVisitor implements ASTVisitor{
 				rightNode = rightESeq.expr();
 			}
 			IRConst oneCell2 = new IRConst(Configuration.WORD_SIZE);
-			IRBinOp rightLengthCell = new IRBinOp(OpType.SUB, (IRExpr)rightNode.copy(), oneCell2);
+			IRBinOp rightLengthCell = new IRBinOp(OpType.SUB, rightNode, oneCell2);
 			
 			IRBinOp newLength = new IRBinOp(OpType.ADD, new IRMem(leftLengthCell), new IRMem(rightLengthCell));	// fresh
 			if (leftNode instanceof IRTemp) {
@@ -173,9 +173,9 @@ public class MIRVisitor implements ASTVisitor{
 				rightNode = new IRTemp(((IRTemp) rightNode).name());
 			}
 			IRConst oneCell3 = new IRConst(Configuration.WORD_SIZE);
-			IRBinOp leftLengthCell2 = new IRBinOp(OpType.SUB, (IRExpr)leftNode.copy(), oneCell3);
+			IRBinOp leftLengthCell2 = new IRBinOp(OpType.SUB, leftNode, oneCell3);
 			IRConst oneCell4 = new IRConst(Configuration.WORD_SIZE);
-			IRBinOp rightLengthCell2 = new IRBinOp(OpType.SUB, (IRExpr)rightNode.copy(), oneCell4);
+			IRBinOp rightLengthCell2 = new IRBinOp(OpType.SUB, rightNode, oneCell4);
 			IRBinOp newLength2 = new IRBinOp(OpType.ADD, new IRMem(leftLengthCell2), new IRMem(rightLengthCell2));
 			IRBinOp realNewLength = new IRBinOp(OpType.ADD, newLength2, new IRConst(1));
 			IRBinOp realrealNewLength = new IRBinOp(OpType.MUL, realNewLength, new IRConst(Configuration.WORD_SIZE));	// length in bytes	// fresh
@@ -211,7 +211,7 @@ public class MIRVisitor implements ASTVisitor{
 			if (leftNode instanceof IRTemp) {
 				leftNode = new IRTemp(((IRTemp) leftNode).name());
 			}
-			IRBinOp leftLengthCell3 = new IRBinOp(OpType.SUB, (IRExpr)leftNode.copy(), new IRConst(Configuration.WORD_SIZE));
+			IRBinOp leftLengthCell3 = new IRBinOp(OpType.SUB, leftNode, new IRConst(Configuration.WORD_SIZE));
 			IRBinOp loopCondition1 = new IRBinOp(OpType.LT, firstLoopCounter2, new IRMem(leftLengthCell3));
 			IRLabel trueLabel1 = new IRLabel("l"+labelCount++);
 			IRLabel falseLabel1 = new IRLabel("l"+labelCount++);
@@ -228,7 +228,7 @@ public class MIRVisitor implements ASTVisitor{
 				leftNode = new IRTemp(((IRTemp) leftNode).name());
 			}
 			// leftArray[i]
-			IRBinOp leftArrayAddr = new IRBinOp(OpType.ADD, (IRExpr)leftNode.copy(), leftArrayOffset);	// fresh
+			IRBinOp leftArrayAddr = new IRBinOp(OpType.ADD, leftNode, leftArrayOffset);	// fresh
 			IRMem newArrayElem = new IRMem(newArrayAddr);
 			IRMem leftArrayElem = new IRMem(leftArrayAddr);
 			// newArray[i] = leftArray[i]
@@ -254,7 +254,7 @@ public class MIRVisitor implements ASTVisitor{
 				rightNode = new IRTemp(((IRTemp) rightNode).name());
 			}
 			IRConst oneCell5 = new IRConst(Configuration.WORD_SIZE);
-			IRBinOp rightLengthCell3 = new IRBinOp(OpType.SUB, (IRExpr)rightNode.copy(), oneCell5);
+			IRBinOp rightLengthCell3 = new IRBinOp(OpType.SUB, rightNode, oneCell5);
 			IRBinOp loopCondition2 = new IRBinOp(OpType.LT, secondLoopCounter2, new IRMem(rightLengthCell3));	// fresh
 			IRLabel trueLabel2 = new IRLabel("l"+labelCount++);
 			IRLabel falseLabel2 = new IRLabel("l"+labelCount++);
@@ -267,7 +267,7 @@ public class MIRVisitor implements ASTVisitor{
 				leftNode = new IRTemp(((IRTemp) leftNode).name());
 			}
 			IRConst oneCell6 = new IRConst(Configuration.WORD_SIZE);
-			IRBinOp leftLengthCell4 = new IRBinOp(OpType.SUB, (IRExpr)leftNode.copy(), oneCell6);
+			IRBinOp leftLengthCell4 = new IRBinOp(OpType.SUB, leftNode, oneCell6);
 			IRMove assignArrayBaseOffset = new IRMove(arrayBaseOffset, new IRMem(leftLengthCell4)); // length(e1)
 			IRTemp arrayBaseOffset2 = new IRTemp(arrayBaseOffset.name());
 			arrayOffset = new IRBinOp(OpType.ADD, secondLoopCounter3, arrayBaseOffset2);	// i + length(e1)
@@ -281,7 +281,7 @@ public class MIRVisitor implements ASTVisitor{
 				rightNode = new IRTemp(((IRTemp) rightNode).name());
 			}
 			// rightArray[i]
-			IRBinOp rightArrayAddr = new IRBinOp(OpType.ADD, (IRExpr)rightNode.copy(), rightArrayOffset);
+			IRBinOp rightArrayAddr = new IRBinOp(OpType.ADD, rightNode, rightArrayOffset);
 			newArrayElem = new IRMem(newArrayAddr);
 			IRMem rightArrayElem = new IRMem(rightArrayAddr);
 			// newArray[i+length(e1)] = rightArray[i]
@@ -423,6 +423,7 @@ public class MIRVisitor implements ASTVisitor{
 	public void visit(FunctionDecl fd) {
 		 // get function label
 		String label = fd.getABIName();
+		IRLabel irLabel = new IRLabel(label);
 		
 		IRSeq seq = new IRSeq(new ArrayList<IRStmt>());
 		List<String> holyParamList = fd.getParams();
@@ -440,7 +441,7 @@ public class MIRVisitor implements ASTVisitor{
 			IRSeq irSeq = (IRSeq) tempNode;
 			seq = LIRVisitor.combineTwoStmt(seq, irSeq);
 		} else {
-			seq = LIRVisitor.combineTwoStmt(seq, new IRReturn());
+			seq = LIRVisitor.combineTwoStmt(seq, new IRSeq(irLabel, new IRReturn()));
 		}
 		
 		// create IRFuncDecl
@@ -773,7 +774,6 @@ public class MIRVisitor implements ASTVisitor{
 	 * there are indices to be put into a IRMem and IRBinOp node.
 	 * 
 	 * @param ib is the rest of the indexed brackets to parse
-	 * @param ire is the base address
 	 * @return an IRExpr that points to the memory location pointed
 	 * from IRExpr and IndexedBrackets
 	 */
@@ -781,68 +781,13 @@ public class MIRVisitor implements ASTVisitor{
 	private IRExpr createIRExprForBrackets(IRExpr ire, IndexedBrackets ib) {
 		Expr exprInBracket = ib.getExpression();
 		exprInBracket.accept(this);
-		IRExpr indexExpr = (IRExpr) tempNode;
 		IRConst byteOffset = new IRConst(Configuration.WORD_SIZE);
-		IRBinOp byteMult = new IRBinOp(OpType.MUL, byteOffset, indexExpr);
+		IRBinOp byteMult = new IRBinOp(OpType.MUL, byteOffset, (IRExpr) tempNode);
 		IRBinOp arrayAddr = new IRBinOp(OpType.ADD, ire, byteMult);
-		// clone arrayAddr and indexExpr
-		IRExpr cloneArrayAddr = (IRExpr)ire.copy();
-		IRExpr cloneIndexExpr = (IRExpr)indexExpr.copy();
-		IRStmt boundCheckStmt = createIRStmtForArrayBoundCheck(cloneArrayAddr, cloneIndexExpr);
 		if (ib.getIndex() == 0) {
-			return new IRESeq(boundCheckStmt, arrayAddr);
+			return arrayAddr;
 		}
-		
-		IRESeq arrayValueESeq = new IRESeq(boundCheckStmt, new IRMem(arrayAddr));
-		return createIRExprForBrackets(arrayValueESeq, ib.getIndexedBrackets());
-	}
-	
-	/**
-	 * Creates an IRStmt that performs array index out of bound check
-	 * 
-	 * a[i]
-	 * @param baseAddr(a) is the base address of the array
-	 * @param arrayIndex(i) is the index of the array in which you are trying to access 
-	 * @return IRStmt that performs array index out of bound check
-	 */
-	private IRStmt createIRStmtForArrayBoundCheck(IRExpr baseAddr, IRExpr arrayIndex) {
-		// master stmt list
-		List<IRStmt> stmtList = new ArrayList<IRStmt>();
-		
-		/* Get array length */
-		IRTemp length = new IRTemp("t" + tempCount++);
-		IRConst offset = new IRConst(Configuration.WORD_SIZE);
-		IRBinOp arrayLengthAddr = new IRBinOp(OpType.SUB, baseAddr, offset);
-		IRMem arrayLength = new IRMem(arrayLengthAddr);
-		IRMove moveLength = new IRMove(length, arrayLength);
-		stmtList.add(moveLength);
-
-		/* Check bounds */
-		// i < 0
-		IRLabel label1 = new IRLabel("l"+labelCount++);
-		IRLabel label2 = new IRLabel("l"+labelCount++);
-		IRConst zero = new IRConst(0);
-		IRBinOp lessThanZero = new IRBinOp(OpType.LT, arrayIndex, zero);
-		IRCJump cond1 = new IRCJump(lessThanZero, label2.name(), label1.name()); 
-		stmtList.add(cond1);
-		stmtList.add(label1);
-		// i < length
-		IRLabel label3 = new IRLabel("l"+labelCount++);
-		length = new IRTemp(length.name());
-		arrayIndex = (IRExpr)arrayIndex.copy();
-		IRBinOp lessThanLength = new IRBinOp(OpType.LT, arrayIndex, length);
-		IRCJump cond2 = new IRCJump(lessThanLength, label3.name(), label2.name());
-		stmtList.add(cond2);
-		stmtList.add(label2);
-		
-		/* Call _I_outOfBounds_p */
-		IRName nameOfOob = new IRName("_I_outOfBounds_p");
-		IRCall oobCall = new IRCall(nameOfOob);
-		IRExp oobExp = new IRExp(oobCall);
-		stmtList.add(oobExp);
-		stmtList.add(label3);
-		
-		return new IRSeq(stmtList);
+		return createIRExprForBrackets(new IRMem(arrayAddr), ib.getIndexedBrackets());
 	}
 	
 	/**
@@ -898,15 +843,14 @@ public class MIRVisitor implements ASTVisitor{
 	
 	/**
 	 * Helper function to create an array
-	 * 
-	 * @param sizes		list of the contents inside the brackets that represents the array dim
-	 * @param index		the current bracket of varDecl that we're curretly allocating memory for
- 	 * 		ex: x: int[5][6][] -> 
- 	 * 			first call would be createArray(exprList, 0) 
- 	 * 			second call would be createArray(exprList, 1)
- 	 * 			third: reaches base case because exprList.size == 2 and index == 2
+	 * index: the current bracket of varDecl that we're curretly allocating memory for
+	 * 		ex: x: int[5][6][] -> 
+	 * 			first call would be createArray(exprList, 0) 
+	 * 			second call would be createArray(exprList, 1)
+	 * 			third: reaches base case because exprList.size == 2 and index == 2
+	 * @param sizes: list of the contents inside the brackets that represents the array dim
 	 */
-	private IRExpr createArray(List<Expr> exprList, int index, List<IRTemp> sizes) {		
+	private IRExpr createArray(List<Expr> exprList, int index, List<IRTemp> sizes) {
 		// Base case
 		if (index == exprList.size()) {
 			// ask jeff if this is correct base case... He says its ok
@@ -952,6 +896,7 @@ public class MIRVisitor implements ASTVisitor{
 		IRLabel trueLabel = new IRLabel("l" + labelCount++);
 		IRLabel falseLabel = new IRLabel("l" + labelCount++);
 		IRCJump whileJump = new IRCJump(loopCondition, trueLabel.name(), falseLabel.name());
+		
 		IRTemp freshArray5 = new IRTemp(freshArray.name());
 		IRTemp loopCounter3 = new IRTemp(loopCounter.name());
 		IRConst wordSize2 = new IRConst(Configuration.WORD_SIZE);

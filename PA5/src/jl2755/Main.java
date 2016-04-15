@@ -77,7 +77,11 @@ public class Main {
         }
 
         if (cmd.hasOption("-help") ||
-                (cmd.getOptions().length == 0 && cmd.getArgs().length == 0)) {
+                (cmd.getOptions().length == 0 && cmd.getArgs().length == 0) ||
+                !(cmd.hasOption("l") || cmd.hasOption("p") || cmd.hasOption("t") 
+                		|| cmd.hasOption("irgen") || cmd.hasOption("irrun")
+                		|| cmd.hasOption("target"))) {
+        	
             HelpFormatter format = new HelpFormatter();
             format.setOptionComparator(null);
             format.printHelp("xic [options] <source files>", options);
@@ -488,12 +492,12 @@ public class Main {
             /* Translate to MIR */
             MIRVisitor mir = new MIRVisitor();
             program.accept(mir);
-            			StringWriter sww = new StringWriter();
-            	        try (PrintWriter pw = new PrintWriter(sww);
-            		             SExpPrinter sp = new CodeWriterSExpPrinter(pw)) {
-            				mir.program.printSExp(sp);
-            		        }
-            	        bw.write(sww.toString());
+//            			StringWriter sww = new StringWriter();
+//            	        try (PrintWriter pw = new PrintWriter(sww);
+//            		             SExpPrinter sp = new CodeWriterSExpPrinter(pw)) {
+//            				mir.program.printSExp(sp);
+//            		        }
+//            	        bw.write(sww.toString());
 
             /* Lower to LIR */
             LIRVisitor lir = new LIRVisitor();
@@ -506,15 +510,6 @@ public class Main {
             }
             bw.write(sw.toString());
             bw.close();
-            //			StringWriter sw2 = new StringWriter();
-            //			try (PrintWriter pw2 = new PrintWriter(sw2);
-            //					SExpPrinter sp2 = new CodeWriterSExpPrinter(pw2)){
-            //				lir.program.printSExp(sp2);
-            //			}
-            //			FileWriter fw2 = new FileWriter("C:/Users/Jonathan/Desktop/Files/CS4120/vmstuff/shared/CS4120/PA4/IROutput.txt");
-            //			BufferedWriter bw2 = new BufferedWriter(fw2);
-            //			bw2.write(sw2.toString());
-            //			bw2.close();
             System.out.println("[xic] Generating intermediate code completed");
             return lir.program;
 
@@ -806,13 +801,13 @@ public class Main {
         libOpt.setArgName("path");
         options.addOption(libOpt);
 
-        Option destDOpt = new Option ("D", true, 
+        Option destDOpt = new Option("D", true, 
                 "Specify where to place generated diagnostic files.");
         destDOpt.setArgs(1);
         destDOpt.setArgName("path");
         options.addOption(destDOpt);
 
-        Option destAOpt = new Option ("d", true, 
+        Option destAOpt = new Option("d", true, 
                 "Specify where to place generated assembly output files.");
         destAOpt.setArgs(1);
         destAOpt.setArgName("path");
@@ -824,10 +819,11 @@ public class Main {
                 " folding will not be performed.");
 
         // target OS
-        Option targetOSOpt = new Option ("target", true, 
+        Option targetOSOpt = new Option("target", true, 
                 "Specify the operating system for which to generate code. "
                         + "The default is linux.");
         targetOSOpt.setArgs(1);
+        targetOSOpt.setOptionalArg(true);
         targetOSOpt.setArgName("OS");
         options.addOption(targetOSOpt);
 

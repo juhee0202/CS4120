@@ -2,7 +2,7 @@ use io
 use conv
 
 main(args:int[][]) {
-    print("a" + unparseInt(foo()));
+    x:int[] = "hello " + " world";
 }
 
 foo(): int {

@@ -295,9 +295,9 @@ return_type ::= COLON type_list:tl                                  {: RESULT = 
                                                                     {: RESULT = new ReturnType(); :}
                 ;
 
-stmt ::= naked_stmt:ns SEMICOLON                                    {: RESULT = new Stmt(ns, true); :}
+stmt ::= naked_stmt:ns SEMICOLON                                    {: RESULT = new Stmt(ns, true, nsleft, nsright); :}
          |
-         naked_stmt:ns                                              {: RESULT = new Stmt(ns, false); :}
+         naked_stmt:ns                                              {: RESULT = new Stmt(ns, false, nsleft, nsright); :}
          ;
 
 stmt_list ::= stmt:s                                                {: RESULT = new StmtList(s); :}

@@ -194,25 +194,34 @@ public class LIRVisitor implements IRTreeVisitor{
 	
 	public void visit(IRMove mov) {
 		// assuming no commute (side effect dirties exp)
+//		System.out.println(mov);
+		
+		// s1, e1 = src
 		mov.expr().accept(this);
 		IRSeq s1 = tempSeq.part1();
 		IRExpr e1 = (IRExpr) tempSeq.part2();
+		// s2, e2 = target
 		mov.target().accept(this);
 		IRSeq s2 = tempSeq.part1();
 		IRExpr e2 = (IRExpr) tempSeq.part2();
 		
+		
 		if (checkCommute(s2, e1)) {
-			IRSeq combinedSeq = combineTwoStmt(s1, s2);
+			IRSeq combinedSeq = combineTwoStmt(s2, s1);
 			IRMove holyMove = new IRMove(e2, e1);
 			combinedSeq = combineTwoStmt(combinedSeq, holyMove);
 			tempSeq = new Pair<IRSeq, IRNode>(combinedSeq, null);
 		}
 		else {
+			// TODO: FIX THIS LATER it should ideally be
+			// s2, storeExpr, s1 :((((( but right now s1 needs to be
+			// executed before storeExpr
 			IRTemp holyTemp = new IRTemp("temp" + globalTempCount++);
 			IRMove storeExpr = new IRMove(holyTemp, (IRExpr) e1);
-			IRSeq combinedSeq = combineTwoStmt(s1, storeExpr);
-			combinedSeq = combineTwoStmt(combinedSeq, s2);
-			IRNode holyMove = new IRMove(e2, holyTemp);
+			IRSeq combinedSeq = combineTwoStmt(s2, s1);
+			combinedSeq = combineTwoStmt(combinedSeq, storeExpr);
+			IRTemp holyTemp2 = new IRTemp(holyTemp.name());
+			IRNode holyMove = new IRMove(e2, holyTemp2);
 			combinedSeq = combineTwoStmt(combinedSeq, (IRStmt) holyMove);
 			tempSeq = new Pair<IRSeq, IRNode>(combinedSeq, null);
 		}
@@ -250,22 +259,24 @@ public class LIRVisitor implements IRTreeVisitor{
 	
 	public static IRSeq combineTwoStmt(IRStmt left, IRStmt right) {
 		if (left instanceof IRSeq) {
-			List<IRStmt> leftStmt = ((IRSeq) left).stmts();
+			List<IRStmt> newStmt = new ArrayList<IRStmt>();
+			newStmt.addAll(((IRSeq)left).stmts());
 			if (right instanceof IRSeq) {
 				List<IRStmt> rightStmt = ((IRSeq) right).stmts();
-				leftStmt.addAll(rightStmt);
-				return new IRSeq(leftStmt);
+				newStmt.addAll(rightStmt);
+				return new IRSeq(newStmt);
 			}
 			else {
-				leftStmt.add(right);
-				return new IRSeq(leftStmt);
+				newStmt.add(right);
+				return new IRSeq(newStmt);
 			}
 		}
 		else {
 			if (right instanceof IRSeq) {
-				List<IRStmt> rightStmt = ((IRSeq) right).stmts();
-				rightStmt.add(0,left);
-				return new IRSeq(rightStmt);
+				List<IRStmt> newStmt = new ArrayList<IRStmt>();
+				newStmt.addAll(((IRSeq) right).stmts());
+				newStmt.add(0,left);
+				return new IRSeq(newStmt);
 			}
 			else {
 				List<IRStmt> newList = new ArrayList<IRStmt>();

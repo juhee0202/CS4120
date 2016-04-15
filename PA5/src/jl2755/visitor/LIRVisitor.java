@@ -216,10 +216,18 @@ public class LIRVisitor implements IRTreeVisitor{
 			// TODO: FIX THIS LATER it should ideally be
 			// s2, storeExpr, s1 :((((( but right now s1 needs to be
 			// executed before storeExpr
+//			IRTemp holyTemp = new IRTemp("temp" + globalTempCount++);
+//			IRMove storeExpr = new IRMove(holyTemp, (IRExpr) e1);
+//			IRSeq combinedSeq = combineTwoStmt(s2, s1);
+//			combinedSeq = combineTwoStmt(combinedSeq, storeExpr);
+//			IRTemp holyTemp2 = new IRTemp(holyTemp.name());
+//			IRNode holyMove = new IRMove(e2, holyTemp2);
+//			combinedSeq = combineTwoStmt(combinedSeq, (IRStmt) holyMove);
+//			tempSeq = new Pair<IRSeq, IRNode>(combinedSeq, null);
 			IRTemp holyTemp = new IRTemp("temp" + globalTempCount++);
 			IRMove storeExpr = new IRMove(holyTemp, (IRExpr) e1);
-			IRSeq combinedSeq = combineTwoStmt(s2, s1);
-			combinedSeq = combineTwoStmt(combinedSeq, storeExpr);
+			IRSeq combinedSeq = combineTwoStmt(s1, storeExpr);
+			combinedSeq = combineTwoStmt(combinedSeq, s2);
 			IRTemp holyTemp2 = new IRTemp(holyTemp.name());
 			IRNode holyMove = new IRMove(e2, holyTemp2);
 			combinedSeq = combineTwoStmt(combinedSeq, (IRStmt) holyMove);
@@ -230,7 +238,7 @@ public class LIRVisitor implements IRTreeVisitor{
 	public void visit(IRName name) {
 		List<IRStmt> emptyIRStmt = new ArrayList<IRStmt>();
 		IRSeq emptySeq = new IRSeq(emptyIRStmt);
-		tempSeq = new Pair<IRSeq, IRNode>(emptySeq, new IRName(name.name()));
+		tempSeq = new Pair<IRSeq, IRNode>(emptySeq, name);
 	}
 	
 	public void visit(IRReturn ret) {
@@ -289,6 +297,10 @@ public class LIRVisitor implements IRTreeVisitor{
 	
 	private static boolean checkCommute(IRStmt stmt, IRExpr expr) {
 		if (expr instanceof IRConst || expr instanceof IRName) {
+			return true;
+		}
+		
+		if (expr instanceof IRMem || expr instanceof IRTemp) {
 			return true;
 		}
 		

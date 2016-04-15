@@ -2,9 +2,9 @@ use io
 use conv
 
 main(args:int[][]) {
-    x:int[] = "hello " + " world";
+    print("hello " + foo());
 }
 
-foo(): int {
-    return 5; 
+foo(): int[] {
+    return "ok"; 
 }

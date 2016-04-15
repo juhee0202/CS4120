@@ -221,7 +221,7 @@ public class LIRVisitor implements IRTreeVisitor{
 	public void visit(IRName name) {
 		List<IRStmt> emptyIRStmt = new ArrayList<IRStmt>();
 		IRSeq emptySeq = new IRSeq(emptyIRStmt);
-		tempSeq = new Pair<IRSeq, IRNode>(emptySeq, name);
+		tempSeq = new Pair<IRSeq, IRNode>(emptySeq, new IRName(name.name()));
 	}
 	
 	public void visit(IRReturn ret) {
@@ -249,23 +249,24 @@ public class LIRVisitor implements IRTreeVisitor{
 	}
 	
 	public static IRSeq combineTwoStmt(IRStmt left, IRStmt right) {
+		List<IRStmt> newStmt = new ArrayList<IRStmt>();
 		if (left instanceof IRSeq) {
-			List<IRStmt> leftStmt = ((IRSeq) left).stmts();
+			newStmt.addAll(((IRSeq) left).stmts());
 			if (right instanceof IRSeq) {
 				List<IRStmt> rightStmt = ((IRSeq) right).stmts();
-				leftStmt.addAll(rightStmt);
-				return new IRSeq(leftStmt);
+				newStmt.addAll(rightStmt);
+				return new IRSeq(newStmt);
 			}
 			else {
-				leftStmt.add(right);
-				return new IRSeq(leftStmt);
+				newStmt.add(right);
+				return new IRSeq(newStmt);
 			}
 		}
 		else {
 			if (right instanceof IRSeq) {
-				List<IRStmt> rightStmt = ((IRSeq) right).stmts();
-				rightStmt.add(0,left);
-				return new IRSeq(rightStmt);
+				newStmt.addAll(((IRSeq) right).stmts());
+				newStmt.add(0,left);
+				return new IRSeq(newStmt);
 			}
 			else {
 				List<IRStmt> newList = new ArrayList<IRStmt>();

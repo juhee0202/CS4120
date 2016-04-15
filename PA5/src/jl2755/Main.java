@@ -544,7 +544,7 @@ public class Main {
     public static void irrun(String filename) throws FileNotFoundException {
         // Generate IR code
         IRNode program = irgen(filename);
-
+        
         // Interpret IR code
         if (program == null) {
             return;

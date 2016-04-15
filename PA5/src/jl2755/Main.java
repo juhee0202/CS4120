@@ -468,6 +468,7 @@ public class Main {
 
         String rmExtension = filename.substring(0,index);
         String outputFileName = destDPath + rmExtension + ".ir";
+        
     	try {
     		File file = new File(outputFileName);
             if (!file.exists()) {
@@ -477,7 +478,7 @@ public class Main {
             bw = new BufferedWriter(fw);
 
             System.out.println("[xic] Generating intermediate code");
-
+            System.out.println(srcPath + filename);
             parser p = new parser(new Scanner(new FileReader(srcPath + filename)));
             Symbol s = p.parse();
             Program program = (Program) s.value;
@@ -529,7 +530,7 @@ public class Main {
         } catch(IOException e) {
         	System.out.println("[xic] Generating intermediate code failed");
             System.out.println("Failed to write to output file " + outputFileName);
-//            e.printStackTrace();
+            e.printStackTrace();
         } catch (Exception e) {
 //            e.printStackTrace();
         }
@@ -561,12 +562,9 @@ public class Main {
         if (index == -1) {
             index = filename.length();
         }
-//        System.out.println(filename);
         String rmExtension = filename.substring(0,index);
-//        if (destAPath.equals("")) {
-//        	destAPath = srcPath;
-//        }
         String outputFileName = destAPath + rmExtension + ".s";
+        
         try {
             File file = new File(outputFileName);
             if (!file.exists()) {
@@ -582,10 +580,12 @@ public class Main {
             Program program = (Program) s.value;
             TypeCheckVisitor typeCheck = new TypeCheckVisitor();
             program.accept(typeCheck);
+            
             if (optimize) {
                 ConstantFolderVisitor constantFold = new ConstantFolderVisitor();
                 program.accept(constantFold);
             }
+            
             MIRVisitor mir = new MIRVisitor();
             program.accept(mir);
             LIRVisitor lir = new LIRVisitor();

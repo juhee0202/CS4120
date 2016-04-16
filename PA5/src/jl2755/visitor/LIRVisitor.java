@@ -206,7 +206,7 @@ public class LIRVisitor implements IRTreeVisitor{
 		IRExpr e2 = (IRExpr) tempSeq.part2();
 		
 		
-		if (checkCommute(s2, e1)) {
+		if (checkCommute(s1, e2)) {
 			IRSeq combinedSeq = combineTwoStmt(s2, s1);
 			IRMove holyMove = new IRMove(e2, e1);
 			combinedSeq = combineTwoStmt(combinedSeq, holyMove);

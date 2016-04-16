@@ -478,7 +478,7 @@ public class Main {
             bw = new BufferedWriter(fw);
 
             System.out.println("[xic] Generating intermediate code");
-            System.out.println(srcPath + filename);
+            
             parser p = new parser(new Scanner(new FileReader(srcPath + filename)));
             Symbol s = p.parse();
             Program program = (Program) s.value;
@@ -532,7 +532,7 @@ public class Main {
             System.out.println("Failed to write to output file " + outputFileName);
             e.printStackTrace();
         } catch (Exception e) {
-//            e.printStackTrace();
+            e.printStackTrace();
         }
         return null;
     }

@@ -1,10 +1,16 @@
 use io
 use conv
 
-main(args:int[][]) {
-	print("hello " + foo());
+foo() {
+    a:int[] = {1,2,3}
+    a[a[1]] = 1
 }
 
-foo():int[] {
-	return "ok"
+f(a:int[]):int[] {
+    return a;
+}
+
+g(a:int[]):int {
+    a[1] = 6
+    return 1;
 }

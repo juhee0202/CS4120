@@ -157,7 +157,11 @@ public class MIRVisitor implements ASTVisitor{
 			IRMem leftMem = new IRMem(leftLengthCell);
 			IRMem rightMem = new IRMem(rightLengthCell);
 			IRBinOp newLength = new IRBinOp(OpType.ADD, leftMem, rightMem);
-			IRBinOp realNewLength = new IRBinOp(OpType.ADD, newLength, new IRConst(1));
+			IRTemp numEl = new IRTemp("t" + tempCount++);
+			IRMove moveLengthToTemp = new IRMove(numEl, newLength);
+			stmtList.add(moveLengthToTemp);
+			
+			IRBinOp realNewLength = new IRBinOp(OpType.ADD, (IRTemp) numEl.copy(), new IRConst(1));
 			IRBinOp realrealNewLength = new IRBinOp(OpType.MUL, realNewLength, (IRConst) WORD_SIZE.copy());	// length in bytes
 			
 			/* leftNode/rightNode are either CALL/TEMP after this point */
@@ -170,7 +174,7 @@ public class MIRVisitor implements ASTVisitor{
 			stmtList.add(moveCallToArray);
 			
 			// move the length
-			IRMove moveLength = new IRMove(new IRMem((IRTemp) tempOfArray.copy()), (IRBinOp) newLength.copy());
+			IRMove moveLength = new IRMove(new IRMem((IRTemp) tempOfArray.copy()), (IRTemp) numEl.copy());
 			stmtList.add(moveLength);
 			
 			// update base address to a[0]

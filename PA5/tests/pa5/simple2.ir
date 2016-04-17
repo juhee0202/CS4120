@@ -4,26 +4,6 @@
   _Imain_paai
   (SEQ
    (MOVE (TEMP args) (TEMP _ARG0))
-   (MOVE
-    (TEMP x)
-    (ESEQ
-     (SEQ
-      (MOVE (TEMP t0) (CALL (NAME _I_alloc_i) (CONST 48)))
-      (MOVE (MEM (TEMP t0)) (CONST 5))
-      (MOVE (MEM (ADD (CONST 8) (TEMP t0))) (CONST 104))
-      (MOVE (MEM (ADD (CONST 16) (TEMP t0))) (CONST 101))
-      (MOVE (MEM (ADD (CONST 24) (TEMP t0))) (CONST 108))
-      (MOVE (MEM (ADD (CONST 32) (TEMP t0))) (CONST 108))
-      (MOVE (MEM (ADD (CONST 40) (TEMP t0))) (CONST 111))
-      (MOVE (TEMP t0) (ADD (TEMP t0) (CONST 8))))
-     (TEMP t0)))))
- (FUNC _Ifoo_p (SEQ (MOVE (TEMP x) (CONST 3)))))
-(COMPUNIT
- Program
- (FUNC
-  _Imain_paai
-  (SEQ
-   (MOVE (TEMP args) (TEMP _ARG0))
    (MOVE (TEMP temp0) (CONST 48))
    (MOVE (TEMP temp1) (CALL (NAME _I_alloc_i) (TEMP temp0)))
    (MOVE (TEMP t0) (TEMP temp1))

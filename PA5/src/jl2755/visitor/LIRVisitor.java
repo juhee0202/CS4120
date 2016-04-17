@@ -206,32 +206,33 @@ public class LIRVisitor implements IRTreeVisitor{
 		IRExpr e2 = (IRExpr) tempSeq.part2();
 		
 		
-		if (checkCommute(s2, e1)) {
+		if (checkCommute(s1, e2)) {
 			IRSeq combinedSeq = combineTwoStmt(s2, s1);
 			IRMove holyMove = new IRMove(e2, e1);
 			combinedSeq = combineTwoStmt(combinedSeq, holyMove);
 			tempSeq = new Pair<IRSeq, IRNode>(combinedSeq, null);
 		}
 		else {
-			// TODO: FIX THIS LATER it should ideally be
-			// s2, storeExpr, s1 :((((( but right now s1 needs to be
-			// executed before storeExpr
+			// TODO: FIX THIS LATER 
+			// S(dest), MOV(TEMP(T), dest'), S(src), MOV(TEMP(T), e')
+			
+			IRTemp holyTemp = new IRTemp("temp" + globalTempCount++);
+			IRMove storeExpr = new IRMove(holyTemp, (IRExpr) e2);
+			IRSeq combinedSeq = combineTwoStmt(s2, storeExpr);
+			combinedSeq = combineTwoStmt(combinedSeq, s1);
+			IRTemp holyTemp2 = new IRTemp(holyTemp.name());
+			IRNode holyMove = new IRMove(holyTemp2, e1);
+			combinedSeq = combineTwoStmt(combinedSeq, (IRStmt) holyMove);
+			tempSeq = new Pair<IRSeq, IRNode>(combinedSeq, null);
+			
 //			IRTemp holyTemp = new IRTemp("temp" + globalTempCount++);
 //			IRMove storeExpr = new IRMove(holyTemp, (IRExpr) e1);
-//			IRSeq combinedSeq = combineTwoStmt(s2, s1);
-//			combinedSeq = combineTwoStmt(combinedSeq, storeExpr);
+//			IRSeq combinedSeq = combineTwoStmt(s1, storeExpr);
+//			combinedSeq = combineTwoStmt(combinedSeq, s2);
 //			IRTemp holyTemp2 = new IRTemp(holyTemp.name());
 //			IRNode holyMove = new IRMove(e2, holyTemp2);
 //			combinedSeq = combineTwoStmt(combinedSeq, (IRStmt) holyMove);
 //			tempSeq = new Pair<IRSeq, IRNode>(combinedSeq, null);
-			IRTemp holyTemp = new IRTemp("temp" + globalTempCount++);
-			IRMove storeExpr = new IRMove(holyTemp, (IRExpr) e1);
-			IRSeq combinedSeq = combineTwoStmt(s1, storeExpr);
-			combinedSeq = combineTwoStmt(combinedSeq, s2);
-			IRTemp holyTemp2 = new IRTemp(holyTemp.name());
-			IRNode holyMove = new IRMove(e2, holyTemp2);
-			combinedSeq = combineTwoStmt(combinedSeq, (IRStmt) holyMove);
-			tempSeq = new Pair<IRSeq, IRNode>(combinedSeq, null);
 		}
 	}
 	

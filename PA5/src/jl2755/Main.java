@@ -532,7 +532,7 @@ public class Main {
             System.out.println("Failed to write to output file " + outputFileName);
             e.printStackTrace();
         } catch (Exception e) {
-//            e.printStackTrace();
+            e.printStackTrace();
         }
         return null;
     }

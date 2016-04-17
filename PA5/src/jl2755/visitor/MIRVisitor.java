@@ -730,19 +730,31 @@ public class MIRVisitor implements ASTVisitor{
 	private IRExpr createIRExprForBrackets(IRExpr ire, IndexedBrackets ib) {
 		Expr exprInBracket = ib.getExpression();
 		exprInBracket.accept(this);
-		IRExpr indexExpr = (IRExpr) tempNode;
-		IRBinOp byteMult = new IRBinOp(OpType.MUL, (IRConst) WORD_SIZE.copy(), indexExpr);
+		IRConst byteOffset = new IRConst(Configuration.WORD_SIZE);
+		IRBinOp byteMult = new IRBinOp(OpType.MUL, byteOffset, (IRExpr) tempNode);
 		IRBinOp arrayAddr = new IRBinOp(OpType.ADD, ire, byteMult);
-		// clone arrayAddr and indexExpr
-		IRExpr cloneArrayAddr = (IRExpr)ire.copy();
-		IRExpr cloneIndexExpr = (IRExpr)indexExpr.copy();
-		IRStmt boundCheckStmt = createIRStmtForArrayBoundCheck(cloneArrayAddr, cloneIndexExpr);
 		if (ib.getIndex() == 0) {
-			return new IRESeq(boundCheckStmt, arrayAddr);
+			return arrayAddr;
 		}
+		return createIRExprForBrackets(new IRMem(arrayAddr), ib.getIndexedBrackets());
 		
-		IRExpr bracketsIRExpr = createIRExprForBrackets(new IRMem(arrayAddr), ib.getIndexedBrackets());
-		return new IRESeq(boundCheckStmt, bracketsIRExpr);		
+	
+//		Expr exprInBracket = ib.getExpression();
+//		exprInBracket.accept(this);
+//		IRExpr indexExpr = (IRExpr) tempNode;
+//		IRConst byteOffset = new IRConst(Configuration.WORD_SIZE);
+//		IRBinOp byteMult = new IRBinOp(OpType.MUL, byteOffset, indexExpr);
+//		IRBinOp arrayAddr = new IRBinOp(OpType.ADD, ire, byteMult);
+//		// clone arrayAddr and indexExpr
+//		IRExpr cloneArrayAddr = (IRExpr)ire.copy();
+//		IRExpr cloneIndexExpr = (IRExpr)indexExpr.copy();
+//		IRStmt boundCheckStmt = createIRStmtForArrayBoundCheck(cloneArrayAddr, cloneIndexExpr);
+//		if (ib.getIndex() == 0) {
+//			return new IRESeq(boundCheckStmt, arrayAddr);
+//		}
+//		
+//		IRExpr bracketsIRExpr = createIRExprForBrackets(new IRMem(arrayAddr), ib.getIndexedBrackets());
+//		return new IRESeq(boundCheckStmt, bracketsIRExpr);		
 	}
 	
 	/**

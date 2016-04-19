@@ -158,7 +158,11 @@ public class MIRVisitor implements ASTVisitor{
 			IRMem leftMem = new IRMem(leftLengthCell);
 			IRMem rightMem = new IRMem(rightLengthCell);
 			IRBinOp newLength = new IRBinOp(OpType.ADD, leftMem, rightMem);
-			IRBinOp realNewLength = new IRBinOp(OpType.ADD, newLength, new IRConst(1));
+			IRTemp numEl = new IRTemp("t" + tempCount++);
+			IRMove moveLengthToTemp = new IRMove(numEl, newLength);
+			stmtList.add(moveLengthToTemp);
+			
+			IRBinOp realNewLength = new IRBinOp(OpType.ADD, (IRTemp) numEl.copy(), new IRConst(1));
 			IRBinOp realrealNewLength = new IRBinOp(OpType.MUL, realNewLength, (IRConst) WORD_SIZE.copy());	// length in bytes
 			
 			/* leftNode/rightNode are either CALL/TEMP after this point */
@@ -171,7 +175,7 @@ public class MIRVisitor implements ASTVisitor{
 			stmtList.add(moveCallToArray);
 			
 			// move the length
-			IRMove moveLength = new IRMove(new IRMem((IRTemp) tempOfArray.copy()), (IRBinOp) newLength.copy());
+			IRMove moveLength = new IRMove(new IRMem((IRTemp) tempOfArray.copy()), (IRTemp) numEl.copy());
 			stmtList.add(moveLength);
 			
 			// update base address to a[0]
@@ -746,36 +750,7 @@ public class MIRVisitor implements ASTVisitor{
 		}
 		
 		IRSeq stmtSeq = new IRSeq(stmtList);
-		return new IRESeq(stmtSeq, arrayElem);
-		
-		
-//		Expr exprInBracket = ib.getExpression();
-//		exprInBracket.accept(this);
-//		IRConst byteOffset = new IRConst(Configuration.WORD_SIZE);
-//		IRBinOp byteMult = new IRBinOp(OpType.MUL, byteOffset, (IRExpr) tempNode);
-//		IRBinOp arrayAddr = new IRBinOp(OpType.ADD, base, byteMult);
-//		if (ib.getIndex() == 0) {
-//			return arrayAddr;
-//		}
-//		return createIRExprForBrackets(new IRMem(arrayAddr), ib.getIndexedBrackets());
-		
-	
-//		Expr exprInBracket = ib.getExpression();
-//		exprInBracket.accept(this);
-//		IRExpr indexExpr = (IRExpr) tempNode;
-//		IRConst byteOffset = new IRConst(Configuration.WORD_SIZE);
-//		IRBinOp byteMult = new IRBinOp(OpType.MUL, byteOffset, indexExpr);
-//		IRBinOp arrayAddr = new IRBinOp(OpType.ADD, ire, byteMult);
-//		// clone arrayAddr and indexExpr
-//		IRExpr cloneArrayAddr = (IRExpr)ire.copy();
-//		IRExpr cloneIndexExpr = (IRExpr)indexExpr.copy();
-//		IRStmt boundCheckStmt = createIRStmtForArrayBoundCheck(cloneArrayAddr, cloneIndexExpr);
-//		if (ib.getIndex() == 0) {
-//			return new IRESeq(boundCheckStmt, arrayAddr);
-//		}
-//		
-//		IRExpr bracketsIRExpr = createIRExprForBrackets(new IRMem(arrayAddr), ib.getIndexedBrackets());
-//		return new IRESeq(boundCheckStmt, bracketsIRExpr);		
+		return new IRESeq(stmtSeq, arrayElem);	
 	}
 	
 	/**

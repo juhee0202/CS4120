@@ -1182,8 +1182,8 @@ public class TilingVisitor implements IRTreeVisitor {
 			List<Instruction> newInstructions = new ArrayList<Instruction>();
 			Tile finalTile;
 			if (!redundant) {
-				newInstructions.add(new Instruction(Operation.MOVQ,sourceOperand,new Register(RegisterName.RCX)));
-				newInstructions.add(new Instruction(Operation.MOVQ,new Register(RegisterName.RCX),targetOperand));
+				newInstructions.add(new Instruction(Operation.MOVQ,sourceOperand,new Register(RegisterName.R10)));
+				newInstructions.add(new Instruction(Operation.MOVQ,new Register(RegisterName.R10),targetOperand));
 				finalTile = new Tile(newInstructions,2,targetOperand);
 			} else {
 				finalTile = new Tile(newInstructions,0,targetOperand);

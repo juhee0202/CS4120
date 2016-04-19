@@ -2,10 +2,10 @@
 	.globl	_Imain_paai
 	.align	4
 _Imain_paai:
-	enter	$144, $0
+	enter	$88, $0
 	movq	%rdi, %rcx
 	movq	%rcx, -8(%rbp)
-	movq	$104, %rcx
+	movq	$48, %rcx
 	movq	%rcx, -16(%rbp)
 	pushq	%rax
 	pushq	%rcx
@@ -32,7 +32,7 @@ _Imain_paai:
 	movq	%rdx, %rcx
 	movq	%rcx, -32(%rbp)
 	movq	-32(%rbp), %rcx
-	movq	$12, 0(%rcx)
+	movq	$5, 0(%rcx)
 	movq	$8, %rcx
 	movq	%rcx, -40(%rbp)
 	movq	-40(%rbp), %rcx
@@ -73,82 +73,27 @@ _Imain_paai:
 	movq	%rcx, -72(%rbp)
 	movq	-72(%rbp), %rcx
 	movq	$111, 0(%rcx)
-	movq	$48, %rcx
-	movq	%rcx, -80(%rbp)
-	movq	-80(%rbp), %rcx
-	movq	-32(%rbp), %rdx
-	addq	%rdx, %rcx
-	movq	%rcx, -80(%rbp)
-	movq	-80(%rbp), %rcx
-	movq	$32, 0(%rcx)
-	movq	$56, %rcx
-	movq	%rcx, -88(%rbp)
-	movq	-88(%rbp), %rcx
-	movq	-32(%rbp), %rdx
-	addq	%rdx, %rcx
-	movq	%rcx, -88(%rbp)
-	movq	-88(%rbp), %rcx
-	movq	$32, 0(%rcx)
-	movq	$64, %rcx
-	movq	%rcx, -96(%rbp)
-	movq	-96(%rbp), %rcx
-	movq	-32(%rbp), %rdx
-	addq	%rdx, %rcx
-	movq	%rcx, -96(%rbp)
-	movq	-96(%rbp), %rcx
-	movq	$119, 0(%rcx)
-	movq	$72, %rcx
-	movq	%rcx, -104(%rbp)
-	movq	-104(%rbp), %rcx
-	movq	-32(%rbp), %rdx
-	addq	%rdx, %rcx
-	movq	%rcx, -104(%rbp)
-	movq	-104(%rbp), %rcx
-	movq	$111, 0(%rcx)
-	movq	$80, %rcx
-	movq	%rcx, -112(%rbp)
-	movq	-112(%rbp), %rcx
-	movq	-32(%rbp), %rdx
-	addq	%rdx, %rcx
-	movq	%rcx, -112(%rbp)
-	movq	-112(%rbp), %rcx
-	movq	$114, 0(%rcx)
-	movq	$88, %rcx
-	movq	%rcx, -120(%rbp)
-	movq	-120(%rbp), %rcx
-	movq	-32(%rbp), %rdx
-	addq	%rdx, %rcx
-	movq	%rcx, -120(%rbp)
-	movq	-120(%rbp), %rcx
-	movq	$108, 0(%rcx)
-	movq	$96, %rcx
-	movq	%rcx, -128(%rbp)
-	movq	-128(%rbp), %rcx
-	movq	-32(%rbp), %rdx
-	addq	%rdx, %rcx
-	movq	%rcx, -128(%rbp)
-	movq	-128(%rbp), %rcx
-	movq	$100, 0(%rcx)
 	movq	-32(%rbp), %rdx
 	movq	%rdx, %rcx
-	movq	%rcx, -136(%rbp)
-	movq	-136(%rbp), %rcx
+	movq	%rcx, -80(%rbp)
+	movq	-80(%rbp), %rcx
 	addq	$8, %rcx
-	movq	%rcx, -136(%rbp)
+	movq	%rcx, -80(%rbp)
 	movq	-32(%rbp), %rcx
-	movq	-136(%rbp), %rdx
+	movq	-80(%rbp), %rdx
 	movq	%rdx, %rcx
 	movq	%rcx, -32(%rbp)
 	movq	-32(%rbp), %rdx
 	movq	%rdx, %rcx
-	movq	%rcx, -144(%rbp)
+	movq	%rcx, -88(%rbp)
 	leave
 	ret
 
-	.globl	_Ifoo_i
+	.globl	_Ifoo_p
 	.align	4
-_Ifoo_i:
-	enter	$0, $0
-	movq	$5, %rax
+_Ifoo_p:
+	enter	$8, $0
+	movq	$3, %rcx
+	movq	%rcx, -8(%rbp)
 	leave
 	ret

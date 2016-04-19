@@ -8,6 +8,7 @@ import java.util.Map;
 
 import edu.cornell.cs.cs4120.xic.ir.*;
 import edu.cornell.cs.cs4120.xic.ir.interpret.Configuration;
+import jl2755.assembly.Instruction.Operation;
 import jl2755.ast.*;
 import jl2755.type.VarType;
 
@@ -28,17 +29,17 @@ public class MIRVisitor implements ASTVisitor{
 		// 0: identifier with indexedBrackets
 		if (index == 0) {
 			ae.getIdentifier().accept(this);
-			tempNode = new IRMem(createIRExprForBrackets((IRExpr) tempNode, ae.getIndexedBrackets()));
+			tempNode = createIRExprForBrackets((IRExpr) tempNode, ae.getIndexedBrackets());
 		}
 		// 1: functionCall with indexedBrackets
 		else if (index == 1) {
 			ae.getFunctionCall().accept(this);
-			tempNode = new IRMem(createIRExprForBrackets((IRExpr) tempNode, ae.getIndexedBrackets()));
+			tempNode = createIRExprForBrackets((IRExpr) tempNode, ae.getIndexedBrackets());
 		}
 		// 2: arrayLiteral with IndexedBrackets
 		else {
 			ae.getArrayLiteral().accept(this);
-			tempNode = new IRMem(createIRExprForBrackets((IRExpr) tempNode, ae.getIndexedBrackets()));
+			tempNode = createIRExprForBrackets((IRExpr) tempNode, ae.getIndexedBrackets());
 		}
 	}
 
@@ -723,16 +724,40 @@ public class MIRVisitor implements ASTVisitor{
 	 * from IRExpr and IndexedBrackets
 	 */
 	
-	private IRExpr createIRExprForBrackets(IRExpr ire, IndexedBrackets ib) {
-		Expr exprInBracket = ib.getExpression();
-		exprInBracket.accept(this);
-		IRConst byteOffset = new IRConst(Configuration.WORD_SIZE);
-		IRBinOp byteMult = new IRBinOp(OpType.MUL, byteOffset, (IRExpr) tempNode);
-		IRBinOp arrayAddr = new IRBinOp(OpType.ADD, ire, byteMult);
-		if (ib.getIndex() == 0) {
-			return arrayAddr;
+	private IRExpr createIRExprForBrackets(IRExpr base, IndexedBrackets ib) {
+		List<IRStmt> stmtList = new ArrayList<IRStmt>();
+		// a[i0][i1]...[in]
+		// mem(mem(a + 8*i0) + 8*i1) +... 
+		List<Expr> exprList = ib.getAllExprInIndexedBrackets();
+		IRExpr arrayElem = base;
+		for (int i = 0; i < exprList.size(); i++) {
+			exprList.get(i).accept(this);
+			IRExpr exprInBrackets = (IRExpr)tempNode;
+			IRTemp tempForExprInBrackets = new IRTemp("t" + tempCount++);
+			// move expr in brackets to a temp register
+			IRMove moveToTemp = new IRMove(tempForExprInBrackets, exprInBrackets);
+			stmtList.add(moveToTemp);
+			// create array index out of bounds check stmts
+			IRStmt boundsCheck = createIRStmtForArrayBoundCheck((IRExpr)arrayElem.copy(), (IRExpr)tempForExprInBrackets.copy());
+			stmtList.add(boundsCheck);
+			IRBinOp offset = new IRBinOp(OpType.MUL, (IRConst) WORD_SIZE.copy(), (IRExpr)tempForExprInBrackets.copy());
+			IRBinOp arrayElemAddr = new IRBinOp(OpType.ADD, arrayElem, offset);
+			arrayElem = new IRMem(arrayElemAddr);
 		}
-		return createIRExprForBrackets(new IRMem(arrayAddr), ib.getIndexedBrackets());
+		
+		IRSeq stmtSeq = new IRSeq(stmtList);
+		return new IRESeq(stmtSeq, arrayElem);
+		
+		
+//		Expr exprInBracket = ib.getExpression();
+//		exprInBracket.accept(this);
+//		IRConst byteOffset = new IRConst(Configuration.WORD_SIZE);
+//		IRBinOp byteMult = new IRBinOp(OpType.MUL, byteOffset, (IRExpr) tempNode);
+//		IRBinOp arrayAddr = new IRBinOp(OpType.ADD, base, byteMult);
+//		if (ib.getIndex() == 0) {
+//			return arrayAddr;
+//		}
+//		return createIRExprForBrackets(new IRMem(arrayAddr), ib.getIndexedBrackets());
 		
 	
 //		Expr exprInBracket = ib.getExpression();

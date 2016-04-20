@@ -111,7 +111,7 @@ public class MIRVisitor implements ASTVisitor{
 			as.getExpr().accept(this);
 			IRExpr tempExpr = (IRExpr) tempNode;
 			tempNode = new IRMove(tempID, tempExpr);
-		} else if (index == 1) {
+		} else if (index == 1) {	
 			// a[i][j]...[z] = 0
 			as.getIdentifier().accept(this);
 			IRTemp base = (IRTemp) tempNode;

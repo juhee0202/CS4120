@@ -14,47 +14,38 @@ public class Memory implements Operand {
 	int index;
 	
 	/** Only used for cloning */
-	private Memory() {
-	}
-	
-//	public Memory(Constant co) {
-//		constantOffset = co;
-//	}
-	
-	private static final Constant NO_OFFSET = new Constant(0);
-	private static final Constant NO_FACTOR = new Constant(1);
+	private Memory() {}
 	
 	public Memory(Register base) {
-		this(NO_OFFSET,base,null,null);
-		index = 0;
+		this(null,base,null,null,0);
 	}
 	
 	public Memory(Constant co, Register base) {
-		this(co,base,null,null);
-		index = 1;
+		this(co,base,null,null,1);
 	}
 	
 	public Memory(Register base, Register ro) {
-		this(NO_OFFSET,base,ro,NO_FACTOR);
-		index = 2;
+		this(null,base,ro,null,2);
 	}
 	
 	public Memory(Register base, Register ro, Constant cf) {
-		this(NO_OFFSET,base,ro,cf);
-		index = 3;
+		this(null,base,ro,cf,3);
 	}
 	
 	public Memory(Constant co, Register base, Register ro) {
-		this(co,base,ro,NO_FACTOR);
-		index = 4;
+		this(co,base,ro,null,4);
 	}
 	
 	public Memory(Constant co, Register base, Register ro, Constant cf) {
+		this(co,base,ro,cf,5);
+	}
+	
+	public Memory(Constant co, Register base, Register ro, Constant cf, int i) {
 		constantOffset = co;
 		registerBase = base;
 		registerOffset = ro;
 		constantFactor = cf;
-		index = 5;
+		index = i;
 	}
 	
 	public Register getRegisterBase() {
@@ -108,6 +99,18 @@ public class Memory implements Operand {
 			s += constantOffset.getValue() + "(" + registerBase.toString()
 					+ "," + registerOffset.toString() + "," + constantFactor.getValue()
 					+ ")";
+		} else if (index == 6) {
+			s += "(" + registerBase.toString();
+			if (constantOffset != null) {
+				s = constantOffset.getValue() + s;
+			}
+			if (registerOffset != null) {
+				s += "," + registerOffset.toString();
+			}
+			if (constantFactor != null) {
+				s += "," + constantFactor.getValue();
+			}
+			s += ")";
 		}
 		return s;
 	}

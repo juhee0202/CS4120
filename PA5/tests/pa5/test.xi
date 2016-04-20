@@ -2,29 +2,30 @@ use io
  use conv
 
  main(args: int[][]) {
-	 a1: int[] = {1, 2, 3, 4}
-	 a2: int[] = {5, 6, 7}
-	 a3: int[] = {}
-	 printai(f(a1) + f(a2))
-	 printai(f(a1) + f(a3))
-	 printai(f(a2) + f(a3))
+ println(b2s(f(true) == f(true)))
+ println(b2s(f(true) == f(false)))
+ println(b2s(f(false) == f(true)))
+ println(b2s(f(false) == f(false)))
+ println(b2s(f(true) != f(true)))
+ println(b2s(f(true) != f(false)))
+ println(b2s(f(false) != f(true)))
+ println(b2s(f(false) != f(false)))
+ println(b2s(f(true) & f(true)))
+ println(b2s(f(true) & f(false)))
+ println(b2s(f(false) & f(true)))
+ println(b2s(f(false) & f(false)))
+ println(b2s(f(true) | f(true)))
+ println(b2s(f(true) | f(false)))
+ println(b2s(f(false) | f(true)))
+ println(b2s(f(false) | f(false)))
  }
 
- f(x: int[]): int[] {
-	 print("f() called: ") 
-	 printai(x)
-	 return x
+ f(x: bool): bool {
+ print("f() called: ")
+ println(b2s(x))
+ return x
  }
 
- printai(a: int[]) {
-	 i: int = 0
-	 print("{")
-	 while (i < length(a)) { 
-	 	if (i > 0) {
-	 		print(", ")
-	 	}
-	 	print(unparseInt(a[i]))
-	 	i = i + 1
-	 }
-	 println("}")
+ b2s(b: bool): int[] {
+ if (b) { return unparseInt(1) } else { return unparseInt(0) } 
  }

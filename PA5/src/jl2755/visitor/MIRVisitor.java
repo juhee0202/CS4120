@@ -111,7 +111,7 @@ public class MIRVisitor implements ASTVisitor{
 			as.getExpr().accept(this);
 			IRExpr tempExpr = (IRExpr) tempNode;
 			tempNode = new IRMove(tempID, tempExpr);
-		} else if (index == 1) {
+		} else if (index == 1) {	
 			// a[i][j]...[z] = 0
 			as.getIdentifier().accept(this);
 			IRTemp base = (IRTemp) tempNode;
@@ -339,9 +339,46 @@ public class MIRVisitor implements ASTVisitor{
 		case GEQ:
 			tempOp = OpType.GEQ;	break;
 		case AND:
-			tempOp = OpType.AND;	break;
+			tempOp = OpType.AND;
+			List<IRStmt> stmts1 = new ArrayList<IRStmt>();
+			IRTemp temp1 = new IRTemp("t" + tempCount++);
+			IRMove moveFalseToTemp = new IRMove(temp1, new IRConst(FALSE));
+			stmts1.add(moveFalseToTemp);
+			
+			IRLabel tL = new IRLabel("l" + labelCount++);
+			IRLabel fL = new IRLabel("l" + labelCount++);
+			IRCJump jump = new IRCJump(leftNode, tL.name(), fL.name());
+			stmts1.add(jump);
+			stmts1.add(tL);
+			
+			IRMove moveRightToTemp = new IRMove((IRExpr) temp1.copy(), rightNode);
+			stmts1.add(moveRightToTemp);
+			stmts1.add(fL);
+			
+			IRSeq shortCircuit = new IRSeq(stmts1);
+			tempNode = new IRESeq(shortCircuit, (IRExpr) temp1.copy());
+			return;
 		case OR:
-			tempOp = OpType.OR;		break;
+			tempOp = OpType.OR;
+
+			List<IRStmt> stmts2 = new ArrayList<IRStmt>();
+			IRTemp temp2 = new IRTemp("t" + tempCount++);
+			IRMove moveTrueToTemp = new IRMove(temp2, new IRConst(TRUE));
+			stmts2.add(moveTrueToTemp);
+			
+			IRLabel tL2 = new IRLabel("l" + labelCount++);
+			IRLabel fL2 = new IRLabel("l" + labelCount++);
+			IRCJump jump2 = new IRCJump(leftNode, tL2.name(), fL2.name());
+			stmts2.add(jump2);
+			stmts2.add(fL2);
+			
+			IRMove moveRightToTemp2 = new IRMove((IRExpr) temp2.copy(), rightNode);
+			stmts2.add(moveRightToTemp2);
+			stmts2.add(tL2);
+			
+			IRSeq shortCircuit2 = new IRSeq(stmts2);
+			tempNode = new IRESeq(shortCircuit2, (IRExpr) temp2.copy());
+			return;
 		case EQUAL:
 			tempOp = OpType.EQ;		break;
 		case NOT_EQUAL:

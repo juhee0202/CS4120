@@ -317,23 +317,23 @@ public class MIRVisitor implements ASTVisitor{
 			tempOp = OpType.GEQ;	break;
 		case AND:
 			tempOp = OpType.AND;
-			List<IRStmt> stmts1 = new ArrayList<IRStmt>();
-			IRTemp temp1 = new IRTemp("t" + tempCount++);
-			IRMove moveFalseToTemp = new IRMove(temp1, new IRConst(FALSE));
-			stmts1.add(moveFalseToTemp);
+			List<IRStmt> stmts = new ArrayList<IRStmt>();
+			IRTemp temp = new IRTemp("t" + tempCount++);
+			IRMove moveFalseToTemp = new IRMove(temp, new IRConst(FALSE));
+			stmts.add(moveFalseToTemp);
 			
 			IRLabel tL = new IRLabel("l" + labelCount++);
 			IRLabel fL = new IRLabel("l" + labelCount++);
 			IRCJump jump = new IRCJump(leftNode, tL.name(), fL.name());
-			stmts1.add(jump);
-			stmts1.add(tL);
+			stmts.add(jump);
+			stmts.add(tL);
 			
-			IRMove moveRightToTemp = new IRMove((IRExpr) temp1.copy(), rightNode);
-			stmts1.add(moveRightToTemp);
-			stmts1.add(fL);
+			IRMove moveRightToTemp = new IRMove((IRExpr) temp.copy(), rightNode);
+			stmts.add(moveRightToTemp);
+			stmts.add(fL);
 			
-			IRSeq shortCircuit = new IRSeq(stmts1);
-			tempNode = new IRESeq(shortCircuit, (IRExpr) temp1.copy());
+			IRSeq shortCircuit = new IRSeq(stmts);
+			tempNode = new IRESeq(shortCircuit, (IRExpr) temp.copy());
 			return;
 		case OR:
 			tempOp = OpType.OR;

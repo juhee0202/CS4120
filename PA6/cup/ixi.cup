@@ -1,0 +1,146 @@
+// A stub for a Xi CUP specification.
+
+package jl2755;
+import jl2755.ast.*;
+import java.io.IOException;
+
+
+parser code  {: 
+  public void report_fatal_error(String msg, Object info) {
+    report_error(msg, info);
+  }
+
+  public void report_error(String msg, Object info) {
+    Main.setToken((java_cup.runtime.Symbol)info);
+    Main.handleSyntaxError("Syntax error: unexpected ");
+  }
+:}
+
+
+/* Terminals */
+terminal String IDENTIFIER;
+terminal String STRING_LITERAL;
+terminal String CHARACTER_LITERAL;
+terminal String INTEGER_LITERAL;
+terminal Boolean TRUE, FALSE;
+// keywords
+terminal IF, ELSE, WHILE, RETURN, USE, PLUS, MINUS, UMINUS, TIMES, HIGH_MULT, INT, BOOL,
+  DIVIDE, MODULO, NOT, LT, LEQ, GT, GEQ, AND, OR, EQUAL, NOT_EQUAL, GETS,
+  OPEN_BRACKET, CLOSE_BRACKET, OPEN_PAREN, CLOSE_PAREN, OPEN_BRACE, CLOSE_BRACE,
+  COLON, COMMA, SEMICOLON, UNDERSCORE, LENGTH;
+
+
+/* Nonterminals */
+non terminal ArrayElement array_element;
+non terminal ArrayElementList array_element_list;
+non terminal ArrayLiteral array_literal;
+non terminal AssignmentStmt assignment_stmt;
+non terminal BlockStmt block_stmt;
+non terminal Brackets brackets;
+non terminal Constant constant;
+non terminal EmptyArrayType empty_array_type;
+non terminal Expr expr;
+non terminal Expr op_expr;
+non terminal FunctionArg function_arg;
+non terminal FunctionCall function_call;
+non terminal FunctionDecl function_decl;
+non terminal FunctionDeclList function_decl_list;
+non terminal FunctionParam function_param;
+non terminal Identifier identifier;
+non terminal IfStmt if_stmt;
+non terminal IndexedBrackets indexed_brackets;
+non terminal Interface interface;
+non terminal InterfaceFunc interface_func;
+non terminal InterfaceList interface_list;
+non terminal Literal literal;
+non terminal MixedArrayType mixed_array_type;
+non terminal MixedBrackets mixed_brackets;
+non terminal NakedStmt naked_stmt;
+non terminal PrimitiveType primitive_type;
+non terminal Program program;
+non terminal ReturnList return_list;
+non terminal ReturnStmt return_stmt;
+non terminal ReturnType return_type;
+non terminal Stmt stmt;
+non terminal StmtList stmt_list;
+non terminal TupleDeclList tuple_decl_list;
+non terminal TupleInit tuple_init;
+non terminal Type type;
+non terminal TypeList type_list;
+non terminal UseId use_id;
+non terminal VarDecl var_decl;
+non terminal VarInit var_init;
+non terminal WhileStmt while_stmt;
+non terminal XiFile xi_file;
+
+
+/* Precedences */
+precedence left OR;
+precedence left AND;
+precedence left EQUAL, NOT_EQUAL;
+precedence left LT, LEQ, GT, GEQ;
+precedence left PLUS, MINUS; 
+precedence left TIMES, HIGH_MULT, DIVIDE, MODULO;
+precedence left UMINUS, NOT; // missing integer and logical negation (unary minus vs. binary minus)
+precedence left OPEN_BRACKET, OPEN_PAREN;  // missing function call, []
+precedence nonassoc ELSE;     // to avoid "dangling else" problem
+precedence nonassoc SEMICOLON;
+
+
+start with interface;
+
+/* Grammar */
+
+brackets ::= OPEN_BRACKET CLOSE_BRACKET                             {: RESULT = new Brackets(); :}
+             | 
+             OPEN_BRACKET CLOSE_BRACKET brackets:b                  {: RESULT = new Brackets(b); :}
+             ;
+             
+empty_array_type ::= primitive_type:pt brackets:b                   {: RESULT = new EmptyArrayType(pt, b); :}
+                     ;
+
+function_param ::= identifier:id COLON type:t                       {: RESULT = new FunctionParam(id, t); :}
+                   |
+                   identifier:id COLON type:t COMMA 
+                   function_param:fp                                {: RESULT = new FunctionParam(id, t, fp); :}
+                   ;
+
+identifier ::= IDENTIFIER:id                                        {: RESULT = new Identifier(id, idleft, idright); :}
+               ; 
+
+interface ::= interface_list:il                                     {: RESULT = new Interface(il); :}
+              ;
+
+interface_func ::= identifier:id OPEN_PAREN 
+                   CLOSE_PAREN return_type:rt                       {: RESULT = new InterfaceFunc(id, rt); :}
+                   |
+                   identifier:id OPEN_PAREN function_param:fp 
+                   CLOSE_PAREN return_type:rt                       {: RESULT = new InterfaceFunc(id, fp, rt); :}
+                   ;
+
+interface_list ::= interface_func:ifd interface_list:il             {: RESULT = new InterfaceList(ifd, il); :}
+                   |                       
+                   interface_func:ifd                               {: RESULT = new InterfaceList(ifd); :}
+                   ;
+
+primitive_type ::= INT:i                                            {: RESULT = new PrimitiveType(0); :}         
+                   | 
+                   BOOL:b                                           {: RESULT = new PrimitiveType(1); :}
+                   ;
+
+return_type ::= COLON type_list:tl                                  {: RESULT = new ReturnType(tl); :}
+                |                       
+                                                                    {: RESULT = new ReturnType(); :}
+                ;
+
+type ::= primitive_type:pt                                          {: RESULT = pt; :}
+         | 
+         empty_array_type:at                                        {: RESULT = at; :}
+         ;
+
+type_list ::= type:t                                                {: RESULT = new TypeList(t); :}
+              | 
+              type:t COMMA type_list:tl                             {: RESULT = new TypeList(t, tl); :}
+              ;
+
+

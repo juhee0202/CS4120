@@ -355,6 +355,7 @@ public class MIRVisitor implements ASTVisitor{
 			
 			IRSeq shortCircuit2 = new IRSeq(stmts2);
 			tempNode = new IRESeq(shortCircuit2, (IRExpr) temp2.copy());
+			return;
 		case EQUAL:
 			tempOp = OpType.EQ;		break;
 		case NOT_EQUAL:

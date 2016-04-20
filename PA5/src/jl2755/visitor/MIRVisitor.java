@@ -106,7 +106,7 @@ public class MIRVisitor implements ASTVisitor{
 			as.getIdentifier().accept(this);
 			IRTemp base = (IRTemp) tempNode;
 			IndexedBrackets ib = as.getIndexedBrackets();
-			IRMem mem = new IRMem(createIRExprForBrackets(base,ib));
+			IRExpr mem = createIRExprForBrackets(base,ib);
 			as.getExpr().accept(this);
 			IRExpr e = (IRExpr) tempNode;
 			tempNode = new IRMove(mem,e);
@@ -116,7 +116,7 @@ public class MIRVisitor implements ASTVisitor{
 			IRCall fCall = (IRCall) tempNode;
 			IndexedBrackets ib = as.getIndexedBrackets();
 			IRMem base = new IRMem(fCall);
-			IRMem mem = new IRMem(createIRExprForBrackets(base,ib));
+			IRExpr mem = createIRExprForBrackets(base,ib);
 			as.getExpr().accept(this);
 			IRExpr e = (IRExpr) tempNode;
 			tempNode = new IRMove(mem,e);

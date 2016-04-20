@@ -123,12 +123,30 @@ public class MIRVisitor implements ASTVisitor{
 		} else {
 			// f()[i][j]...[z] = 0
 			as.getFunctionCall().accept(this);
-			IRCall fCall = (IRCall) tempNode;
-			IndexedBrackets ib = as.getIndexedBrackets();
-			IRExpr mem = createIRExprForBrackets(fCall,ib);
+			IRCall call = (IRCall) tempNode;
+			IRTemp callTemp = new IRTemp("t" + tempCount++);
+			IRMove moveCallToTemp = new IRMove(callTemp, call);
+			IRESeq arrayElem = (IRESeq)createIRExprForBrackets((IRExpr)callTemp.copy(), as.getIndexedBrackets());
+			IRStmt stmts = arrayElem.stmt();
+			if (stmts instanceof IRSeq) {
+				List<IRStmt> stmtList = ((IRSeq) stmts).stmts();
+				stmtList.add(0,moveCallToTemp);
+				stmts = new IRSeq(stmtList);
+			}
+			IRESeq updatedArrayElem = new IRESeq(stmts, arrayElem.expr());
 			as.getExpr().accept(this);
 			IRExpr e = (IRExpr) tempNode;
-			tempNode = new IRMove(mem,e);
+			tempNode = new IRMove(updatedArrayElem, e);
+			
+			
+//			// f()[i][j]...[z] = 0
+//			as.getFunctionCall().accept(this);
+//			IRCall fCall = (IRCall) tempNode;
+//			IndexedBrackets ib = as.getIndexedBrackets();
+//			IRExpr mem = createIRExprForBrackets(fCall,ib);
+//			as.getExpr().accept(this);
+//			IRExpr e = (IRExpr) tempNode;
+//			tempNode = new IRMove(mem,e);
 		}
 	}
 

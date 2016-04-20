@@ -34,7 +34,17 @@ public class MIRVisitor implements ASTVisitor{
 		// 1: functionCall with indexedBrackets
 		else if (index == 1) {
 			ae.getFunctionCall().accept(this);
-			tempNode = createIRExprForBrackets((IRExpr) tempNode, ae.getIndexedBrackets());
+			IRExpr call = (IRExpr) tempNode;
+			IRTemp callTemp = new IRTemp("t" + tempCount++);
+			IRMove moveCallToTemp = new IRMove(callTemp, call);
+			IRESeq arrayElem = (IRESeq)createIRExprForBrackets((IRExpr)callTemp.copy(), ae.getIndexedBrackets());
+			IRStmt stmts = arrayElem.stmt();
+			if (stmts instanceof IRSeq) {
+				List<IRStmt> stmtList = ((IRSeq) stmts).stmts();
+				stmtList.add(0,moveCallToTemp);
+				stmts = new IRSeq(stmtList);
+			}
+			tempNode = new IRESeq(stmts, arrayElem.expr());
 		}
 		// 2: arrayLiteral with IndexedBrackets
 		else {

@@ -157,27 +157,27 @@ public class MIRVisitor implements ASTVisitor{
 		IRExpr leftNode = (IRExpr) tempNode;
 		be.getRightExpr().accept(this);
 		IRExpr rightNode = (IRExpr) tempNode;
-		List<IRStmt> masterStmtList = new ArrayList<IRStmt>();
-		
-		/* Store calls into temps */
-		if (leftNode instanceof IRCall) {
-			IRCall leftCall = (IRCall) leftNode;
-			IRTemp tempLeftCall = new IRTemp("t" + tempCount++);
-			IRMove moveLeftToTemp = new IRMove(tempLeftCall, leftCall);
-			masterStmtList.add(moveLeftToTemp);
-			leftNode = (IRExpr) tempLeftCall.copy();
-		}
-		if (rightNode instanceof IRCall) {
-			IRCall rightCall = (IRCall) rightNode;
-			IRTemp tempRightCall = new IRTemp("t" + tempCount++);
-			IRMove moveRightToTemp = new IRMove(tempRightCall, rightCall);
-			masterStmtList.add(moveRightToTemp);
-			rightNode = (IRExpr) tempRightCall.copy();
-		}
 
 		// Array Concatenation
 		VarType tempType = (VarType) be.getType();
 		if (tempType.isArray()) {
+			List<IRStmt> masterStmtList = new ArrayList<IRStmt>();
+			/* Store calls into temps */
+			if (leftNode instanceof IRCall) {
+				IRCall leftCall = (IRCall) leftNode;
+				IRTemp tempLeftCall = new IRTemp("t" + tempCount++);
+				IRMove moveLeftToTemp = new IRMove(tempLeftCall, leftCall);
+				masterStmtList.add(moveLeftToTemp);
+				leftNode = (IRExpr) tempLeftCall.copy();
+			}
+			if (rightNode instanceof IRCall) {
+				IRCall rightCall = (IRCall) rightNode;
+				IRTemp tempRightCall = new IRTemp("t" + tempCount++);
+				IRMove moveRightToTemp = new IRMove(tempRightCall, rightCall);
+				masterStmtList.add(moveRightToTemp);
+				rightNode = (IRExpr) tempRightCall.copy();
+			}
+			
 			// master statement list
 			List<IRStmt> stmtList = new ArrayList<IRStmt>();
 			
@@ -384,14 +384,7 @@ public class MIRVisitor implements ASTVisitor{
 		case NOT_EQUAL:
 			tempOp = OpType.NEQ;	break;
 		}
-		
-		
-		IRBinOp binOp = new IRBinOp(tempOp, leftNode, rightNode);
-		if (masterStmtList.size() > 0) {
-			tempNode = new IRESeq(new IRSeq(masterStmtList), binOp);
-		} else {
-			tempNode = binOp;
-		}
+		tempNode = new IRBinOp(tempOp, leftNode, rightNode);
 	}
 
 	/**

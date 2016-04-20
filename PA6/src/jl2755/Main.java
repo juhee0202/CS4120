@@ -508,7 +508,7 @@ public class Main {
             StringWriter sw = new StringWriter();
             try (PrintWriter pw = new PrintWriter(sw);
                     SExpPrinter sp = new CodeWriterSExpPrinter(pw)) {
-                lir.program.printSExp(sp);
+                lir.program.printSExp(sp);					
             }
             bw.write(sw.toString());
             bw.close();

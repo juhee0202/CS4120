@@ -27,11 +27,7 @@ public class TypeCheckVisitor implements ASTVisitor {
 	private VType tempType;
 	private VType stmtType;	// either UnitType or VoidType
 	private VType functionReturnType;
-	private Stmt nextStmt;
-	private boolean unreachableCodeFlag = false;
-	private boolean inFunctionDecl = false;
 	private boolean negativeNumber = false; // needed for UnaryExpr, Literal
-	private boolean returnIsLast; // True iff last statement is RETURNNN
 	
 	public TypeCheckVisitor(){
 		env = new HashMap<String, VType>();

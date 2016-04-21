@@ -1,18 +1,23 @@
 package jl2755.dataflow;
 
+import java.util.Queue;
+import java.util.Set;
+
+import jl2755.controlflow.CFGNode;
 import jl2755.controlflow.ControlFlowGraph;
 
 public abstract class Dataflow<T> {
-	private ControlFlowGraph cfg;
-	private Direction directionOfAnalysis;
+	protected ControlFlowGraph cfg;
+	protected Direction directionOfAnalysis;
+	protected Queue<CFGNode> worklist;
 	
-	private enum Direction {
+	protected enum Direction {
 		BACKWARD, FORWARD;
 	}
 	
-	public abstract T meetOperator(T... args);
+	public abstract Set<T> meetOperator(T... args);
 	
-	public abstract T transferFunction(T arg);
+	public abstract boolean transferFunction(CFGNode arg);
 	
-	public abstract ControlFlowGraph analyze();
+	public abstract void analyze();
 }

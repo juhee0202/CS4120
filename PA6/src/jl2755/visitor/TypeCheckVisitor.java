@@ -25,7 +25,8 @@ public class TypeCheckVisitor implements ASTVisitor {
 	private HashMap<String, VType> if_env;
 	private Stack<String> stack;	// "_": special marker
 	private VType tempType;
-	private VType stmtType;
+	private VType stmtType;	// either UnitType or VoidType
+	private VType functionReturnType;
 	private Stmt nextStmt;
 	private boolean unreachableCodeFlag = false;
 	private boolean inFunctionDecl = false;
@@ -407,11 +408,9 @@ public class TypeCheckVisitor implements ASTVisitor {
 		if (op.toString().equals("+")) {
 			if (leftType.isInt()) {
 				tempType = new VarType(false, 0);
-				be.setType(tempType);
 			} else if (leftType.isArray()) {
 				tempType = new VarType(leftType.getIsBool(), 
 						leftType.getNumBrackets());
-				be.setType(tempType);
 			} else {
 				String s = "Invalid expression types for + operation.";
 				SemanticErrorObject seo = new SemanticErrorObject(
@@ -429,7 +428,6 @@ public class TypeCheckVisitor implements ASTVisitor {
 		else if (op.toString().equals("!=") || op.toString().equals("==")) {
 			if (leftType.isBool() ||leftType.isInt() || leftType.isArray()) {	
 				tempType = new VarType(true, 0);
-				be.setType(tempType);
 			} else {
 				String s = "Invalid types for " + op.toString() + " operation.";
 				SemanticErrorObject seo = new SemanticErrorObject(
@@ -461,7 +459,6 @@ public class TypeCheckVisitor implements ASTVisitor {
 				Main.handleSemanticError(seo);
 			}
 			tempType = new VarType(true,0);
-			be.setType(tempType);
 		}
 		/*
 		 * &, | operator
@@ -482,7 +479,6 @@ public class TypeCheckVisitor implements ASTVisitor {
 				Main.handleSemanticError(seo);
 			}
 			tempType = new VarType(true,0);
-			be.setType(tempType);
 		}
 		/*
 		 * -, *, *<<, /, %
@@ -501,14 +497,16 @@ public class TypeCheckVisitor implements ASTVisitor {
 				Main.handleSemanticError(seo);
 			}
 			tempType = new VarType(false,0);
-			be.setType(tempType);
 		}
-
+		be.setType(tempType);
 	}
-		
+	
 	@Override
 	public void visit(BlockStmt bs) {		
-		if (bs.getIndex() == 0) {
+		int index = bs.getIndex();
+		
+		// empty block statement
+		if (index == 0) {
 			tempType = new UnitType();
 			stmtType = new UnitType();
 			return;
@@ -517,23 +515,21 @@ public class TypeCheckVisitor implements ASTVisitor {
 		// Start of scope
 		stack.add("_");
 		
-		if (bs.getIndex() != 0 && bs.getIndex() != 3) { 
-			// Check stmt list
-			(bs.getStmtList()).accept(this);
-		}
-		
-		// Check return stmt
-		if (bs.getIndex() >= 2) {
-			(bs.getReturnStmt()).accept(this);
+		// stmt list without an ending return stmt
+		// could have return stmts inside the stmt list		
+		if (index == 1) {
+			// if there is an ending return stmt inside the stmt list
+			// then stmtType will be set to VoidType by it
+			bs.getStmtList().accept(this);
 		} 
-		
-		else {
-		// Set tempType to unit
-			if (!returnIsLast) {
-				tempType = new UnitType();
-			}
-			returnIsLast = false;
-			
+		// both stmt list and an ending return stmt		
+		else if (index == 2) {
+			bs.getStmtList().accept(this);
+			bs.getReturnStmt().accept(this);
+		} 
+		// only return stmt
+		else if (index == 3) {
+			bs.getReturnStmt().accept(this);
 		}
 		
 		// Pop out of scope
@@ -677,40 +673,11 @@ public class TypeCheckVisitor implements ASTVisitor {
 		}
 		
 		/* Typecheck function body */
-		fd.getBlockStmt().accept(this);
-		VType bodyReturnType = tempType;
-		if (bodyReturnType instanceof UnitType && unreachableCodeFlag) {
-			String errMsg = "Unreachable code";
-			SemanticErrorObject seo = new SemanticErrorObject(
-					nextStmt.getLine(),
-					nextStmt.getColumn(),
-					errMsg);
-			Main.handleSemanticError(seo);	
-		}
-		unreachableCodeFlag = false;
-		inFunctionDecl = false;
-		nextStmt = null;
-		
+		// comparing the expected and actual return type is done inside returnStmt
 		String id = fd.getIdentifier().toString();
 		funType = (FunType) env.get(id);	// safe
-		VType returnTypes = funType.getReturnTypes();
-				
-		if (!returnTypes.equals(bodyReturnType)) {
-			String s = "Expected " + returnTypes.toString() 
-						+ ", but found " + bodyReturnType.toString();
-			System.out.println("*here*");
-			System.out.println(s);
-			ReturnStmt rs = fd.getBlockStmt().getReturnStmt();
-			SemanticErrorObject seo;
-			if (fd.getBlockStmt().getIndex() < 2) {
-				seo = new SemanticErrorObject(
-						fd.getIdentifier_line(), fd.getIdentifier_col(), s);
-			} else {
-				seo = new SemanticErrorObject(
-						rs.getReturn_line(), rs.getReturn_col(), s);
-			}
-			Main.handleSemanticError(seo);
-		}
+		functionReturnType = funType.getReturnTypes();
+		fd.getBlockStmt().accept(this);
 		
 		/* Restore the parent scope */
 		for (Entry<String, Type> entry : paramToType.entrySet()) {
@@ -774,7 +741,8 @@ public class TypeCheckVisitor implements ASTVisitor {
 			}
 		}
 		
-//		VType ifStmtType = stmtType;
+		VType ifStmtType = stmtType;
+		stmtType = new UnitType();
 		
 		// Check else stmt
 		if (is.getIndex() == 1) {
@@ -793,14 +761,13 @@ public class TypeCheckVisitor implements ASTVisitor {
 					id = stack.pop();
 				}
 			}
-			returnIsLast = true;
 		}
 		
-//		VType elseStmtType = stmtType;
+		VType elseStmtType = stmtType;
 		
-//		if (ifStmtType.equals(elseStmtType)) {
-//			
-//		}
+		if (!(ifStmtType instanceof VoidType && elseStmtType instanceof VoidType)) {
+			stmtType = new UnitType();
+		}
 	}
 	
 	@Override
@@ -927,15 +894,17 @@ public class TypeCheckVisitor implements ASTVisitor {
 
 	/**
 	 * DIRTIES tempType to the return type
+	 * check if the return type is equal to functionReturnType
 	 * stmtType is UnitType if no return value and VoidType otherwise
 	 */
 	@Override
 	public void visit(ReturnStmt rs) {
 		VType returnType;
 		
-		 // index = 1: function call
+		 // index = 1: function call (should have a return value)
 		if (rs.getIndex() == 1) {
 			List<Expr> returnExprs = rs.getReturnList().getListOfExpr();
+			// one return value
 			if (returnExprs.size() == 1) {
 				Expr returnExpr = returnExprs.get(0);
 				returnExpr.accept(this);
@@ -954,6 +923,7 @@ public class TypeCheckVisitor implements ASTVisitor {
 					Main.handleSemanticError(seo);	
 				}
 			}
+			// multiple return values
 			else {
 				returnType = new TupleType();
 				for (int i = 0; i < returnExprs.size(); i++){
@@ -982,6 +952,13 @@ public class TypeCheckVisitor implements ASTVisitor {
 			returnType = new UnitType();
 		}
 		
+		// compare the return type with the function's return type
+		if (!returnType.equals(functionReturnType)) {
+			String s = "Expected " + functionReturnType.toString() + ", but found " + returnType.toString();
+			SemanticErrorObject seo = new SemanticErrorObject(rs.getReturn_line(), rs.getReturn_col(), s);
+			Main.handleSemanticError(seo);			
+		}
+		
 		tempType = returnType;
 		stmtType = new VoidType();
 	}
@@ -1006,31 +983,28 @@ public class TypeCheckVisitor implements ASTVisitor {
 		}
 	}
 
+	/**
+	 * checks if s_(i-1) before s_i is UnitType
+	 */
 	@Override
 	public void visit(StmtList sl) {
-//		List<Stmt> stmtList = sl.getAllStmt();
-//		for (Stmt s : stmtList) {
-//			s.accept(this);
-//		}
 		List<Stmt> stmtList = sl.getAllStmt();
-		int n = stmtList.size();		
-		for (int i = 0; i < n; i++) {
+		int n = stmtList.size();	
+		for (int i = 0; i < n-1; i++) {
 			Stmt stmt = stmtList.get(i);
 			stmt.accept(this);
-			if (i < n-1 && stmtType instanceof VoidType && inFunctionDecl) {
-				unreachableCodeFlag = true;
-				nextStmt = stmtList.get(i+1);
-				inFunctionDecl = false;
+			if (stmtType instanceof VoidType) {
 				Stmt nextStmt = stmtList.get(i+1);
-//				
-//				String errMsg = "Unreachable code";
-//				SemanticErrorObject seo = new SemanticErrorObject(
-//						nextStmt.getLine(),
-//						nextStmt.getColumn(),
-//						errMsg);
-//				Main.handleSemanticError(seo);	
+				String errMsg = "Unreachable code.";
+				SemanticErrorObject seo = new SemanticErrorObject(
+						nextStmt.getLine(),
+						nextStmt.getColumn(),
+						errMsg);
+				Main.handleSemanticError(seo);	
 			}
-		}		
+		}
+		Stmt stmt = stmtList.get(n-1);
+		stmt.accept(this);
 	}
 	
 	/**

@@ -94,7 +94,7 @@ public class Main {
         destAPath = "";
         libPath = "";
         currPath = System.getProperty("user.dir") + "/";
-
+        System.out.println(currPath);
         // Check path and optimization options
         optionsCheck(cmd);
         if (target.equals("linux") && target.equals("windows") && target.equals("macos")) {
@@ -468,7 +468,7 @@ public class Main {
 
         String rmExtension = filename.substring(0,index);
         String outputFileName = destDPath + rmExtension + ".ir";
-        
+        System.out.println(outputFileName);
     	try {
     		File file = new File(outputFileName);
             if (!file.exists()) {
@@ -494,13 +494,15 @@ public class Main {
             /* Translate to MIR */
             MIRVisitor mir = new MIRVisitor();
             program.accept(mir);
+            
+            // Output MIR
 //            			StringWriter sww = new StringWriter();
 //            	        try (PrintWriter pw = new PrintWriter(sww);
 //            		             SExpPrinter sp = new CodeWriterSExpPrinter(pw)) {
 //            				mir.program.printSExp(sp);
 //            		        }
 //            	        bw.write(sww.toString());
-
+            
             /* Lower to LIR */
             LIRVisitor lir = new LIRVisitor();
             mir.program.accept(lir);

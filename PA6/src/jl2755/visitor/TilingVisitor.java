@@ -36,8 +36,9 @@ public class TilingVisitor implements IRTreeVisitor {
 	};
 	
 	/** list of caller-saved registers */
+	// TODO: temporarily added rdi and rsi here but i should refactor.
 	private static final String[] CALLER_REG_LIST = {
-			"rax", "rcx", "rdx", "r8", "r9", "r10", "r11"
+			"rax", "rcx", "rdx", "r8", "r9", "r10", "r11", "rdi", "rsi"
 	};
 	// shuttle regs: rcx, rdx, r11
 	
@@ -619,10 +620,21 @@ public class TilingVisitor implements IRTreeVisitor {
 			// set rdi to ret3's address in stack frame
 			Register rdi = new Register(RegisterName.RDI);
 			Register rsp = new Register(RegisterName.RSP);
-			Memory ret3 = new Memory(new Constant(-8), rsp); 
-			// "movq ret3 rdi"
-			Instruction instr = new Instruction(Operation.MOVQ, ret3, rdi);
-			tempInstructions.add(instr);
+			Register temp = new Register(RegisterName.R11);
+			// "movq rsp temp"
+			Instruction makeTempForRsp = new Instruction(Operation.MOVQ, rsp, temp);
+			// "subq 8 temp"
+			Instruction computeRet3MemAddr = new Instruction(Operation.SUBQ, new Constant(8), temp);
+			// "movq temp rdi"
+			Instruction moveRet3MemAddr = new Instruction(Operation.MOVQ, temp, rdi);
+			tempInstructions.add(makeTempForRsp);
+			tempInstructions.add(computeRet3MemAddr);
+			tempInstructions.add(moveRet3MemAddr);
+			
+//			Memory ret3 = new Memory(new Constant(-8), rsp); 
+//			// "movq ret3 rdi"
+//			Instruction instr = new Instruction(Operation.MOVQ, ret3, rdi);
+//			tempInstructions.add(instr);
 			
 			// create (m-2) words space 
 			Constant c = new Constant(8*(numReturns - 2));
@@ -682,6 +694,7 @@ public class TilingVisitor implements IRTreeVisitor {
 			Register rsp = new Register(RegisterName.RSP);
 			Instruction extraSpace = new Instruction(Operation.SUBQ, c, rsp);
 			tempInstructions.add(extraSpace);
+			call.setHasExtra8ByteSpace(true);
 			num8ByteSpace++;
 		}
 		call.setNum8ByteSpace(num8ByteSpace);
@@ -689,7 +702,6 @@ public class TilingVisitor implements IRTreeVisitor {
 		// "callq targetDest"
 		Label targetDest = (Label)targetTile.getDest();
 		targetDest.setLabelName(targetDest.toString());
-//		targetDest.setLabelName("FUNC("+targetDest.toString().substring(1)+")");
 		Instruction callInstruction = new Instruction(Operation.CALLQ, targetDest);
 		tempInstructions.add(callInstruction);
 	
@@ -1697,10 +1709,13 @@ public class TilingVisitor implements IRTreeVisitor {
 
 		// restore caller-save registers 
 		int argOffset = Math.max(0, numArgs-6);
+		int extraSpaceOffset = call.hasExtra8ByteSpace() ? 1 : 0;
+		int retOffset = call.getNumReturns() > 2 ? 1 : 0;
 		int numCallerReg = CALLER_REG_LIST.length;
+		int totalOffset = argOffset + extraSpaceOffset + retOffset;
 		Register rsp = new Register(RegisterName.RSP);
 		for (int i = 0; i < numCallerReg; i++) {
-			Constant offset = new Constant(8*(argOffset + numCallerReg - 1 - i));
+			Constant offset = new Constant(8*(numCallerReg + totalOffset - 1 - i));
 			Memory mem = new Memory(offset, rsp);
 			// "movq offset(rsp) caller_saved_reg"
 			Instruction instr = new Instruction(Operation.MOVQ, mem, new Register(CALLER_REG_LIST[i]));

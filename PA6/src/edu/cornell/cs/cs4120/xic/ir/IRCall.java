@@ -21,6 +21,7 @@ public class IRCall extends IRExpr {
     private int numReturns;
     private boolean[] returnBoolList; 
     private int num8ByteSpace;
+    private boolean hasExtra8ByteSpace = false;
 
     /**
      *
@@ -138,6 +139,14 @@ public class IRCall extends IRExpr {
 
 	public void setNum8ByteSpace(int num8ByteSpace) {
 		this.num8ByteSpace = num8ByteSpace;
+	}
+
+	public boolean hasExtra8ByteSpace() {
+		return hasExtra8ByteSpace;
+	}
+
+	public void setHasExtra8ByteSpace(boolean hasExtra8ByteSpace) {
+		this.hasExtra8ByteSpace = hasExtra8ByteSpace;
 	}
 
 	@Override

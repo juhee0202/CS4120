@@ -94,7 +94,8 @@ public class Main {
         destAPath = "";
         libPath = "";
         currPath = System.getProperty("user.dir") + "/";
-        System.out.println(currPath);
+//        System.out.println("currPath: " + currPath);
+        
         // Check path and optimization options
         optionsCheck(cmd);
         if (target.equals("linux") && target.equals("windows") && target.equals("macos")) {
@@ -348,6 +349,16 @@ public class Main {
             }
 
             String rmExtension = filename.substring(0,index);
+            
+            /* strip path in front of filename.xi
+             * ex: /Users/PA6/tests/test.xi -> test/xi */
+            if (!destDPath.equals("")) {
+            	int indexOfLastSlash = filename.lastIndexOf('/');
+            	if (indexOfLastSlash != -1) {
+            		rmExtension = filename.substring(indexOfLastSlash + 1);
+            	}
+            }
+            
             File file = new File(destDPath + rmExtension + ".lexed");
 
             if (!file.exists()) {
@@ -373,6 +384,16 @@ public class Main {
         }
 
         String rmExtension = filename.substring(0,index);
+
+        /* strip path in front of filename.xi
+         * ex: /Users/PA6/tests/test.xi -> test/xi */
+        if (!destDPath.equals("")) {
+        	int indexOfLastSlash = filename.lastIndexOf('/');
+        	if (indexOfLastSlash != -1) {
+        		rmExtension = filename.substring(indexOfLastSlash + 1);
+        	}
+        }
+        
         String outputFileName = destDPath + rmExtension + ".parsed";
         
         try {		
@@ -416,6 +437,16 @@ public class Main {
             index = filename.length();
         }
         String rmExtension = filename.substring(0,index);
+        
+        /* strip path in front of filename.xi
+         * ex: /Users/PA6/tests/test.xi -> test/xi */
+        if (!destDPath.equals("")) {
+        	int indexOfLastSlash = filename.lastIndexOf('/');
+        	if (indexOfLastSlash != -1) {
+        		rmExtension = filename.substring(indexOfLastSlash + 1);
+        	}
+        }
+        
         String outputFileName = destDPath + rmExtension + ".typed";
         
         try {
@@ -467,8 +498,19 @@ public class Main {
         }
 
         String rmExtension = filename.substring(0,index);
+        
+        /* strip path in front of filename.xi
+         * ex: /Users/PA6/tests/test.xi -> test/xi */
+        if (!destDPath.equals("")) {
+        	int indexOfLastSlash = filename.lastIndexOf('/');
+        	if (indexOfLastSlash != -1) {
+        		rmExtension = filename.substring(indexOfLastSlash + 1);
+        	}
+        }
+        
         String outputFileName = destDPath + rmExtension + ".ir";
-        System.out.println(outputFileName);
+        System.out.println("srcPath+filename: " + srcPath + filename);
+        System.out.println("destDPath + rmExtension: " + outputFileName);
     	try {
     		File file = new File(outputFileName);
             if (!file.exists()) {
@@ -565,6 +607,16 @@ public class Main {
             index = filename.length();
         }
         String rmExtension = filename.substring(0,index);
+        
+        /* strip path in front of filename.xi
+         * ex: /Users/PA6/tests/test.xi -> test/xi */
+        if (!destDPath.equals("")) {
+        	int indexOfLastSlash = filename.lastIndexOf('/');
+        	if (indexOfLastSlash != -1) {
+        		rmExtension = filename.substring(indexOfLastSlash + 1);
+        	}
+        }
+        
         String outputFileName = destAPath + rmExtension + ".s";
         
         try {

@@ -12,20 +12,24 @@ _If_t3ibi:
 	pushq	%r9
 	pushq	%r10
 	pushq	%r11
+	pushq	%rdi
+	pushq	%rsi
 	movq	-8(%rbp), %rdx
 	movq	%rdx, %rdi
 	subq	$8, %rsp
 	callq	_I_alloc_i
 	movq	%rax, %rcx
 	movq	%rcx, -16(%rbp)
-	movq	48(%rsp), %rax
-	movq	40(%rsp), %rcx
-	movq	32(%rsp), %rdx
-	movq	24(%rsp), %r8
-	movq	16(%rsp), %r9
-	movq	8(%rsp), %r10
-	movq	0(%rsp), %r11
-	addq	$64, %rsp
+	movq	72(%rsp), %rax
+	movq	64(%rsp), %rcx
+	movq	56(%rsp), %rdx
+	movq	48(%rsp), %r8
+	movq	40(%rsp), %r9
+	movq	32(%rsp), %r10
+	movq	24(%rsp), %r11
+	movq	16(%rsp), %rdi
+	movq	8(%rsp), %rsi
+	addq	$80, %rsp
 	movq	-16(%rbp), %rdx
 	movq	%rdx, %rcx
 	movq	%rcx, -24(%rbp)
@@ -131,18 +135,22 @@ _If_t3ibi:
 	pushq	%r9
 	pushq	%r10
 	pushq	%r11
+	pushq	%rdi
+	pushq	%rsi
 	movq	-120(%rbp), %rdx
 	movq	%rdx, %rdi
 	subq	$8, %rsp
 	callq	_Iprintln_pai
-	movq	48(%rsp), %rax
-	movq	40(%rsp), %rcx
-	movq	32(%rsp), %rdx
-	movq	24(%rsp), %r8
-	movq	16(%rsp), %r9
-	movq	8(%rsp), %r10
-	movq	0(%rsp), %r11
-	addq	$64, %rsp
+	movq	72(%rsp), %rax
+	movq	64(%rsp), %rcx
+	movq	56(%rsp), %rdx
+	movq	48(%rsp), %r8
+	movq	40(%rsp), %r9
+	movq	32(%rsp), %r10
+	movq	24(%rsp), %r11
+	movq	16(%rsp), %rdi
+	movq	8(%rsp), %rsi
+	addq	$80, %rsp
 	movq	$17, %rax
 	movq	$1, %rdx
 	movq	$42, 0(%rdi)
@@ -152,7 +160,7 @@ _If_t3ibi:
 	.globl	_Imain_paai
 	.align	4
 _Imain_paai:
-	enter	$32, $0
+	enter	$72, $0
 	movq	%rdi, %rcx
 	movq	%rcx, -8(%rbp)
 	pushq	%rax
@@ -162,22 +170,134 @@ _Imain_paai:
 	pushq	%r9
 	pushq	%r10
 	pushq	%r11
-	movq	-8(%rsp), %rdi
+	pushq	%rdi
+	pushq	%rsi
+	movq	%rsp, %r11
+	subq	$8, %r11
+	movq	%r11, %rdi
 	subq	$8, %rsp
 	callq	_If_t3ibi
 	movq	%rax, %rcx
 	movq	%rcx, -16(%rbp)
-	movq	%rdx, %rcx
-	movq	%rcx, -24(%rbp)
 	movq	0(%rdi), %r11
-	movq	%r11, -32(%rbp)
-	movq	48(%rsp), %rax
-	movq	40(%rsp), %rcx
-	movq	32(%rsp), %rdx
-	movq	24(%rsp), %r8
-	movq	16(%rsp), %r9
-	movq	8(%rsp), %r10
-	movq	0(%rsp), %r11
-	addq	$64, %rsp
+	movq	%r11, -24(%rbp)
+	movq	72(%rsp), %rax
+	movq	64(%rsp), %rcx
+	movq	56(%rsp), %rdx
+	movq	48(%rsp), %r8
+	movq	40(%rsp), %r9
+	movq	32(%rsp), %r10
+	movq	24(%rsp), %r11
+	movq	16(%rsp), %rdi
+	movq	8(%rsp), %rsi
+	addq	$80, %rsp
+	movq	-16(%rbp), %rdx
+	movq	%rdx, %rcx
+	movq	%rcx, -32(%rbp)
+	pushq	%rax
+	pushq	%rcx
+	pushq	%rdx
+	pushq	%r8
+	pushq	%r9
+	pushq	%r10
+	pushq	%r11
+	pushq	%rdi
+	pushq	%rsi
+	movq	-32(%rbp), %rdx
+	movq	%rdx, %rdi
+	subq	$8, %rsp
+	callq	_IunparseInt_aii
+	movq	%rax, %rcx
+	movq	%rcx, -40(%rbp)
+	movq	72(%rsp), %rax
+	movq	64(%rsp), %rcx
+	movq	56(%rsp), %rdx
+	movq	48(%rsp), %r8
+	movq	40(%rsp), %r9
+	movq	32(%rsp), %r10
+	movq	24(%rsp), %r11
+	movq	16(%rsp), %rdi
+	movq	8(%rsp), %rsi
+	addq	$80, %rsp
+	movq	-40(%rbp), %rdx
+	movq	%rdx, %rcx
+	movq	%rcx, -48(%rbp)
+	pushq	%rax
+	pushq	%rcx
+	pushq	%rdx
+	pushq	%r8
+	pushq	%r9
+	pushq	%r10
+	pushq	%r11
+	pushq	%rdi
+	pushq	%rsi
+	movq	-48(%rbp), %rdx
+	movq	%rdx, %rdi
+	subq	$8, %rsp
+	callq	_Iprintln_pai
+	movq	72(%rsp), %rax
+	movq	64(%rsp), %rcx
+	movq	56(%rsp), %rdx
+	movq	48(%rsp), %r8
+	movq	40(%rsp), %r9
+	movq	32(%rsp), %r10
+	movq	24(%rsp), %r11
+	movq	16(%rsp), %rdi
+	movq	8(%rsp), %rsi
+	addq	$80, %rsp
+	movq	-24(%rbp), %rdx
+	movq	%rdx, %rcx
+	movq	%rcx, -56(%rbp)
+	pushq	%rax
+	pushq	%rcx
+	pushq	%rdx
+	pushq	%r8
+	pushq	%r9
+	pushq	%r10
+	pushq	%r11
+	pushq	%rdi
+	pushq	%rsi
+	movq	-56(%rbp), %rdx
+	movq	%rdx, %rdi
+	subq	$8, %rsp
+	callq	_IunparseInt_aii
+	movq	%rax, %rcx
+	movq	%rcx, -64(%rbp)
+	movq	72(%rsp), %rax
+	movq	64(%rsp), %rcx
+	movq	56(%rsp), %rdx
+	movq	48(%rsp), %r8
+	movq	40(%rsp), %r9
+	movq	32(%rsp), %r10
+	movq	24(%rsp), %r11
+	movq	16(%rsp), %rdi
+	movq	8(%rsp), %rsi
+	addq	$80, %rsp
+	movq	-64(%rbp), %rdx
+	movq	%rdx, %rcx
+	movq	%rcx, -72(%rbp)
+	pushq	%rax
+	pushq	%rcx
+	pushq	%rdx
+	pushq	%r8
+	pushq	%r9
+	pushq	%r10
+	pushq	%r11
+	pushq	%rdi
+	pushq	%rsi
+	movq	-72(%rbp), %rdx
+	movq	%rdx, %rdi
+	subq	$8, %rsp
+	callq	_Iprintln_pai
+	movq	72(%rsp), %rax
+	movq	64(%rsp), %rcx
+	movq	56(%rsp), %rdx
+	movq	48(%rsp), %r8
+	movq	40(%rsp), %r9
+	movq	32(%rsp), %r10
+	movq	24(%rsp), %r11
+	movq	16(%rsp), %rdi
+	movq	8(%rsp), %rsi
+	addq	$80, %rsp
 	leave
 	ret

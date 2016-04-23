@@ -2,17 +2,14 @@
 	.globl	_Imain_paai
 	.align	4
 _Imain_paai:
-<<<<<<< HEAD
 	enter	$392, $0
 	movq	%rdi, %rcx
 	movq	%rcx, -8(%rbp)
 	movq	$24, %rcx
-=======
 	enter	$88, $0
 	movq	%rdi, %rcx
 	movq	%rcx, -8(%rbp)
 	movq	$48, %rcx
->>>>>>> 0729dbfeaca890761220f04139058b81193a9525
 	movq	%rcx, -16(%rbp)
 	pushq	%rax
 	pushq	%rcx
@@ -39,11 +36,7 @@ _Imain_paai:
 	movq	%rdx, %rcx
 	movq	%rcx, -32(%rbp)
 	movq	-32(%rbp), %rcx
-<<<<<<< HEAD
 	movq	$2, 0(%rcx)
-=======
-	movq	$5, 0(%rcx)
->>>>>>> 0729dbfeaca890761220f04139058b81193a9525
 	movq	$8, %rcx
 	movq	%rcx, -40(%rbp)
 	movq	-40(%rbp), %rcx
@@ -73,7 +66,6 @@ _Imain_paai:
 	movq	-32(%rbp), %rdx
 	movq	%rdx, %rcx
 	movq	%rcx, -64(%rbp)
-<<<<<<< HEAD
 	movq	$48, %rcx
 	movq	%rcx, -72(%rbp)
 	pushq	%rax
@@ -150,7 +142,6 @@ _Imain_paai:
 	movq	%rcx, -136(%rbp)
 	movq	-88(%rbp), %rcx
 	movq	-136(%rbp), %rdx
-=======
 	movq	-64(%rbp), %rcx
 	movq	$108, 0(%rcx)
 	movq	$40, %rcx
@@ -169,12 +160,10 @@ _Imain_paai:
 	movq	%rcx, -80(%rbp)
 	movq	-32(%rbp), %rcx
 	movq	-80(%rbp), %rdx
->>>>>>> 0729dbfeaca890761220f04139058b81193a9525
 	movq	%rdx, %rcx
 	movq	%rcx, -88(%rbp)
 	movq	-64(%rbp), %rdx
 	movq	%rdx, %rcx
-<<<<<<< HEAD
 	movq	%rcx, -144(%rbp)
 	movq	-144(%rbp), %rcx
 	subq	$8, %rcx
@@ -330,9 +319,6 @@ l5:
 	movq	8(%rsp), %r10
 	movq	0(%rsp), %r11
 	addq	$64, %rsp
-=======
-	movq	%rcx, -88(%rbp)
->>>>>>> 0729dbfeaca890761220f04139058b81193a9525
 	leave
 	ret
 l1:
@@ -427,7 +413,6 @@ l4:
 	movq	%rcx, -264(%rbp)
 	jmp	l3
 
-<<<<<<< HEAD
 	.globl	_Ifoo_ai
 	.align	4
 _Ifoo_ai:
@@ -488,13 +473,11 @@ _Ifoo_ai:
 	movq	%rcx, -24(%rbp)
 	movq	-24(%rbp), %rdx
 	movq	%rdx, %rax
-=======
 	.globl	_Ifoo_p
 	.align	4
 _Ifoo_p:
 	enter	$8, $0
 	movq	$3, %rcx
 	movq	%rcx, -8(%rbp)
->>>>>>> 0729dbfeaca890761220f04139058b81193a9525
 	leave
 	ret

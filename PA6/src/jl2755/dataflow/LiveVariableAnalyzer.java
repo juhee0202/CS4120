@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import jl2755.controlflow.AACFGNode;
 import jl2755.controlflow.CFGNode;
 import jl2755.controlflow.ControlFlowGraph;
 
@@ -19,9 +20,9 @@ public class LiveVariableAnalyzer<Register> extends Dataflow<Register> {
 	
 	/**
 	 * A mapping to keep track of the in set for
-	 * each CFGNode.
+	 * each AACFGNode.
 	 */
-	private HashMap<CFGNode, Set<Register>> inMap;
+	private HashMap<AACFGNode, Set<Register>> inMap;
 	
 	/**
 	 * Assigns the cfg field, and hardcodes
@@ -72,7 +73,7 @@ public class LiveVariableAnalyzer<Register> extends Dataflow<Register> {
 		Iterator<CFGNode> iteratorVersion = allNodes.iterator();
 		while (iteratorVersion.hasNext()) {
 			CFGNode temp = iteratorVersion.next();
-			inMap.put(temp, new HashSet<Register>());
+			inMap.put((AACFGNode) temp, new HashSet<Register>());
 		}
 		WorklistQueue<CFGNode> ourQueue = new WorklistQueue<CFGNode>();
 		ourQueue.addAll(allNodes);
@@ -84,7 +85,7 @@ public class LiveVariableAnalyzer<Register> extends Dataflow<Register> {
 		}
 	}
 	
-	public HashMap<CFGNode,Set<Register>> getInMap() {
+	public HashMap<AACFGNode,Set<Register>> getInMap() {
 		return inMap;
 	}
 }

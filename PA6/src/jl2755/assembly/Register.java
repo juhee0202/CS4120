@@ -401,4 +401,8 @@ public class Register implements Operand {
 		this.isMoveRelated = isMoveRelated;
 	}
 	
+	public boolean isBuiltIn() {
+		return type != RegisterName.TEMP;
+	}
+	
 }

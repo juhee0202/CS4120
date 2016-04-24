@@ -53,6 +53,23 @@ public class InterferenceGraph {
 		}
 	}
 	
+	public void remove(Register reg) {
+		nodes.remove(reg);
+		for (Register neighbor : neighbors.get(reg)) {
+			Set<Register> edges = neighbors.get(neighbor);
+			edges.remove(reg);
+			neighbors.put(neighbor,edges);
+		}
+	}
+	
+	public Set<Register> getNodes() {
+		return nodes;
+	}
+
+	public Map<Register, Set<Register>> getNeighbors() {
+		return neighbors;
+	}
+
 	@Override
 	public String toString() {
 		String s = "";

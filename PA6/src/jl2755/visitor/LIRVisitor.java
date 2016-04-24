@@ -196,7 +196,6 @@ public class LIRVisitor implements IRTreeVisitor{
 	
 	public void visit(IRMove mov) {
 		// assuming no commute (side effect dirties exp)
-//		System.out.println(mov);
 		
 		// s1, e1 = src
 		mov.expr().accept(this);
@@ -209,7 +208,6 @@ public class LIRVisitor implements IRTreeVisitor{
 		
 		
 		if (checkCommute(s1, e2)) {
-			System.out.println("commutes!");
 			IRSeq combinedSeq = combineTwoStmt(s2, s1);
 			IRMove holyMove = new IRMove(e2, e1);
 			combinedSeq = combineTwoStmt(combinedSeq, holyMove);
@@ -217,7 +215,6 @@ public class LIRVisitor implements IRTreeVisitor{
 		}
 		else {
 			// S(dest), save expr in dest=IRMem(expr), S(src), MOV(IRMem(savedExpr), e')
-			System.out.println("doesn't commute!");
 			IRTemp holyTemp = new IRTemp("temp" + globalTempCount++);
 			if (e2 instanceof IRMem) {
 				IRExpr memExpr = ((IRMem) e2).expr();

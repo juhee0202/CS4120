@@ -1,5 +1,6 @@
 package optimization;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -12,6 +13,7 @@ import jl2755.assembly.Instruction;
 import jl2755.assembly.Register;
 import jl2755.assembly.Instruction.Operation;
 import jl2755.assembly.Label;
+import jl2755.assembly.Operand;
 import jl2755.assembly.Register.RegisterName;
 import jl2755.controlflow.AACFGNode;
 import jl2755.controlflow.CFGNode;
@@ -38,8 +40,15 @@ public class RegisterAllocator {
 
 	/** Stack to use for register allocation. */
 	private Stack<Register> regStack;
+	
 	/** Stack to keep track of neighbors. */
 	private Stack<Set<Register>> neighborStack;
+	
+	/** Map of register to list of instructions containing the register */
+	private Map<Register, List<Instruction>> reg2instructions;
+	
+	/** Map of register to list of registers in the same mov instruction */
+	private Map<Register, List<Instruction>> reg2movInstructions;
 	
 	// Built-in registers to use for allocation
 	private static final Register RAX = new Register(RegisterName.RAX);
@@ -61,10 +70,6 @@ public class RegisterAllocator {
 	
 	private static final int NUM_COLORS = 16;
 	
-<<<<<<< HEAD
-	public RegisterAllocator(List<Instruction> argInstrs) {
-		instructions = argInstrs;
-=======
 	public RegisterAllocator(List<Instruction> instructions) {
 		// Initialize globals
 		registerUsage = new HashMap<String,Set<Register>>();
@@ -72,7 +77,6 @@ public class RegisterAllocator {
 		neighborStack = new Stack<Set<Register>>();
 		
 		program = instructions;
->>>>>>> 6d2669907d4f2b5750cbc4ba765cdbf64a4e78ca
 	}
 	
 	/**
@@ -135,9 +139,14 @@ public class RegisterAllocator {
 	
 	/**
 	 * Construct a ControlFlowGraph using instructions
+	 * Update reg2instructions and reg2regs maps
 	 * @return a CFG of the list of instructions
 	 */
 	private ControlFlowGraph constructCFG() {
+		/* Initialize the maps */
+		reg2instructions = new HashMap<Register,List<Instruction>>();
+		reg2movInstructions = new HashMap<Register,List<Instruction>>();
+		
 		/* Set of all CFG nodes */
 		Set<CFGNode> nodeSet = new HashSet<CFGNode>();
 		
@@ -153,6 +162,7 @@ public class RegisterAllocator {
 		while (firstInstr.getOp() == Operation.LABEL) {
 			firstInstr = program.get(++first_instr_index);
 		}
+		updateRegisterMaps(firstInstr);
 		AACFGNode head = new AACFGNode(firstInstr);
 		
 		nodeSet.add(head);
@@ -173,6 +183,8 @@ public class RegisterAllocator {
 				label2node.put(label, curr);
 			}
 			
+			// update register maps
+			updateRegisterMaps(instr);
 			// add node to nodeSet 
 			nodeSet.add(curr);
 			
@@ -204,6 +216,57 @@ public class RegisterAllocator {
 		}
 		
 		return new ControlFlowGraph(nodeSet, head);
+	}
+	
+	/**
+	 * Updates reg2instructions & reg2movInstructions maps
+	 * @param Instruction instr
+	 */
+	private void updateRegisterMaps(Instruction instr) {
+		Operand src = instr.getSrc();
+		Operand dest = instr.getDest();
+		
+		if (src instanceof Register) {
+			List<Instruction> list;
+			if (reg2instructions.containsKey(src)) {
+				list = reg2instructions.get(src);
+			} else {
+				list = new ArrayList<Instruction>();
+			}
+			list.add(instr);
+			reg2instructions.put((Register) src, list);
+		}
+		
+		if (dest instanceof Register) {
+			List<Instruction> list;
+			if (reg2instructions.containsKey(dest)) {
+				list = reg2instructions.get(dest);
+			} else {
+				list = new ArrayList<Instruction>();
+			}
+			list.add(instr);
+			reg2instructions.put((Register) dest,list);
+		} 
+		
+		if (instr.isMoveWithTwoRegs()) {
+			List<Instruction> srcList;
+			if (reg2movInstructions.containsKey(src)) {
+				srcList = reg2movInstructions.get(src);
+			} else {
+				srcList = new ArrayList<Instruction>();
+			}
+			srcList.add(instr);
+			reg2instructions.put((Register) src, srcList);
+			
+			List<Instruction> destList;
+			if (reg2movInstructions.containsKey(dest)) {
+				destList = reg2movInstructions.get(dest);
+			} else {
+				destList = new ArrayList<Instruction>();
+			}
+			destList.add(instr);
+			reg2instructions.put((Register) dest, destList);
+		}
 	}
 
 	private void simplify() {

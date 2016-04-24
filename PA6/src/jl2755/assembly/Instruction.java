@@ -211,12 +211,12 @@ public class Instruction {
 				((Register) destination).setMoveRelated(true);
 				isMoveWithTwoRegs = true;
 			}
-			if (source instanceof Register) {
-				((Register) source).setMoveRelated(true);
-			}
-			if (destination instanceof Register) {
-				((Register) destination).setMoveRelated(true);
-			}
+//			if (source instanceof Register) {
+//				((Register) source).setMoveRelated(true);
+//			}
+//			if (destination instanceof Register) {
+//				((Register) destination).setMoveRelated(true);
+//			}
 		}
 	}
 	

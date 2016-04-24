@@ -128,7 +128,7 @@ public class RegisterAllocator {
 		Set<Register> nodes = graph.getNodes();
 		for (Register reg : nodes) {
 			Map<Register,Set<Register>> neighbors = graph.getNeighbors();
-			if (!reg.isMoveRelated() && reg.isBuiltIn()
+			if (!reg.isMoveRelated() && !reg.isBuiltIn()
 					&& neighbors.get(reg).size() < NUM_COLORS) {
 				// Remove reg from interference graph
 				graph.remove(reg);
@@ -146,25 +146,55 @@ public class RegisterAllocator {
 	private boolean coalesce() {
 		boolean result = false;
 		Map<Register,Set<Register>> neighbors = graph.getNeighbors();
-		for (AACFGNode node : liveVariables.keySet()) {
-			Instruction instr = node.getUnderlyingInstruction();
-			if (instr.isMoveWithTwoRegs()) {
-				Register dest = (Register) instr.getDest();
-				Register src = (Register) instr.getSrc();
-				if (neighbors.get(dest).size() + neighbors.get(src).size() < NUM_COLORS) {
-					// Remove move from CFG
-					for (CFGNode pre : node.getPredecessors()) {
-						if (pre.getSuccessor1() == node) {
-							
+		for (Register reg : map.keySet()) {
+			Set<Instruction> moves = map.get(reg);
+			for (Instruction move : moves) {
+				Register otherReg = otherRegister(move,reg);
+				if (neighbors.get(reg).size() + neighbors.get(otherReg).size() < NUM_COLORS
+						&& !neighbors.get(reg).contains(otherReg)
+						&& !(reg.isBuiltIn() && otherReg.isBuiltIn())) {
+					// Remove move 
+					moves.remove(move);
+					map.put(reg,moves);
+					
+					Set<Instruction> allInsts = secondmap.get(reg);
+					allInsts.remove(move);
+					secondmap.put(reg,allInsts);
+					
+					program.remove(move);
+					
+					// Replace all instances of otherReg with reg unless otherReg is built-in
+					Register replacedReg;
+					Register replacingReg;
+					Set<Instruction> replacedMoves;
+					Set<Instruction> replacedAll;
+					if (otherReg.isBuiltIn()) {
+						replacedReg = reg;
+						replacingReg = otherReg;
+						replacedMoves = moves;
+						replacedAll = 
+					} else {
+						replacedReg = otherReg;
+						replacingReg = reg;
+					}
+					// Remove replacedReg from globals
+					Set<Instruction> replacedMoves = map.get(replaced);
+					Set<Instruction>
+					map.remove(replacedReg);
+					// Replace operand of all related instructions
+					for (Instruction inst : secondmap.get(replacedReg)) {	// Should automatically replace operands in program
+						if (inst.getDest().equals(replacedReg)) {
+							inst.setDest(replacingReg);
+						} else {
+							inst.setSrc(replacingReg);
 						}
 					}
 					
-					// Replace all instances of dest with src
+					// Check if replacingReg is still move-related
 					
-					
-					// Check if src is still move-related
 					
 					result = true;
+					break;
 				}
 			}
 		}
@@ -172,13 +202,58 @@ public class RegisterAllocator {
 	}
 	
 	/**
+	 * @param	move	the move instruction
+	 * @param	reg		the register you already know
+	 * @return	the other register in the move instruction
+	 */
+	private Register otherRegister(Instruction move, Register reg) {
+		if (move.getDest() == reg) {
+			return (Register) move.getSrc();
+		} else {
+			return (Register) move.getDest();
+		}
+	}
+	
+	/**
 	 * @return	true if a node was frozen
 	 */
 	private boolean freeze() {
 		boolean result = false;
-		
-		
-		return result;
+		// Choose a high-degree node
+		Set<Register> nodes = graph.getNodes();
+		Map<Register,Set<Register>> neighbors = graph.getNeighbors();
+		Register frozen = null;
+		for (Register reg : nodes) {
+			if (!reg.isBuiltIn() && reg.isMoveRelated() 
+					&& neighbors.get(reg).size() < NUM_COLORS) {
+				frozen = reg;
+				
+				// TODO: change this!!
+				Map<Register,Set<Instruction>> map = null;
+				// Freeze all moves related to frozen
+				frozen.setMoveRelated(false);
+				Set<Instruction> frozenMoves = map.get(frozen);
+				map.remove(frozen);
+				for (Instruction frozenMove : frozenMoves) {
+					Register relatedReg = otherRegister(frozenMove,frozen);
+					Set<Instruction> relatedMoves = map.get(relatedReg);
+					relatedMoves.remove(frozenMove);
+					if (relatedMoves.size() == 0) {
+						// Mark relatedReg as non-move-related
+						relatedReg.setMoveRelated(false);
+						map.remove(relatedReg);
+					} else {
+						map.put(relatedReg,relatedMoves);
+					}
+				}
+				result = true;
+				break;
+			}
+		}
+		if (!result) {
+			return false;
+		}
+		return true;
 	}
 	
 	/**

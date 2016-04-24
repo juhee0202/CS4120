@@ -405,4 +405,13 @@ public class Register implements Operand {
 		return type != RegisterName.TEMP;
 	}
 	
+	@Override
+	public boolean equals(Object o) {
+		Register reg = (Register) o;
+		if (type == reg.type && name == reg.name) {
+			return true;
+		}
+		return false;
+	}
+	
 }

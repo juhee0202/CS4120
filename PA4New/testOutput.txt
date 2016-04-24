@@ -1,0 +1,362 @@
+Testpath "/home/vagrant/xth/tests/pa4/" specified.
+Test script: xthScript
+  xic-build: Buildfile: /home/vagrant/shared/cs4120/pa4new/build.xml
+
+build-subprojects:
+
+init:
+
+build-project:
+     [echo] PA1: /home/vagrant/shared/cs4120/pa4new/build.xml
+
+build:
+
+BUILD SUCCESSFUL
+Total time: 1 second
+OK
+  Test collection: xic (Test --help)
+    []: OK
+    [Compiler's standard output:
+    usage: xic
+ -D <arg>               Specify where to place generated diagnostic files.
+ -h,--help              Print a synopsis of options.
+ -irgen <arg>           Generate intermediate code.
+ -irrun <arg>           Generate and interpret intermediate code.
+ -l,--lex <arg>         Generate output from lexical analysis.
+ -libpath <arg>         Specify where to find library interface files. The
+                        default is the current directory in which xic is
+                        run.
+ -O                     If specified, optimizations such as constant
+                        folding will not be performed.
+ -p,--parse <arg>       Generate output from syntactic analysis.
+ -sourcepath <arg>      Specify where to find input source files.
+ -t,--typecheck <arg>   Generate output from semantic analysis.
+]
+  xic (Test --help): 1 out of 1 tests succeeded.
+  Test collection: xic (Test --lex)
+    ex1.xi: File ex1.lexed does not exist in directory .
+    [Compiler's standard output:
+    [xic] Lexing
+[xic] Lexing completed
+]
+    ex2.xi: File ex2.lexed does not exist in directory .
+    [Compiler's standard output:
+    [xic] Lexing
+[xic] Lexing completed
+]
+    spec1.xi: File spec1.lexed does not exist in directory .
+    [Compiler's standard output:
+    [xic] Lexing
+[xic] Lexing completed
+]
+    spec2.xi: File spec2.lexed does not exist in directory .
+    [Compiler's standard output:
+    [xic] Lexing
+[xic] Lexing completed
+]
+    spec3.xi: File spec3.lexed does not exist in directory .
+    [Compiler's standard output:
+    [xic] Lexing
+[xic] Lexing completed
+]
+    gcd.xi: File gcd.lexed does not exist in directory .
+    [Compiler's standard output:
+    [xic] Lexing
+[xic] Lexing completed
+]
+    ratadd.xi: File ratadd.lexed does not exist in directory .
+    [Compiler's standard output:
+    [xic] Lexing
+[xic] Lexing completed
+]
+    ratadduse.xi: File ratadduse.lexed does not exist in directory .
+    [Compiler's standard output:
+    [xic] Lexing
+[xic] Lexing completed
+]
+    insertionsort.xi: File insertionsort.lexed does not exist in directory .
+    [Compiler's standard output:
+    [xic] Lexing
+[xic] Lexing completed
+]
+    arrayinit.xi: File arrayinit.lexed does not exist in directory .
+    [Compiler's standard output:
+    [xic] Lexing
+[xic] Lexing completed
+]
+    arrayinit2.xi: File arrayinit2.lexed does not exist in directory .
+    [Compiler's standard output:
+    [xic] Lexing
+[xic] Lexing completed
+]
+    mdarrays.xi: File mdarrays.lexed does not exist in directory .
+    [Compiler's standard output:
+    [xic] Lexing
+[xic] Lexing completed
+]
+    add.xi: File add.lexed does not exist in directory .
+    [Compiler's standard output:
+    [xic] Lexing
+[xic] Lexing completed
+]
+    beauty.xi: File beauty.lexed does not exist in directory .
+    [Compiler's standard output:
+    [xic] Lexing
+[xic] Lexing completed
+]
+  xic (Test --lex): 0 out of 14 tests succeeded.
+  Test collection: xic (Test --parse)
+    ex1.xi: OK
+    [Compiler's standard output:
+    [xic] Parsing
+[xic] Parsing completed
+]
+    ex2.xi: OK
+    [Compiler's standard output:
+    [xic] Parsing
+[xic] Parsing completed
+]
+    ex3.xi: File ex3.parsed does not exist in directory .
+    [Compiler's standard output:
+    [xic] Parsing
+instead expected token classes are [EOF, IDENTIFIER, USE]
+Syntax error beginning at 1:1:Unexpected token 
+]
+    spec1.xi: OK
+    [Compiler's standard output:
+    [xic] Parsing
+[xic] Parsing completed
+]
+    spec2.xi: OK
+    [Compiler's standard output:
+    [xic] Parsing
+[xic] Parsing completed
+]
+    spec3.xi: OK
+    [Compiler's standard output:
+    [xic] Parsing
+[xic] Parsing completed
+]
+    gcd.xi: OK
+    [Compiler's standard output:
+    [xic] Parsing
+[xic] Parsing completed
+]
+    ratadd.xi: OK
+    [Compiler's standard output:
+    [xic] Parsing
+[xic] Parsing completed
+]
+    ratadduse.xi: OK
+    [Compiler's standard output:
+    [xic] Parsing
+[xic] Parsing completed
+]
+    insertionsort.xi: OK
+    [Compiler's standard output:
+    [xic] Parsing
+[xic] Parsing completed
+]
+    arrayinit.xi: OK
+    [Compiler's standard output:
+    [xic] Parsing
+[xic] Parsing completed
+]
+    arrayinit2.xi: OK
+    [Compiler's standard output:
+    [xic] Parsing
+[xic] Parsing completed
+]
+    mdarrays.xi: OK
+    [Compiler's standard output:
+    [xic] Parsing
+[xic] Parsing completed
+]
+    add.xi: File add.parsed does not exist in directory .
+    [Compiler's standard output:
+    [xic] Parsing
+instead expected token classes are [EOF, IDENTIFIER, USE]
+Syntax error beginning at 1:1:Unexpected token 
+]
+    beauty.xi: File beauty.parsed does not exist in directory .
+    [Compiler's standard output:
+    [xic] Parsing
+instead expected token classes are [EOF, IDENTIFIER, USE]
+Syntax error beginning at 1:1:Unexpected token 
+]
+  xic (Test --parse): 12 out of 15 tests succeeded.
+  Test collection: xic (Test --typecheck)
+    ex01.xi: File ex01.typed does not exist in directory .
+    [Compiler's standard output:
+    [xic] Typechecking
+[xic] Typechecking completed
+]
+    ex02.xi: File ex02.typed does not exist in directory .
+    [Compiler's standard output:
+    [xic] Typechecking
+[xic] Typechecking completed
+]
+    ex03.xi: File ex03.typed does not exist in directory .
+    [Compiler's standard output:
+    [xic] Typechecking
+[xic] Typechecking completed
+]
+    ex04.xi: File ex04.typed does not exist in directory .
+    [Compiler's standard output:
+    [xic] Typechecking
+Semantic error beginning at 2:12:: Expected bool, but found int
+]
+    ex05.xi: File ex05.typed does not exist in directory .
+    [Compiler's standard output:
+    [xic] Typechecking
+Semantic error beginning at 2:18:: Mismatched types for binary operation &
+]
+    ex06.xi: File ex06.typed does not exist in directory .
+    [Compiler's standard output:
+    [xic] Typechecking
+Semantic error beginning at 1:22:: Name baz cannot be resolved
+]
+    ex07.xi: File ex07.typed does not exist in directory .
+    [Compiler's standard output:
+    [xic] Typechecking
+Semantic error beginning at 4:3:: Expected bool[], but found int[]
+]
+    ex08.xi: File ex08.typed does not exist in directory .
+    [Compiler's standard output:
+    [xic] Typechecking
+Semantic error beginning at 1:1:: Expected bool, but found unit
+]
+    ex09.xi: File ex09.typed does not exist in directory .
+    [Compiler's standard output:
+    [xic] Typechecking
+instead expected token classes are []
+Syntax error beginning at 1:13:Invalid assignment operator.
+]
+    ex10.xi: File ex10.typed does not exist in directory .
+    [Compiler's standard output:
+    [xic] Typechecking
+Semantic error beginning at 2:9:: Mismatched number of values
+]
+    ex11.xi: File ex11.typed does not exist in directory .
+    [Compiler's standard output:
+    [xic] Typechecking
+Semantic error beginning at 2:9:: Mismatched number of values
+]
+    ex12.xi: File ex12.typed does not exist in directory .
+    [Compiler's standard output:
+    [xic] Typechecking
+Semantic error beginning at 2:17:: Expected int, but found unit
+]
+    spec1-full.xi: File spec1-full.typed does not exist in directory .
+    [Compiler's standard output:
+    [xic] Typechecking
+[xic] Typechecking completed
+]
+    spec1.xi: File spec1.typed does not exist in directory .
+    [Compiler's standard output:
+    [xic] Typechecking
+Semantic error beginning at 4:22:: Name f cannot be resolved
+]
+    spec2.xi: File spec2.typed does not exist in directory .
+    [Compiler's standard output:
+    [xic] Typechecking
+Semantic error beginning at 2:3:: Name x cannot be resolved
+]
+    spec3.xi: File spec3.typed does not exist in directory .
+    [Compiler's standard output:
+    [xic] Typechecking
+[xic] Typechecking completed
+]
+    gcd.xi: File gcd.typed does not exist in directory .
+    [Compiler's standard output:
+    [xic] Typechecking
+[xic] Typechecking completed
+]
+    ratadd-full.xi: File ratadd-full.typed does not exist in directory .
+    [Compiler's standard output:
+    [xic] Typechecking
+[xic] Typechecking completed
+]
+    ratadd.xi: File ratadd.typed does not exist in directory .
+    [Compiler's standard output:
+    [xic] Typechecking
+Semantic error beginning at 4:13:: Name gcd cannot be resolved
+]
+    ratadduse-full.xi: File ratadduse-full.typed does not exist in directory .
+    [Compiler's standard output:
+    [xic] Typechecking
+[xic] Typechecking completed
+]
+    ratadduse.xi: File ratadduse.typed does not exist in directory .
+    [Compiler's standard output:
+    [xic] Typechecking
+Semantic error beginning at 2:20:: Name ratadd cannot be resolved
+]
+    insertionsort.xi: File insertionsort.typed does not exist in directory .
+    [Compiler's standard output:
+    [xic] Typechecking
+[xic] Typechecking completed
+]
+    arrayinit.xi: File arrayinit.typed does not exist in directory .
+    [Compiler's standard output:
+    [xic] Typechecking
+Semantic error beginning at 3:5:: a is already declared
+]
+    arrayinit2-full.xi: File arrayinit2-full.typed does not exist in directory .
+    [Compiler's standard output:
+    [xic] Typechecking
+[xic] Typechecking completed
+]
+    arrayinit2.xi: File arrayinit2.typed does not exist in directory .
+    [Compiler's standard output:
+    [xic] Typechecking
+Semantic error beginning at 2:14:: Name gcd cannot be resolved
+]
+    mdarrays.xi: File mdarrays.typed does not exist in directory .
+    [Compiler's standard output:
+    [xic] Typechecking
+[xic] Typechecking completed
+]
+  xic (Test --typecheck): 0 out of 26 tests succeeded.
+  Test collection: xic (Test --irgen)
+    ex01.xi: File ex01.ir does not exist in directory .
+    [Compiler's standard output:
+    [xic] Generating intermediate code
+[xic] Generating intermediate code completed
+]
+    ack.xi: File ack.ir does not exist in directory .
+    [Compiler's standard output:
+    [xic] Generating intermediate code
+[xic] Generating intermediate code completed
+]
+    primes.xi: File primes.ir does not exist in directory .
+    [Compiler's standard output:
+    [xic] Generating intermediate code
+[xic] Generating intermediate code completed
+]
+  xic (Test --irgen): 0 out of 3 tests succeeded.
+Number of IRs: 0
+Number of canonical IRs: 0
+Number of constant-folded IRs: 0
+Number of correct IRs: 0
+  Test collection: xic (Test --irgen -O)
+    ex01.xi: File ex01.ir does not exist in directory .
+    [Compiler's standard output:
+    [xic] Generating intermediate code
+[xic] Generating intermediate code completed
+]
+    ack.xi: File ack.ir does not exist in directory .
+    [Compiler's standard output:
+    [xic] Generating intermediate code
+[xic] Generating intermediate code completed
+]
+    primes.xi: File primes.ir does not exist in directory .
+    [Compiler's standard output:
+    [xic] Generating intermediate code
+[xic] Generating intermediate code completed
+]
+  xic (Test --irgen -O): 0 out of 3 tests succeeded.
+Number of IRs: 0
+Number of canonical IRs: 0
+Number of correct IRs: 0
+xthScript: 14 out of 63 tests succeeded.

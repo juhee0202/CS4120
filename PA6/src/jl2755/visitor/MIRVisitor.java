@@ -8,7 +8,7 @@ import java.util.Map;
 
 import edu.cornell.cs.cs4120.xic.ir.*;
 import edu.cornell.cs.cs4120.xic.ir.interpret.Configuration;
-import jl2755.assembly.Instruction.Operation;
+import jl2755.assembly.Operation;
 import jl2755.ast.*;
 import jl2755.type.VarType;
 

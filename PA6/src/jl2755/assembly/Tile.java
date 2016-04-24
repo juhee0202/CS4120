@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import edu.cornell.cs.cs4120.xic.ir.*;
-import jl2755.assembly.Instruction.Operation;
+import jl2755.assembly.Operation;
 
 public class Tile {
 
@@ -257,7 +257,7 @@ public class Tile {
 		List<Instruction> neededMovs = new ArrayList<Instruction>();
 		for (int i = 0; i < argOperands.size(); i++) {
 			if (argOperands.get(i) instanceof Memory) {
-				neededMovs.add(new Instruction(Operation.MOVQ,argOperands.get(i), new Register(shuttleStuff[i])));
+				neededMovs.add(new NormalInstruction(Operation.MOVQ,argOperands.get(i), new Register(shuttleStuff[i])));
 				argOperands.set(i,new Register(shuttleStuff[i]));
 				cost++;
 			}
@@ -350,8 +350,12 @@ public class Tile {
 		String s = "";
 		for (int i = 0; i < instructions.size(); i++) {
 			Instruction instr = instructions.get(i);
-			if (instr.getOp() == Operation.LABEL) {
-				s += instr.toString() + ":\n";
+			if (instr instanceof FunctionInstruction) {
+				s += ((FunctionInstruction) instr).getFnName() + ":\n";
+				List<Instruction> fnInstructions = ((FunctionInstruction) instr).getAllInstructions();
+				for (int j = 1; j < fnInstructions.size(); j++) {
+					s += "\t" + fnInstructions.get(j).toString() + "\n";
+				}
 			} else {
 				s += "\t" + instr.toString() + "\n";
 			}

@@ -15,7 +15,7 @@ public class LIRVisitor implements IRTreeVisitor{
 	private int globalTempCount = 0;
 	private int globalLabelCount = 0;
 	private Map<String, BasicBlock> labelToBasicBlock;
-	public IRNode program;
+	public IRCompUnit program;
 	private static final IRConst TRUE = new IRConst(1);
 	
 	public LIRVisitor() {

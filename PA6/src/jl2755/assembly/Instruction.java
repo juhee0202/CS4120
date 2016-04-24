@@ -3,6 +3,7 @@ package jl2755.assembly;
 import java.util.List;
 
 import edu.cornell.cs.cs4120.util.InternalCompilerError;
+import jl2755.assembly.Instruction.Operation;
 
 public class Instruction {
 	
@@ -13,12 +14,14 @@ public class Instruction {
 		CALLQ, PUSHQ, LABEL, ENTER, LEAVE, POPQ, RET,
 		JMP, JE, JNE, JG, JGE, JL, JLE, JZ, JNZ;
 		
+		public static final Operation[] JUMP_OPS;
 		
-//	    ADD, SUB, IMUL, HMUL, IDIV, MOD, AND, OR, XOR,
-//	    EQ, NEQ, LT, GT, LEQ, GEQ, LABEL, MOV, CALL, PUSH, JMP, JE, JNE, 
-//	    JG, JGE, JL, JLE, JZ, JNZ, CMP, TEST, 
-//	    CMOVE, CMOVNE, CMOVL, CMOVLE, CMOVG, CMOVGE, CMOVS, CMOVNS;
-
+		static {
+			JUMP_OPS = new Operation[]{Operation.JMP, Operation.JE, Operation.JNE, 
+									   Operation.JG, Operation.JGE, Operation.JL, 
+									   Operation.JLE, Operation.JZ, Operation.JNZ};
+		}
+		
 	    @Override
 	    public String toString() {
 	        switch (this) {
@@ -173,6 +176,15 @@ public class Instruction {
 	        System.out.println(this);
 	        throw new InternalCompilerError("Unknown op type");
 	    }
+	    
+		public static boolean isJumpInstruction(Operation op) {
+			for (Operation operation : Operation.JUMP_OPS) {
+				if (op == operation) {
+					return true;
+				}
+			}
+			return false;
+		}
 	}
 	
 	private Operation op;

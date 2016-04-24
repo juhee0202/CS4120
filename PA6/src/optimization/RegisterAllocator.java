@@ -1,13 +1,19 @@
 package optimization;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.Stack;
 
 import jl2755.assembly.Instruction;
 import jl2755.assembly.Register;
+import jl2755.assembly.Instruction.Operation;
+import jl2755.assembly.Label;
+import jl2755.assembly.Operand;
 import jl2755.assembly.Register.RegisterName;
 import jl2755.controlflow.AACFGNode;
 import jl2755.controlflow.CFGNode;
@@ -34,8 +40,15 @@ public class RegisterAllocator {
 
 	/** Stack to use for register allocation. */
 	private Stack<Register> regStack;
+	
 	/** Stack to keep track of neighbors. */
 	private Stack<Set<Register>> neighborStack;
+	
+	/** Map of register to list of instructions containing the register */
+	private Map<Register, List<Instruction>> reg2instructions;
+	
+	/** Map of register to list of registers in the same mov instruction */
+	private Map<Register, List<Instruction>> reg2movInstructions;
 	
 	// Built-in registers to use for allocation
 	private static final Register RAX = new Register(RegisterName.RAX);
@@ -114,14 +127,146 @@ public class RegisterAllocator {
 
 	private void build() {
 		// Construct CFG
-		cfg = new ControlFlowGraph(program);
+		cfg = constructCFG();
 		
 		// Run live variable analysis
-		LiveVariableAnalyzer lva = new LiveVariableAnalyzer(cfg);
+		LiveVariableAnalyzer<Register> lva = new LiveVariableAnalyzer<Register>(cfg);
 		liveVariables = lva.getInMap();
 		
 		// Create interference graph
 		graph = new InterferenceGraph(liveVariables);
+	}
+	
+	/**
+	 * Construct a ControlFlowGraph using instructions
+	 * Update reg2instructions and reg2regs maps
+	 * @return a CFG of the list of instructions
+	 */
+	private ControlFlowGraph constructCFG() {
+		/* Initialize the maps */
+		reg2instructions = new HashMap<Register,List<Instruction>>();
+		reg2movInstructions = new HashMap<Register,List<Instruction>>();
+		
+		/* Set of all CFG nodes */
+		Set<CFGNode> nodeSet = new HashSet<CFGNode>();
+		
+		/* Maps a jump related node to the corresponding label */
+		Map<AACFGNode, Label> node2label = new HashMap<AACFGNode,Label>();
+		
+		/* Maps a label to the node of instruction that immediately follows */
+		Map<Label, AACFGNode> label2node = new HashMap<Label,AACFGNode>();
+		
+		/* Get the head node */
+		int first_instr_index = 0;
+		Instruction firstInstr = program.get(first_instr_index);
+		while (firstInstr.getOp() == Operation.LABEL) {
+			firstInstr = program.get(++first_instr_index);
+		}
+		updateRegisterMaps(firstInstr);
+		AACFGNode head = new AACFGNode(firstInstr);
+		
+		nodeSet.add(head);
+		
+		/* Construct CFG */
+		AACFGNode prev = head;
+		for (int i = first_instr_index+1; i < program.size(); i++) {
+			Instruction instr = program.get(i);
+			Operation op = instr.getOp();
+			AACFGNode curr = new AACFGNode(instr);
+			
+			// if it's a label instruction,
+			// get the next label and put the pair in label2node map
+			if (op == Operation.LABEL) {
+				Label label = (Label) instr.getDest();
+				instr = program.get(++i);
+				curr = new AACFGNode(instr);
+				label2node.put(label, curr);
+			}
+			
+			// update register maps
+			updateRegisterMaps(instr);
+			// add node to nodeSet 
+			nodeSet.add(curr);
+			
+			// if it's a jump instruction,
+			// put the node, label pair in node2label map
+			if (Operation.isJumpInstruction(op)) {
+				Label label = (Label) instr.getDest();
+				node2label.put(curr,label);
+				
+				if (op == Operation.JMP) {
+					prev = null;
+					continue;
+				}
+			}
+			
+			// link prev to curr
+			if (prev != null) {
+				prev.addSuccessor(curr);
+			}
+			prev = curr;
+		}
+		
+		/* Link jumps */
+		for (Entry<AACFGNode, Label> entry : node2label.entrySet()) {
+			AACFGNode node1 = entry.getKey();
+			Label label = entry.getValue();
+			AACFGNode node2 = label2node.get(label);
+			node1.addSuccessor(node2);
+		}
+		
+		return new ControlFlowGraph(nodeSet, head);
+	}
+	
+	/**
+	 * Updates reg2instructions & reg2movInstructions maps
+	 * @param Instruction instr
+	 */
+	private void updateRegisterMaps(Instruction instr) {
+		Operand src = instr.getSrc();
+		Operand dest = instr.getDest();
+		
+		if (src instanceof Register) {
+			List<Instruction> list;
+			if (reg2instructions.containsKey(src)) {
+				list = reg2instructions.get(src);
+			} else {
+				list = new ArrayList<Instruction>();
+			}
+			list.add(instr);
+			reg2instructions.put((Register) src, list);
+		}
+		
+		if (dest instanceof Register) {
+			List<Instruction> list;
+			if (reg2instructions.containsKey(dest)) {
+				list = reg2instructions.get(dest);
+			} else {
+				list = new ArrayList<Instruction>();
+			}
+			list.add(instr);
+			reg2instructions.put((Register) dest,list);
+		} 
+		
+		if (instr.isMoveWithTwoRegs()) {
+			List<Instruction> srcList;
+			if (reg2movInstructions.containsKey(src)) {
+				srcList = reg2movInstructions.get(src);
+			} else {
+				srcList = new ArrayList<Instruction>();
+			}
+			srcList.add(instr);
+			reg2instructions.put((Register) src, srcList);
+			
+			List<Instruction> destList;
+			if (reg2movInstructions.containsKey(dest)) {
+				destList = reg2movInstructions.get(dest);
+			} else {
+				destList = new ArrayList<Instruction>();
+			}
+			destList.add(instr);
+			reg2instructions.put((Register) dest, destList);
+		}
 	}
 
 	private void simplify() {

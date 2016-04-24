@@ -315,6 +315,9 @@ public class Register implements Operand {
 	private boolean isBase;
 	private boolean isFactor;
 	
+	/** Used for register allocation. */
+	private boolean isMoveRelated = false;
+	
 	/** Only used for copying */
 	private Register() {
 	}
@@ -388,6 +391,14 @@ public class Register implements Operand {
 	
 	public void setRegBase() {
 		isBase = true;
+	}
+
+	public boolean isMoveRelated() {
+		return isMoveRelated;
+	}
+
+	public void setMoveRelated(boolean isMoveRelated) {
+		this.isMoveRelated = isMoveRelated;
 	}
 	
 }

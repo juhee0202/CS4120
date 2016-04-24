@@ -180,25 +180,23 @@ public class Instruction {
 	private Operand dest;
 	private int cost;
 	
+	/** Used for register allocation. */
+	private boolean isMoveWithTwoRegs = false;
+	
 	/** Only used for copying */
 	private Instruction() {
 	}
 	
 	public Instruction(Operation operation) {
-		op = operation;
+		this(operation,null,null,0);
 	}
 	
 	public Instruction(Operation operation, Operand destination) {
-		op = operation;
-		dest = destination;
-		cost = 1;
+		this(operation,null,destination,1);
 	}
 	
 	public Instruction(Operation operation, Operand source, Operand destination) {
-		op = operation;
-		src = source;
-		dest = destination;
-		cost = 1;
+		this(operation,source,destination,1);
 	}
 	
 	public Instruction(Operation operation, Operand source, Operand destination,
@@ -207,6 +205,19 @@ public class Instruction {
 		src = source;
 		dest = destination;
 		this.cost = cost;
+		if (operation == Operation.MOVQ) {
+			if (source instanceof Register && destination instanceof Register) {
+				((Register) source).setMoveRelated(true);
+				((Register) destination).setMoveRelated(true);
+				isMoveWithTwoRegs = true;
+			}
+			if (source instanceof Register) {
+				((Register) source).setMoveRelated(true);
+			}
+			if (destination instanceof Register) {
+				((Register) destination).setMoveRelated(true);
+			}
+		}
 	}
 	
 	/**
@@ -272,6 +283,14 @@ public class Instruction {
 		this.cost = cost;
 	}
 	
+	public boolean isMoveWithTwoRegs() {
+		return isMoveWithTwoRegs;
+	}
+
+	public void setMoveWithTwoRegs(boolean isMoveWithTwoRegs) {
+		this.isMoveWithTwoRegs = isMoveWithTwoRegs;
+	}
+
 	@Override
 	public String toString() {
 		if (op == Operation.LABEL) {

@@ -50,4 +50,12 @@ public class AACFGNode extends CFGNode {
 			System.out.println("Already added 2 successors");
 		}
 	}
+
+	public Instruction getUnderlyingInstruction() {
+		return underlyingInstruction;
+	}
+
+	public void setUnderlyingInstruction(Instruction underlyingInstruction) {
+		this.underlyingInstruction = underlyingInstruction;
+	}
 }

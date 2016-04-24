@@ -13,15 +13,15 @@ import jl2755.controlflow.ControlFlowGraph;
  * Class that perform the live variable analysis
  * on the control flow graph.
  *
- * @param <Operand>
+ * @param <Register>
  */
-public class LiveVariableAnalyzer<Operand> extends Dataflow<Operand> {
+public class LiveVariableAnalyzer<Register> extends Dataflow<Register> {
 	
 	/**
 	 * A mapping to keep track of the in set for
 	 * each CFGNode.
 	 */
-	private HashMap<CFGNode, Set<Operand>> inMap;
+	private HashMap<CFGNode, Set<Register>> inMap;
 	
 	/**
 	 * Assigns the cfg field, and hardcodes
@@ -40,7 +40,7 @@ public class LiveVariableAnalyzer<Operand> extends Dataflow<Operand> {
 	 * the Operands.
 	 */
 	@Override
-	public Set<Operand> meetOperator(Operand... args) {
+	public Set<Register> meetOperator(Register... args) {
 		// TODO: Implement Operand .equals method.
 		return null;
 	}
@@ -72,7 +72,7 @@ public class LiveVariableAnalyzer<Operand> extends Dataflow<Operand> {
 		Iterator<CFGNode> iteratorVersion = allNodes.iterator();
 		while (iteratorVersion.hasNext()) {
 			CFGNode temp = iteratorVersion.next();
-			inMap.put(temp, new HashSet<Operand>());
+			inMap.put(temp, new HashSet<Register>());
 		}
 		WorklistQueue<CFGNode> ourQueue = new WorklistQueue<CFGNode>();
 		ourQueue.addAll(allNodes);
@@ -84,7 +84,7 @@ public class LiveVariableAnalyzer<Operand> extends Dataflow<Operand> {
 		}
 	}
 	
-	public HashMap<CFGNode,Set<Operand>> getInMap() {
+	public HashMap<CFGNode,Set<Register>> getInMap() {
 		return inMap;
 	}
 }

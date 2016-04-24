@@ -415,7 +415,7 @@ public class TilingVisitor implements IRTreeVisitor {
 			cost++;
 			
 			// imulq stores high and low values into rax and rdx
-			argDest = rax;
+			argDest = new Register(RegisterName.RDX);
 		}
 		
 		/* 
@@ -510,7 +510,7 @@ public class TilingVisitor implements IRTreeVisitor {
 			}
 			Instruction compare;
 			if (dest instanceof Constant) {
-				Register cons = new Register(RegisterName.R9);
+				Register cons = new Register("tileRegister" + registerCount++);
 				Instruction move = new Instruction(Operation.MOVQ,dest,cons);
 				instrList.add(move);
 				cost += move.getCost();
@@ -848,7 +848,7 @@ public class TilingVisitor implements IRTreeVisitor {
 			case XOR:
 				// cmp e1,e2
 				if (tempDest instanceof Constant) {
-					Register cons = new Register(RegisterName.R9);
+					Register cons = new Register("tileRegister" + registerCount++);
 					tempInst = new Instruction(Operation.MOVQ,tempDest,cons);
 					instructions.add(tempInst);
 					cost += tempInst.getCost();
@@ -869,7 +869,7 @@ public class TilingVisitor implements IRTreeVisitor {
 			case EQ:
 				// cmp e1,e2
 				if (tempDest instanceof Constant) {
-					Register cons = new Register(RegisterName.R9);
+					Register cons = new Register("tileRegister" + registerCount++);
 					tempInst = new Instruction(Operation.MOVQ,tempDest,cons);
 					instructions.add(tempInst);
 					cost += tempInst.getCost();
@@ -890,7 +890,7 @@ public class TilingVisitor implements IRTreeVisitor {
 			case NEQ:
 				// cmp e1,e2
 				if (tempDest instanceof Constant) {
-					Register cons = new Register(RegisterName.R9);
+					Register cons = new Register("tileRegister" + registerCount++);
 					tempInst = new Instruction(Operation.MOVQ,tempDest,cons);
 					instructions.add(tempInst);
 					cost += tempInst.getCost();
@@ -911,7 +911,7 @@ public class TilingVisitor implements IRTreeVisitor {
 			case LT:
 				// cmp e2,e1
 				if (tempSrc instanceof Constant) {
-					Register cons = new Register(RegisterName.R9);
+					Register cons = new Register("tileRegister" + registerCount++);
 					tempInst = new Instruction(Operation.MOVQ,tempSrc,cons);
 					instructions.add(tempInst);
 					cost += tempInst.getCost();
@@ -932,7 +932,7 @@ public class TilingVisitor implements IRTreeVisitor {
 			case LEQ:
 				// cmp e2,e1
 				if (tempSrc instanceof Constant) {
-					Register cons = new Register(RegisterName.R9);
+					Register cons = new Register("tileRegister" + registerCount++);
 					tempInst = new Instruction(Operation.MOVQ,tempSrc,cons);
 					instructions.add(tempInst);
 					cost += tempInst.getCost();
@@ -953,7 +953,7 @@ public class TilingVisitor implements IRTreeVisitor {
 			case GT:
 				// cmp e2,e1
 				if (tempSrc instanceof Constant) {
-					Register cons = new Register(RegisterName.R9);
+					Register cons = new Register("tileRegister" + registerCount++);
 					tempInst = new Instruction(Operation.MOVQ,tempSrc,cons);
 					instructions.add(tempInst);
 					cost += tempInst.getCost();
@@ -974,7 +974,7 @@ public class TilingVisitor implements IRTreeVisitor {
 			case GEQ:
 				// cmp e2,e1
 				if (tempSrc instanceof Constant) {
-					Register cons = new Register(RegisterName.R9);
+					Register cons = new Register("tileRegister" + registerCount++);
 					tempInst = new Instruction(Operation.MOVQ,tempSrc,cons);
 					instructions.add(tempInst);
 					cost += tempInst.getCost();
@@ -1160,9 +1160,10 @@ public class TilingVisitor implements IRTreeVisitor {
 		Operand newDest = null;
 		int cost = 0;
 		if (childDest instanceof Memory || childDest instanceof Constant) {
-			Instruction movPart = new Instruction(Operation.MOVQ,childDest,new Register("rcx"));
+			Register newReg = new Register("tileRegister" + registerCount++);
+			Instruction movPart = new Instruction(Operation.MOVQ,childDest,newReg);
 			newInstructions.add(movPart);
-			newDest = new Memory(new Register("rcx"));
+			newDest = new Memory(newReg);
 			cost++;
 		}
 		else {
@@ -1194,8 +1195,9 @@ public class TilingVisitor implements IRTreeVisitor {
 			List<Instruction> newInstructions = new ArrayList<Instruction>();
 			Tile finalTile;
 			if (!redundant) {
-				newInstructions.add(new Instruction(Operation.MOVQ,sourceOperand,new Register(RegisterName.R10)));
-				newInstructions.add(new Instruction(Operation.MOVQ,new Register(RegisterName.R10),targetOperand));
+				Register temp = new Register("tileRegister" + registerCount++);
+				newInstructions.add(new Instruction(Operation.MOVQ,sourceOperand,temp));
+				newInstructions.add(new Instruction(Operation.MOVQ,temp,targetOperand));
 				finalTile = new Tile(newInstructions,2,targetOperand);
 			} else {
 				finalTile = new Tile(newInstructions,0,targetOperand);

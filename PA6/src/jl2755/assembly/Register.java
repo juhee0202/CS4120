@@ -414,4 +414,9 @@ public class Register implements Operand {
 		return false;
 	}
 	
+	@Override
+	public int hashCode() {
+		return name.hashCode() + type.hashCode();
+	}
+	
 }

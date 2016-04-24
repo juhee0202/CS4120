@@ -1,6 +1,9 @@
 package optimization;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -9,10 +12,12 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.Stack;
 
+import jl2755.assembly.Constant;
 import jl2755.assembly.Instruction;
 import jl2755.assembly.Register;
 import jl2755.assembly.Instruction.Operation;
 import jl2755.assembly.Label;
+import jl2755.assembly.Memory;
 import jl2755.assembly.Operand;
 import jl2755.assembly.Register.RegisterName;
 import jl2755.controlflow.AACFGNode;
@@ -33,10 +38,10 @@ public class RegisterAllocator {
 	private InterferenceGraph graph;
 	
 	/** Map of function names to the set of registers it uses. */
-	private Map<String, Set<Register>> registerUsage;
+	private Map<String, Set<Register>> funcToRegsUsed;
 	
 	/** Map of CFGNodes to live registers. */
-	private Map<AACFGNode, Set<Register>> liveVariables;
+	private Map<AACFGNode, Set<Register>> nodeToLiveRegs;
 
 	/** Stack to use for register allocation. */
 	private Stack<Register> regStack;
@@ -45,10 +50,19 @@ public class RegisterAllocator {
 	private Stack<Set<Register>> neighborStack;
 	
 	/** Map of register to list of instructions containing the register */
-	private Map<Register, List<Instruction>> reg2instructions;
+	private Map<Register, List<Instruction>> regToInstructions;
 	
-	/** Map of register to list of registers in the same mov instruction */
-	private Map<Register, List<Instruction>> reg2movInstructions;
+	/** Map of register to its unfrozen mov instruction */
+	private Map<Register, List<Instruction>> regToMovInstructions;
+	
+	/** Comparator for registers based on degree. */
+	private final Comparator<Register> DEGREE_COMPARATOR = 
+			new Comparator<Register>() {
+		public int compare(Register r1, Register r2) {
+			Map<Register, Set<Register>> edges = graph.getEdges();
+			return edges.get(r1).size() - edges.get(r2).size();
+		}
+	};
 	
 	// Built-in registers to use for allocation
 	private static final Register RAX = new Register(RegisterName.RAX);
@@ -57,8 +71,6 @@ public class RegisterAllocator {
 	private static final Register RDX = new Register(RegisterName.RDX);
 	private static final Register RSI = new Register(RegisterName.RSI);
 	private static final Register RDI = new Register(RegisterName.RDI);
-	private static final Register RSP = new Register(RegisterName.RSP);
-	private static final Register RBP = new Register(RegisterName.RBP);
 	private static final Register R8  = new Register(RegisterName.R8);
 	private static final Register R9  = new Register(RegisterName.R9);
 	private static final Register R10 = new Register(RegisterName.R10);
@@ -68,15 +80,22 @@ public class RegisterAllocator {
 	private static final Register R14 = new Register(RegisterName.R14);
 	private static final Register R15 = new Register(RegisterName.R15);
 	
-	private static final int NUM_COLORS = 16;
+	private static final Register[] availableRegs = 
+		{RAX,RBX,RCX,RDX,RSI,RDI,R8,R9,R10,R11,R12,R13,R14,R15};
 	
-	public RegisterAllocator(List<Instruction> instructions) {
+	// Built-in registers off-limits for allocation
+	private static final Register RSP = new Register(RegisterName.RSP);
+	private static final Register RBP = new Register(RegisterName.RBP);
+	
+	private static final int NUM_COLORS = 14;
+	
+	private int stackCounter;
+	
+	public RegisterAllocator() {
 		// Initialize globals
-		registerUsage = new HashMap<String,Set<Register>>();
+		funcToRegsUsed = new HashMap<String,Set<Register>>();
 		regStack = new Stack<Register>();
 		neighborStack = new Stack<Set<Register>>();
-		
-		program = instructions;
 	}
 	
 	/**
@@ -84,57 +103,51 @@ public class RegisterAllocator {
 	 * 
 	 * @param 
 	 */
-	public boolean registerAllocation() {
+	public List<Instruction> registerAllocation(List<Instruction> instructions) {
+		// Clear all globals
+		funcToRegsUsed.clear();
+		regStack.clear();
+		neighborStack.clear();
+		program = instructions;
+		stackCounter = 0;
+		
 		boolean didCoalesce;
 		boolean didFreeze;
 		boolean didPotentiallySpill;
 		boolean didActuallySpill = true;
 		while (didActuallySpill) {
-			// Build: Construct CFG, run LVA, create Interference Graph
 			build();
-			
 			didPotentiallySpill = true;
 			while (didPotentiallySpill) {
 				didFreeze = true;
 				while (didFreeze) {
 					didCoalesce = true;
 					while (didCoalesce) {
-						// Simplify: Push onto stack all low-degree non-move-related nodes
 						simplify();
-						
-						// Coalesce: Conservatively coalesce move-related nodes
-						// loop through CFGNodes and find mov with two regs
-						// if possible, coalesce and repeat simplify and coalesce
-						// else, move to freeze
 						didCoalesce = coalesce();
 					}
-					// Freeze: abandon coalescing a move-related node
-					// Choose a low-degree move-related node
-					// Freeze the node and other related nodes
-					// Repeat Simplify and Coalesce until nothing to freeze
 					didFreeze = freeze();
 				}
-				// Spill: select a significant-degree node for spilling and push to stack
-					// Repeat from Simplify until only pre-colored nodes remain
 				didPotentiallySpill = spill();		
 			}
-			// Select: Pop from stack, assigning colors
-				// If cannot assign, spill to stack, rewrite code, and repeat from Build
 			didActuallySpill = select();
 		}
-		return false;
+		return program;
 	}
 
+	/**
+	 * 	Build: Construct CFG, run LVA, create Interference Graph
+	 */
 	private void build() {
 		// Construct CFG
 		cfg = constructCFG();
 		
 		// Run live variable analysis
 		LiveVariableAnalyzer<Register> lva = new LiveVariableAnalyzer<Register>(cfg);
-		liveVariables = lva.getInMap();
+		nodeToLiveRegs = lva.getInMap();
 		
 		// Create interference graph
-		graph = new InterferenceGraph(liveVariables);
+		graph = new InterferenceGraph(nodeToLiveRegs);
 	}
 	
 	/**
@@ -144,8 +157,8 @@ public class RegisterAllocator {
 	 */
 	private ControlFlowGraph constructCFG() {
 		/* Initialize the maps */
-		reg2instructions = new HashMap<Register,List<Instruction>>();
-		reg2movInstructions = new HashMap<Register,List<Instruction>>();
+		regToInstructions = new HashMap<Register,List<Instruction>>();
+		regToMovInstructions = new HashMap<Register,List<Instruction>>();
 		
 		/* Set of all CFG nodes */
 		Set<CFGNode> nodeSet = new HashSet<CFGNode>();
@@ -228,115 +241,125 @@ public class RegisterAllocator {
 		
 		if (src instanceof Register) {
 			List<Instruction> list;
-			if (reg2instructions.containsKey(src)) {
-				list = reg2instructions.get(src);
+			if (regToInstructions.containsKey(src)) {
+				list = regToInstructions.get(src);
 			} else {
 				list = new ArrayList<Instruction>();
 			}
 			list.add(instr);
-			reg2instructions.put((Register) src, list);
+			regToInstructions.put((Register) src, list);
 		}
 		
 		if (dest instanceof Register) {
 			List<Instruction> list;
-			if (reg2instructions.containsKey(dest)) {
-				list = reg2instructions.get(dest);
+			if (regToInstructions.containsKey(dest)) {
+				list = regToInstructions.get(dest);
 			} else {
 				list = new ArrayList<Instruction>();
 			}
 			list.add(instr);
-			reg2instructions.put((Register) dest,list);
+			regToInstructions.put((Register) dest,list);
 		} 
 		
 		if (instr.isMoveWithTwoRegs()) {
 			List<Instruction> srcList;
-			if (reg2movInstructions.containsKey(src)) {
-				srcList = reg2movInstructions.get(src);
+			if (regToMovInstructions.containsKey(src)) {
+				srcList = regToMovInstructions.get(src);
 			} else {
 				srcList = new ArrayList<Instruction>();
 			}
 			srcList.add(instr);
-			reg2instructions.put((Register) src, srcList);
+			regToInstructions.put((Register) src, srcList);
 			
 			List<Instruction> destList;
-			if (reg2movInstructions.containsKey(dest)) {
-				destList = reg2movInstructions.get(dest);
+			if (regToMovInstructions.containsKey(dest)) {
+				destList = regToMovInstructions.get(dest);
 			} else {
 				destList = new ArrayList<Instruction>();
 			}
 			destList.add(instr);
-			reg2instructions.put((Register) dest, destList);
+			regToInstructions.put((Register) dest, destList);
 		}
 	}
 
+	/**
+	 * 	Simplify: Push onto stack all low-degree non-move-related nodes
+	 */
 	private void simplify() {
 		Set<Register> nodes = graph.getNodes();
 		for (Register reg : nodes) {
-			Map<Register,Set<Register>> neighbors = graph.getNeighbors();
+			Map<Register,Set<Register>> edges = graph.getEdges();
 			if (!reg.isMoveRelated() && !reg.isBuiltIn()
-					&& neighbors.get(reg).size() < NUM_COLORS) {
-				// Remove reg from interference graph
-				graph.remove(reg);
-				
+					&& edges.get(reg).size() < NUM_COLORS) {
 				// Push reg onto stack
 				regStack.push(reg);
-				neighborStack.push(neighbors.get(reg));
+				neighborStack.push(edges.get(reg));
+				
+				// Remove reg from interference graph
+				graph.remove(reg);
 			}
 		}
 	}
 	
 	/**
+	 *  Coalesce: Conservatively coalesce move-related nodes
+	 *	 loop through CFGNodes and find mov with two regs
+	 *	 if possible, coalesce and repeat simplify and coalesce
+	 *	 else, move to freeze
+	 *
 	 * @return	true if a mov was coalesced, false otherwise
 	 */
 	private boolean coalesce() {
 		boolean result = false;
-		Map<Register,Set<Register>> neighbors = graph.getNeighbors();
-		for (Register reg : map.keySet()) {
-			Set<Instruction> moves = map.get(reg);
+		Map<Register,Set<Register>> edges = graph.getEdges();
+		for (Register reg : regToMovInstructions.keySet()) {
+			List<Instruction> moves = regToMovInstructions.get(reg);
 			for (Instruction move : moves) {
 				Register otherReg = otherRegister(move,reg);
-				if (neighbors.get(reg).size() + neighbors.get(otherReg).size() < NUM_COLORS
-						&& !neighbors.get(reg).contains(otherReg)
+				if (edges.get(reg).size() + edges.get(otherReg).size() < NUM_COLORS
+						&& !edges.get(reg).contains(otherReg)
 						&& !(reg.isBuiltIn() && otherReg.isBuiltIn())) {
-					// Remove move 
-					moves.remove(move);
-					map.put(reg,moves);
-					
-					Set<Instruction> allInsts = secondmap.get(reg);
-					allInsts.remove(move);
-					secondmap.put(reg,allInsts);
-					
+					// Remove move from program
 					program.remove(move);
+					// Remove move from both move lists
+					regToMovInstructions.get(reg).remove(move);
+					regToMovInstructions.get(otherReg).remove(move);
+					// Remove move from both instruction lists
+					regToInstructions.get(reg).remove(move);
+					regToInstructions.get(otherReg).remove(move);
 					
 					// Replace all instances of otherReg with reg unless otherReg is built-in
 					Register replacedReg;
 					Register replacingReg;
-					Set<Instruction> replacedMoves;
-					Set<Instruction> replacedAll;
 					if (otherReg.isBuiltIn()) {
 						replacedReg = reg;
 						replacingReg = otherReg;
-						replacedMoves = moves;
-						replacedAll = 
 					} else {
 						replacedReg = otherReg;
 						replacingReg = reg;
 					}
-					// Remove replacedReg from globals
-					Set<Instruction> replacedMoves = map.get(replaced);
-					Set<Instruction>
-					map.remove(replacedReg);
-					// Replace operand of all related instructions
-					for (Instruction inst : secondmap.get(replacedReg)) {	// Should automatically replace operands in program
+					
+					// Replace replacedReg of all related instructions with replacingReg
+					List<Instruction> replacedInsts = regToInstructions.get(replacedReg);
+					for (Instruction inst : replacedInsts) {	// Should automatically replace operands in program
 						if (inst.getDest().equals(replacedReg)) {
 							inst.setDest(replacingReg);
 						} else {
 							inst.setSrc(replacingReg);
 						}
 					}
+					// Converge instruction lists
+					regToInstructions.get(replacingReg).addAll(replacedInsts);
+					regToInstructions.remove(replacedReg);
+					// Converge move lists
+					List<Instruction> replacedMovs = regToMovInstructions.get(replacedReg);
+					regToMovInstructions.get(replacingReg).addAll(replacedMovs);
+					regToMovInstructions.remove(replacedReg);
 					
 					// Check if replacingReg is still move-related
-					
+					if (regToMovInstructions.get(replacingReg).size() == 0) {
+						replacingReg.setMoveRelated(false);
+					}
 					
 					result = true;
 					break;
@@ -360,35 +383,36 @@ public class RegisterAllocator {
 	}
 	
 	/**
+	 *  Freeze: abandon coalescing a move-related node
+	 *	 Choose a low-degree move-related node
+	 *	 Freeze the node and other related nodes
+	 *	 Repeat Simplify and Coalesce until nothing to freeze
+	 * 
 	 * @return	true if a node was frozen
 	 */
 	private boolean freeze() {
 		boolean result = false;
 		// Choose a high-degree node
 		Set<Register> nodes = graph.getNodes();
-		Map<Register,Set<Register>> neighbors = graph.getNeighbors();
+		Map<Register,Set<Register>> edges = graph.getEdges();
 		Register frozen = null;
 		for (Register reg : nodes) {
 			if (!reg.isBuiltIn() && reg.isMoveRelated() 
-					&& neighbors.get(reg).size() < NUM_COLORS) {
+					&& edges.get(reg).size() < NUM_COLORS) {
 				frozen = reg;
 				
-				// TODO: change this!!
-				Map<Register,Set<Instruction>> map = null;
 				// Freeze all moves related to frozen
 				frozen.setMoveRelated(false);
-				Set<Instruction> frozenMoves = map.get(frozen);
-				map.remove(frozen);
+				List<Instruction> frozenMoves = regToMovInstructions.get(frozen);
+				regToMovInstructions.remove(frozen);
 				for (Instruction frozenMove : frozenMoves) {
 					Register relatedReg = otherRegister(frozenMove,frozen);
-					Set<Instruction> relatedMoves = map.get(relatedReg);
+					List<Instruction> relatedMoves = regToMovInstructions.get(relatedReg);
 					relatedMoves.remove(frozenMove);
 					if (relatedMoves.size() == 0) {
 						// Mark relatedReg as non-move-related
 						relatedReg.setMoveRelated(false);
-						map.remove(relatedReg);
-					} else {
-						map.put(relatedReg,relatedMoves);
+						regToMovInstructions.remove(relatedReg);
 					}
 				}
 				result = true;
@@ -402,22 +426,87 @@ public class RegisterAllocator {
 	}
 	
 	/**
-	 * @return	true if a node was spilt
+	 *  Spill: select a significant-degree node for spilling and push to stack
+	 *	 Repeat from Simplify until only pre-colored nodes remain
+	 * 
+	 * @return	true if a node was spilled
 	 */
 	private boolean spill() {
 		boolean result = false;
+		Set<Register> nodes = graph.getNodes();
+		Map<Register,Set<Register>> edges = graph.getEdges();
 		
-		
+		// Sort the nodes by degree
+		List<Register> sorted = new ArrayList<Register>(nodes);
+		Collections.sort(sorted, DEGREE_COMPARATOR);
+
+		// Choose highest-degree node
+		int lastIndex = sorted.size() - 1;
+		for (int i = lastIndex; i >= 0; i--) {
+			Register highest = sorted.get(i);
+			if (!highest.isBuiltIn() && edges.get(highest).size() >= NUM_COLORS) {
+				// Push highest onto stack
+				regStack.push(highest);
+				neighborStack.push(edges.get(highest));
+				
+				// Remove highest from interference graph
+				graph.remove(highest);
+					
+				result = true;
+				break;
+			}
+		}
 		return result;
 	}
-	
+		
 	/**
-	 * @return	true if a node was frozen
+	 *  Select: Pop from stack, assigning colors
+	 *	 If cannot assign, spill to stack, rewrite code, and repeat from Build
+	 * 
+	 * @return	true if a node was actually spilled
 	 */
 	private boolean select() {
 		boolean result = false;
-		
-		
+		Set<Register> nodes = graph.getNodes();
+		Map<Register,Set<Register>> edges = graph.getEdges();
+		for (Register reg : regStack) {
+			// Attempt to color reg
+			if (!color(reg,edges.get(reg))) {
+				// Spill reg to stack
+				Constant addr = new Constant(-8*++stackCounter);
+				Memory mem = new Memory(addr,RBP);
+				Instruction movFromStack = new Instruction(Operation.MOVQ,mem,reg);
+				Instruction movToStack = new Instruction(Operation.MOVQ,reg,mem);
+				for (Instruction inst : regToInstructions.get(reg)) {
+					int index = program.indexOf(inst);
+					program.add(index+1, movToStack);
+					program.add(index, movFromStack);
+				}
+				result = true;
+			}
+		}
 		return result;
+	}
+
+	/**
+	 * Attempts to color the given register
+	 * 
+	 * @param reg	the given register to color
+	 * @param neighbors	the set of neighbors of reg
+	 * @return		true if successfully colored
+	 * 				false otherwise
+	 */
+	private boolean color(Register reg, Set<Register> neighbors) {
+		// Check colors of neighbors
+		Set<Register> colors = new HashSet<Register>();
+		colors.addAll(Arrays.asList(availableRegs));
+		for (Register neighbor : neighbors) {
+			colors.remove(neighbor);
+		}
+		if (colors.size() > 0) {
+			
+		}
+		
+		return false;
 	}
 }

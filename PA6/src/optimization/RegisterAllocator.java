@@ -1,16 +1,22 @@
 package optimization;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
 
 import jl2755.assembly.Instruction;
 import jl2755.assembly.Register;
+import jl2755.assembly.Instruction.Operation;
 import jl2755.assembly.Register.RegisterName;
 import jl2755.controlflow.AACFGNode;
 import jl2755.controlflow.CFGNode;
+import jl2755.controlflow.ControlFlowGraph;
 
 public class RegisterAllocator {
+	
+	/** List of Assembly instructions */
+	private List<Instruction> instructions;
 	
 	/** Map of function names to the set of registers it uses. */
 	private Map<String, Set<Register>> registerUsage;
@@ -43,8 +49,8 @@ public class RegisterAllocator {
 	
 	private static final int NUM_COLORS = 16;
 	
-	public RegisterAllocator() {
-		// TODO
+	public RegisterAllocator(List<Instruction> argInstrs) {
+		instructions = argInstrs;
 	}
 	
 	/**
@@ -84,6 +90,31 @@ public class RegisterAllocator {
 		// Select: Pop from stack, assigning colors
 			// If cannot assign, spill to stack, rewrite code, and repeat from Build
 		return select();
+	}
+	
+	/**
+	 * Construct a ControlFlowGraph using instructions
+	 * @return a CFG of the list of instructions
+	 */
+	private ControlFlowGraph constructCFG() {
+		int first_instr_index = 0;
+		Instruction firstInstr = instructions.get(first_instr_index);
+		while (firstInstr.getOp() == Operation.LABEL) {
+			firstInstr = instructions.get(++first_instr_index);
+		}
+		
+		AACFGNode head = new AACFGNode(firstInstr);
+		AACFGNode prev = head;
+		for (int i = first_instr_index+1; i < instructions.size(); i++) {
+			Instruction instr = instructions.get(i);
+			AACFGNode curr = new AACFGNode(instr);
+			
+			if (Operation.isJumpInstruction(instr.getOp())) {
+				
+			}
+			
+			prev.addSuccessor(curr);
+		}
 	}
 
 	private void simplify() {

@@ -197,6 +197,7 @@ public class RegisterAllocator {
 			if (op == Operation.LABEL) {
 				Label label = (Label) instr.getDest();
 				instr = program.get(++i);
+				op = instr.getOp();
 				curr = new AACFGNode(instr);
 				label2node.put(label, curr);
 			}

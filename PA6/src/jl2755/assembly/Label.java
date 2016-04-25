@@ -1,5 +1,8 @@
 package jl2755.assembly;
 
+import java.util.HashSet;
+import java.util.Set;
+
 public class Label implements Operand{
 
 	private String labelName;
@@ -49,5 +52,10 @@ public class Label implements Operand{
 	@Override
 	public boolean isRegBase() {
 		return false;
+	}
+
+	@Override
+	public Set<Register> getRegistersUsed() {
+		return new HashSet<Register>();
 	}
 }

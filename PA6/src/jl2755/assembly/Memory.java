@@ -1,5 +1,8 @@
 package jl2755.assembly;
 
+import java.util.HashSet;
+import java.util.Set;
+
 public class Memory implements Operand {
 	
 	/** (%r): Use memory address in r */
@@ -157,6 +160,35 @@ public class Memory implements Operand {
 	@Override
 	public boolean isRegBase() {
 		return false;
+	}
+
+	@Override
+	public Set<Register> getRegistersUsed() {
+		Set<Register> returnSet = new HashSet<Register>();
+		if (index == 0) {
+			returnSet.add(registerBase);
+		}
+		else if (index == 1) {
+			returnSet.add(registerBase);
+		}
+		else if (index == 2) {
+			returnSet.add(registerBase);
+			returnSet.add(registerOffset);
+		}
+		else if (index == 3) {
+			returnSet.add(registerBase);
+			returnSet.add(registerOffset);
+		}
+		else if (index == 4) {
+			returnSet.add(registerBase);
+			returnSet.add(registerOffset);
+		}
+		else if (index == 5) {
+			returnSet.add(registerBase);
+			returnSet.add(registerOffset);
+		}
+		
+		return null;
 	}
 	
 }

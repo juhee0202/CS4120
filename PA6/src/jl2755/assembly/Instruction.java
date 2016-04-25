@@ -8,7 +8,7 @@ public class Instruction {
 	
 	// TODO: complete this
 	public enum Operation {
-		ADDQ, SUBQ, IMULQ1, IMULQ2, IDIVQ, ANDQ, ORQ, XORQ, NOTQ,
+		ADDQ, SUBQ, IMULQ1, IMULQ2, IDIVQ, ANDQ, ORQ, XORQ,
 		CMOVE, CMOVNE, CMOVL, CMOVLE, CMOVG, CMOVGE, MOVQ, CMPQ, TESTQ,
 		CALLQ, PUSHQ, LABEL, ENTER, LEAVE, POPQ, RET,
 		JMP, JE, JNE, JG, JGE, JL, JLE, JZ, JNZ;
@@ -38,8 +38,6 @@ public class Instruction {
 	        	return "orq";
 	        case XORQ:
 	        	return "xorq";
-	        case NOTQ:
-	        	return "notq";
 	        case CMOVE:
 	        	return "cmove";
 	        case CMOVNE:
@@ -115,8 +113,6 @@ public class Instruction {
 	        	return 2;
 	        case XORQ:
 	        	return 2;
-	        case NOTQ:
-	        	return 1;
 	        case CMOVE:
 	        	return 2;
 	        case CMOVNE:

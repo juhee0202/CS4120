@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import jl2755.controlflow.AACFGNode;
 import jl2755.controlflow.CFGNode;
 import jl2755.controlflow.ControlFlowGraph;
 
@@ -41,8 +42,11 @@ public class LiveVariableAnalyzer<Operand> extends Dataflow<Operand> {
 	 */
 	@Override
 	public Set<Operand> meetOperator(Operand... args) {
-		// TODO: Implement Operand .equals method.
-		return null;
+		Set<Operand> results = new HashSet<Operand>();
+		for (int i = 0; i < args.length; i++) {
+			results.add(args[i]);
+		}
+		return results;
 	}
 
 	/**
@@ -56,6 +60,18 @@ public class LiveVariableAnalyzer<Operand> extends Dataflow<Operand> {
 	@Override
 	public boolean transferFunction(CFGNode arg) {
 		// TODO Complete
+		CFGNode firstSuccessor = arg.getSuccessor1();
+		CFGNode secondSuccessor = arg.getSuccessor2();
+		
+		assert(firstSuccessor == null ||firstSuccessor instanceof AACFGNode);
+		assert(secondSuccessor == null || secondSuccessor instanceof AACFGNode);
+		
+		assert(arg instanceof AACFGNode);
+		
+		AACFGNode AAView = (AACFGNode) arg;
+		
+		
+		
 		return false;
 	}
 

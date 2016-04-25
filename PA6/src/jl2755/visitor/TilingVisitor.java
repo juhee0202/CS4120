@@ -1469,7 +1469,7 @@ public class TilingVisitor implements IRTreeVisitor {
 						newMem = new Memory(cons,rcx,rdx,fact);
 						added.add(movToReg2);
 					} else {
-						newMem = new Memory(cons,rcx,regOff,fact,6);
+						newMem = new Memory(cons,rcx,regOff,fact);
 					}
 				} else {
 					if (regOff != null && regOff.getType() == RegisterName.TEMP) {
@@ -1530,7 +1530,7 @@ public class TilingVisitor implements IRTreeVisitor {
 						newMem = new Memory(cons,rcx,rdx,fact);
 						added.add(movToReg2);
 					} else {
-						newMem = new Memory(cons,rcx,regOff,fact,6);
+						newMem = new Memory(cons,rcx,regOff,fact);
 					}
 				} else {
 					if (regOff != null && regOff.getType() == RegisterName.TEMP) {
@@ -1627,7 +1627,7 @@ public class TilingVisitor implements IRTreeVisitor {
 						newMem = new Memory(cons,rcx,rdx,fact);
 						added.add(movToReg2);
 					} else {
-						newMem = new Memory(cons,rcx,regOff,fact,6);
+						newMem = new Memory(cons,rcx,regOff,fact);
 					}
 				} else {
 					if (regOff != null && regOff.getType() == RegisterName.TEMP) {

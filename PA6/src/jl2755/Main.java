@@ -804,8 +804,12 @@ public class Main {
         // help
         options.addOption("h", "help", false, "Print a synopsis of options.");
 
+        // report opts
+        options.addOption("report-opts", false, "Output a list of optimizations"
+        		+ "supported by this compiler.");
+        
         // lex
-        Option lexOpt = new Option("l", "lex", false, 
+        Option lexOpt = new Option("l", "lex", true, 
                 "Generate output from lexical analysis.");
         lexOpt.setArgs(Option.UNLIMITED_VALUES);
         lexOpt.setOptionalArg(true);
@@ -813,7 +817,7 @@ public class Main {
         options.addOption(lexOpt);
 
         // parse
-        Option parseOpt = new Option("p", "parse", false, 
+        Option parseOpt = new Option("p", "parse", true, 
                 "Generate output from syntactic analysis.");
         parseOpt.setArgs(Option.UNLIMITED_VALUES);
         parseOpt.setOptionalArg(true);
@@ -821,7 +825,7 @@ public class Main {
         options.addOption(parseOpt);
 
         // typecheck
-        Option typecheckOpt = new Option("t", "typecheck", false, 
+        Option typecheckOpt = new Option("t", "typecheck", true, 
                 "Generate output from semantic analysis. ");
         typecheckOpt.setArgs(Option.UNLIMITED_VALUES);
         typecheckOpt.setOptionalArg(true);
@@ -829,20 +833,34 @@ public class Main {
         options.addOption(typecheckOpt);
 
         // irgen
-        Option irgenOpt = new Option("irgen", false, "Generate intermediate code.");
+        Option irgenOpt = new Option("irgen", true, "Generate intermediate code.");
         irgenOpt.setArgs(Option.UNLIMITED_VALUES);
         irgenOpt.setOptionalArg(true);
         irgenOpt.setArgName("source files");
         options.addOption(irgenOpt);
 
         // irrun
-        Option irrunOpt = new Option("irrun", false, 
+        Option irrunOpt = new Option("irrun", true, 
                 "Generate and interpret intermediate code.");
         irrunOpt.setArgs(Option.UNLIMITED_VALUES);
         irrunOpt.setOptionalArg(true);
         irrunOpt.setArgName("source files");
         options.addOption(irrunOpt);
 
+        // optir
+        Option optirOpt = new Option("optir", true, 
+        		"Report the intermediate code at the specified phase of optimization");
+        optirOpt.setArgs(1);
+        optirOpt.setArgName("phase");
+        options.addOption(optirOpt);
+        
+        // optcfg
+        Option optcfgOpt = new Option("optcfg", true, 
+        		"Report the control-flow graph at the specified phase of optimization");
+        optirOpt.setArgs(1);
+        optirOpt.setArgName("phase");
+        options.addOption(optcfgOpt);
+        
         // path options
         Option srcOpt = new Option("sourcepath", true, 
                 "Specify where to find input source files.");
@@ -869,11 +887,17 @@ public class Main {
         destAOpt.setArgName("path");
         options.addOption(destAOpt);
 
-        // optimization
-        options.addOption("O", false, 
-                "If specified, optimizations such as constant" +
-                " folding will not be performed.");
-
+        // optimizations
+        Option oOpt = new Option("O", true, "Enable optimization <opt>");
+        oOpt.setArgs(1);
+        oOpt.setArgName("opt");
+        Option onoOpt = new Option("o-no-", true, "Disable only optimiation <opt>");
+        onoOpt.setArgs(1);
+        onoOpt.setArgName("opt");
+        options.addOption(oOpt);
+        options.addOption("o", false, "Disable all optimizations");
+        options.addOption(onoOpt);
+        
         // target OS
         Option targetOSOpt = new Option("target", true, 
                 "Specify the operating system for which to generate code. "

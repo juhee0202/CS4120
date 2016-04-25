@@ -55,4 +55,6 @@ public abstract class CFGNode {
 	public Set<CFGNode> getPredecessors() {
 		return predecessors;
 	}
+	
+	public abstract String dotOutput();
 }

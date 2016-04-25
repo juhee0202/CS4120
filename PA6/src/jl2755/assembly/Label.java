@@ -3,9 +3,15 @@ package jl2755.assembly;
 public class Label implements Operand{
 
 	private String labelName;
+	private boolean isFuncLabel;
 	
 	public Label(String s) {
+		this(s,false);
+	}
+	
+	public Label(String s, boolean isFunc) {
 		labelName = s;
+		isFuncLabel = isFunc;
 	}
 	
 	@Override
@@ -49,5 +55,9 @@ public class Label implements Operand{
 	@Override
 	public boolean isRegBase() {
 		return false;
+	}
+	
+	public boolean isFuncLabel() {
+		return isFuncLabel;
 	}
 }

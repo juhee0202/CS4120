@@ -5,15 +5,34 @@ import java.util.Set;
 
 public class Memory implements Operand {
 	
+	/**
+	 * 
+	 * 	Addressing Modes
+	 * 		movq    (%ecx), %edx             # Register mode
+	 * 		movq    -4(%ebp), %eax           # Typical example: load a stack variable into eax
+	 * 		movq    8(%eax,4), %eax          # R*W + Off
+	 *		movq    -4(%ebp, %edx, 4), %eax  # Full example: load *(ebp - 4 + (edx * 4)) into eax
+	 */
+	
 	/** (%r): Use memory address in r */
 	private Register registerBase;
+	
 	/** k(%r): Add r and k */
 	private Constant constantOffset;
+	
 	/** (%r1,%r2): Add r1 and r2. */
 	private Register registerOffset;
+	
 	/** (%r1,%r2,w): Multiply r2 and w, add to r1. */
 	private Constant constantFactor;
 	
+	/** 
+	 * 0: (%r)
+	 * 1: constantOffset(%base)
+	 * 2: constantOffset(%registerOffset, constantFactor)
+	 * 3: k(%base, %registerOffset, constantFactor)		(NOTE: if k=0, then k is excluded from assembly)
+	 * 6: ? ask JP
+	 */
 	int index;
 	
 	/** Only used for cloning */
@@ -27,20 +46,12 @@ public class Memory implements Operand {
 		this(co,base,null,null,1);
 	}
 	
-	public Memory(Register base, Register ro) {
-		this(null,base,ro,null,2);
-	}
-	
-	public Memory(Register base, Register ro, Constant cf) {
-		this(null,base,ro,cf,3);
-	}
-	
-	public Memory(Constant co, Register base, Register ro) {
-		this(co,base,ro,null,4);
+	public Memory(Constant co, Register ro, Constant cf) {
+		this(co,null,ro,cf,2);
 	}
 	
 	public Memory(Constant co, Register base, Register ro, Constant cf) {
-		this(co,base,ro,cf,5);
+		this(co,base,ro,cf,3);
 	}
 	
 	public Memory(Constant co, Register base, Register ro, Constant cf, int i) {
@@ -83,6 +94,12 @@ public class Memory implements Operand {
 		this.constantFactor = constantFactor;
 	}
 
+//	/** 
+//	 * 0: (%r)
+//	 * 1: constantOffset(%base)
+//	 * 2: constantOffset(%registerOffset, constantFactor)
+//	 * 3: k(%base, %registerOffset, constantFactor)		(NOTE: if k=0, then k is excluded from assembly)
+	
 	@Override
 	public String toString() {
 		String s = "";
@@ -91,15 +108,10 @@ public class Memory implements Operand {
 		} else if (index == 1) {
 			s += constantOffset.getValue() + "(" + registerBase.toString() + ")";
 		} else if (index == 2) {
-			s += "(" + registerBase.toString() + "," + registerOffset.toString() + ")";
+			s += constantOffset.getValue() + "(" + registerOffset.toString() + "," + constantFactor.getValue() + ")";
 		} else if (index == 3) {
-			s += "(" + registerBase.toString() + "," + registerOffset.toString()
-					+ "," + constantFactor.getValue() + ")";
-		} else if (index == 4) {
-			s += constantOffset.getValue() + "(" + registerBase.toString()
-					+ ","  + registerOffset.toString() + ")";
-		} else if (index == 5) {
-			s += constantOffset.getValue() + "(" + registerBase.toString()
+			String constOffset = (constantOffset.getValue() == 0)? "": String.valueOf(constantOffset.getValue());
+			s += constOffset + "(" + registerBase.toString()
 					+ "," + registerOffset.toString() + "," + constantFactor.getValue()
 					+ ")";
 		} else if (index == 6) {

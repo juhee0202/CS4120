@@ -20,8 +20,8 @@ public class Tile {
 		BASEONLY,
 		/**0(1)*/
 		BASEWITHCONSTANTOFFSET,
-		/**0(1,2)*/
-		BASEWITHBOTHOFFSET,
+//		/**0(1,2)*/
+//		BASEWITHBOTHOFFSET,
 		/**(0,1,2)*/
 		BASEWITHREGISTEROFFSETANDFACTOR,
 		/**0(1,2,3)*/
@@ -249,100 +249,100 @@ public class Tile {
 		return theMakingNode;
 	}
 	
-	public void fillInOperands(List<Operand> argOperands) {
-		
-		// Parse through and replace all Mem Operands with Mov to registers
-		
-		String[] shuttleStuff = {"rcx", "rdx", "r11"};
-		List<Instruction> neededMovs = new ArrayList<Instruction>();
-		for (int i = 0; i < argOperands.size(); i++) {
-			if (argOperands.get(i) instanceof Memory) {
-				neededMovs.add(new Instruction(Operation.MOVQ,argOperands.get(i), new Register(shuttleStuff[i])));
-				argOperands.set(i,new Register(shuttleStuff[i]));
-				cost++;
-			}
-		}
-		
-		
-		if (theEnum == tileEnum.BASEONLY) {
-			Register registerView = (Register) argOperands.get(0);
-			dest = new Memory(registerView);
-		}
-		if (theEnum == tileEnum.BASEWITHCONSTANTOFFSET) {
-			Register theBase = null;
-			Constant theOffset = null;
-			assert(argOperands.size() == 2);
-			for (int i = 0; i < argOperands.size(); i++) {
-				if (argOperands.get(i).isRegBase()) {
-					theBase = (Register) argOperands.get(i);
-				}
-				if (argOperands.get(i).isConstOffset()) {
-					theOffset = (Constant) argOperands.get(i);
-				}
-			}
-//			System.out.println("" + theBase + " " + theOffset);
-			dest = new Memory(theOffset,theBase);
-		}
-		if (theEnum == tileEnum.BASEWITHBOTHOFFSET) {
-			Register theBase = null;
-			Register registerOffset = null;
-			Constant constantOffset = null;
-//			System.out.println("TILE " + rootOfSubtree);
-			assert(argOperands.size() == 3);
-			for (int i = 0; i < argOperands.size(); i++) {
-				if (argOperands.get(i).isRegBase()) {
-					theBase = (Register) argOperands.get(i);
-				}
-				if (argOperands.get(i).isRegFactorOffset()) {
-					registerOffset = (Register) argOperands.get(i);
-				}
-				if (argOperands.get(i).isConstOffset()) {
-					constantOffset = (Constant) argOperands.get(i);
-				}
-			}
-			dest = new Memory(constantOffset,theBase,registerOffset);
-		}
-		if (theEnum == tileEnum.BASEWITHREGISTEROFFSETANDFACTOR) {
-			Register theBase = null;
-			Register registerOffset = null;
-			Constant constantFactor = null;
-			assert(argOperands.size() == 3);
-			for (int i = 0; i < argOperands.size(); i++) {
-				if (argOperands.get(i).isRegBase()) {
-					theBase = (Register) argOperands.get(i);
-				}
-				if (argOperands.get(i).isRegFactorOffset()) {
-					registerOffset = (Register) argOperands.get(i);
-				}
-				if (argOperands.get(i).isConstFactor()) {
-					constantFactor = (Constant) argOperands.get(i);
-				}
-			}
-			dest = new Memory(theBase,registerOffset,constantFactor);
-		}
-		if (theEnum == tileEnum.EVERYTHING) {
-			Register theBase = null;
-			Register registerOffset = null;
-			Constant constantFactor = null;
-			Constant constantOffset = null;
-			assert(argOperands.size() == 4);
-			for (int i = 0; i < argOperands.size(); i++) {
-				if (argOperands.get(i).isRegBase()) {
-					theBase = (Register) argOperands.get(i);
-				}
-				if (argOperands.get(i).isRegFactorOffset()) {
-					registerOffset = (Register) argOperands.get(i);
-				}
-				if (argOperands.get(i).isConstFactor()) {
-					constantFactor = (Constant) argOperands.get(i);
-				}
-				if (argOperands.get(i).isConstOffset()) {
-					constantOffset = (Constant) argOperands.get(i);
-				}
-			}
-			dest = new Memory(constantOffset, theBase, registerOffset, constantFactor);
-		}
-	}
+//	public void fillInOperands(List<Operand> argOperands) {
+//		
+//		// Parse through and replace all Mem Operands with Mov to registers
+//		
+//		String[] shuttleStuff = {"rcx", "rdx", "r11"};
+//		List<Instruction> neededMovs = new ArrayList<Instruction>();
+//		for (int i = 0; i < argOperands.size(); i++) {
+//			if (argOperands.get(i) instanceof Memory) {
+//				neededMovs.add(new Instruction(Operation.MOVQ,argOperands.get(i), new Register(shuttleStuff[i])));
+//				argOperands.set(i,new Register(shuttleStuff[i]));
+//				cost++;
+//			}
+//		}
+//		
+//		
+//		if (theEnum == tileEnum.BASEONLY) {
+//			Register registerView = (Register) argOperands.get(0);
+//			dest = new Memory(registerView);
+//		}
+//		if (theEnum == tileEnum.BASEWITHCONSTANTOFFSET) {
+//			Register theBase = null;
+//			Constant theOffset = null;
+//			assert(argOperands.size() == 2);
+//			for (int i = 0; i < argOperands.size(); i++) {
+//				if (argOperands.get(i).isRegBase()) {
+//					theBase = (Register) argOperands.get(i);
+//				}
+//				if (argOperands.get(i).isConstOffset()) {
+//					theOffset = (Constant) argOperands.get(i);
+//				}
+//			}
+////			System.out.println("" + theBase + " " + theOffset);
+//			dest = new Memory(theOffset,theBase);
+//		}
+////		if (theEnum == tileEnum.BASEWITHBOTHOFFSET) {
+////			Register theBase = null;
+////			Register registerOffset = null;
+////			Constant constantOffset = null;
+//////			System.out.println("TILE " + rootOfSubtree);
+////			assert(argOperands.size() == 3);
+////			for (int i = 0; i < argOperands.size(); i++) {
+////				if (argOperands.get(i).isRegBase()) {
+////					theBase = (Register) argOperands.get(i);
+////				}
+////				if (argOperands.get(i).isRegFactorOffset()) {
+////					registerOffset = (Register) argOperands.get(i);
+////				}
+////				if (argOperands.get(i).isConstOffset()) {
+////					constantOffset = (Constant) argOperands.get(i);
+////				}
+////			}
+////			dest = new Memory(constantOffset,theBase,registerOffset);
+////		}
+////		if (theEnum == tileEnum.BASEWITHREGISTEROFFSETANDFACTOR) {
+////			Register theBase = null;
+////			Register registerOffset = null;
+////			Constant constantFactor = null;
+////			assert(argOperands.size() == 3);
+////			for (int i = 0; i < argOperands.size(); i++) {
+////				if (argOperands.get(i).isRegBase()) {
+////					theBase = (Register) argOperands.get(i);
+////				}
+////				if (argOperands.get(i).isRegFactorOffset()) {
+////					registerOffset = (Register) argOperands.get(i);
+////				}
+////				if (argOperands.get(i).isConstFactor()) {
+////					constantFactor = (Constant) argOperands.get(i);
+////				}
+////			}
+////			dest = new Memory(theBase,registerOffset,constantFactor);
+////		}
+//		if (theEnum == tileEnum.EVERYTHING) {
+//			Register theBase = null;
+//			Register registerOffset = null;
+//			Constant constantFactor = null;
+//			Constant constantOffset = null;
+//			assert(argOperands.size() == 4);
+//			for (int i = 0; i < argOperands.size(); i++) {
+//				if (argOperands.get(i).isRegBase()) {
+//					theBase = (Register) argOperands.get(i);
+//				}
+//				if (argOperands.get(i).isRegFactorOffset()) {
+//					registerOffset = (Register) argOperands.get(i);
+//				}
+//				if (argOperands.get(i).isConstFactor()) {
+//					constantFactor = (Constant) argOperands.get(i);
+//				}
+//				if (argOperands.get(i).isConstOffset()) {
+//					constantOffset = (Constant) argOperands.get(i);
+//				}
+//			}
+//			dest = new Memory(constantOffset, theBase, registerOffset, constantFactor);
+//		}
+//	}
 	
 	// TODO: Uncomment
 	@Override

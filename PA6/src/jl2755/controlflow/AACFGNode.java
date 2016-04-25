@@ -297,4 +297,27 @@ public class AACFGNode extends CFGNode {
 			System.out.println("Already added 2 successors");
 		}
 	}
+
+	public Instruction getUnderlyingInstruction() {
+		return underlyingInstruction;
+	}
+
+	public void setUnderlyingInstruction(Instruction underlyingInstruction) {
+		this.underlyingInstruction = underlyingInstruction;
+	}
+	
+	@Override
+	public String dotOutput() {
+		String s = "\t" + underlyingInstruction;
+		s += " -> {";
+		if (successor1 != null) {
+			s += ((AACFGNode) successor1).underlyingInstruction;
+			if (successor2 != null) {
+				s += " " + ((AACFGNode) successor2).underlyingInstruction;
+			}
+		}
+		s += "}\n";
+		s += successor1.dotOutput() + successor2.dotOutput();
+		return s;
+	}
 }

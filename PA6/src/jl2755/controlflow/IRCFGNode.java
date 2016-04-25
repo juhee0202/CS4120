@@ -49,5 +49,21 @@ public class IRCFGNode extends CFGNode {
 			assert(false);
 			System.out.println("Already added 2 successors");
 		}
+	}
+
+	@Override
+	public String dotOutput() {
+		String s = "\t" + underlyingIRStmt;
+		s += " -> {";
+		if (successor1 != null) {
+			s += ((IRCFGNode) successor1).underlyingIRStmt;
+			if (successor2 != null) {
+				s += " " + ((IRCFGNode) successor2).underlyingIRStmt;
+			}
+		}
+		
+		s += "}\n";
+		s += successor1.dotOutput() + successor2.dotOutput();
+		return s;
 	}	
 }

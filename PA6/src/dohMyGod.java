@@ -151,6 +151,22 @@ public class dohMyGod {
 //		System.out.println("Subtree result is " + temp.equalTrees(tree1, tree2));
 //	}
 	
-
+	@Test
+	public void test5() {
+		List<String> jl2755 = new ArrayList<String>();
+		jl2755.add("1");
+		jl2755.add("2");
+		jl2755.add("3");
+		jl2755.add("4");
+		
+		List<String> testing = jl2755.subList(2, 3);
+		
+		System.out.println(testing.get(0));
+		
+		boolean bool = true;
+		bool = bool && false;
+		System.out.println(bool);
+		System.out.println(bool & false);
+	}
 
 }

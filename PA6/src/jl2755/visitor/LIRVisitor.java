@@ -36,12 +36,14 @@ public class LIRVisitor implements IRTreeVisitor{
 			tempSeq = new Pair<IRSeq, IRNode>(combinedSeq, holyBinOp);
 		}
 		else {			
+			// S(s1), MOV(TEMP(T), e1'), S(s2), BINOP(TEMP(T), e2')
 			IRTemp holyTemp = new IRTemp("temp" + globalTempCount++);
 			IRMove storeExpr = new IRMove(holyTemp, (IRExpr) e1);
 			IRSeq combinedSeq = combineTwoStmt(s1, storeExpr);
 			combinedSeq = combineTwoStmt(combinedSeq, s2);
 			IRTemp holyTemp2 = new IRTemp(holyTemp.name());
 			IRNode holyBinOp = new IRBinOp(bo.opType(), holyTemp2, (IRExpr) e2);
+			combinedSeq = combineTwoStmt(combinedSeq, (IRStmt) holyBinOp);
 			tempSeq = new Pair<IRSeq, IRNode>(combinedSeq, holyBinOp);
 		}
 	}
@@ -194,7 +196,6 @@ public class LIRVisitor implements IRTreeVisitor{
 	
 	public void visit(IRMove mov) {
 		// assuming no commute (side effect dirties exp)
-//		System.out.println(mov);
 		
 		// s1, e1 = src
 		mov.expr().accept(this);
@@ -213,26 +214,19 @@ public class LIRVisitor implements IRTreeVisitor{
 			tempSeq = new Pair<IRSeq, IRNode>(combinedSeq, null);
 		}
 		else {
-			// TODO: FIX THIS LATER 
-			// S(dest), MOV(TEMP(T), dest'), S(src), MOV(TEMP(T), e')
-			
+			// S(dest), save expr in dest=IRMem(expr), S(src), MOV(IRMem(savedExpr), e')
 			IRTemp holyTemp = new IRTemp("temp" + globalTempCount++);
-			IRMove storeExpr = new IRMove(holyTemp, (IRExpr) e2);
-			IRSeq combinedSeq = combineTwoStmt(s2, storeExpr);
-			combinedSeq = combineTwoStmt(combinedSeq, s1);
-			IRTemp holyTemp2 = new IRTemp(holyTemp.name());
-			IRNode holyMove = new IRMove(holyTemp2, e1);
-			combinedSeq = combineTwoStmt(combinedSeq, (IRStmt) holyMove);
-			tempSeq = new Pair<IRSeq, IRNode>(combinedSeq, null);
-			
-//			IRTemp holyTemp = new IRTemp("temp" + globalTempCount++);
-//			IRMove storeExpr = new IRMove(holyTemp, (IRExpr) e1);
-//			IRSeq combinedSeq = combineTwoStmt(s1, storeExpr);
-//			combinedSeq = combineTwoStmt(combinedSeq, s2);
-//			IRTemp holyTemp2 = new IRTemp(holyTemp.name());
-//			IRNode holyMove = new IRMove(e2, holyTemp2);
-//			combinedSeq = combineTwoStmt(combinedSeq, (IRStmt) holyMove);
-//			tempSeq = new Pair<IRSeq, IRNode>(combinedSeq, null);
+			if (e2 instanceof IRMem) {
+				IRExpr memExpr = ((IRMem) e2).expr();
+				IRMove storeExpr = new IRMove(holyTemp, (IRExpr) memExpr);
+				IRSeq combinedSeq = combineTwoStmt(s2, storeExpr);
+				combinedSeq = combineTwoStmt(combinedSeq, s1);
+				IRTemp holyTemp2 = new IRTemp(holyTemp.name());
+				IRNode holyMove = new IRMove(new IRMem(holyTemp2), e1);
+				combinedSeq = combineTwoStmt(combinedSeq, (IRStmt) holyMove);
+				tempSeq = new Pair<IRSeq, IRNode>(combinedSeq, null);
+			}
+
 		}
 	}
 	
@@ -296,15 +290,20 @@ public class LIRVisitor implements IRTreeVisitor{
 		}
 	}
 	
+	/* case 1: IRMove: checkCommute(src_stmt, dest_expr) in mov dest, src 
+	 * case 2: IRBinOp: checkCommute(s2, e1)
+	 */
 	private static boolean checkCommute(IRStmt stmt, IRExpr expr) {
 		if (expr instanceof IRConst || expr instanceof IRName) {
 			return true;
 		}
 		
-		if (expr instanceof IRMem || expr instanceof IRTemp) {
+		// ex: MOV TEMP1, expr
+		//     This always commutes since temp1 can be overwritten by any side expression
+		if (expr instanceof IRTemp) {
 			return true;
 		}
-		
+
 		if (stmt == null) {
 			return true;
 		}

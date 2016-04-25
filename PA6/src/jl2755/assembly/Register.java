@@ -318,6 +318,9 @@ public class Register implements Operand {
 	private boolean isBase;
 	private boolean isFactor;
 	
+	/** Used for register allocation. */
+	private boolean isMoveRelated = false;
+	
 	/** Only used for copying */
 	private Register() {
 	}
@@ -398,6 +401,32 @@ public class Register implements Operand {
 		Set<Register> result = new HashSet<Register>();
 		result.add(this);
 		return result;
+	}
+
+	public boolean isMoveRelated() {
+		return isMoveRelated;
+	}
+
+	public void setMoveRelated(boolean isMoveRelated) {
+		this.isMoveRelated = isMoveRelated;
+	}
+	
+	public boolean isBuiltIn() {
+		return type != RegisterName.TEMP;
+	}
+	
+	@Override
+	public boolean equals(Object o) {
+		Register reg = (Register) o;
+		if (type == reg.type && name == reg.name) {
+			return true;
+		}
+		return false;
+	}
+	
+	@Override
+	public int hashCode() {
+		return name.hashCode() + type.hashCode();
 	}
 	
 }

@@ -19,7 +19,7 @@ public class InterferenceGraph {
 	private Set<Register> nodes;
 	
 	/** Map of all nodes to its neighbors in the graph. */
-	private Map<Register, Set<Register>> neighbors;
+	private Map<Register, Set<Register>> edges;
 	
 
 	/**
@@ -31,7 +31,7 @@ public class InterferenceGraph {
 	public InterferenceGraph(Map<AACFGNode, Set<Register>> map) {
 		// Initialize globals
 		nodes = new HashSet<Register>();
-		neighbors = new HashMap<Register,Set<Register>>();
+		edges = new HashMap<Register,Set<Register>>();
 		
 		// For each node, add each register in the set to nodes
 		for (CFGNode node : map.keySet()) {
@@ -42,11 +42,11 @@ public class InterferenceGraph {
 				setWithoutCurrReg.remove(currReg);
 				if (!nodes.contains(currReg)) {
 					nodes.add(currReg);
-					neighbors.put(currReg, setWithoutCurrReg);
+					edges.put(currReg, setWithoutCurrReg);
 				} else {
-					Set<Register> newSet = neighbors.get(currReg);
+					Set<Register> newSet = edges.get(currReg);
 					newSet.addAll(setWithoutCurrReg);
-					neighbors.put(currReg, newSet);
+					edges.put(currReg, newSet);
 				}
 				
 			}
@@ -55,10 +55,10 @@ public class InterferenceGraph {
 	
 	public void remove(Register reg) {
 		nodes.remove(reg);
-		for (Register neighbor : neighbors.get(reg)) {
-			Set<Register> edges = neighbors.get(neighbor);
+		for (Register neighbor : edges.get(reg)) {
+			Set<Register> neighbors = edges.get(neighbor);
 			edges.remove(reg);
-			neighbors.put(neighbor,edges);
+			edges.put(neighbor,neighbors);
 		}
 	}
 	
@@ -66,16 +66,16 @@ public class InterferenceGraph {
 		return nodes;
 	}
 
-	public Map<Register, Set<Register>> getNeighbors() {
-		return neighbors;
+	public Map<Register, Set<Register>> getEdges() {
+		return edges;
 	}
 
 	@Override
 	public String toString() {
 		String s = "";
-		for (Register reg : neighbors.keySet()) {
+		for (Register reg : edges.keySet()) {
 			s += reg.getName() + ":\t";
-			for (Register neighbor : neighbors.get(reg)) {
+			for (Register neighbor : edges.get(reg)) {
 				s += neighbor.getName() + ", ";
 			}
 			s += "\n";

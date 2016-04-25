@@ -824,15 +824,6 @@ public class MIRVisitor implements ASTVisitor{
 		for (int i = 0; i < exprList.size(); i++) {
 			exprList.get(i).accept(this);
 			IRExpr exprInBrackets = (IRExpr)tempNode;
-			
-			// IN HERE: if tempNode is in the form of (MOVE (TEMP t1) (ADD (MUL (CONST 3) (TEMP index)) (CONST 1)))
-			// perform optimization using addressing mode offset(base*index + k) instead of doing
-			// moveToTemp
-			
-//			if (exprInBrackets instanceof IRLea) {
-//				// TODO
-//			}
-			
 			IRTemp tempForExprInBrackets = new IRTemp("t" + tempCount++);
 			// move expr in brackets to a temp register
 			IRMove moveToTemp = new IRMove(tempForExprInBrackets, exprInBrackets);

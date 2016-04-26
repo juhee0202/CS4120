@@ -1,5 +1,6 @@
 package jl2755.dataflow;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -10,13 +11,15 @@ import jl2755.controlflow.AACFGNode;
 import jl2755.controlflow.CFGNode;
 import jl2755.controlflow.ControlFlowGraph;
 
+import jl2755.assembly.Register;
+
 /**
  * Class that perform the live variable analysis
  * on the control flow graph.
  *
  * @param <Register>
  */
-public class LiveVariableAnalyzer<Register> extends Dataflow<Register> {
+public class LiveVariableAnalyzer extends Dataflow<Register> {
 	
 	/**
 	 * A mapping to keep track of the in set for
@@ -59,7 +62,6 @@ public class LiveVariableAnalyzer<Register> extends Dataflow<Register> {
 	 */
 	@Override
 	public boolean transferFunction(CFGNode arg) {
-		// TODO Complete
 		CFGNode firstSuccessor = arg.getSuccessor1();
 		CFGNode secondSuccessor = arg.getSuccessor2();
 		
@@ -70,9 +72,28 @@ public class LiveVariableAnalyzer<Register> extends Dataflow<Register> {
 		
 		AACFGNode AAView = (AACFGNode) arg;
 		
+		Set<Register> tempSet = new HashSet<Register>();
 		
+		if (firstSuccessor != null) {
+			tempSet.addAll(inMap.get(firstSuccessor));
+		}
+		if (secondSuccessor != null) {
+			tempSet.addAll(inMap.get(secondSuccessor));
+		}
 		
-		return false;
+		if (AAView.getDef() != null) {
+			tempSet.remove(AAView.getDef());
+		}
+		
+		tempSet.addAll(AAView.getUses());
+		
+		Set<Register> originalInSet = inMap.get(arg);
+		
+		if (originalInSet.equals(tempSet)) {
+			return false;
+		}
+		
+		return true;
 	}
 
 	/**

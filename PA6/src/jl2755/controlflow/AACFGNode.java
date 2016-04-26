@@ -36,7 +36,8 @@ public class AACFGNode extends CFGNode {
 	public AACFGNode(Instruction argInstruction) {
 		super();
 		underlyingInstruction = argInstruction;
-		
+		computeUses();
+		computeDefs();
 	}
 	
 	private void computeUses() {
@@ -269,8 +270,9 @@ public class AACFGNode extends CFGNode {
 			def = iteratorView.next();
 		}
 	}
+
 	
-	private Set<Register> getUses() {
+	public Set<Register> getUses() {
 		Set<Register> theSet = new HashSet<Register>();
 		if (use1 != null) {
 			theSet.add(use1);
@@ -284,6 +286,10 @@ public class AACFGNode extends CFGNode {
 		return theSet;
 	}
 	
+	public Register getDef() {
+		return def;
+	}
+
 	public void addSuccessor(AACFGNode argNode) {
 		proposeToSuccessor(argNode);
 		if (successor1 == null) {

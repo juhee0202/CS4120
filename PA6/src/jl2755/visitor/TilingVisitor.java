@@ -38,7 +38,7 @@ public class TilingVisitor implements IRTreeVisitor {
 	/** list of caller-saved registers */
 	// TODO: temporarily added rdi and rsi here but i should refactor.
 	private static final String[] CALLER_REG_LIST = {
-			"rax", "rcx", "rdx", "r8", "r9", "r10", "r11", "rdi", "rsi"
+			"rax", "rcx", "rdx", "r8", "r9", "r10", "r11"
 	};
 	// shuttle regs: rcx, rdx, r11
 	
@@ -1003,6 +1003,13 @@ public class TilingVisitor implements IRTreeVisitor {
 	@Override
 	public void visit(IRCompUnit cu) {
 		// Visit all function decls
+//		for (IRFuncDecl fd : cu.functions().values()) {
+//			fd.accept(this);
+//			Tile fnTile = tileMap.get(fd);
+//			// TODO: compute the stack frame offset to pass in 
+//			// TODO: call stackallocation/regallocation
+//		}
+		
 		
 		Tile superTile = null;
 		
@@ -1065,15 +1072,25 @@ public class TilingVisitor implements IRTreeVisitor {
 
 	@Override
 	public void visit(IRFuncDecl fd) {
+		// list of all instructions for this function
 		List<Instruction> instructions = new ArrayList<Instruction>();
-		// Label
+		
+		/* Label */
 		Label fnLabel = new Label(fd.name());
 		instructions.add(new Instruction(Operation.LABEL, fnLabel));
-		// Prologue
-		// TODO: replace enter with push/mov/sub for optimization
+		
+		/* Prologue */
 		// "enter 8*l, 0" 8*l will be filled in later
 		Instruction enter = new Instruction(Operation.ENTER, new Constant(0), new Constant(0));
 		instructions.add(enter);
+		// save callee-saved registers
+		// TODO: only save the used ones
+		for (int i = 0; i < CALLEE_REG_LIST.length; i++) {
+			Register reg = new Register(CALLEE_REG_LIST[i]);
+			Instruction push = new Instruction(Operation.PUSHQ, reg);
+			instructions.add(push);
+		}
+		fd.setNumSavedCalleeRegs(CALLEE_REG_LIST.length); // TODO: Question. do we have to ensure 16-byte alignment here?
 		// move args to param regs
 		List<String> paramList = fd.getParamList();
 		int numArgs = fd.getNumArgs();
@@ -1095,26 +1112,47 @@ public class TilingVisitor implements IRTreeVisitor {
 					 param);
 			instructions.add(moveArgtoParam);
 		}
-		// Body 
+		
+		/* Body */ 
 		IRStmt body = fd.body();
+		// remove duplicate move(%ARG, %arg) instructions
+		// precondition: first n stmts are moving n arg stmts
 		if (body instanceof IRSeq) {
 			List<IRStmt> bodyStmtList = ((IRSeq) body).stmts();
-			
-			// prologue
-			// precondition: first n stmts are moving n arg stmts
-			// remove duplicate move(%ARG, %arg) instructions
-			// TODO fix
 			for (int i = 0; i < numArgs; i++) {
 				bodyStmtList.remove(0);
 			}	
 		}
-		
 		// tile function body
 		body.accept(this);
 		Tile bodyTile = tileMap.get(body);
 		// replace _RETi registers with correct ones
 		replaceReturnRegisters(bodyTile);		
 		instructions.addAll(bodyTile.getInstructions());
+		
+		/* Epilogue */
+		// restore callee-saved registers
+		List<Instruction> epilogueInstructions = new ArrayList<Instruction>();
+		for (int i = 0; i < CALLEE_REG_LIST.length; i++) {
+			Register reg = new Register(CALLEE_REG_LIST[i]);
+			Constant memOffset = new Constant(-8*(i+1));
+			Memory mem = new Memory(memOffset, rbp);
+			// "movq offset(rbp) reg"
+			Instruction mov = new Instruction(Operation.MOVQ, mem, reg);
+			epilogueInstructions.add(mov);
+		}
+		// put in epilogue to the right place (right before leave instruction)
+		int epilogueIndex = -1;
+		for (int i = 0; i < instructions.size(); i++) {
+			Instruction instr = instructions.get(i);
+			if (instr.getOp() == Operation.LEAVE) {
+				epilogueIndex = i;
+				break;
+			}
+		}
+		
+		assert(epilogueIndex != -1);
+		instructions.addAll(epilogueIndex, epilogueInstructions);
 		
 		// create a tile for this node
 		Tile tile = new Tile(instructions);

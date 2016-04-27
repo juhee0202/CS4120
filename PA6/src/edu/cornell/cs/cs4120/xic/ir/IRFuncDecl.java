@@ -16,6 +16,7 @@ public class IRFuncDecl extends IRNode {
     private List<String> paramList;
     private int numArgs;
     private int numReturns;
+    private int numSavedCalleeRegs;
 
     public IRFuncDecl(String name, IRStmt stmt) {
         this.name = name;
@@ -112,6 +113,14 @@ public class IRFuncDecl extends IRNode {
 
 	public void setParamList(List<String> paramList) {
 		this.paramList = paramList;
+	}
+
+	public int getNumSavedCalleeRegs() {
+		return numSavedCalleeRegs;
+	}
+
+	public void setNumSavedCalleeRegs(int numSavedCalleeRegs) {
+		this.numSavedCalleeRegs = numSavedCalleeRegs;
 	}
 
 	@Override

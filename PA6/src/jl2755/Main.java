@@ -509,8 +509,8 @@ public class Main {
         }
         
         String outputFileName = destDPath + rmExtension + ".ir";
-        System.out.println("srcPath+filename: " + srcPath + filename);
-        System.out.println("destDPath + rmExtension: " + outputFileName);
+//        System.out.println("srcPath+filename: " + srcPath + filename);
+//        System.out.println("destDPath + rmExtension: " + outputFileName);
     	try {
     		File file = new File(outputFileName);
             if (!file.exists()) {

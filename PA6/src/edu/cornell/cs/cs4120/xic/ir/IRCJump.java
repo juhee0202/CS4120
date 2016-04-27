@@ -69,7 +69,11 @@ public class IRCJump extends IRStmt {
         return this;
     }
 
-    @Override
+    public void setTrueLabel(String trueLabel) {
+		this.trueLabel = trueLabel;
+	}
+
+	@Override
     public <T> T aggregateChildren(AggregateVisitor<T> v) {
         T result = v.unit();
         result = v.bind(result, v.visit(expr));

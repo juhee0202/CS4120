@@ -1,12 +1,17 @@
 package jl2755.visitor;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 
 import edu.cornell.cs.cs4120.xic.ir.*;
-import edu.cornell.cs.cs4120.xic.ir.OpType;
 import polyglot.util.Pair;
 
 public class LIRVisitor implements IRTreeVisitor{
@@ -107,7 +112,7 @@ public class LIRVisitor implements IRTreeVisitor{
 			IRLabel labelle = new IRLabel("tempLabel"+i);
 			stmts.add(labelle);
 			stmts.addAll(tempSeq.part1().stmts());
-
+			
 			IRSeq body = new IRSeq(stmts);
 			List<BasicBlock> basicBlockList = createBasicBlocks(body);
 			// Construct trace list
@@ -119,7 +124,17 @@ public class LIRVisitor implements IRTreeVisitor{
 					stmtList.addAll(block.stmtList);
 				}
 			}
-			stmtList.remove(0);	// remove the tempLabel
+			// coalesce RETURNs
+			coalesceReturns(stmtList);
+			// remove consecutive JUMP l; LABEL l instructions
+			removeConsecutiveJumpLabel(stmtList);
+			// remove unused Labels
+			removeUnusedLabels(stmtList);
+			// TODO: FIX (primes.xi won't run)
+			// remove consecutive LABEL l1; JUMP l2 by replacing JUMP l1 with JUMP l2
+//			removeConsecutiveLabelJump(stmtList);
+			
+
 			IRSeq seq = new IRSeq(stmtList);
 			IRFuncDecl newFuncDecl = new IRFuncDecl(funcDecl.name(),seq);
 			newFuncDecl.setNumArgs(funcDecl.getNumArgs());
@@ -133,6 +148,188 @@ public class LIRVisitor implements IRTreeVisitor{
 		program = cu;
 	}
 	
+	/**
+	 * Removes consecutive LABEL l1; JUMP l2 by replacing 
+	 * JUMP l1 with JUMP l2
+	 * @param stmtList
+	 */
+	private void removeConsecutiveLabelJump(List<IRStmt> stmtList) {
+		// labels to JUMP/CJUMPs that jump to it
+		Map<String, List<IRStmt>> label2jumps = new HashMap<String, List<IRStmt>>();
+		
+		// 1st pass: fill label2jumps 
+		for (int i = 0; i < stmtList.size(); i++) {
+			IRStmt stmt = stmtList.get(i);
+			if (stmt instanceof IRJump || stmt instanceof IRCJump) {
+				String label;
+				if (stmt instanceof IRJump) {
+					IRJump jumpStmt = (IRJump)stmt;
+					label = ((IRName)jumpStmt.target()).name();
+				} else {
+					IRCJump cjumpStmt = (IRCJump)stmt;
+					label = cjumpStmt.trueLabel();
+				} 
+				List<IRStmt> list; 
+				if (label2jumps.containsKey(label)) {
+					list = label2jumps.get(label);
+				} else {
+					list = new ArrayList<IRStmt>();
+				}
+				list.add(stmt);
+				label2jumps.put(label, list);
+			}
+		}
+		
+		// 2nd pass: iterate backward to remove/replace
+		IRStmt prev = null;
+		ListIterator<IRStmt> currIt = stmtList.listIterator(stmtList.size());
+		while (currIt.hasPrevious()) {
+			IRStmt curr = currIt.previous();
+			if (curr instanceof IRLabel && prev instanceof IRJump) {
+				IRLabel currLabel = (IRLabel)curr;
+				String label = currLabel.name();
+				IRJump prevJump = (IRJump)prev;
+				String newLabel = ((IRName)prevJump.target()).name();				
+				List<IRStmt> jumps = label2jumps.get(label);
+				
+				// replace old labels with new labels in IRJumps
+				for (IRStmt jump : jumps) {
+					int index = stmtList.indexOf(jump);
+					IRStmt newStmt;
+					if (jump instanceof IRJump) {
+						newStmt = new IRJump(new IRName(newLabel));
+					} else {
+						newStmt = jump;
+						((IRCJump)newStmt).setTrueLabel(newLabel);
+					}
+					stmtList.set(index, newStmt);
+				}
+				
+				// remove 
+				currIt.remove();
+				currIt.next();
+				currIt.remove();
+				prev = null;
+				continue;
+			}
+			prev = curr;
+		}
+	}
+
+	/**
+	 * Removes consecutive JUMP l1; Label l2 instructions
+	 * @param stmtList
+	 */
+	private void removeConsecutiveJumpLabel(List<IRStmt>  stmtList) {
+		// list containing indices of label stmts to be removed
+		List<Integer> indexList = new ArrayList<Integer>();
+
+		// look for consecutive jump label instructions
+		IRStmt prev = null;
+		for (int i = 0; i < stmtList.size(); i++) {
+			IRStmt curr = stmtList.get(i);
+			if (prev instanceof IRJump && curr instanceof IRLabel) {
+				IRJump jumpPrev = (IRJump)prev;
+				IRLabel labelCurr = (IRLabel)curr;
+				String labelName = ((IRName)jumpPrev.target()).name();
+				if (labelName.equals(labelCurr.name())) {
+					indexList.add(i);
+				}
+			}
+			prev = curr;
+		}
+		
+		// remove consecutive jump label instructions
+		for (int i = indexList.size()-1; i >= 0; i--) {
+			int index = indexList.get(i);
+			stmtList.remove(index);		// remove label
+			stmtList.remove(index-1);	// remove jump
+		}
+	}
+
+	/**
+	 * Removes unused Labels
+	 * @param stmtList
+	 */
+	private void removeUnusedLabels(List<IRStmt>  stmtList) {
+		// Map of Label string to stmtList index
+		Map<String, Integer> label2index = new HashMap<String, Integer>();
+		// Set of used Labels
+		Set<String> usedLabels = new HashSet<String>();
+		
+		// update label2index & unusedLabels
+		for (int i = 0; i < stmtList.size(); i++) {
+			IRStmt stmt = stmtList.get(i);
+			if (stmt instanceof IRLabel) {
+				label2index.put(((IRLabel)stmt).name(), i);
+			} else if (stmt instanceof IRJump) {
+				IRJump jumpStmt = (IRJump)stmt;
+				String labelName = ((IRName)jumpStmt.target()).name();
+				usedLabels.add(labelName);
+			} else if (stmt instanceof IRCJump) {
+				IRCJump cjumpStmt = (IRCJump)stmt;
+				String trueLabel = cjumpStmt.trueLabel();
+				usedLabels.add(trueLabel);
+			}
+		}
+		
+		// remove used labels in label2index
+		Iterator<Entry<String, Integer>> it = label2index.entrySet().iterator();
+	    while (it.hasNext()) {
+	        Entry<String, Integer> entry = it.next();
+	        String label = entry.getKey();
+	        if (usedLabels.contains(label)) {
+	        	it.remove();
+	        }
+	    }
+		
+		// remove unused labels in stmtList
+		List<Integer> indices = new ArrayList<Integer>(label2index.values());
+		Collections.sort(indices);
+		for (int i = indices.size()-1; i >= 0; i--) {
+			int index = indices.get(i);
+			stmtList.remove(index);
+		}
+	}
+	
+	/**
+	 * Coalesce Returns in the function's stmt list by
+	 * 1) Insert Label l before the first Return
+	 * 2) Turn next returns into Jump l 
+	 * @param stmts
+	 */
+	private void coalesceReturns(List<IRStmt> stmts) {
+		String returnLabel = "";  //"label" + globalLabelCount++;
+		boolean found_first_return = false;
+		int first_return_index = -1;
+		
+		IRStmt prev = null;
+		for (int i = 0; i < stmts.size(); i++) {
+			IRStmt curr = stmts.get(i);
+			if (curr instanceof IRReturn) {
+				if (found_first_return) { 
+					IRJump jump = new IRJump(new IRName(returnLabel));
+					stmts.set(i, jump);
+				} else {
+					found_first_return = true;
+					if (prev instanceof IRLabel) {
+						returnLabel = ((IRLabel)prev).name();
+					} else {
+						returnLabel = "label" + globalLabelCount++;
+						first_return_index = i;
+					}
+				}
+			}
+			prev = curr;
+		}
+		
+		// Insert a label if needed
+		if (first_return_index != -1) {
+			IRLabel label = new IRLabel(returnLabel);
+			stmts.add(first_return_index, label);
+		}
+	}
+
 	public void visit(IRConst con) {
 		List<IRStmt> emptyIRStmt = new ArrayList<IRStmt>();
 		IRSeq emptySeq = new IRSeq(emptyIRStmt);
@@ -467,7 +664,8 @@ public class LIRVisitor implements IRTreeVisitor{
 				numUnmarkedBlocks--;
 				currBlock = nextBlock;
 			}
-			traceList.add(lowerJumps(trace));
+			trace = lowerJumps(trace);
+			traceList.add(trace);
 		}
 //		for (List<BasicBlock> bbList : traceList) {
 //			System.out.println("*****Start*****");
@@ -478,9 +676,10 @@ public class LIRVisitor implements IRTreeVisitor{
 //			}
 //			System.out.println("******End******");
 //		}
+		
 		return traceList;
 	}
-	
+
 	private BasicBlock pickStartBlock(List<BasicBlock> bbList) {
 		// choose an unmarked block
 		// preferably blocks without unmarked pred

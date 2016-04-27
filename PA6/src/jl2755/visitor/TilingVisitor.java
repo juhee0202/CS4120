@@ -1002,15 +1002,6 @@ public class TilingVisitor implements IRTreeVisitor {
 
 	@Override
 	public void visit(IRCompUnit cu) {
-		// Visit all function decls
-//		for (IRFuncDecl fd : cu.functions().values()) {
-//			fd.accept(this);
-//			Tile fnTile = tileMap.get(fd);
-//			// TODO: compute the stack frame offset to pass in 
-//			// TODO: call stackallocation/regallocation
-//		}
-		
-		
 		Tile superTile = null;
 		
 		for (IRFuncDecl fd : cu.functions().values()) {
@@ -1553,13 +1544,16 @@ public class TilingVisitor implements IRTreeVisitor {
 	 * @param headNode	the IR node representing the xi program
 	 */
 	private void stackAllocation(IRCompUnit headNode) {
-		Tile masterTile = tileMap.get(headNode);
-		List<Instruction> everyInstruction = masterTile.getInstructions();
-		Map<String, Integer> registerToStackOffsetMap = new HashMap<String, Integer>();
-		// Call addNecessaryInstruction
-		masterTile.setInstructions(addNecessaryInstruction(
-				everyInstruction,registerToStackOffsetMap));
-		functionSpaceMap.put(currentFunction,stackCounter);
+		for (IRFuncDecl fd : headNode.functions().values()) {
+			Tile functionTile = tileMap.get(headNode);
+			List<Instruction> functionInstructions = functionTile.getInstructions();
+			Map<String, Integer> registerToStackOffsetMap = new HashMap<String, Integer>();
+			// Call addNecessaryInstruction
+			functionTile.setInstructions(addNecessaryInstruction(
+					functionInstructions,registerToStackOffsetMap, fd.getNumSavedCalleeRegs()));
+			functionSpaceMap.put(fd.name(),stackCounter);
+		}
+		
 	}
 	
 	/**
@@ -1570,7 +1564,8 @@ public class TilingVisitor implements IRTreeVisitor {
 	 * @return				list of instructions with correct insertions
 	 */
 	private List<Instruction> addNecessaryInstruction(
-			List<Instruction> instructions, Map<String, Integer> regToStack) {
+			List<Instruction> instructions, Map<String, Integer> regToStack,
+			int num) {
 		int size = instructions.size();
 		if (size == 0) {
 			return new ArrayList<Instruction>();
@@ -1584,7 +1579,7 @@ public class TilingVisitor implements IRTreeVisitor {
 			// ret, leave
 			added.add(currentInstruction);
 			added.addAll(addNecessaryInstruction(
-					instructions.subList(1,size),regToStack));
+					instructions.subList(1,size),regToStack,num));
 			return added;
 		} 
 		Register rcx = new Register(RegisterName.RCX);
@@ -1599,7 +1594,7 @@ public class TilingVisitor implements IRTreeVisitor {
 				if (((Register) dest).getType() != RegisterName.TEMP) {
 					added.add(currentInstruction);
 					added.addAll(addNecessaryInstruction(
-							instructions.subList(1,size),regToStack));
+							instructions.subList(1,size),regToStack,num));
 					return added;
 				}
 				
@@ -1668,7 +1663,7 @@ public class TilingVisitor implements IRTreeVisitor {
 				if (op == Operation.LABEL && ((Label) label).isFuncLabel()) {
 					functionSpaceMap.put(currentFunction,stackCounter);
 					currentFunction = label.toString();
-					stackCounter = 0;
+					stackCounter = num;
 					regToStack.clear();
 				}
 				added.add(currentInstruction);
@@ -1859,7 +1854,7 @@ public class TilingVisitor implements IRTreeVisitor {
 					if (((Register) src).getType() != RegisterName.TEMP) {
 						added.add(currentInstruction);
 						added.addAll(addNecessaryInstruction(
-								instructions.subList(1,size),regToStack));
+								instructions.subList(1,size),regToStack,num));
 						return added;
 					}
 					// src uses a temp register
@@ -1873,7 +1868,7 @@ public class TilingVisitor implements IRTreeVisitor {
 			}
 		}
 		added.addAll(addNecessaryInstruction(
-				instructions.subList(1,size),regToStack));
+				instructions.subList(1,size),regToStack,num));
 		return added;
 	}
 	

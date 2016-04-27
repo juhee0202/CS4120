@@ -26,41 +26,44 @@ public class Memory implements Operand {
 	/** (%r1,%r2,w): Multiply r2 and w, add to r1. */
 	private Constant constantFactor;
 	
-	/** 
-	 * 0: (%r)
-	 * 1: constantOffset(%base)
-	 * 2: constantOffset(%registerOffset, constantFactor)
-	 * 3: k(%base, %registerOffset, constantFactor)		(NOTE: if k=0, then k is excluded from assembly)
-	 * 6: ? ask JP
-	 */
-	int index;
+//	/** 
+//	 * 0: (%r)
+//	 * 1: constantOffset(%base)
+//	 * 2: constantOffset(%registerOffset, constantFactor)
+//	 * 3: k(%base, %registerOffset, constantFactor)		(NOTE: if k=0, then k is excluded from assembly)
+//	 * 6: ? ask JP
+//	 */
+//	int index;
 	
 	/** Only used for cloning */
 	private Memory() {}
 	
 	public Memory(Register base) {
-		this(null,base,null,null,0);
+		this(null,base,null,null);
 	}
 	
 	public Memory(Constant co, Register base) {
-		this(co,base,null,null,1);
+		this(co,base,null,null);
 	}
 	
 	public Memory(Constant co, Register ro, Constant cf) {
-		this(co,null,ro,cf,2);
+		this(co,null,ro,cf);
 	}
 	
 	public Memory(Constant co, Register base, Register ro, Constant cf) {
-		this(co,base,ro,cf,3);
-	}
-	
-	public Memory(Constant co, Register base, Register ro, Constant cf, int i) {
 		constantOffset = co;
 		registerBase = base;
 		registerOffset = ro;
 		constantFactor = cf;
-		index = i;
 	}
+	
+//	public Memory(Constant co, Register base, Register ro, Constant cf, int i) {
+//		constantOffset = co;
+//		registerBase = base;
+//		registerOffset = ro;
+//		constantFactor = cf;
+//		index = i;
+//	}
 	
 	public Register getRegisterBase() {
 		return registerBase;
@@ -102,31 +105,45 @@ public class Memory implements Operand {
 	
 	@Override
 	public String toString() {
-		String s = "";
-		if (index == 0) {
-			s += "(" + registerBase.toString() + ")";
-		} else if (index == 1) {
-			s += constantOffset.getValue() + "(" + registerBase.toString() + ")";
-		} else if (index == 2) {
-			s += constantOffset.getValue() + "(" + registerOffset.toString() + "," + constantFactor.getValue() + ")";
-		} else if (index == 3) {
-			String constOffset = (constantOffset.getValue() == 0)? "": String.valueOf(constantOffset.getValue());
-			s += constOffset + "(" + registerBase.toString()
-					+ "," + registerOffset.toString() + "," + constantFactor.getValue()
-					+ ")";
-		} else if (index == 6) {
-			s += "(" + registerBase.toString();
-			if (constantOffset != null) {
-				s = constantOffset.getValue() + s;
-			}
-			if (registerOffset != null) {
-				s += "," + registerOffset.toString();
-			}
-			if (constantFactor != null) {
-				s += "," + constantFactor.getValue();
-			}
-			s += ")";
+		String s = "(";
+//		if (index == 0) {
+//			s += "(" + registerBase.toString() + ")";
+//		} else if (index == 1) {
+//			s += constantOffset.getValue() + "(" + registerBase.toString() + ")";
+//		} else if (index == 2) {
+//			s += constantOffset.getValue() + "(" + registerOffset.toString() + "," + constantFactor.getValue() + ")";
+//		} else if (index == 3) {
+//			String constOffset = (constantOffset.getValue() == 0)? "": String.valueOf(constantOffset.getValue());
+//			s += constOffset + "(" + registerBase.toString()
+//					+ "," + registerOffset.toString() + "," + constantFactor.getValue()
+//					+ ")";
+//		} else if (index == 6) {
+//			s += "(" + registerBase.toString();
+//			if (constantOffset != null) {
+//				s = constantOffset.getValue() + s;
+//			}
+//			if (registerOffset != null) {
+//				s += "," + registerOffset.toString();
+//			}
+//			if (constantFactor != null) {
+//				s += "," + constantFactor.getValue();
+//			}
+//			s += ")";
+//		}
+		// Universal printer
+		if (constantOffset != null && constantOffset.getValue() != 0) {
+			s = constantOffset.getValue() + s;
 		}
+		if (registerBase != null) {
+			s += registerBase.toString();
+		}
+		if (registerOffset != null) {
+			s += "," + registerOffset.toString();
+		}
+		if (constantFactor != null && constantFactor.getValue() != 1) {
+			s += "," + constantFactor.getValue();
+		}
+		s += ")";
 		return s;
 	}
 
@@ -150,7 +167,7 @@ public class Memory implements Operand {
 		if (constantFactor != null) {
 			temp.constantFactor = (Constant) constantFactor.getNewOperand();
 		}
-		temp.index = index;
+//		temp.index = index;
 		return temp;
 	}
 
@@ -177,30 +194,35 @@ public class Memory implements Operand {
 	@Override
 	public Set<Register> getRegistersUsed() {
 		Set<Register> returnSet = new HashSet<Register>();
-		if (index == 0) {
+//		if (index == 0) {
+//			returnSet.add(registerBase);
+//		}
+//		else if (index == 1) {
+//			returnSet.add(registerBase);
+//		}
+//		else if (index == 2) {
+//			returnSet.add(registerBase);
+//			returnSet.add(registerOffset);
+//		}
+//		else if (index == 3) {
+//			returnSet.add(registerBase);
+//			returnSet.add(registerOffset);
+//		}
+//		else if (index == 4) {
+//			returnSet.add(registerBase);
+//			returnSet.add(registerOffset);
+//		}
+//		else if (index == 5) {
+//			returnSet.add(registerBase);
+//			returnSet.add(registerOffset);
+//		}
+		if (registerBase != null) {
 			returnSet.add(registerBase);
 		}
-		else if (index == 1) {
-			returnSet.add(registerBase);
-		}
-		else if (index == 2) {
-			returnSet.add(registerBase);
+		if (registerOffset != null) {
 			returnSet.add(registerOffset);
 		}
-		else if (index == 3) {
-			returnSet.add(registerBase);
-			returnSet.add(registerOffset);
-		}
-		else if (index == 4) {
-			returnSet.add(registerBase);
-			returnSet.add(registerOffset);
-		}
-		else if (index == 5) {
-			returnSet.add(registerBase);
-			returnSet.add(registerOffset);
-		}
-		
-		return null;
+		return returnSet;
 	}
 	
 }

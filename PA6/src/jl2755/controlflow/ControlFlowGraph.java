@@ -134,10 +134,10 @@ public class ControlFlowGraph {
 	public ControlFlowGraph(IRFuncDecl func) {	
 		// TODO: finalize func or compunit
 		/* Maps a jump related node to the corresponding label */
-		Map<IRCFGNode, String> node2label = new HashMap<IRCFGNode, String>();
+		Map<CSECFGNode, String> node2label = new HashMap<CSECFGNode, String>();
 		
 		/* Maps a label to the node of instruction that immediately follows */
-		Map<String, IRCFGNode> label2node = new HashMap<String, IRCFGNode>();
+		Map<String, CSECFGNode> label2node = new HashMap<String, CSECFGNode>();
 //		
 ////		Map<String, IRFuncDecl> functions = program.functions();
 //		
@@ -147,21 +147,21 @@ public class ControlFlowGraph {
 //		
 		IRSeq body = (IRSeq) func.body();
 		List<IRStmt> stmts = body.stmts();
-		IRCFGNode head = new IRCFGNode(stmts.get(0));
+		CSECFGNode head = new CSECFGNode(stmts.get(0));
 		allNodes.add(head);
 		
 		/* Construct CFG */
-		IRCFGNode prev = head;
+		CSECFGNode prev = head;
 		for (int i = 1; i < stmts.size(); i++) {
 			IRStmt stmt = stmts.get(i);
-			IRCFGNode curr = new IRCFGNode(stmt);
+			CSECFGNode curr = new CSECFGNode(stmt);
 			
 			// if it's a label instruction,
 			// get the next label and put the pair in label2node map
 			if (stmt instanceof IRLabel) {
 				String label = ((IRLabel) stmt).name();
 				stmt = stmts.get(++i);
-				curr = new IRCFGNode(stmt);
+				curr = new CSECFGNode(stmt);
 				label2node.put(label, curr);
 			}
 			// add node to nodeSet 
@@ -190,10 +190,10 @@ public class ControlFlowGraph {
 		}
 		
 		/* Link jumps */
-		for (Entry<IRCFGNode, String> entry : node2label.entrySet()) {
-			IRCFGNode node1 = entry.getKey();
+		for (Entry<CSECFGNode, String> entry : node2label.entrySet()) {
+			CSECFGNode node1 = entry.getKey();
 			String label = entry.getValue();
-			IRCFGNode node2 = label2node.get(label);
+			CSECFGNode node2 = label2node.get(label);
 			node1.addSuccessor(node2);
 		}
 	}

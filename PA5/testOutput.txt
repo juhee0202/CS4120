@@ -8,11 +8,14 @@ init:
 
 build-project:
      [echo] PA1: /home/vagrant/shared/cs4120/pa5/build.xml
+    [javac] Compiling 1 source file to /home/vagrant/shared/cs4120/pa5/bin
+    [javac] warning: [options] bootstrap class path not set in conjunction with -source 1.7
+    [javac] 1 warning
 
 build:
 
 BUILD SUCCESSFUL
-Total time: 1 second
+Total time: 6 seconds
 OK
   Test collection: xic (Test --help)
     []: OK

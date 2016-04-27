@@ -1076,7 +1076,7 @@ public class TilingVisitor implements IRTreeVisitor {
 		List<Instruction> instructions = new ArrayList<Instruction>();
 		
 		/* Label */
-		Label fnLabel = new Label(fd.name());
+		Label fnLabel = new Label(fd.name(),true);
 		instructions.add(new Instruction(Operation.LABEL, fnLabel));
 		
 		/* Prologue */
@@ -1189,6 +1189,20 @@ public class TilingVisitor implements IRTreeVisitor {
 		if (tileMap.containsKey(mem)) {
 			return;
 		}
+		
+		if (mem.expr() instanceof IRBinOp) {
+			//OPTIMIZE TILING: addressing mode
+			Memory memory = createEffectiveMemory(mem);
+			if (memory != null) {
+				// TODO: memory should never be null if we're done implementing createEffectiveMemory
+
+				List<Instruction> emptyInstr = new ArrayList<Instruction>();
+				Tile dummyTile = new Tile(emptyInstr, 0, memory);
+				tileMap.put(mem, dummyTile);		//merged with children in IRMove
+				return;
+			}
+		}
+		
 		mem.expr().accept(this);
 		Tile childTile = tileMap.get(mem.expr());
 		Operand childDest = childTile.getDest();
@@ -1212,6 +1226,108 @@ public class TilingVisitor implements IRTreeVisitor {
 		tileMap.put(mem, finalTile);
 	}
 
+	/* Returns a Memory Operand with the most effective addressing mode */
+	private Memory createEffectiveMemory(IRMem mem) {
+		// TODO Auto-generated method stub
+		Memory resultMem = null;
+		
+		IRBinOp binopExpr = (IRBinOp) mem.expr();
+		if (binopExpr.opType() == OpType.ADD || binopExpr.opType() == OpType.SUB) {
+			
+			// Case 1: constantOffset(%base)
+			if (binopExpr.left() instanceof IRConst && binopExpr.right() instanceof IRTemp) {
+				IRConst leftConst = (IRConst) binopExpr.left();
+				IRTemp rightTemp = (IRTemp) binopExpr.right();
+				long constVal = 0;
+				if (binopExpr.opType() == OpType.SUB) {
+					constVal = leftConst.value() * -1;
+				}
+				else {
+					constVal = leftConst.value();
+				}
+				resultMem = new Memory(new Constant(constVal), new Register(rightTemp.name()));
+			}
+			
+			// Case 1: constantOffset(%base)
+			else if (binopExpr.left() instanceof IRTemp && binopExpr.right() instanceof IRConst) {
+				IRTemp leftTemp = (IRTemp) binopExpr.left();
+				IRConst rightConst = (IRConst) binopExpr.right();
+				long constVal = 0;
+				if (binopExpr.opType() == OpType.SUB) {
+					constVal = rightConst.value() * -1;
+				}
+				else {
+					constVal = rightConst.value();
+				}
+				resultMem = new Memory(new Constant(constVal), new Register(leftTemp.name()));
+			}
+			
+			// Case 2: constantOffset(%registerOffset, constantFactor)
+			else if (binopExpr.opType() == OpType.ADD && 
+					 binopExpr.left() instanceof IRConst &&
+					 binopExpr.right() instanceof IRBinOp) 
+			{
+				IRConst constantOffset = (IRConst) binopExpr.left();
+				IRBinOp binop = (IRBinOp) binopExpr.right();
+				if (binop.opType() == OpType.MUL) {
+					IRTemp registerOffset = null;
+					IRConst constantFactor = null;
+					
+					// ADD(MUL(TEMP, CONST)) => k(%ro, cf)
+					if (binop.left() instanceof IRTemp && binop.right() instanceof IRConst) {
+						registerOffset = (IRTemp) binop.left();
+						constantFactor = (IRConst) binop.right();
+					}
+					
+					// ADD(MUL(CONST cf, TEMP ro)) => k(%ro, cf)
+					else if (binop.left() instanceof IRConst && binop.right() instanceof IRTemp) {
+						registerOffset = (IRTemp) binop.right();
+						constantFactor = (IRConst) binop.left();
+					}
+					
+					else {
+						return null;
+					}
+					
+					resultMem = new Memory(new Constant(constantOffset.value()), 
+							new Register(registerOffset.name()), 
+							new Constant(constantFactor.value()));
+				}
+			}
+			
+			// Case 3: (%base, %registerOffset, constantFactor) 
+			else if ((binopExpr.opType() == OpType.ADD) &&
+				(binopExpr.left() instanceof IRTemp) && 
+				(binopExpr.right() instanceof IRBinOp)) 
+			{
+				IRTemp baseTemp = (IRTemp) binopExpr.left();
+				IRBinOp rightExpr = (IRBinOp) binopExpr.right();
+				if (rightExpr.opType() == OpType.MUL) {
+					IRTemp registerOffset = null;
+					IRConst constantFactor = null;
+					
+					if (rightExpr.left() instanceof IRConst && rightExpr.right() instanceof IRTemp) {
+						registerOffset = (IRTemp) rightExpr.right();
+						constantFactor = (IRConst) rightExpr.left();
+					}
+					else if (rightExpr.left() instanceof IRTemp && rightExpr.right() instanceof IRConst) {
+						registerOffset = (IRTemp) rightExpr.left();
+						constantFactor = (IRConst) rightExpr.right();
+					}
+					else {
+						return null;
+					}
+
+					resultMem = new Memory(new Constant(0),
+							new Register(baseTemp.name()), 
+							new Register(registerOffset.name()), 
+							new Constant(constantFactor.value()));
+				}
+			}
+		}
+		return resultMem;
+	}
+
 	@Override
 	public void visit(IRMove mov) {
 		if (tileMap.containsKey(mov)) {
@@ -1220,10 +1336,29 @@ public class TilingVisitor implements IRTreeVisitor {
 		
 		mov.expr().accept(this);
 		mov.target().accept(this);
-		Tile sourceTile = tileMap.get(mov.expr());
-		Tile targetTile = tileMap.get(mov.target());
+		Tile sourceTile = tileMap.get(mov.expr());		// sourceTile may contain the optimized memory operand
+		Tile targetTile = tileMap.get(mov.target());	// targetTile may contain the optimized memory operand
 		Operand sourceOperand = sourceTile.getDest();
 		Operand targetOperand = targetTile.getDest();
+		
+		/* OPTIMIZATON: addressing modes */
+		if ((!(sourceOperand instanceof Memory) && targetOperand instanceof Memory) ||
+			(!(targetOperand instanceof Memory) && sourceOperand instanceof Memory)) 
+		{
+			List<Instruction> instrList = new ArrayList<Instruction>();
+			int cost = 0;
+			Operand argDest = null;
+			Instruction movConstToMem = new Instruction(Operation.MOVQ, sourceOperand, targetOperand);
+			instrList.add(movConstToMem);
+			cost++;
+			argDest = targetOperand;
+			
+			Tile finalTile = new Tile(instrList, cost, argDest);
+			finalTile = Tile.mergeTiles(targetTile, finalTile);
+			finalTile = Tile.mergeTiles(sourceTile, finalTile);
+			tileMap.put(mov, finalTile);
+			return;
+		}
 		
 		
 		boolean redundant = sourceOperand.toString().equals(targetOperand.toString());		
@@ -1509,7 +1644,7 @@ public class TilingVisitor implements IRTreeVisitor {
 						newMem = new Memory(cons,rcx,rdx,fact);
 						added.add(movToReg2);
 					} else {
-						newMem = new Memory(cons,rcx,regOff,fact,6);
+						newMem = new Memory(cons,rcx,regOff,fact);
 					}
 				} else {
 					if (regOff != null && regOff.getType() == RegisterName.TEMP) {
@@ -1530,7 +1665,7 @@ public class TilingVisitor implements IRTreeVisitor {
 				// dest is constant or label
 				Operation op = currentInstruction.getOp();
 				Operand label = currentInstruction.getDest();
-				if (op == Operation.LABEL && label.toString().charAt(0) == '_') {
+				if (op == Operation.LABEL && ((Label) label).isFuncLabel()) {
 					functionSpaceMap.put(currentFunction,stackCounter);
 					currentFunction = label.toString();
 					stackCounter = 0;
@@ -1570,7 +1705,7 @@ public class TilingVisitor implements IRTreeVisitor {
 						newMem = new Memory(cons,rcx,rdx,fact);
 						added.add(movToReg2);
 					} else {
-						newMem = new Memory(cons,rcx,regOff,fact,6);
+						newMem = new Memory(cons,rcx,regOff,fact);
 					}
 				} else {
 					if (regOff != null && regOff.getType() == RegisterName.TEMP) {
@@ -1667,7 +1802,7 @@ public class TilingVisitor implements IRTreeVisitor {
 						newMem = new Memory(cons,rcx,rdx,fact);
 						added.add(movToReg2);
 					} else {
-						newMem = new Memory(cons,rcx,regOff,fact,6);
+						newMem = new Memory(cons,rcx,regOff,fact);
 					}
 				} else {
 					if (regOff != null && regOff.getType() == RegisterName.TEMP) {

@@ -1,5 +1,7 @@
 package jl2755.assembly;
 
+import java.util.Set;
+
 public interface Operand {
 
 	public String getOpType();
@@ -13,4 +15,6 @@ public interface Operand {
 	public boolean isRegFactorOffset();
 	public boolean isConstFactor();
 	public boolean isRegBase();
+	
+	public Set<Register> getRegistersUsed();
 }

@@ -1,5 +1,8 @@
 package jl2755.assembly;
 
+import java.util.HashSet;
+import java.util.Set;
+
 public class Constant implements Operand {
 
 	/** The value of this constant. */
@@ -61,6 +64,11 @@ public class Constant implements Operand {
 	@Override
 	public boolean isRegBase() {
 		return false;
+	}
+
+	@Override
+	public Set<Register> getRegistersUsed() {
+		return new HashSet<Register>();
 	}
 	
 }

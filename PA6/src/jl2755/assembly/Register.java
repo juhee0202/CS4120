@@ -1,5 +1,8 @@
 package jl2755.assembly;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import edu.cornell.cs.cs4120.util.InternalCompilerError;
 
 public class Register implements Operand {
@@ -391,6 +394,13 @@ public class Register implements Operand {
 	
 	public void setRegBase() {
 		isBase = true;
+	}
+
+	@Override
+	public Set<Register> getRegistersUsed() {
+		Set<Register> result = new HashSet<Register>();
+		result.add(this);
+		return result;
 	}
 
 	public boolean isMoveRelated() {

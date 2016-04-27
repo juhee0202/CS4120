@@ -1,5 +1,6 @@
 package jl2755.dataflow;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -10,13 +11,15 @@ import jl2755.controlflow.AACFGNode;
 import jl2755.controlflow.CFGNode;
 import jl2755.controlflow.ControlFlowGraph;
 
+import jl2755.assembly.Register;
+
 /**
  * Class that perform the live variable analysis
  * on the control flow graph.
  *
  * @param <Register>
  */
-public class LiveVariableAnalyzer<Register> extends Dataflow<Register> {
+public class LiveVariableAnalyzer extends Dataflow<Register> {
 	
 	/**
 	 * A mapping to keep track of the in set for
@@ -42,8 +45,11 @@ public class LiveVariableAnalyzer<Register> extends Dataflow<Register> {
 	 */
 	@Override
 	public Set<Register> meetOperator(Register... args) {
-		// TODO: Implement Operand .equals method.
-		return null;
+		Set<Register> results = new HashSet<Register>();
+		for (int i = 0; i < args.length; i++) {
+			results.add(args[i]);
+		}
+		return results;
 	}
 
 	/**
@@ -56,8 +62,38 @@ public class LiveVariableAnalyzer<Register> extends Dataflow<Register> {
 	 */
 	@Override
 	public boolean transferFunction(CFGNode arg) {
-		// TODO Complete
-		return false;
+		CFGNode firstSuccessor = arg.getSuccessor1();
+		CFGNode secondSuccessor = arg.getSuccessor2();
+		
+		assert(firstSuccessor == null ||firstSuccessor instanceof AACFGNode);
+		assert(secondSuccessor == null || secondSuccessor instanceof AACFGNode);
+		
+		assert(arg instanceof AACFGNode);
+		
+		AACFGNode AAView = (AACFGNode) arg;
+		
+		Set<Register> tempSet = new HashSet<Register>();
+		
+		if (firstSuccessor != null) {
+			tempSet.addAll(inMap.get(firstSuccessor));
+		}
+		if (secondSuccessor != null) {
+			tempSet.addAll(inMap.get(secondSuccessor));
+		}
+		
+		if (AAView.getDef() != null) {
+			tempSet.remove(AAView.getDef());
+		}
+		
+		tempSet.addAll(AAView.getUses());
+		
+		Set<Register> originalInSet = inMap.get(arg);
+		
+		if (originalInSet.equals(tempSet)) {
+			return false;
+		}
+		
+		return true;
 	}
 
 	/**

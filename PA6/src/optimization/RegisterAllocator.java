@@ -148,7 +148,7 @@ public class RegisterAllocator {
 		cfg = constructCFG();
 		
 		// Run live variable analysis
-		LiveVariableAnalyzer<Register> lva = new LiveVariableAnalyzer<Register>(cfg);
+		LiveVariableAnalyzer lva = new LiveVariableAnalyzer(cfg);
 		nodeToLiveRegs = lva.getInMap();
 		
 		// Create interference graph

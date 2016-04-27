@@ -80,4 +80,19 @@ public class BasicBlock {
 		return result;
 	}
 	
+	public List<IRStmt> getStmtList() {
+		return stmtList;
+	}
+
+	public void setStmtList(List<IRStmt> stmtList) {
+		this.stmtList = stmtList;
+	}
+
+	public String toString() {
+		String s = "";
+		for (IRStmt stmt : stmtList) {
+			s += stmt.toString();
+		}
+		return s;
+	}
 }

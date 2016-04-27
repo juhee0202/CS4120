@@ -3,7 +3,7 @@ package jl2755.controlflow;
 import edu.cornell.cs.cs4120.xic.ir.IRExpr;
 import edu.cornell.cs.cs4120.xic.ir.IRStmt;
 
-public class IRCFGNode extends CFGNode {
+public class CSECFGNode extends CFGNode {
 	/**
 	 * The Instruction that this CFGNode represents.
 	 */
@@ -23,21 +23,21 @@ public class IRCFGNode extends CFGNode {
 	 */
 	private IRExpr def;
 	
-	public IRCFGNode(IRStmt argStmt) {
+	public CSECFGNode(IRStmt argStmt) {
 		super();
 		underlyingIRStmt = argStmt;
 		
 	}
 	
-	private void computeUses() {
-		// TODO: Complete
+	private void computeKills() {
+		
 	}
 	
-	private void computeDefs() {
-		// TODO: Complete
+	private void computeExprs() {
+		
 	}
 	
-	public void addSuccessor(IRCFGNode argNode) {
+	public void addSuccessor(CSECFGNode argNode) {
 		proposeToSuccessor(argNode);
 		if (successor1 == null) {
 			successor1 = argNode;
@@ -49,5 +49,21 @@ public class IRCFGNode extends CFGNode {
 			assert(false);
 			System.out.println("Already added 2 successors");
 		}
+	}
+
+	@Override
+	public String dotOutput() {
+		String s = "\t" + underlyingIRStmt;
+		s += " -> {";
+		if (successor1 != null) {
+			s += ((CSECFGNode) successor1).underlyingIRStmt;
+			if (successor2 != null) {
+				s += " " + ((CSECFGNode) successor2).underlyingIRStmt;
+			}
+		}
+		
+		s += "}\n";
+		s += successor1.dotOutput() + successor2.dotOutput();
+		return s;
 	}	
 }

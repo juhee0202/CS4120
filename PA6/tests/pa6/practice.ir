@@ -1,0 +1,12 @@
+(COMPUNIT
+ Program
+ (FUNC
+  _Imain_paai
+  (SEQ
+   (MOVE (TEMP args) (TEMP _ARG0))
+   (MOVE (TEMP x) (CONST 5))
+   (CJUMP (EQ (TEMP x) (CONST 3)) l3)
+   (MOVE (TEMP x) (CONST 3))
+   (CJUMP (EQ (TEMP x) (CONST 5)) l3)
+   (LABEL l3)
+   (RETURN))))

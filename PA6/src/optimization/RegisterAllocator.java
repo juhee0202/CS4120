@@ -40,6 +40,9 @@ public class RegisterAllocator {
 	/** Map of function names to the set of registers it uses. */
 	private Map<String, Set<Register>> funcToRegsUsed;
 	
+	/** Name of current function. */
+	private String currentFunction;
+	
 	/** Map of CFGNodes to live registers. */
 	private Map<AACFGNode, Set<Register>> nodeToLiveRegs;
 
@@ -103,13 +106,15 @@ public class RegisterAllocator {
 	 * 
 	 * @param 
 	 */
-	public List<Instruction> registerAllocation(List<Instruction> instructions) {
+	public List<Instruction> registerAllocation(List<Instruction> instructions,
+			String currentFunc) {
 		// Clear all globals
 		funcToRegsUsed.clear();
 		regStack.clear();
 		neighborStack.clear();
 		program = instructions;
 		stackCounter = 0;
+		currentFunction = currentFunc;
 		
 		boolean didCoalesce;
 		boolean didFreeze;
@@ -143,7 +148,7 @@ public class RegisterAllocator {
 		cfg = constructCFG();
 		
 		// Run live variable analysis
-		LiveVariableAnalyzer<Register> lva = new LiveVariableAnalyzer<Register>(cfg);
+		LiveVariableAnalyzer lva = new LiveVariableAnalyzer(cfg);
 		nodeToLiveRegs = lva.getInMap();
 		
 		// Create interference graph
@@ -209,6 +214,7 @@ public class RegisterAllocator {
 				node2label.put(curr,label);
 				
 				if (op == Operation.JMP) {
+					prev.addSuccessor(curr);
 					prev = null;
 					continue;
 				}
@@ -249,6 +255,26 @@ public class RegisterAllocator {
 			}
 			list.add(instr);
 			regToInstructions.put((Register) src, list);
+		} else if (src instanceof Memory) {
+			Register base = ((Memory) src).getRegisterBase();
+			Register offset = ((Memory) src).getRegisterOffset();
+			List<Instruction> list;
+			if (regToInstructions.containsKey(base)) {
+				list = regToInstructions.get(base);
+			} else {
+				list = new ArrayList<Instruction>();
+			}
+			list.add(instr);
+			regToInstructions.put(base, list);
+			if (offset != null) {
+				if (regToInstructions.containsKey(offset)) {
+					list = regToInstructions.get(offset);
+				} else {
+					list = new ArrayList<Instruction>();
+				}
+				list.add(instr);
+				regToInstructions.put(offset, list);
+			}
 		}
 		
 		if (dest instanceof Register) {
@@ -260,7 +286,27 @@ public class RegisterAllocator {
 			}
 			list.add(instr);
 			regToInstructions.put((Register) dest,list);
-		} 
+		} else if (dest instanceof Memory) {
+			Register base = ((Memory) dest).getRegisterBase();
+			Register offset = ((Memory) dest).getRegisterOffset();
+			List<Instruction> list;
+			if (regToInstructions.containsKey(base)) {
+				list = regToInstructions.get(base);
+			} else {
+				list = new ArrayList<Instruction>();
+			}
+			list.add(instr);
+			regToInstructions.put(base, list);
+			if (offset != null) {
+				if (regToInstructions.containsKey(offset)) {
+					list = regToInstructions.get(offset);
+				} else {
+					list = new ArrayList<Instruction>();
+				}
+				list.add(instr);
+				regToInstructions.put(offset, list);
+			}
+		}
 		
 		if (instr.isMoveWithTwoRegs()) {
 			List<Instruction> srcList;
@@ -341,16 +387,10 @@ public class RegisterAllocator {
 					}
 					
 					// Replace replacedReg of all related instructions with replacingReg
-					List<Instruction> replacedInsts = regToInstructions.get(replacedReg);
-					for (Instruction inst : replacedInsts) {	// Should automatically replace operands in program
-						if (inst.getDest().equals(replacedReg)) {
-							inst.setDest(replacingReg);
-						} else {
-							inst.setSrc(replacingReg);
-						}
-					}
+					replace(replacedReg,replacingReg);
+					
 					// Converge instruction lists
-					regToInstructions.get(replacingReg).addAll(replacedInsts);
+					regToInstructions.get(replacingReg).addAll(regToInstructions.get(replacedReg));
 					regToInstructions.remove(replacedReg);
 					// Converge move lists
 					List<Instruction> replacedMovs = regToMovInstructions.get(replacedReg);
@@ -404,9 +444,7 @@ public class RegisterAllocator {
 				
 				// Freeze all moves related to frozen
 				frozen.setMoveRelated(false);
-				List<Instruction> frozenMoves = regToMovInstructions.get(frozen);
-				regToMovInstructions.remove(frozen);
-				for (Instruction frozenMove : frozenMoves) {
+				for (Instruction frozenMove : regToMovInstructions.get(frozen)) {
 					Register relatedReg = otherRegister(frozenMove,frozen);
 					List<Instruction> relatedMoves = regToMovInstructions.get(relatedReg);
 					relatedMoves.remove(frozenMove);
@@ -416,6 +454,8 @@ public class RegisterAllocator {
 						regToMovInstructions.remove(relatedReg);
 					}
 				}
+				regToMovInstructions.remove(frozen);
+				
 				result = true;
 				break;
 			}
@@ -468,11 +508,17 @@ public class RegisterAllocator {
 	 */
 	private boolean select() {
 		boolean result = false;
+		Set<Register> usedRegs = new HashSet<Register>();
 		Set<Register> nodes = graph.getNodes();
+		for (Register preColored : nodes) {
+			assert(preColored.getType() != RegisterName.TEMP);
+			usedRegs.add(preColored);
+		}
 		Map<Register,Set<Register>> edges = graph.getEdges();
 		for (Register reg : regStack) {
 			// Attempt to color reg
-			if (!color(reg,edges.get(reg))) {
+			Register color = color(reg,edges.get(reg));
+			if (color == null) {
 				// Spill reg to stack
 				Constant addr = new Constant(-8*++stackCounter);
 				Memory mem = new Memory(addr,RBP);
@@ -484,8 +530,13 @@ public class RegisterAllocator {
 					program.add(index, movFromStack);
 				}
 				result = true;
+			} else {
+				// Set all related instruction to use color
+				usedRegs.add(color);
+				replace(reg,color);
 			}
 		}
+		funcToRegsUsed.put(currentFunction, usedRegs);
 		return result;
 	}
 
@@ -494,10 +545,10 @@ public class RegisterAllocator {
 	 * 
 	 * @param reg	the given register to color
 	 * @param neighbors	the set of neighbors of reg
-	 * @return		true if successfully colored
-	 * 				false otherwise
+	 * @return		the new register to use if successfully colored
+	 * 				null otherwise
 	 */
-	private boolean color(Register reg, Set<Register> neighbors) {
+	private Register color(Register reg, Set<Register> neighbors) {
 		// Check colors of neighbors
 		Set<Register> colors = new HashSet<Register>();
 		colors.addAll(Arrays.asList(availableRegs));
@@ -505,9 +556,51 @@ public class RegisterAllocator {
 			colors.remove(neighbor);
 		}
 		if (colors.size() > 0) {
-			
+			for (Register color : colors) {
+				return color;
+			}
 		}
-		
-		return false;
+		return null;
+	}
+	
+	/**
+	 * Replaces all instructions that use replaced with replacing.
+	 * 
+	 * @param replace	the register to replace
+	 * @param replacing	the register that replaces
+	 */
+	private void replace(Register replaced, Register replacing) {
+		for (Instruction related : regToInstructions.get(replaced)) {
+			Operand src = related.getSrc();
+			Operand dest = related.getDest();
+			if (src instanceof Register) {
+				if (replaced.equals(src)) {
+					related.setSrc(replacing);
+				}
+			} else if (src instanceof Memory) {
+				Memory mem = (Memory) src;
+				Register base = mem.getRegisterBase();
+				Register offset = mem.getRegisterOffset();
+				if (replaced.equals(base)) {
+					mem.setRegisterBase(replacing);
+				} else if (replaced.equals(offset)) {
+					mem.setRegisterOffset(replacing);
+				}
+			}
+			if (dest instanceof Register) {
+				if (replaced.equals(dest)) {
+					related.setDest(replacing);
+				}
+			} else if (dest instanceof Memory) {
+				Memory mem = (Memory) dest;
+				Register base = mem.getRegisterBase();
+				Register offset = mem.getRegisterOffset();
+				if (replaced.equals(base)) {
+					mem.setRegisterBase(replacing);
+				} else if (replaced.equals(offset)) {
+					mem.setRegisterOffset(replacing);
+				}
+			}
+		}
 	}
 }

@@ -66,6 +66,7 @@ public class DominatorTree {
 	 * Currently, this is an inefficient iterative algorithm
 	 * TODO: Replace with Lengauer and Tarjan's algorithm based on DFS
 	 */
+	// TODO: test
 	private void computeDominanceRelation() {
 		/* Initialize */
 		dominanceMap = new HashMap<CFGNode, Set<CFGNode>>();

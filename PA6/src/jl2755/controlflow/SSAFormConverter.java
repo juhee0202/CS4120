@@ -39,13 +39,12 @@ public class SSAFormConverter {
 	}
 
 	/**
-	 * Inserts phi-function by following Dominance Frontier criterion
+	 * Inserts phi-function by following the Dominance Frontier criterion
 	 */
 	private void insertPhiFunctions() {
-		// TODO Auto-generated method stub
 		
 	}
-
+	
 	/**
 	 * Computes the dominance frontier (DF) map
 	 * DF[v] = set of node w's such that

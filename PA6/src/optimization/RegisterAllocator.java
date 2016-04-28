@@ -26,7 +26,7 @@ import jl2755.controlflow.ControlFlowGraph;
 import jl2755.dataflow.InterferenceGraph;
 import jl2755.dataflow.LiveVariableAnalyzer;
 
-public class RegisterAllocator {
+public class RegisterAllocator extends Optimization {
 	
 	/** Current list of instructions. */
 	private List<Instruction> program;
@@ -148,7 +148,7 @@ public class RegisterAllocator {
 		cfg = constructCFG();
 		
 		// Run live variable analysis
-		LiveVariableAnalyzer<Register> lva = new LiveVariableAnalyzer<Register>(cfg);
+		LiveVariableAnalyzer lva = new LiveVariableAnalyzer(cfg);
 		nodeToLiveRegs = lva.getInMap();
 		
 		// Create interference graph
@@ -602,5 +602,11 @@ public class RegisterAllocator {
 				}
 			}
 		}
+	}
+
+	@Override
+	public boolean run() {
+		// TODO Auto-generated method stub
+		return false;
 	}
 }

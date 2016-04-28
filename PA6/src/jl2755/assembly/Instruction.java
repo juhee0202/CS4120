@@ -12,7 +12,8 @@ public class Instruction {
 		ADDQ, SUBQ, IMULQ1, IMULQ2, IDIVQ, ANDQ, ORQ, XORQ,
 		CMOVE, CMOVNE, CMOVL, CMOVLE, CMOVG, CMOVGE, MOVQ, CMPQ, TESTQ,
 		CALLQ, PUSHQ, LABEL, ENTER, LEAVE, POPQ, RET,
-		JMP, JE, JNE, JG, JGE, JL, JLE, JZ, JNZ;
+		JMP, JE, JNE, JG, JGE, JL, JLE, JZ, JNZ,
+		LEAQ;
 		
 		public static final Operation[] JUMP_OPS;
 		
@@ -91,6 +92,8 @@ public class Instruction {
 				return "cmpq";
 			case TESTQ:
 				return "testq";
+			case LEAQ:
+				return "leaq";
 			default:
 				break;
 	        }
@@ -166,6 +169,8 @@ public class Instruction {
 				return 1;
 			case TESTQ:
 				return 2;
+			case LEAQ:
+				return 2;
 			default:
 				break;
 	        }
@@ -183,10 +188,11 @@ public class Instruction {
 		}
 	}
 	
-	private Operation op;
-	private Operand src;
-	private Operand dest;
-	private int cost;
+	protected Operation op;
+	protected Operand src;
+	protected Operand dest;
+	protected int cost;
+	protected boolean isLea = false;
 	
 	/** Used for register allocation. */
 	private boolean isMoveWithTwoRegs = false;
@@ -289,6 +295,9 @@ public class Instruction {
 	}
 	public void setCost(int cost) {
 		this.cost = cost;
+	}
+	public boolean isLea() {
+		return isLea;
 	}
 	
 	public boolean isMoveWithTwoRegs() {

@@ -20,16 +20,29 @@ public abstract class CFGNode {
 	 * The list of predecessors of this CFGNode,
 	 * depending on the implementation.
 	 */
-	protected Set<CFGNode> predecessors;
+	protected List<CFGNode> predecessors;
+	
+	/**
+	 * Immediate dominator of this CFGNode
+	 * (aka immediate parent in Dominator Tree)
+	 */
+	protected CFGNode idom;
+	
+	/**
+	 * Set of children nodes in Dominator Tree
+	 */
+	protected Set<CFGNode> children;
 
 	public CFGNode() {
-		predecessors = new HashSet<CFGNode>();
+		predecessors = new ArrayList<CFGNode>();
+		children = new HashSet<CFGNode>();
 	}
 	
 	public CFGNode(CFGNode argNode) {
 		successor1 = argNode;
 		proposeToSuccessor(successor1);
-		predecessors = new HashSet<CFGNode>();
+		predecessors = new ArrayList<CFGNode>();
+		children = new HashSet<CFGNode>();
 	}
 	
 	public CFGNode(CFGNode argNode1, CFGNode argNode2) {
@@ -37,7 +50,8 @@ public abstract class CFGNode {
 		successor2 = argNode2;
 		proposeToSuccessor(successor1);
 		proposeToSuccessor(successor2);
-		predecessors = new HashSet<CFGNode>();
+		predecessors = new ArrayList<CFGNode>();
+		children = new HashSet<CFGNode>();
 	}
 	
 	protected void proposeToSuccessor(CFGNode argNode) {
@@ -51,9 +65,25 @@ public abstract class CFGNode {
 	public CFGNode getSuccessor2() {
 		return successor2;
 	}
+	
+	public Set<CFGNode> getSuccessors() {
+		Set<CFGNode> successors = new HashSet<CFGNode>();
+		if (successor1 != null) {
+			successors.add(successor1);
+		}
+		if (successor2 != null) {
+			successors.add(successor2);
+		}
+		return successors;
+	}
 
-	public Set<CFGNode> getPredecessors() {
+	public List<CFGNode> getPredecessors() {
 		return predecessors;
+	}
+	
+	public void addChild(CFGNode node) {
+		children.add(node);
+		node.idom = this;
 	}
 	
 	public abstract String dotOutput();

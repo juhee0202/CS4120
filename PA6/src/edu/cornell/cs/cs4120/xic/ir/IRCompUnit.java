@@ -29,7 +29,7 @@ public class IRCompUnit extends IRNode {
     }
 
     public void appendFunc(IRFuncDecl func) {
-        functions.put(func.name(), func);
+        functions.put(func.getABIName(), func);
     }
 
     public String name() {
@@ -57,7 +57,7 @@ public class IRCompUnit extends IRNode {
         for (IRFuncDecl func : functions.values()) {
             IRFuncDecl newFunc = (IRFuncDecl) v.visit(this, func);
             if (newFunc != func) modified = true;
-            results.put(newFunc.name(), newFunc);
+            results.put(newFunc.getABIName(), newFunc);
         }
 
         if (modified) return new IRCompUnit(name, results);

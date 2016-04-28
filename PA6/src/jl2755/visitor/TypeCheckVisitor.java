@@ -349,6 +349,7 @@ public class TypeCheckVisitor implements ASTVisitor {
 				Main.handleSemanticError(seo);
 			}
 		}
+		tempType = new UnitType();
 		stmtType = new UnitType();
 	}
 
@@ -674,6 +675,12 @@ public class TypeCheckVisitor implements ASTVisitor {
 		funType = (FunType) env.get(id);	// safe
 		functionReturnType = funType.getReturnTypes();
 		fd.getBlockStmt().accept(this);
+		// check the return type using tempType
+		if (!tempType.equals(functionReturnType)) {
+			String s = "Expected " + functionReturnType.toString() + ", but found " + tempType.toString();
+			SemanticErrorObject seo = new SemanticErrorObject(fd.getIdentifier_line(), fd.getIdentifier_col(), s);
+			Main.handleSemanticError(seo);			
+		}
 		
 		/* Restore the parent scope */
 		for (Entry<String, Type> entry : paramToType.entrySet()) {
@@ -1110,6 +1117,7 @@ public class TypeCheckVisitor implements ASTVisitor {
 		}
 		
 		stmtType = new UnitType();
+		tempType = new UnitType();
 	}
 
 	@Override
@@ -1260,6 +1268,7 @@ public class TypeCheckVisitor implements ASTVisitor {
 		}
 		
 		stmtType = new UnitType();
+		tempType = new UnitType();
 	}
 	
 	@Override
@@ -1300,6 +1309,7 @@ public class TypeCheckVisitor implements ASTVisitor {
 		stack.push(id);
 		
 		stmtType = new UnitType();
+		tempType = new UnitType();
 	}
 
 	/**

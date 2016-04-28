@@ -3,12 +3,12 @@ package jl2755.dataflow;
 import java.util.Set;
 
 import jl2755.controlflow.CFGNode;
-import jl2755.controlflow.CSECFGNode;
+import jl2755.controlflow.IRCFGNode;
 
-public class CommonSubExp extends Dataflow<CSECFGNode> {
+public class CommonSubExp extends Dataflow<IRCFGNode> {
 
 	@Override
-	public Set<CSECFGNode> meetOperator(CSECFGNode... args) {
+	public Set<IRCFGNode> meetOperator(IRCFGNode... args) {
 		// TODO Auto-generated method stub
 		return null;
 	}

@@ -15,6 +15,7 @@ public interface Operand {
 	public boolean isRegFactorOffset();
 	public boolean isConstFactor();
 	public boolean isRegBase();
+	public boolean isFuncLabel();
 	
 	public Set<Register> getRegistersUsed();
 }

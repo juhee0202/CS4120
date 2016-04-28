@@ -1,4 +1,4 @@
-package optimization;
+package jl2755.optimization;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -12,6 +12,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.Stack;
 
+import edu.cornell.cs.cs4120.xic.ir.IRFuncDecl;
 import jl2755.assembly.Constant;
 import jl2755.assembly.Instruction;
 import jl2755.assembly.Register;
@@ -26,7 +27,7 @@ import jl2755.controlflow.ControlFlowGraph;
 import jl2755.dataflow.InterferenceGraph;
 import jl2755.dataflow.LiveVariableAnalyzer;
 
-public class RegisterAllocator {
+public class RegisterAllocator extends Optimization {
 	
 	/** Current list of instructions. */
 	private List<Instruction> program;
@@ -94,11 +95,20 @@ public class RegisterAllocator {
 	
 	private int stackCounter;
 	
-	public RegisterAllocator() {
+	private boolean Omc;
+	
+	public RegisterAllocator(boolean omc) {
 		// Initialize globals
 		funcToRegsUsed = new HashMap<String,Set<Register>>();
 		regStack = new Stack<Register>();
 		neighborStack = new Stack<Set<Register>>();
+		Omc = omc;
+	}
+	
+	@Override
+	public boolean run(ControlFlowGraph cfg) {
+		// TODO Auto-generated method stub
+		return false;
 	}
 	
 	/**
@@ -107,14 +117,14 @@ public class RegisterAllocator {
 	 * @param 
 	 */
 	public List<Instruction> registerAllocation(List<Instruction> instructions,
-			String currentFunc) {
+			IRFuncDecl currentFunc) {
 		// Clear all globals
-		funcToRegsUsed.clear();
+//		funcToRegsUsed.clear();
 		regStack.clear();
 		neighborStack.clear();
 		program = instructions;
-		stackCounter = 0;
-		currentFunction = currentFunc;
+		stackCounter = currentFunc.getNumSavedCalleeRegs();
+		currentFunction = currentFunc.getABIName();
 		
 		boolean didCoalesce;
 		boolean didFreeze;
@@ -122,6 +132,7 @@ public class RegisterAllocator {
 		boolean didActuallySpill = true;
 		while (didActuallySpill) {
 			build();
+
 			didPotentiallySpill = true;
 			while (didPotentiallySpill) {
 				didFreeze = true;
@@ -129,7 +140,11 @@ public class RegisterAllocator {
 					didCoalesce = true;
 					while (didCoalesce) {
 						simplify();
-						didCoalesce = coalesce();
+						if (Omc) {
+							didCoalesce = coalesce();
+						} else {
+							didCoalesce = false;
+						}
 					}
 					didFreeze = freeze();
 				}
@@ -148,7 +163,7 @@ public class RegisterAllocator {
 		cfg = constructCFG();
 		
 		// Run live variable analysis
-		LiveVariableAnalyzer<Register> lva = new LiveVariableAnalyzer<Register>(cfg);
+		LiveVariableAnalyzer lva = new LiveVariableAnalyzer(cfg);
 		nodeToLiveRegs = lva.getInMap();
 		
 		// Create interference graph
@@ -603,4 +618,9 @@ public class RegisterAllocator {
 			}
 		}
 	}
+
+	public int getStackCounter() {
+		return stackCounter;
+	}
+	
 }

@@ -1,0 +1,11 @@
+digraph {
+{	rankdir=LR
+	node[shape=box]
+}	"func" -> {"movq	$5, %temp"}
+	"movq	$5, %temp" -> {"jnz	l2"}
+	"jnz	l2" -> {"callq	func2", "ret"}
+	"callq	func2" -> {"jmp	l2"}
+	"jmp	l2" -> {"ret"}
+	"ret" -> {}
+	"ret" -> {}
+}

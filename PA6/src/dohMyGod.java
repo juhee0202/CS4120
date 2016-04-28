@@ -1,5 +1,9 @@
 import static org.junit.Assert.*;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -12,7 +16,13 @@ import org.junit.Test;
 import edu.cornell.cs.cs4120.util.CodeWriterSExpPrinter;
 import edu.cornell.cs.cs4120.util.SExpPrinter;
 import edu.cornell.cs.cs4120.xic.ir.IRNode;
+import jl2755.assembly.Constant;
+import jl2755.assembly.Instruction;
+import jl2755.assembly.Instruction.Operation;
+import jl2755.assembly.Label;
+import jl2755.assembly.Register;
 import jl2755.assembly.Tile;
+import jl2755.controlflow.ControlFlowGraph;
 import jl2755.visitor.IRTreeEqualsVisitor;
 import jl2755.visitor.TilingVisitor;
 
@@ -167,6 +177,46 @@ public class dohMyGod {
 		bool = bool && false;
 		System.out.println(bool);
 		System.out.println(bool & false);
+	}
+	
+	@Test
+	public void testCFG() {
+		List<Instruction> list = new ArrayList<Instruction>();
+		Label l = new Label("func");
+		Instruction label = new Instruction(Operation.LABEL,l);
+		Register temp = new Register("temp");
+		Instruction move = new Instruction(Operation.MOVQ,new Constant(5),temp);
+		Label l1 = new Label("l1");
+		Label l2 = new Label("l2");
+		Instruction label1 = new Instruction(Operation.LABEL,l1);
+		Instruction label2 = new Instruction(Operation.LABEL,l2);
+		Instruction cj = new Instruction(Operation.JNZ,l1,l2);
+		Instruction call = new Instruction(Operation.CALLQ,new Label("func2"));
+		Instruction jmp = new Instruction(Operation.JMP,l2);
+		Instruction ret = new Instruction(Operation.RET);
+		list.add(label);
+		list.add(move);
+		list.add(cj);
+		list.add(label1);
+		list.add(call);
+		list.add(jmp);
+		list.add(label2);
+		list.add(ret);
+		ControlFlowGraph cfg = new ControlFlowGraph(list);
+		System.out.println(cfg.dotOutput());
+		
+		try{
+		File file = new File("cfgtest" + "_" + "main" + "_" + "initial.dot");
+		if (!file.exists()) {
+			file.createNewFile();
+		}
+		FileWriter fw = new FileWriter(file.getAbsoluteFile());
+		BufferedWriter bwCFG = new BufferedWriter(fw);
+		bwCFG.write(cfg.dotOutput());
+		bwCFG.close();
+		} catch (IOException e) {
+			
+		}
 	}
 
 }

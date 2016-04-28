@@ -20,7 +20,7 @@ public abstract class CFGNode {
 	 * The list of predecessors of this CFGNode,
 	 * depending on the implementation.
 	 */
-	protected Set<CFGNode> predecessors;
+	protected List<CFGNode> predecessors;
 	
 	/**
 	 * Immediate dominator of this CFGNode
@@ -34,14 +34,14 @@ public abstract class CFGNode {
 	protected Set<CFGNode> children;
 
 	public CFGNode() {
-		predecessors = new HashSet<CFGNode>();
+		predecessors = new ArrayList<CFGNode>();
 		children = new HashSet<CFGNode>();
 	}
 	
 	public CFGNode(CFGNode argNode) {
 		successor1 = argNode;
 		proposeToSuccessor(successor1);
-		predecessors = new HashSet<CFGNode>();
+		predecessors = new ArrayList<CFGNode>();
 		children = new HashSet<CFGNode>();
 	}
 	
@@ -50,7 +50,7 @@ public abstract class CFGNode {
 		successor2 = argNode2;
 		proposeToSuccessor(successor1);
 		proposeToSuccessor(successor2);
-		predecessors = new HashSet<CFGNode>();
+		predecessors = new ArrayList<CFGNode>();
 		children = new HashSet<CFGNode>();
 	}
 	
@@ -77,7 +77,7 @@ public abstract class CFGNode {
 		return successors;
 	}
 
-	public Set<CFGNode> getPredecessors() {
+	public List<CFGNode> getPredecessors() {
 		return predecessors;
 	}
 	

@@ -21,7 +21,6 @@ public class IRCFGNode extends CFGNode {
 	public IRCFGNode(IRStmt argStmt) {
 		super();
 		underlyingIRStmt = argStmt;
-		
 	}
 	
 	private void computeKills() {
@@ -89,4 +88,5 @@ public class IRCFGNode extends CFGNode {
 		}
 		return s;
 	}	
+
 }

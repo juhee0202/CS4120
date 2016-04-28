@@ -15,7 +15,7 @@ public class DominatorTree {
 	private CFGNode root;
 	
 	/** Maps node n to the set of nodes that dominate n */
-	protected Map<CFGNode, Set<CFGNode>> dominanceMap;
+	Map<CFGNode, Set<CFGNode>> dominanceMap;
 	
 	public DominatorTree(ControlFlowGraph argCfg) {
 		cfg = argCfg;
@@ -66,7 +66,6 @@ public class DominatorTree {
 	 * Currently, this is an inefficient iterative algorithm
 	 * TODO: Replace with Lengauer and Tarjan's algorithm based on DFS
 	 */
-	// TODO: test
 	private void computeDominanceRelation() {
 		/* Initialize */
 		dominanceMap = new HashMap<CFGNode, Set<CFGNode>>();
@@ -118,5 +117,9 @@ public class DominatorTree {
 				}
 			}
 		}
+	}
+
+	public CFGNode getRoot() {
+		return root;
 	}
 }

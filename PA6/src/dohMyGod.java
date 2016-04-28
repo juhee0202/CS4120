@@ -168,5 +168,13 @@ public class dohMyGod {
 		System.out.println(bool);
 		System.out.println(bool & false);
 	}
+	
+	@Test 
+	public void test6() {
+		TestingEquals temp = new TestingEquals3();
+		TestingEquals2 temp2 = new TestingEquals3();
+		System.out.println(temp.equals(null));
+		System.out.println(temp2.equals(null));
+	}
 
 }

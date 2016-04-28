@@ -9,17 +9,13 @@ import jl2755.assembly.Operand;
 import jl2755.assembly.Register;
 
 public class AACFGNode extends CFGNode {
-	/**
-	 * The Instruction that this CFGNode represents.
-	 */
+	
+	/** The Instruction that this CFGNode represents. */
 	private Instruction underlyingInstruction;
-	/**
-	 * The use (if applicable) of this AACFGNode.
-	 */
+	
+	/** The use (if applicable) of this AACFGNode. */
 	private Register use1;
-	/**
-	 * The second use of this AACFGNode.
-	 */
+	/** The second use of this AACFGNode. */
 	private Register use2;
 	/**
 	 * The third (there can be at most 3) use of
@@ -27,10 +23,7 @@ public class AACFGNode extends CFGNode {
 	 * src or dest can have 2 Registers in it as a Memory operand.
 	 */
 	private Register use3;
-	/**
-	 * The one and only (if applicable) def
-	 * of this AACFGNode.
-	 */
+	/** The one and only (if applicable) def of this AACFGNode. */
 	private Register def;
 	
 	public AACFGNode(Instruction argInstruction) {

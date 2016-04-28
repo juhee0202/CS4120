@@ -429,4 +429,9 @@ public class Register implements Operand {
 		return name.hashCode() + type.hashCode();
 	}
 	
+	@Override
+	public boolean isFuncLabel() {
+		return false;
+	}
+	
 }

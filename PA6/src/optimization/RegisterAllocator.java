@@ -12,6 +12,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.Stack;
 
+import edu.cornell.cs.cs4120.xic.ir.IRFuncDecl;
 import jl2755.assembly.Constant;
 import jl2755.assembly.Instruction;
 import jl2755.assembly.Register;
@@ -94,11 +95,14 @@ public class RegisterAllocator {
 	
 	private int stackCounter;
 	
-	public RegisterAllocator() {
+	private boolean Omc;
+	
+	public RegisterAllocator(boolean omc) {
 		// Initialize globals
 		funcToRegsUsed = new HashMap<String,Set<Register>>();
 		regStack = new Stack<Register>();
 		neighborStack = new Stack<Set<Register>>();
+		Omc = omc;
 	}
 	
 	/**
@@ -107,14 +111,14 @@ public class RegisterAllocator {
 	 * @param 
 	 */
 	public List<Instruction> registerAllocation(List<Instruction> instructions,
-			String currentFunc) {
+			IRFuncDecl currentFunc) {
 		// Clear all globals
-		funcToRegsUsed.clear();
+//		funcToRegsUsed.clear();
 		regStack.clear();
 		neighborStack.clear();
 		program = instructions;
-		stackCounter = 0;
-		currentFunction = currentFunc;
+		stackCounter = currentFunc.getNumSavedCalleeRegs();
+		currentFunction = currentFunc.name();
 		
 		boolean didCoalesce;
 		boolean didFreeze;
@@ -122,6 +126,7 @@ public class RegisterAllocator {
 		boolean didActuallySpill = true;
 		while (didActuallySpill) {
 			build();
+
 			didPotentiallySpill = true;
 			while (didPotentiallySpill) {
 				didFreeze = true;
@@ -129,7 +134,11 @@ public class RegisterAllocator {
 					didCoalesce = true;
 					while (didCoalesce) {
 						simplify();
-						didCoalesce = coalesce();
+						if (Omc) {
+							didCoalesce = coalesce();
+						} else {
+							didCoalesce = false;
+						}
 					}
 					didFreeze = freeze();
 				}
@@ -602,5 +611,9 @@ public class RegisterAllocator {
 				}
 			}
 		}
+	}
+
+	public int getStackCounter() {
+		return stackCounter;
 	}
 }

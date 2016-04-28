@@ -14,11 +14,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.cli.AlreadySelectedException;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.GnuParser;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
+import org.apache.commons.cli.OptionGroup;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
@@ -56,21 +58,37 @@ public class Main {
 	/** true if optimizations are enabled
 	 *  false if optimizations are disabled 
 	 */
-	public static boolean optimize = true;
 	public static String target = "linux";
 
-	public static final int NUM_OPTS = 6;
+	// Optimization fields
 	public static final String[] OPTS = 
 		{"cf", "reg", "mc", "uce", "cse", "temp"};
+	public static boolean[] enabled = new boolean[6];
+	public static final int CF = 0;
+	public static final int REG = 1;
+	public static final int MC = 2;
+	public static final int UCE = 3;
+	public static final int CSE = 4;
+	public static final int TEMP = 5;
+	
+	public static HashMap<String, Symbol> fileToSymbol;
+	public static HashMap<String, Program> fileToAST;
+	public static HashMap<String, IRNode> fileToIR;
+	
+	public static CommandLine cmd;
 
 	/* All path strings are responsible for adding their own trailing forward-slash
 	 * and deleting their own leading forward-slash
 	 */
 	public static void main(String[] args) {
+		// Initialize globals
+		fileToSymbol = new HashMap<String, Symbol>();
+		fileToAST = new HashMap<String, Program>();
+		fileToIR = new HashMap<String, IRNode>();
+		
 		// Initialize command line
 		Options options = optionsInit();
 		CommandLineParser parser = new GnuParser();
-		CommandLine cmd;
 		try {
 			cmd = parser.parse(options, args);
 		} catch (ParseException exp) {
@@ -84,11 +102,10 @@ public class Main {
 		destAPath = "";
 		libPath = "";
 		currPath = System.getProperty("user.dir") + "/";
-		//        System.out.println("currPath: " + currPath);
 
 		// Check path and optimization options
 		try {
-			optionsCheck(cmd, options);
+			optionsCheck(options);
 		} catch (Exception e1) {
 			if (e1.getMessage() != null) {
 				System.out.println(e1.getMessage());
@@ -97,58 +114,10 @@ public class Main {
 		}
 
 		// Get files to process
-//		String[] lexArgs = cmd.getOptionValues("l");
-//		String[] parseArgs = cmd.getOptionValues("p");
-//		String[] typecheckArgs = cmd.getOptionValues("t");
-//		String[] irgenArgs = cmd.getOptionValues("irgen");
-//		String[] irrunArgs = cmd.getOptionValues("irrun");
-//		String[] leftoverArgs = cmd.getArgs();
-//
-//		if (lexArgs == null) {
-//			lexArgs = new String[0];
-//		} 
-//		if (parseArgs == null) {
-//			parseArgs = new String[0];
-//		} 
-//		if (typecheckArgs == null) {
-//			typecheckArgs = new String[0];
-//		} 
-//		if (irgenArgs == null) {
-//			irgenArgs = new String[0];
-//		} 
-//		if (irrunArgs == null) {
-//			irrunArgs = new String[0];
-//		} 
-//		if (leftoverArgs == null) {
-//			leftoverArgs = new String[0];
-//		} 
-//
-//		List<String> lexFiles = new ArrayList<String>(Arrays.asList(lexArgs));; 
-//		List<String> parseFiles = new ArrayList<String>(Arrays.asList(parseArgs));
-//		List<String> typecheckFiles = new ArrayList<String>(Arrays.asList(typecheckArgs));
-//		List<String> irgenFiles = new ArrayList<String>(Arrays.asList(irgenArgs));
-//		List<String> irrunFiles = new ArrayList<String>(Arrays.asList(irrunArgs));
-//		List<String> leftoverFiles = new ArrayList<String>(Arrays.asList(leftoverArgs));
-//		List<String> files;
-		
 		String[] files = cmd.getArgs();
 
 		/* LEX */
 		if (cmd.hasOption("l")) {
-//			if (lexFiles.size() == 0) {
-//				files = concat(parseFiles, 
-//						typecheckFiles, 
-//						irgenFiles, 
-//						irrunFiles, 
-//						leftoverFiles);
-//			} else {
-//				files = lexFiles;
-//			}			
-//			if (files.length == 0) {
-//				System.out.println("Missing argument for xic");
-//				return;
-//			}
-
 			for (String file: files) {
 				try { 
 					lex(file);
@@ -156,26 +125,13 @@ public class Main {
 					System.out.println(srcPath + file + " is not found.");
 				} catch (Exception e) {
 					e.printStackTrace();
+					return;
 				}
 			}
 		}
 
 		/* PARSE */
 		if (cmd.hasOption("p")) {
-//			if (parseFiles.size() == 0) {
-//				files = concat(lexFiles, 
-//						typecheckFiles, 
-//						irgenFiles, 
-//						irrunFiles, 
-//						leftoverFiles);
-//			} else {
-//				files = parseFiles;
-//			}
-//			if (files.length == 0) {
-//				System.out.println("Missing argument for xic");
-//				return;
-//			}
-
 			for (String file: files) {
 				try { 
 					parse(file);
@@ -183,26 +139,13 @@ public class Main {
 					System.out.println(srcPath + file + " is not found.");
 				} catch (Exception e) {
 					e.printStackTrace();
+					return;
 				}
 			}
 		}
 
 		/* TYPECHECK */
 		if (cmd.hasOption("t")) {
-//			if (typecheckFiles.size() == 0) {
-//				files = concat(lexFiles, 
-//						parseFiles, 
-//						irgenFiles, 
-//						irrunFiles, 
-//						leftoverFiles);
-//			} else {
-//				files = typecheckFiles;
-//			}
-//			if (files.length == 0) {
-//				System.out.println("Missing argument for xic");
-//				return;
-//			}
-
 			for (String file: files) {
 				try { 
 					typecheck(file);
@@ -210,26 +153,13 @@ public class Main {
 					System.out.println(srcPath + file + " is not found.");
 				} catch (Exception e) {
 					e.printStackTrace();
+					return;
 				}
 			}
 		}
 
 		/* IR GENERATION */
 		if (cmd.hasOption("irgen") || cmd.hasOption("optir")) {
-//			if (irgenFiles.size() == 0) {
-//				files = concat(lexFiles, 
-//						parseFiles, 
-//						typecheckFiles, 
-//						irrunFiles, 
-//						leftoverFiles);
-//			} else {
-//				files = irgenFiles;
-//			}
-//			if (files.length == 0) {
-//				System.out.println("Missing argument xic");
-//				return;
-//			}
-
 			for (String file: files) {
 				try { 
 					irgen(file);
@@ -237,26 +167,13 @@ public class Main {
 					System.out.println(srcPath + file + " is not found.");
 				} catch (Exception e) {
 					e.printStackTrace();
+					return;
 				}
 			}
 		}
 
 		/* IR INTERPRET */
 		if (cmd.hasOption("irrun")) {
-//			if (irrunFiles.size() == 0) {
-//				files = concat(lexFiles, 
-//						parseFiles, 
-//						typecheckFiles, 
-//						irgenFiles, 
-//						leftoverFiles);
-//			} else {
-//				files = irrunFiles;
-//			}
-//			if (files.length == 0) {
-//				System.out.println("Missing argument for xic");
-//				return;
-//			}
-
 			for (String file: files) {
 				try { 
 					irrun(file);
@@ -264,23 +181,13 @@ public class Main {
 					System.out.println(srcPath + file + " is not found.");
 				} catch (Exception e) {
 					e.printStackTrace();
+					return;
 				}
 			}
 		}
 
 		/* ASSEMBLY */
-		if (cmd.hasOption("target")) {
-//			files = concat(lexFiles, 
-//					parseFiles, 
-//					typecheckFiles, 
-//					irgenFiles, 
-//					irrunFiles,
-//					leftoverFiles);
-//			if (files.length == 0) {
-//				System.out.println("Missing argument for xic");
-//				return;
-//			}
-			
+		if (cmd.hasOption("target")) {			
 			for (String file: files) {
 				try { 
 					assembly(file);
@@ -288,6 +195,7 @@ public class Main {
 					System.out.println(srcPath + file + " is not found.");
 				} catch (Exception e) {
 					e.printStackTrace();
+					return;
 				}
 			}
 		}
@@ -404,6 +312,9 @@ public class Main {
 
 			System.out.println("[xic] Parsing");
 			Symbol s = p.parse();
+			
+			// Update global map
+			fileToSymbol.put(filename, s);
 
 			Program result = (Program) s.value;
 
@@ -456,13 +367,30 @@ public class Main {
 
 			System.out.println("[xic] Typechecking");
 
-			/* typecheck */
-			parser p = new parser(new Scanner(new FileReader(srcPath + filename)));
-			Symbol s = p.parse();
+			Symbol s;
+			if (fileToSymbol.containsKey(filename)) {
+				s = fileToSymbol.get(filename);
+			} else {
+				parser p = new parser(new Scanner(new FileReader(srcPath + filename)));
+				s = p.parse();
+				
+				// Update global map
+				fileToSymbol.put(filename, s);
+			}
 
+			/* Typecheck */
 			Program result = (Program) s.value;
 			TypeCheckVisitor visitor = new TypeCheckVisitor();
 			result.accept(visitor);
+			
+			/* Constant Folding */
+			if (enabled[CF]) {
+				ConstantFolderVisitor constantFold = new ConstantFolderVisitor();
+				result.accept(constantFold);
+			}
+			
+			// Update global map
+			fileToAST.put(filename, result);
 
 			bw.write("Valid Xi Program");
 			bw.close();
@@ -518,16 +446,32 @@ public class Main {
 
 			System.out.println("[xic] Generating intermediate code");
 
-			parser p = new parser(new Scanner(new FileReader(srcPath + filename)));
-			Symbol s = p.parse();
-			Program program = (Program) s.value;
-			TypeCheckVisitor typeCheck = new TypeCheckVisitor();
-			program.accept(typeCheck);
-
-			/* Constant Folding */
-			if (optimize) {
-				ConstantFolderVisitor constantFold = new ConstantFolderVisitor();
-				program.accept(constantFold);
+			Program program;
+			if (fileToAST.containsKey(filename)) {
+				program = fileToAST.get(filename);
+			} else {
+				Symbol s;
+				if (fileToSymbol.containsKey(filename)) {
+					s = fileToSymbol.get(filename);
+				} else {
+					parser p = new parser(new Scanner(new FileReader(srcPath + filename)));
+					s = p.parse();
+					
+					// Update global map
+					fileToSymbol.put(filename, s);
+				}
+				program = (Program) s.value;
+				TypeCheckVisitor typeCheck = new TypeCheckVisitor();
+				program.accept(typeCheck);
+				
+				/* Constant Folding */
+				if (enabled[CF]) {
+					ConstantFolderVisitor constantFold = new ConstantFolderVisitor();
+					program.accept(constantFold);
+				}
+				
+				// Update global map
+				fileToAST.put(filename, program);
 			}
 
 			/* Translate to MIR */
@@ -545,6 +489,13 @@ public class Main {
 			/* Lower to LIR */
 			LIRVisitor lir = new LIRVisitor();
 			mir.program.accept(lir);
+			IRNode compUnit = lir.program;
+			
+			/* Optimize */
+//			compUnit = optimize(compUnit);
+			
+			// Update global map
+			fileToIR.put(filename, compUnit);
 
 			StringWriter sw = new StringWriter();
 			try (PrintWriter pw = new PrintWriter(sw);
@@ -554,7 +505,7 @@ public class Main {
 			bw.write(sw.toString());
 			bw.close();
 			System.out.println("[xic] Generating intermediate code completed");
-			return lir.program;
+			return compUnit;
 
 		} catch(LexicalError error) {
 			error.setFilename(srcPath + filename);
@@ -580,7 +531,15 @@ public class Main {
 
 	public static void irrun(String filename) throws FileNotFoundException {
 		// Generate IR code
-		IRNode program = irgen(filename);
+		IRNode program;
+		if (fileToIR.containsKey(filename)) {
+			program = fileToIR.get(filename);
+		} else {
+			program = irgen(filename);
+			
+			// Update global map
+			fileToIR.put(filename, program);
+		}
 
 		// Interpret IR code
 		if (program == null) {
@@ -626,35 +585,54 @@ public class Main {
 
 			System.out.println("[xic] Generating assembly code");
 
-			parser p = new parser(new Scanner(new FileReader(srcPath + filename)));
-			Symbol s = p.parse();
-			Program program = (Program) s.value;
-			TypeCheckVisitor typeCheck = new TypeCheckVisitor();
-			program.accept(typeCheck);
-
-			if (optimize) {
-				ConstantFolderVisitor constantFold = new ConstantFolderVisitor();
-				program.accept(constantFold);
-			}
-
-			MIRVisitor mir = new MIRVisitor();
-			program.accept(mir);
-			LIRVisitor lir = new LIRVisitor();
-			mir.program.accept(lir);
-
-			//            StringWriter sw = new StringWriter();
-			//            try (PrintWriter pw = new PrintWriter(sw);
-			//                    SExpPrinter sp = new CodeWriterSExpPrinter(pw)) {
-			//                lir.program.printSExp(sp);
-			//            }
-			//            bw.write(sw.toString());
-			////            bw.close();
-			//            
+			IRNode result;
+			if (fileToIR.containsKey(filename)) {
+				result = fileToIR.get(filename);
+			} else {
+				Program program;
+				if (fileToAST.containsKey(filename)) {
+					program = fileToAST.get(filename);
+				} else {
+					Symbol s;
+					if (fileToSymbol.containsKey(filename)) {
+						s = fileToSymbol.get(filename);
+					} else {
+						parser p = new parser(new Scanner(new FileReader(srcPath + filename)));
+						s = p.parse();
+						
+						// Update global map
+						fileToSymbol.put(filename, s);
+					}
+					program = (Program) s.value;
+					TypeCheckVisitor typeCheck = new TypeCheckVisitor();
+					program.accept(typeCheck);
+					
+					/* Constant Folding */
+					if (enabled[CF]) {
+						ConstantFolderVisitor constantFold = new ConstantFolderVisitor();
+						program.accept(constantFold);
+					}
+					
+					// Update global map
+					fileToAST.put(filename, program);
+				}
+				MIRVisitor mir = new MIRVisitor();
+				program.accept(mir);
+				LIRVisitor lir = new LIRVisitor();
+				mir.program.accept(lir);
+				result = lir.program;
+				
+				/* Optimize */
+//				result = optimize(compUnit);
+				
+				// Update global map
+				fileToIR.put(filename, result);
+			}			  
 
 			/* Generate Assembly Code */
 
-			TilingVisitor tv = new TilingVisitor();
-			String assembly = tv.parseTiles(lir.program);
+			TilingVisitor tv = new TilingVisitor(enabled[REG], enabled[MC]);
+			String assembly = tv.parseTiles(result);
 
 			bw.write(assembly);
 			bw.close();
@@ -681,6 +659,29 @@ public class Main {
 			System.out.println("[xic] Generating assembly code failed");
 			e.printStackTrace();
 		}
+	}
+	
+	/**
+	 * Handles all optimizations on the IR level.
+	 * 
+	 * @param node	The IRNode to optimize (should be IRCompUnit)
+	 * @return	the optimized IRNode (should be IRCompUnit)
+	 */
+	public static IRNode optimize(IRNode node) {
+		boolean changed = true;
+		
+		while (changed) {
+			if (enabled[UCE]) {
+				// TODO: UCE
+			}
+			if (enabled[CSE]) {
+				// TODO: CSE
+			}
+			if (enabled[TEMP]) {
+				// TODO: 4th opt
+			}
+		}
+		return node;
 	}
 
 
@@ -867,12 +868,16 @@ public class Main {
 		test.setArgs(1);
 		test.setArgName("opt");
 
-		for (int i = 0; i < NUM_OPTS; i++) {
+		for (int i = 0; i < OPTS.length; i++) {
 			String opt = OPTS[i];
-			options.addOption(null, "O" + opt, false, 
-					"Enable optimization <" + opt + ">.");
-			options.addOption(null, "O-no-" + opt, false, 
-					"Disable optimization <" + opt + ">.");
+			OptionGroup og = new OptionGroup();
+			Option oE = new Option(null, "O" + opt, false, 
+					"Enable only optimization <" + opt + ">.");
+			og.addOption(oE);
+			Option oD = new Option(null, "O-no-" + opt, false, 
+					"Disable only optimization <" + opt + ">.");
+			og.addOption(oD);
+			options.addOptionGroup(og);
 		}
 
 		// target OS
@@ -891,7 +896,7 @@ public class Main {
 	 * Checks all auxiliary options and sets global variables
 	 * @throws Exception 
 	 */
-	private static void optionsCheck(CommandLine cmd, Options opts) throws Exception {
+	private static void optionsCheck(Options opts) throws Exception {
 		// print
 		boolean print = false;
 		String[] leftoverArgs = cmd.getArgs();
@@ -982,11 +987,6 @@ public class Main {
 			}
 		}
 
-		// optimization
-		if (cmd.hasOption("O")) {
-			optimize = false;
-		}
-
 		// target OS
 		if (cmd.hasOption("target")) {
 			String OS = cmd.getOptionValue("target");
@@ -1012,6 +1012,34 @@ public class Main {
 			String phase = cmd.getOptionValue("optcfg");
 			if (!phase.equals("initial") && !phase.equals("final")) {
 				throw new Exception("Invalid argument for option -optcfg: " + phase);
+			}
+		}
+		
+		// optimizations
+		boolean enables = false;
+		boolean initialized = false;
+		if (cmd.hasOption("O")) {
+			Arrays.fill(enabled, false);
+			enables = true;
+			initialized = true;
+		} else {
+			Arrays.fill(enabled, true);
+		}
+		for (int i = 0; i < OPTS.length; i++) {
+			String opt = OPTS[i];
+			if (cmd.hasOption("O" + opt)) {
+				enabled[i] = true;
+				if (initialized && !enables) {
+					throw new Exception("Cannot simultaneously enable "
+							+ "and disable optimizations");
+				}
+				enables = true;
+			} else if (cmd.hasOption("O-no-" + opt)) {
+				enabled[i] = false;
+				if (initialized && enables) {
+					throw new Exception();
+				}
+				enables = false;
 			}
 		}
 	}

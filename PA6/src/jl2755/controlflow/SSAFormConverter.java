@@ -66,7 +66,7 @@ public class SSAFormConverter {
 		}
 	}
 
-	private SSAFormGraph convertToSSAForm() {
+	public SSAFormGraph convertToSSAForm() {
 		// 1) compute Dominance Frontier
 		computeDominanceFrontier();
 		// 2) add phi-functions for vars

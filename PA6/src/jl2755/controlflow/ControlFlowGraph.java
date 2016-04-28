@@ -1,5 +1,6 @@
 package jl2755.controlflow;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -30,7 +31,9 @@ public class ControlFlowGraph {
 	 * @param program	the list of instructions that constitute a function
 	 */
 	public ControlFlowGraph(List<Instruction> program) {	
-		// TODO: finalize function or program
+		// Initialize globals
+		allNodes = new HashSet<CFGNode>();
+		
 		/* Maps a jump related node to the corresponding label */
 		Map<AACFGNode, Label> node2label = new HashMap<AACFGNode,Label>();
 		
@@ -43,22 +46,22 @@ public class ControlFlowGraph {
 //		
 		/* Get the head node */
 		int first_instr_index = 0;
-		Instruction firstInstr = program.get(first_instr_index);
-		while (firstInstr.getOp() == Operation.LABEL) {
-			firstInstr = program.get(++first_instr_index);
-			Label label = (Label) firstInstr.getDest();
-//			
-////			if (label.isFuncLabel()) {
-////				currFunc = label;
-////			}
-//			
-		}
-		AACFGNode head = new AACFGNode(firstInstr);
 		
+		Instruction firstInstr = program.get(0);
+		
+//		while (firstInstr.getOp() == Operation.LABEL) {
+//			firstInstr = program.get(++first_instr_index);
+//			Label label = (Label) firstInstr.getDest();
+//			if (label.isFuncLabel()) {
+//				currFunc = label;
+//			}
+//		}
+		
+		head = new AACFGNode(firstInstr);
 		allNodes.add(head);
 		
 		/* Construct CFG */
-		AACFGNode prev = head;
+		AACFGNode prev = (AACFGNode) head;
 //		
 ////		boolean putInMap = false;
 //		
@@ -132,12 +135,14 @@ public class ControlFlowGraph {
 	 * @param function	the IRFuncDecl that defines a function
 	 */
 	public ControlFlowGraph(IRFuncDecl func) {	
-		// TODO: finalize func or compunit
+		// Initialize globals
+		allNodes = new HashSet<CFGNode>();
+				
 		/* Maps a jump related node to the corresponding label */
-		Map<CSECFGNode, String> node2label = new HashMap<CSECFGNode, String>();
+		Map<IRCFGNode, String> node2label = new HashMap<IRCFGNode, String>();
 		
 		/* Maps a label to the node of instruction that immediately follows */
-		Map<String, CSECFGNode> label2node = new HashMap<String, CSECFGNode>();
+		Map<String, IRCFGNode> label2node = new HashMap<String, IRCFGNode>();
 //		
 ////		Map<String, IRFuncDecl> functions = program.functions();
 //		
@@ -145,23 +150,26 @@ public class ControlFlowGraph {
 //		
 ////		IRFuncDecl func = functions.get("_Imain_paai");
 //		
+
 		IRSeq body = (IRSeq) func.body();
 		List<IRStmt> stmts = body.stmts();
-		CSECFGNode head = new CSECFGNode(stmts.get(0));
+		IRCFGNode head1 = new IRCFGNode(stmts.get(0));
+		head1.setName(func.getABIName());
+		head = head1;
 		allNodes.add(head);
 		
 		/* Construct CFG */
-		CSECFGNode prev = head;
+		IRCFGNode prev = head1;
 		for (int i = 1; i < stmts.size(); i++) {
 			IRStmt stmt = stmts.get(i);
-			CSECFGNode curr = new CSECFGNode(stmt);
+			IRCFGNode curr = new IRCFGNode(stmt);
 			
 			// if it's a label instruction,
 			// get the next label and put the pair in label2node map
 			if (stmt instanceof IRLabel) {
 				String label = ((IRLabel) stmt).name();
 				stmt = stmts.get(++i);
-				curr = new CSECFGNode(stmt);
+				curr = new IRCFGNode(stmt);
 				label2node.put(label, curr);
 			}
 			// add node to nodeSet 
@@ -190,12 +198,35 @@ public class ControlFlowGraph {
 		}
 		
 		/* Link jumps */
-		for (Entry<CSECFGNode, String> entry : node2label.entrySet()) {
-			CSECFGNode node1 = entry.getKey();
+		for (Entry<IRCFGNode, String> entry : node2label.entrySet()) {
+			IRCFGNode node1 = entry.getKey();
 			String label = entry.getValue();
-			CSECFGNode node2 = label2node.get(label);
+			IRCFGNode node2 = label2node.get(label);
 			node1.addSuccessor(node2);
 		}
+	}
+	
+	public List<Instruction> flattenIntoAA() {
+		List<Instruction> function = new ArrayList<Instruction>();
+		AACFGNode next = (AACFGNode) head;
+		while (next != null) {
+			function.add(next.getUnderlyingInstruction());
+			next = (AACFGNode) next.successor1;
+		}
+		return function;
+	}
+	
+	public IRFuncDecl flattenIntoIR() {
+		List<IRStmt> stmts = new ArrayList<IRStmt>();
+		IRCFGNode next = (IRCFGNode) head;
+		String name = next.getName();
+		String ABIName = next.getABIName();
+		while (next != null) {
+			stmts.add(next.getUnderlyingIRStmt());
+			next = (IRCFGNode) next.successor1;
+		}
+		IRSeq seq = new IRSeq(stmts);
+		return new IRFuncDecl(name, ABIName, seq);
 	}
 	
 	public Set<CFGNode> getAllNodes() {

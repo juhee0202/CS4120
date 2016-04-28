@@ -9,29 +9,10 @@ import jl2755.assembly.Operand;
 import jl2755.assembly.Register;
 
 public class AACFGNode extends CFGNode {
-	/**
-	 * The Instruction that this CFGNode represents.
-	 */
+	
+	/** The Instruction that this CFGNode represents. */
 	public Instruction underlyingInstruction;
-	/**
-	 * The use (if applicable) of this AACFGNode.
-	 */
-	private Register use1;
-	/**
-	 * The second use of this AACFGNode.
-	 */
-	private Register use2;
-	/**
-	 * The third (there can be at most 3) use of
-	 * this AACFGNode. There can be 3 because one of the
-	 * src or dest can have 2 Registers in it as a Memory operand.
-	 */
-	private Register use3;
-	/**
-	 * The one and only (if applicable) def
-	 * of this AACFGNode.
-	 */
-	private Register def;
+	
 	
 	public AACFGNode(Instruction argInstruction) {
 		super();
@@ -312,16 +293,21 @@ public class AACFGNode extends CFGNode {
 	
 	@Override
 	public String dotOutput() {
-		String s = "\t" + underlyingInstruction;
+		String s = "\t" + "\"" + underlyingInstruction + "\"";
 		s += " -> {";
 		if (successor1 != null) {
-			s += ((AACFGNode) successor1).underlyingInstruction;
+			s += "\"" + ((AACFGNode) successor1).underlyingInstruction + "\"";
 			if (successor2 != null) {
-				s += " " + ((AACFGNode) successor2).underlyingInstruction;
+				s += ", \"" + ((AACFGNode) successor2).underlyingInstruction + "\"";
 			}
 		}
 		s += "}\n";
-		s += successor1.dotOutput() + successor2.dotOutput();
+		if (successor1 != null) {
+			s += successor1.dotOutput();
+			if (successor2 != null) {
+				s += successor2.dotOutput();
+			}
+		}
 		return s;
 	}
 }

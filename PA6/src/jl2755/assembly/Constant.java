@@ -71,4 +71,9 @@ public class Constant implements Operand {
 		return new HashSet<Register>();
 	}
 	
+	@Override
+	public boolean isFuncLabel() {
+		return false;
+	}
+	
 }

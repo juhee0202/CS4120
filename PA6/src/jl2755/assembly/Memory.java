@@ -224,5 +224,10 @@ public class Memory implements Operand {
 		}
 		return returnSet;
 	}
+
+	@Override
+	public boolean isFuncLabel() {
+		return false;
+	}
 	
 }

@@ -417,7 +417,7 @@ public class IRSimulator {
                 if (indexToInsn.containsKey(target.value)) {
                     IRNode node = indexToInsn.get(target.value);
                     if (node instanceof IRFuncDecl)
-                        targetName = ((IRFuncDecl) node).name();
+                        targetName = ((IRFuncDecl) node).getABIName();
                     else throw new InternalCompilerError("Call to a non-function instruction!");
                 }
                 else throw new InternalCompilerError("Invalid function call '"

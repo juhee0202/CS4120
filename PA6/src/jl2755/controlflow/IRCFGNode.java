@@ -8,6 +8,8 @@ public class IRCFGNode extends CFGNode {
 	private IRStmt underlyingIRStmt;
 	/** The name of the function that this IRCFGNode is contained in. */
 	private String name;
+	/** The ABIName of the function that this IRCFGNode is contained in. */
+	private String ABIName;
 	
 	/** The use (if applicable) of this AACFGNode. */
 	private IRExpr use1;
@@ -52,6 +54,14 @@ public class IRCFGNode extends CFGNode {
 		this.name = name;
 	}
 
+	public String getABIName() {
+		return ABIName;
+	}
+
+	public void setABIName(String aBIName) {
+		ABIName = aBIName;
+	}
+
 	public IRStmt getUnderlyingIRStmt() {
 		return underlyingIRStmt;
 	}
@@ -62,17 +72,21 @@ public class IRCFGNode extends CFGNode {
 
 	@Override
 	public String dotOutput() {
-		String s = "\t" + underlyingIRStmt;
+		String s = "\t" + "\"" + underlyingIRStmt + "\"";
 		s += " -> {";
 		if (successor1 != null) {
-			s += ((IRCFGNode) successor1).underlyingIRStmt;
+			s += "\"" + ((IRCFGNode) successor1).underlyingIRStmt + "\"";
 			if (successor2 != null) {
-				s += " " + ((IRCFGNode) successor2).underlyingIRStmt;
+				s += ", \"" + ((IRCFGNode) successor2).underlyingIRStmt + "\"";
 			}
 		}
-		
 		s += "}\n";
-		s += successor1.dotOutput() + successor2.dotOutput();
+		if (successor1 != null) {
+			s += successor1.dotOutput();
+			if (successor2 != null) {
+				s += successor2.dotOutput();
+			}
+		}
 		return s;
 	}	
 }

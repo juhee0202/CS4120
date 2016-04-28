@@ -31,7 +31,9 @@ public class ControlFlowGraph {
 	 * @param program	the list of instructions that constitute a function
 	 */
 	public ControlFlowGraph(List<Instruction> program) {	
-		// TODO: finalize function or program
+		// Initialize globals
+		allNodes = new HashSet<CFGNode>();
+		
 		/* Maps a jump related node to the corresponding label */
 		Map<AACFGNode, Label> node2label = new HashMap<AACFGNode,Label>();
 		
@@ -55,12 +57,11 @@ public class ControlFlowGraph {
 //			}
 //		}
 		
-		AACFGNode head = new AACFGNode(firstInstr);
-		
+		head = new AACFGNode(firstInstr);
 		allNodes.add(head);
 		
 		/* Construct CFG */
-		AACFGNode prev = head;
+		AACFGNode prev = (AACFGNode) head;
 //		
 ////		boolean putInMap = false;
 //		
@@ -134,7 +135,9 @@ public class ControlFlowGraph {
 	 * @param function	the IRFuncDecl that defines a function
 	 */
 	public ControlFlowGraph(IRFuncDecl func) {	
-		// TODO: finalize func or compunit
+		// Initialize globals
+		allNodes = new HashSet<CFGNode>();
+				
 		/* Maps a jump related node to the corresponding label */
 		Map<IRCFGNode, String> node2label = new HashMap<IRCFGNode, String>();
 		
@@ -150,12 +153,13 @@ public class ControlFlowGraph {
 
 		IRSeq body = (IRSeq) func.body();
 		List<IRStmt> stmts = body.stmts();
-		IRCFGNode head = new IRCFGNode(stmts.get(0));
-		head.setName(func.name());
+		IRCFGNode head1 = new IRCFGNode(stmts.get(0));
+		head1.setName(func.getABIName());
+		head = head1;
 		allNodes.add(head);
 		
 		/* Construct CFG */
-		IRCFGNode prev = head;
+		IRCFGNode prev = head1;
 		for (int i = 1; i < stmts.size(); i++) {
 			IRStmt stmt = stmts.get(i);
 			IRCFGNode curr = new IRCFGNode(stmt);
@@ -216,12 +220,13 @@ public class ControlFlowGraph {
 		List<IRStmt> stmts = new ArrayList<IRStmt>();
 		IRCFGNode next = (IRCFGNode) head;
 		String name = next.getName();
+		String ABIName = next.getABIName();
 		while (next != null) {
 			stmts.add(next.getUnderlyingIRStmt());
 			next = (IRCFGNode) next.successor1;
 		}
 		IRSeq seq = new IRSeq(stmts);
-		return new IRFuncDecl(name, seq);
+		return new IRFuncDecl(name, ABIName, seq);
 	}
 	
 	public Set<CFGNode> getAllNodes() {

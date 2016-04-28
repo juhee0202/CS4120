@@ -1,4 +1,4 @@
-package optimization;
+package jl2755.optimization;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -106,7 +106,7 @@ public class RegisterAllocator extends Optimization {
 	}
 	
 	@Override
-	public boolean run() {
+	public boolean run(ControlFlowGraph cfg) {
 		// TODO Auto-generated method stub
 		return false;
 	}
@@ -124,7 +124,7 @@ public class RegisterAllocator extends Optimization {
 		neighborStack.clear();
 		program = instructions;
 		stackCounter = currentFunc.getNumSavedCalleeRegs();
-		currentFunction = currentFunc.name();
+		currentFunction = currentFunc.getABIName();
 		
 		boolean didCoalesce;
 		boolean didFreeze;

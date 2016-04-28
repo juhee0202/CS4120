@@ -11,8 +11,10 @@ import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.cli.AlreadySelectedException;
 import org.apache.commons.cli.CommandLine;
@@ -27,6 +29,7 @@ import org.apache.commons.cli.ParseException;
 import edu.cornell.cs.cs4120.util.CodeWriterSExpPrinter;
 import edu.cornell.cs.cs4120.util.SExpPrinter;
 import edu.cornell.cs.cs4120.xic.ir.IRCompUnit;
+import edu.cornell.cs.cs4120.xic.ir.IRFuncDecl;
 import edu.cornell.cs.cs4120.xic.ir.IRNode;
 import edu.cornell.cs.cs4120.xic.ir.interpret.IRSimulator;
 import java_cup.runtime.Symbol;
@@ -34,9 +37,11 @@ import jl2755.ast.Identifier;
 import jl2755.ast.Interface;
 import jl2755.ast.InterfaceFunc;
 import jl2755.ast.Program;
+import jl2755.controlflow.ControlFlowGraph;
 import jl2755.exceptions.LexicalError;
 import jl2755.exceptions.SemanticError;
 import jl2755.exceptions.SyntaxError;
+import jl2755.optimization.Optimization;
 import jl2755.type.FunType;
 import jl2755.type.VType;
 import jl2755.visitor.ConstantFolderVisitor;
@@ -73,7 +78,12 @@ public class Main {
 	
 	public static HashMap<String, Symbol> fileToSymbol;
 	public static HashMap<String, Program> fileToAST;
-	public static HashMap<String, IRNode> fileToIR;
+	public static HashMap<String, IRCompUnit> fileToIR;
+	
+	public static Set<String> IRPhases;
+	public static boolean initialWritten = false;
+	public static boolean finalWritten = false;
+	public static Set<String> CFGPhases;
 	
 	public static CommandLine cmd;
 
@@ -84,7 +94,9 @@ public class Main {
 		// Initialize globals
 		fileToSymbol = new HashMap<String, Symbol>();
 		fileToAST = new HashMap<String, Program>();
-		fileToIR = new HashMap<String, IRNode>();
+		fileToIR = new HashMap<String, IRCompUnit>();
+		IRPhases = new HashSet<String>();
+		CFGPhases = new HashSet<String>();
 		
 		// Initialize command line
 		Options options = optionsInit();
@@ -157,6 +169,20 @@ public class Main {
 				}
 			}
 		}
+		
+		/* OPTCFG */
+		if (cmd.hasOption("optcfg")) {			
+			for (String file: files) {
+				try { 
+					optcfg(file);
+				} catch (FileNotFoundException e) {
+					System.out.println(srcPath + file + " is not found.");
+				} catch (Exception e) {
+					e.printStackTrace();
+					return;
+				}
+			}
+		}
 
 		/* IR GENERATION */
 		if (cmd.hasOption("irgen") || cmd.hasOption("optir")) {
@@ -199,7 +225,6 @@ public class Main {
 				}
 			}
 		}
-
 	}
 
 	public static void lex(String filename) throws FileNotFoundException {
@@ -416,7 +441,7 @@ public class Main {
 		}
 	}
 
-	public static IRNode irgen(String filename) throws FileNotFoundException {
+	public static IRCompUnit irgen(String filename) throws FileNotFoundException {
 		int index = filename.lastIndexOf('.');
 		if (index == -1) {
 			index = filename.length();
@@ -425,7 +450,7 @@ public class Main {
 		String rmExtension = filename.substring(0,index);
 
 		/* strip path in front of filename.xi
-		 * ex: /Users/PA6/tests/test.xi -> test/xi */
+		 * ex: /Users/PA6/tests/test.xi -> test.xi */
 		if (!destDPath.equals("")) {
 			int indexOfLastSlash = filename.lastIndexOf('/');
 			if (indexOfLastSlash != -1) {
@@ -434,8 +459,8 @@ public class Main {
 		}
 
 		String outputFileName = destDPath + rmExtension + ".ir";
-		System.out.println("srcPath+filename: " + srcPath + filename);
-		System.out.println("destDPath + rmExtension: " + outputFileName);
+//		System.out.println("srcPath+filename: " + srcPath + filename);
+//		System.out.println("destDPath + rmExtension: " + outputFileName);
 		try {
 			File file = new File(outputFileName);
 			if (!file.exists()) {
@@ -489,23 +514,61 @@ public class Main {
 			/* Lower to LIR */
 			LIRVisitor lir = new LIRVisitor();
 			mir.program.accept(lir);
-			IRNode compUnit = lir.program;
+			IRCompUnit result = lir.program;
+			
+			if (IRPhases.contains("initial") && !initialWritten) {
+				System.out.println("[xic] Generating initial intermediate code");
+				File IRFile = new File(rmExtension + "_initial.ir");
+				if (!IRFile.exists()) {
+					IRFile.createNewFile();
+				}
+				FileWriter IRfw = new FileWriter(IRFile.getAbsoluteFile());
+				BufferedWriter IRbw = new BufferedWriter(IRfw);
+				StringWriter IRsw = new StringWriter();
+				try (PrintWriter IRpw = new PrintWriter(IRsw);
+						SExpPrinter IRsp = new CodeWriterSExpPrinter(IRpw)) {
+					result.printSExp(IRsp);					
+				}
+				IRbw.write(IRsw.toString());
+				IRbw.close();
+				System.out.println("[xic] Generating initial intermediate code completed");
+				initialWritten = true;
+			}
 			
 			/* Optimize */
-//			compUnit = optimize(compUnit);
+//			result = optimize(result);
 			
 			// Update global map
-			fileToIR.put(filename, compUnit);
+			fileToIR.put(filename, result);
 
 			StringWriter sw = new StringWriter();
 			try (PrintWriter pw = new PrintWriter(sw);
 					SExpPrinter sp = new CodeWriterSExpPrinter(pw)) {
-				lir.program.printSExp(sp);					
+				result.printSExp(sp);					
 			}
 			bw.write(sw.toString());
 			bw.close();
+			
+			if (IRPhases.contains("final") && !finalWritten) {
+				System.out.println("[xic] Generating final intermediate code");
+				File IRFile2 = new File(rmExtension + "_final.ir");
+				if (!IRFile2.exists()) {
+					IRFile2.createNewFile();
+				}
+				FileWriter IRfw2 = new FileWriter(IRFile2.getAbsoluteFile());
+				BufferedWriter IRbw2 = new BufferedWriter(IRfw2);
+				StringWriter IRsw2 = new StringWriter();
+				try (PrintWriter IRpw2 = new PrintWriter(IRsw2);
+						SExpPrinter IRsp2 = new CodeWriterSExpPrinter(IRpw2)) {
+					result.printSExp(IRsp2);					
+				}
+				IRbw2.write(IRsw2.toString());
+				IRbw2.close();
+				System.out.println("[xic] Generating final intermediate code completed");
+				finalWritten = true;
+			}
 			System.out.println("[xic] Generating intermediate code completed");
-			return compUnit;
+			return result;
 
 		} catch(LexicalError error) {
 			error.setFilename(srcPath + filename);
@@ -531,7 +594,7 @@ public class Main {
 
 	public static void irrun(String filename) throws FileNotFoundException {
 		// Generate IR code
-		IRNode program;
+		IRCompUnit program;
 		if (fileToIR.containsKey(filename)) {
 			program = fileToIR.get(filename);
 		} else {
@@ -585,7 +648,7 @@ public class Main {
 
 			System.out.println("[xic] Generating assembly code");
 
-			IRNode result;
+			IRCompUnit result;
 			if (fileToIR.containsKey(filename)) {
 				result = fileToIR.get(filename);
 			} else {
@@ -623,7 +686,7 @@ public class Main {
 				result = lir.program;
 				
 				/* Optimize */
-//				result = optimize(compUnit);
+//				result = optimize(result);
 				
 				// Update global map
 				fileToIR.put(filename, result);
@@ -661,26 +724,145 @@ public class Main {
 		}
 	}
 	
+	public static void optcfg(String filename) throws FileNotFoundException {
+		int index = filename.lastIndexOf('.');
+		if (index == -1) {
+			index = filename.length();
+		}
+		String rmExtension = filename.substring(0,index);
+
+		try {
+			System.out.println("[xic] Generating control flow graph");
+
+			IRCompUnit result;
+			Program program;
+			if (fileToAST.containsKey(filename)) {
+				program = fileToAST.get(filename);
+			} else {
+				Symbol s;
+				if (fileToSymbol.containsKey(filename)) {
+					s = fileToSymbol.get(filename);
+				} else {
+					parser p = new parser(new Scanner(new FileReader(srcPath + filename)));
+					s = p.parse();
+					
+					// Update global map
+					fileToSymbol.put(filename, s);
+				}
+				program = (Program) s.value;
+				TypeCheckVisitor typeCheck = new TypeCheckVisitor();
+				program.accept(typeCheck);
+				
+				/* Constant Folding */
+				if (enabled[CF]) {
+					ConstantFolderVisitor constantFold = new ConstantFolderVisitor();
+					program.accept(constantFold);
+				}
+				
+				// Update global map
+				fileToAST.put(filename, program);
+			}
+			
+			MIRVisitor mir = new MIRVisitor();
+			program.accept(mir);
+			LIRVisitor lir = new LIRVisitor();
+			mir.program.accept(lir);
+			result = lir.program;
+			
+			if (CFGPhases.contains("initial")) {
+				for (IRFuncDecl fd : result.functions().values()) {
+					ControlFlowGraph initialCFG = new ControlFlowGraph(fd);
+					File file = new File(rmExtension + "_" + fd.getABIName() + "_" + "initial.dot");
+					if (!file.exists()) {
+						file.createNewFile();
+					}
+					FileWriter fw = new FileWriter(file.getAbsoluteFile());
+					BufferedWriter bwCFG = new BufferedWriter(fw);
+					bwCFG.write(initialCFG.dotOutput());
+					bwCFG.close();
+				}
+			}
+			
+			/* Optimize */
+//			result = optimize(result);
+			
+			// Update global map
+			fileToIR.put(filename, result);	
+			
+			if (CFGPhases.contains("final")) {
+				for (IRFuncDecl fd : result.functions().values()) {
+					ControlFlowGraph finalCFG = new ControlFlowGraph(fd);
+					File file = new File(rmExtension + "_" + fd.getABIName() + "_" + "final.dot");
+					if (!file.exists()) {
+						file.createNewFile();
+					}
+					FileWriter fw = new FileWriter(file.getAbsoluteFile());
+					BufferedWriter bwCFG = new BufferedWriter(fw);
+					bwCFG.write(finalCFG.dotOutput());
+					bwCFG.close();
+				}
+			}
+
+			System.out.println("[xic] Generating control flow graph completed");
+
+		} catch(LexicalError error) {
+			error.setFilename(filename);
+			System.out.println("[xic] Generating control flow graph failed");
+			System.out.println("\t" + error.getMessage());
+		} catch(SyntaxError error) {
+			error.setFilename(filename);
+			System.out.println("[xic] Generating control flow graph failed");
+			System.out.println("\t" + error.getMessage());
+		} catch(SemanticError error) {
+			error.setFilename(filename);
+			System.out.println("[xic] Generating control flow graph failed");
+			System.out.println("\t" + error.getMessage());
+		} catch(IOException e) {
+			System.out.println("[xic] Generating control flow graph failed");
+			e.printStackTrace();
+		} catch (Exception e) {
+			System.out.println("[xic] Generating control flow graph failed");
+			e.printStackTrace();
+		}
+	}
+	
 	/**
 	 * Handles all optimizations on the IR level.
 	 * 
 	 * @param node	The IRNode to optimize (should be IRCompUnit)
 	 * @return	the optimized IRNode (should be IRCompUnit)
 	 */
-	public static IRNode optimize(IRNode node) {
+	public static IRCompUnit optimize(IRCompUnit node) {
 		boolean changed = true;
-		
-		while (changed) {
-			if (enabled[UCE]) {
-				// TODO: UCE
-			}
-			if (enabled[CSE]) {
-				// TODO: CSE
-			}
-			if (enabled[TEMP]) {
-				// TODO: 4th opt
-			}
+		List<Optimization> opts = new ArrayList<Optimization>();
+		if (enabled[UCE]) {
+			// TODO: UCE
+			// call constructor
+			// add to opts
 		}
+		if (enabled[CSE]) {
+			// TODO: CSE
+			// call constructor
+			// add to opts
+		}
+		if (enabled[TEMP]) {
+			// TODO: 4th opt
+			// call constructor
+			// add to opts
+		}
+		Map<String, IRFuncDecl> nameToFD = node.functions();
+		for (IRFuncDecl fd : nameToFD.values()) {
+			ControlFlowGraph cfg = new ControlFlowGraph(fd);
+			while (changed) {
+				changed = false;
+				for (Optimization o : opts) {
+					changed |= o.run(cfg);
+				}
+			}
+			IRFuncDecl newFD = cfg.flattenIntoIR();
+			nameToFD.put(fd.getABIName(), newFD);
+		}
+		
 		return node;
 	}
 
@@ -1001,17 +1183,21 @@ public class Main {
 
 		// optir
 		if (cmd.hasOption("optir")) {
-			String phase = cmd.getOptionValue("optir");
-			if (!phase.equals("initial") && !phase.equals("final")) {
-				throw new Exception("Invalid argument for option -optir: " + phase);
+			IRPhases.addAll(Arrays.asList(cmd.getOptionValues("optir")));
+			for (String phase : IRPhases) {
+				if (!phase.equals("initial") && !phase.equals("final")) {
+					throw new Exception("Invalid argument for option -optir: " + phase);
+				}
 			}
 		}
 
 		// optcfg
 		if (cmd.hasOption("optcfg")) {
-			String phase = cmd.getOptionValue("optcfg");
-			if (!phase.equals("initial") && !phase.equals("final")) {
-				throw new Exception("Invalid argument for option -optcfg: " + phase);
+			CFGPhases.addAll(Arrays.asList(cmd.getOptionValues("optcfg")));
+			for (String phase : CFGPhases) {
+				if (!phase.equals("initial") && !phase.equals("final")) {
+					throw new Exception("Invalid argument for option -optir: " + phase);
+				}
 			}
 		}
 		

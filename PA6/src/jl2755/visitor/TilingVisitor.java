@@ -12,7 +12,7 @@ import jl2755.assembly.*;
 import jl2755.assembly.Instruction.Operation;
 import jl2755.assembly.Register.RegisterName;
 import jl2755.assembly.Tile.tileEnum;
-import optimization.RegisterAllocator;
+import jl2755.optimization.RegisterAllocator;
 
 public class TilingVisitor implements IRTreeVisitor {
 
@@ -848,7 +848,7 @@ public class TilingVisitor implements IRTreeVisitor {
 	public void visit(IRFuncDecl fd) {
 		List<Instruction> instructions = new ArrayList<Instruction>();
 		// Label
-		Label fnLabel = new Label(fd.name(), true);
+		Label fnLabel = new Label(fd.getABIName(), true);
 		instructions.add(new Instruction(Operation.LABEL, fnLabel));
 		// Prologue
 		// TODO: replace enter with push/mov/sub for optimization

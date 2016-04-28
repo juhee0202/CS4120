@@ -467,6 +467,7 @@ public class MIRVisitor implements ASTVisitor{
 	public void visit(FunctionDecl fd) {
 		 // get function label
 		String label = fd.getABIName();
+		String name = fd.getIdentifier().toString();
 		
 		IRSeq seq = new IRSeq(new ArrayList<IRStmt>());
 		List<String> holyParamList = fd.getParams();
@@ -488,7 +489,7 @@ public class MIRVisitor implements ASTVisitor{
 		}
 		
 		// create IRFuncDecl
-		IRFuncDecl irFuncDecl = new IRFuncDecl(label, seq);
+		IRFuncDecl irFuncDecl = new IRFuncDecl(name, label, seq);
 		irFuncDecl.setParamList(fd.getParams());
 		irFuncDecl.setNumArgs(fd.getNumParams());
 		irFuncDecl.setNumReturns(fd.getNumReturns());

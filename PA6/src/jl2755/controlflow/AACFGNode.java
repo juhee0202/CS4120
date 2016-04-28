@@ -29,8 +29,8 @@ public class AACFGNode extends CFGNode {
 	public AACFGNode(Instruction argInstruction) {
 		super();
 		underlyingInstruction = argInstruction;
-		computeUses();
-		computeDefs();
+//		computeUses();
+//		computeDefs();
 	}
 	
 	private void computeUses() {
@@ -307,16 +307,21 @@ public class AACFGNode extends CFGNode {
 	
 	@Override
 	public String dotOutput() {
-		String s = "\t" + underlyingInstruction;
+		String s = "\t" + "\"" + underlyingInstruction + "\"";
 		s += " -> {";
 		if (successor1 != null) {
-			s += ((AACFGNode) successor1).underlyingInstruction;
+			s += "\"" + ((AACFGNode) successor1).underlyingInstruction + "\"";
 			if (successor2 != null) {
-				s += " " + ((AACFGNode) successor2).underlyingInstruction;
+				s += ", \"" + ((AACFGNode) successor2).underlyingInstruction + "\"";
 			}
 		}
 		s += "}\n";
-		s += successor1.dotOutput() + successor2.dotOutput();
+		if (successor1 != null) {
+			s += successor1.dotOutput();
+			if (successor2 != null) {
+				s += successor2.dotOutput();
+			}
+		}
 		return s;
 	}
 }

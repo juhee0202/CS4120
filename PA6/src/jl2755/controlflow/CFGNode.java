@@ -65,6 +65,17 @@ public abstract class CFGNode {
 	public CFGNode getSuccessor2() {
 		return successor2;
 	}
+	
+	public Set<CFGNode> getSuccessors() {
+		Set<CFGNode> successors = new HashSet<CFGNode>();
+		if (successor1 != null) {
+			successors.add(successor1);
+		}
+		if (successor2 != null) {
+			successors.add(successor2);
+		}
+		return successors;
+	}
 
 	public Set<CFGNode> getPredecessors() {
 		return predecessors;

@@ -27,7 +27,7 @@ import jl2755.controlflow.ControlFlowGraph;
 import jl2755.dataflow.InterferenceGraph;
 import jl2755.dataflow.LiveVariableAnalyzer;
 
-public class RegisterAllocator {
+public class RegisterAllocator extends Optimization {
 	
 	/** Current list of instructions. */
 	private List<Instruction> program;
@@ -103,6 +103,12 @@ public class RegisterAllocator {
 		regStack = new Stack<Register>();
 		neighborStack = new Stack<Set<Register>>();
 		Omc = omc;
+	}
+	
+	@Override
+	public boolean run() {
+		// TODO Auto-generated method stub
+		return false;
 	}
 	
 	/**
@@ -616,4 +622,5 @@ public class RegisterAllocator {
 	public int getStackCounter() {
 		return stackCounter;
 	}
+	
 }

@@ -1,5 +1,7 @@
 package optimization;
 
+import edu.cornell.cs.cs4120.xic.ir.IRCompUnit;
+
 /**
  * Class that, after an available expressions analysis has been done,
  * uses common subexpressions by creating new IRMem into temps
@@ -7,9 +9,15 @@ package optimization;
  */
 public class CommonSubExpElimination {
 	
+	private IRCompUnit ircu;
 	
 	
-	public CommonSubExpElimination() {
+	public CommonSubExpElimination(IRCompUnit argIrcu) {
+		ircu = argIrcu;
+	}
+	
+	public void run() {
 		
 	}
+	
 }

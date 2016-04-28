@@ -353,7 +353,7 @@ public class Main {
 			if (!destDPath.equals("")) {
 				int indexOfLastSlash = filename.lastIndexOf('/');
 				if (indexOfLastSlash != -1) {
-					rmExtension = filename.substring(indexOfLastSlash + 1);
+					rmExtension = rmExtension.substring(indexOfLastSlash + 1);
 				}
 			}
 
@@ -388,7 +388,7 @@ public class Main {
 		if (!destDPath.equals("")) {
 			int indexOfLastSlash = filename.lastIndexOf('/');
 			if (indexOfLastSlash != -1) {
-				rmExtension = filename.substring(indexOfLastSlash + 1);
+				rmExtension = rmExtension.substring(indexOfLastSlash + 1);
 			}
 		}
 
@@ -440,7 +440,7 @@ public class Main {
 		if (!destDPath.equals("")) {
 			int indexOfLastSlash = filename.lastIndexOf('/');
 			if (indexOfLastSlash != -1) {
-				rmExtension = filename.substring(indexOfLastSlash + 1);
+				rmExtension = rmExtension.substring(indexOfLastSlash + 1);
 			}
 		}
 
@@ -501,7 +501,7 @@ public class Main {
 		if (!destDPath.equals("")) {
 			int indexOfLastSlash = filename.lastIndexOf('/');
 			if (indexOfLastSlash != -1) {
-				rmExtension = filename.substring(indexOfLastSlash + 1);
+				rmExtension = rmExtension.substring(indexOfLastSlash + 1);
 			}
 		}
 
@@ -610,7 +610,7 @@ public class Main {
 		if (!destDPath.equals("")) {
 			int indexOfLastSlash = filename.lastIndexOf('/');
 			if (indexOfLastSlash != -1) {
-				rmExtension = filename.substring(indexOfLastSlash + 1);
+				rmExtension = rmExtension.substring(indexOfLastSlash + 1);
 			}
 		}
 
@@ -768,7 +768,7 @@ public class Main {
 			System.out.println("\tFailed to read input file " + absPath);
 		} catch (Exception e) {
 			System.out.println("\t" + absPath);
-			//            e.printStackTrace();
+			e.printStackTrace();
 		}
 		return tempMap;
 	}

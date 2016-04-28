@@ -1,9 +1,14 @@
 package edu.cornell.cs.cs4120.xic.ir;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import edu.cornell.cs.cs4120.util.SExpPrinter;
 import edu.cornell.cs.cs4120.xic.ir.visit.AggregateVisitor;
 import edu.cornell.cs.cs4120.xic.ir.visit.IRVisitor;
 import jl2755.assembly.ChildType;
+import jl2755.assembly.Instruction.Operation;
+import jl2755.assembly.Tile;
 import jl2755.visitor.IRTreeVisitor;
 
 /**
@@ -15,6 +20,7 @@ public class IRBinOp extends IRExpr {
     private OpType type;
     private IRExpr left, right;
     private ChildType leftType, rightType;
+    private static Map<IRBinOp, Tile> nodeToTile;
     
     /**
      * 0:	add or sub
@@ -28,14 +34,59 @@ public class IRBinOp extends IRExpr {
     private int index;
 
     public IRBinOp(OpType type, IRExpr left, IRExpr right) {
-        this(type, left, right, 0);
+        this(type, left, right, 6);
         computeIndex();
     }
     
     /**
      * Computes the corresponding index of this IRBinOp and sets the index field.
+     * Sets index to the most complex tile that can be made from this IRBinOp.
      */
     private void computeIndex() {
+    	if (type == OpType.ADD || type == OpType.SUB) {
+    		if (left instanceof IRBinOp && right instanceof IRBinOp) {
+    			IRBinOp leftNode = (IRBinOp) left;
+    			IRBinOp rightNode = (IRBinOp) right;
+    			if (leftNode.index == 0 && rightNode.index == 1) {
+    				index = 4;
+    				return;
+    			} else if (leftNode.index == 1 && rightNode.index == 0) {
+    				index = 4;
+    				return;
+    			}
+    		}
+    		if (left instanceof IRBinOp) {
+    			IRBinOp leftNode = (IRBinOp) left;
+    			if (leftNode.index == 3) {
+    				index = 5;
+    				return;
+    			} else if (leftNode.index == 1) {
+    				index = 3;
+    				return;
+    			} else if (leftNode.index == 0) {
+    				index = 2;
+    				return;
+    			}
+    		}
+    		if (right instanceof IRBinOp) {
+    			IRBinOp rightNode = (IRBinOp) right;
+    			if (rightNode.index == 3) {
+    				index = 5;
+    				return;
+    			} else if (rightNode.index == 1) {
+    				index = 3;
+    				return;
+    			} else if (rightNode.index == 0) {
+    				index = 2;
+    				return;
+    			}
+    		}
+    		index = 0;
+    	} else if (type == OpType.MUL) {
+    		index = 1;
+    	} else {
+    		index = 6;
+    	}
 		
 		
 	}
@@ -45,6 +96,9 @@ public class IRBinOp extends IRExpr {
         this.left = left;
         this.right = right;
         this.index = index;
+        if (nodeToTile == null) {
+        	nodeToTile = new HashMap<IRBinOp, Tile>();
+        }
     }
 
     public OpType opType() {

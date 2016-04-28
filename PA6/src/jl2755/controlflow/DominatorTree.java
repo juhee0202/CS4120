@@ -7,6 +7,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 public class DominatorTree {
+	
 	/** A ControlFlowGraph from which we are building the Dominator Tree */
 	private ControlFlowGraph cfg;
 	
@@ -14,7 +15,7 @@ public class DominatorTree {
 	private CFGNode root;
 	
 	/** Maps node n to the set of nodes that dominate n */
-	private Map<CFGNode, Set<CFGNode>> dominanceMap;
+	protected Map<CFGNode, Set<CFGNode>> dominanceMap;
 	
 	public DominatorTree(ControlFlowGraph argCfg) {
 		cfg = argCfg;

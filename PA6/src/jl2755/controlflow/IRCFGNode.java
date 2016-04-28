@@ -5,7 +5,7 @@ import edu.cornell.cs.cs4120.xic.ir.IRStmt;
 
 public class IRCFGNode extends CFGNode {
 	/** The IRStmt that this IRCFGNode represents. */
-	private IRStmt underlyingIRStmt;
+	protected IRStmt underlyingIRStmt;
 	/** The name of the function that this IRCFGNode is contained in. */
 	private String name;
 	/** The ABIName of the function that this IRCFGNode is contained in. */

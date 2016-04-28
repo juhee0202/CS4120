@@ -11,7 +11,7 @@ import jl2755.controlflow.AACFGNode;
 import jl2755.controlflow.CFGNode;
 import jl2755.controlflow.CSECFGNode;
 
-public class CommonSubExp extends Dataflow<IRExpr> {
+public class AvailableExpressionAnalysis extends Dataflow<IRExpr> {
 
 	@Override
 	public Set<IRExpr> meetOperator(IRExpr... args) {

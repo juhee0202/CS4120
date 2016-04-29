@@ -132,7 +132,7 @@ public class RegisterAllocator extends Optimization {
 		boolean didActuallySpill = true;
 		while (didActuallySpill) {
 			build();
-
+			
 			didPotentiallySpill = true;
 			while (didPotentiallySpill) {
 				didFreeze = true;
@@ -164,6 +164,7 @@ public class RegisterAllocator extends Optimization {
 		
 		// Run live variable analysis
 		LiveVariableAnalyzer lva = new LiveVariableAnalyzer(cfg);
+		lva.analyze();
 		nodeToLiveRegs = lva.getInMap();
 		
 		// Create interference graph
@@ -531,6 +532,7 @@ public class RegisterAllocator extends Optimization {
 		}
 		Map<Register,Set<Register>> edges = graph.getEdges();
 		for (Register reg : regStack) {
+			System.out.println(reg);
 			// Attempt to color reg
 			Register color = color(reg,edges.get(reg));
 			if (color == null) {
@@ -586,6 +588,7 @@ public class RegisterAllocator extends Optimization {
 	 */
 	private void replace(Register replaced, Register replacing) {
 		for (Instruction related : regToInstructions.get(replaced)) {
+			System.out.println(related);
 			Operand src = related.getSrc();
 			Operand dest = related.getDest();
 			if (src instanceof Register) {

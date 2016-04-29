@@ -1074,12 +1074,12 @@ public class TilingVisitor implements IRTreeVisitor {
 //		tileMap.put(cu, superTile);
 		
 		// Register/Stack allocation
-//		if (Oreg) {
-//			regAllocation(cu);
-//		} else {
-//			stackAllocation(cu);
-//		}
-		stackAllocation(cu);
+		if (Oreg) {
+			regAllocation(cu);
+		} else {
+			stackAllocation(cu);
+		}
+//		stackAllocation(cu);
 		
 		Tile superTile = null;
 		
@@ -1872,7 +1872,7 @@ public class TilingVisitor implements IRTreeVisitor {
 			
 			// complete "enter 8*l, 0"
 			Instruction enter = newInsts.get(1);
-			Constant space = new Constant(8*stackCounter);
+			Constant space = new Constant(8*rAlloc.getStackCounter());
 			enter.setSrc(space);
 		}
 	}
@@ -1897,7 +1897,6 @@ public class TilingVisitor implements IRTreeVisitor {
 			int numSpace = stackCounter % 2 == 1 ? stackCounter + 1 : stackCounter;
 			Constant space = new Constant(8*numSpace);
 			enter.setSrc(space);
-			System.out.println(functionTile);
 		}
 	}
 	

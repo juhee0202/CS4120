@@ -46,6 +46,9 @@ public class LiveVariableAnalyzer extends Dataflow<Register> {
 	 * @param argCFG
 	 */
 	public LiveVariableAnalyzer(ControlFlowGraph argCFG) {
+		inMap = new HashMap<AACFGNode, Set<Register>>();
+		uses = new HashMap<AACFGNode, Set<Register>>();
+		defs = new HashMap<AACFGNode, Register>();
 		cfg = argCFG;
 		for (CFGNode cfgNode : argCFG.getAllNodes()) {
 			uses.put((AACFGNode) cfgNode, new HashSet<Register>());

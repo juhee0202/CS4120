@@ -28,15 +28,13 @@ public class CommonSubExpElimination extends Optimization{
 	 * This is to ensure that some things don't happen more than once, in a very
 	 * conservative way.
 	 */
-	private Map<IRCFGNode,IRExprOverrider> nodeHoistedMap = 
-			new HashMap<IRCFGNode,IRExprOverrider>();
+	private Map<IRCFGNode,IRExprOverrider> nodeHoistedMap;
 	
 	/**
 	 * A HashMap to keep track of what we are calling the temp in which
 	 * each available expression should be stored in.
 	 */
-	private Map<IRExprOverrider,Integer> tempToInt = 
-			new HashMap<IRExprOverrider,Integer>();
+	private Map<IRExprOverrider,Integer> tempToInt;
 	
 	/**
 	 * The current int to assign to the next temp/IRExprOverrider if
@@ -49,6 +47,8 @@ public class CommonSubExpElimination extends Optimization{
 	
 	@Override
 	public boolean run(ControlFlowGraph cfg) {
+		nodeHoistedMap = new HashMap<IRCFGNode, IRExprOverrider>();
+		tempToInt = new HashMap<IRExprOverrider,Integer>();
 		AvailableExpressionAnalysis analyzerObject = new AvailableExpressionAnalysis(cfg);
 		analyzerObject.analyze();
 		outer:

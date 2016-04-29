@@ -16,7 +16,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.cli.AlreadySelectedException;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.GnuParser;
@@ -30,7 +29,6 @@ import edu.cornell.cs.cs4120.util.CodeWriterSExpPrinter;
 import edu.cornell.cs.cs4120.util.SExpPrinter;
 import edu.cornell.cs.cs4120.xic.ir.IRCompUnit;
 import edu.cornell.cs.cs4120.xic.ir.IRFuncDecl;
-import edu.cornell.cs.cs4120.xic.ir.IRNode;
 import edu.cornell.cs.cs4120.xic.ir.interpret.IRSimulator;
 import java_cup.runtime.Symbol;
 import jl2755.ast.Identifier;
@@ -41,6 +39,7 @@ import jl2755.controlflow.ControlFlowGraph;
 import jl2755.exceptions.LexicalError;
 import jl2755.exceptions.SemanticError;
 import jl2755.exceptions.SyntaxError;
+import jl2755.optimization.CommonSubExpElimination;
 import jl2755.optimization.Optimization;
 import jl2755.type.FunType;
 import jl2755.type.VType;
@@ -845,6 +844,8 @@ public class Main {
 			// TODO: CSE
 			// call constructor
 			// add to opts
+			CommonSubExpElimination cse = new CommonSubExpElimination();
+			opts.add(cse);
 		}
 		if (enabled[TEMP]) {
 			// TODO: 4th opt

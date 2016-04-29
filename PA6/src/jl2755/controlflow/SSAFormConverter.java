@@ -39,7 +39,7 @@ public class SSAFormConverter {
 		allVars = new HashSet<String>();
 		initializeUseAndDefMaps();
 	}
-
+	
 	/**
 	 * Initialize node2use & node2def maps and allVariables 
 	 */

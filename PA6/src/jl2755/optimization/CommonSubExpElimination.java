@@ -11,6 +11,7 @@ import edu.cornell.cs.cs4120.xic.ir.IRTemp;
 import jl2755.controlflow.CFGNode;
 import jl2755.controlflow.ControlFlowGraph;
 import jl2755.controlflow.IRCFGNode;
+import jl2755.controlflow.OptimizationGraph;
 import jl2755.controlflow.SubTreeListMaker;
 import jl2755.dataflow.AvailableExpressionAnalysis;
 import jl2755.dataflow.IRExprOverrider;
@@ -46,7 +47,8 @@ public class CommonSubExpElimination extends Optimization{
 	}
 	
 	@Override
-	public boolean run(ControlFlowGraph cfg) {
+	public boolean run(OptimizationGraph argGraph) {
+		ControlFlowGraph cfg = (ControlFlowGraph) argGraph;
 		nodeHoistedMap = new HashMap<IRCFGNode, IRExprOverrider>();
 		tempToInt = new HashMap<IRExprOverrider,Integer>();
 		AvailableExpressionAnalysis analyzerObject = new AvailableExpressionAnalysis(cfg);

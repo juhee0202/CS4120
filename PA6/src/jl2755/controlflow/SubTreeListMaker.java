@@ -2,12 +2,14 @@ package jl2755.controlflow;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import edu.cornell.cs.cs4120.xic.ir.IRBinOp;
 import edu.cornell.cs.cs4120.xic.ir.IRCall;
 import edu.cornell.cs.cs4120.xic.ir.IRConst;
 import edu.cornell.cs.cs4120.xic.ir.IRExpr;
 import edu.cornell.cs.cs4120.xic.ir.IRMem;
+import edu.cornell.cs.cs4120.xic.ir.IRName;
 import edu.cornell.cs.cs4120.xic.ir.IRTemp;
 import jl2755.dataflow.IRExprOverrider;
 
@@ -75,5 +77,43 @@ public class SubTreeListMaker {
 			// Other cases should not be part of the IRTree, or visited at least.
 		}
 		return tempList;
+	}
+	
+	public IRExprOverrider highestMatchingExpr(Set<IRExprOverrider> argOverriders) {
+		
+		
+		return null;
+	}
+	
+	private int getValue(IRExpr argExpr) {
+		if (argExpr instanceof IRBinOp) {
+			return 1 + getValue(((IRBinOp) argExpr).left()) + getValue(((IRBinOp) argExpr).right());
+		}
+		else if (argExpr instanceof IRCall) {
+			IRCall callView = (IRCall) argExpr;
+			int currentValue = 0;
+			for (int i = 0; i < callView.args().size(); i++) {
+				currentValue += getValue(callView.args().get(i));
+			}
+			return 1 + currentValue;
+		}
+		else if (argExpr instanceof IRConst) {
+			return 0;
+		}
+		else if (argExpr instanceof IRMem) {
+			IRMem memView = (IRMem) argExpr;
+			return getValue(memView.expr());
+		}
+		else if (argExpr instanceof IRName) {
+			return 0;
+		}
+		else if (argExpr instanceof IRTemp) {
+			return 0;
+		}
+		assert(false);
+		// Should not fall through to here. In this particular function,
+		// it's okay to reach IRConst or IRName, but IRESeq should have been
+		// taken out long ago.
+		return 0;
 	}
 }

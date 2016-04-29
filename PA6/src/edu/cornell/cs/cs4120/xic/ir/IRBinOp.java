@@ -23,18 +23,22 @@ public class IRBinOp extends IRExpr {
     private static Map<IRBinOp, Tile> nodeToTile;
     
     /**
-     * 0:	add or sub
-     * 1:	mul
-     * 2:	add with 1 add child
-     * 3:	add with 1 mul child
-     * 4:	add with 1 add child and 1 mul child
-     * 5:	add with 1 add child and 1 mul grandchild
-     * 6:	other (non-interesting binop)
+     *  0:	add		(const + reg)
+     *  1:	add		(reg + reg)
+     *  2:	mul		(const * reg)
+     *  3:	add with 1 add child	(const + (reg + reg))
+     *  4:	add with 1 add child	(reg + (const + reg))
+     *  5:	add with 1 mul child	(const + (const * reg))
+     *  6:	add with 1 mul child	(reg + (const * reg))
+     *  7:	add with 1 add child and 1 mul grandchild	(const + (reg + (reg * const)))
+     *  8:	add with 1 add child and 1 mul grandchild	(reg + (const + (reg * const)))
+     *  9:	add with 1 add child and 1 mul child	((const + reg) + (reg * const))
+     * -1:	other (non-interesting binop)
      */
     private int index;
 
     public IRBinOp(OpType type, IRExpr left, IRExpr right) {
-        this(type, left, right, 6);
+        this(type, left, right, -1);
         computeIndex();
     }
     
@@ -43,53 +47,115 @@ public class IRBinOp extends IRExpr {
      * Sets index to the most complex tile that can be made from this IRBinOp.
      */
     private void computeIndex() {
-    	if (type == OpType.ADD || type == OpType.SUB) {
+    	int operands = computeChildrenTypes();
+    	if (type == OpType.ADD) {
     		if (left instanceof IRBinOp && right instanceof IRBinOp) {
     			IRBinOp leftNode = (IRBinOp) left;
     			IRBinOp rightNode = (IRBinOp) right;
-    			if (leftNode.index == 0 && rightNode.index == 1) {
-    				index = 4;
+    			if (leftNode.index == 0 && rightNode.index == 2) {
+    				index = 9;
     				return;
-    			} else if (leftNode.index == 1 && rightNode.index == 0) {
-    				index = 4;
+    			} else if (leftNode.index == 2 && rightNode.index == 0) {
+    				index = 9;
     				return;
     			}
     		}
     		if (left instanceof IRBinOp) {
-    			IRBinOp leftNode = (IRBinOp) left;
-    			if (leftNode.index == 3) {
-    				index = 5;
+    			IRBinOp childNode = (IRBinOp) left;
+    			if (childNode.index == 5 && operands == 1) {
+    				index = 8;
     				return;
-    			} else if (leftNode.index == 1) {
+    			} else if (childNode.index == 6 && operands == 1) {
+    				index = 7;
+    				return;
+    			} else if (childNode.index == 2) {
+    				if (operands == 1) {
+    					index = 5;
+    					return;
+    				} else if (operands == 2) {
+    					index = 6;
+    					return;
+    				}
+    			} else if (childNode.index == 0 && operands == 2) {
+    				index = 4;
+    				return;
+    			} else if (childNode.index == 1 && operands == 1) {
     				index = 3;
-    				return;
-    			} else if (leftNode.index == 0) {
-    				index = 2;
     				return;
     			}
     		}
     		if (right instanceof IRBinOp) {
-    			IRBinOp rightNode = (IRBinOp) right;
-    			if (rightNode.index == 3) {
-    				index = 5;
+    			IRBinOp childNode = (IRBinOp) left;
+    			if (childNode.index == 5 && operands == 1) {
+    				index = 8;
     				return;
-    			} else if (rightNode.index == 1) {
+    			} else if (childNode.index == 6 && operands == 1) {
+    				index = 7;
+    				return;
+    			} else if (childNode.index == 2) {
+    				if (operands == 1) {
+    					index = 5;
+    					return;
+    				} else if (operands == 2) {
+    					index = 6;
+    					return;
+    				}
+    			} else if (childNode.index == 0 && operands == 2) {
+    				index = 4;
+    				return;
+    			} else if (childNode.index == 1 && operands == 1) {
     				index = 3;
-    				return;
-    			} else if (rightNode.index == 0) {
-    				index = 2;
     				return;
     			}
     		}
-    		index = 0;
+    		if (operands == 1) {
+    			index = 0;
+    		} else if (operands == 2) {
+    			index = 1;
+    		} else {
+    			index = -1;
+    		}
     	} else if (type == OpType.MUL) {
-    		index = 1;
+    		if (operands == 1) {
+    			index = 2;
+    		} else {
+    			index = -1;
+    		}
     	} else {
-    		index = 6;
+    		index = -1;
     	}
-		
-		
 	}
+    
+    /**
+     * Computes the types of the children of this IRBinOp
+     * 
+     * @return	0: const, const
+     * 			1: const, reg/binop
+     * 			2: reg/binop, reg/binop
+     * 		   -1: other
+     */
+    private int computeChildrenTypes() {
+    	if (left instanceof IRConst) {
+    		if (right instanceof IRConst) {
+    			return 0;
+    		} else if (right instanceof IRTemp || right instanceof IRBinOp) {
+    			return 1;
+    		}
+    	} else if (left instanceof IRTemp) {
+    		if (right instanceof IRConst) {
+    			return 1;
+    		} else if (right instanceof IRTemp || right instanceof IRBinOp) {
+    			return 2;
+    		}
+    	} else if (left instanceof IRBinOp) {
+    		if (right instanceof IRConst) {
+    			return 1;
+    		} else if (right instanceof IRTemp || right instanceof IRBinOp) {
+    			return 2;
+    		}
+    	}
+    	return -1;
+    }
 
 	public IRBinOp(OpType type, IRExpr left, IRExpr right, int index) {
         this.type = type;
@@ -118,7 +184,15 @@ public class IRBinOp extends IRExpr {
         return type.toString();
     }
     
-    @Override
+    public int getIndex() {
+		return index;
+	}
+
+	public static Map<IRBinOp, Tile> getNodeToTile() {
+		return nodeToTile;
+	}
+
+	@Override
     public IRNode visitChildren(IRVisitor v) {
         IRExpr left = (IRExpr) v.visit(this, this.left);
         IRExpr right = (IRExpr) v.visit(this, this.right);

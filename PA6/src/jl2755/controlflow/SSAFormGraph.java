@@ -51,7 +51,7 @@ public class SSAFormGraph implements OptimizationGraph {
 	 * given a variable name, this map returns
 	 *  a list of CFG nodes (stmts) that use that variable 
 	 */
-	public Map<String, List<CFGNode>> getVarToUsesMap() {
+	public Map<String, Set<CFGNode>> getVarToUseMap() {
 		//TODO
 		return null;
 	}

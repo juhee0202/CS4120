@@ -18,6 +18,10 @@ public class SSAFormGraph implements OptimizationGraph {
 	// node of IRPhiFunction isn't included
 	private Map<CFGNode, String> node2def;
 	
+	private Map<String, Set<CFGNode>> var2use;
+	
+	private Map<String, CFGNode> var2def;
+	
 	public SSAFormGraph(ControlFlowGraph cfg, Map<CFGNode, Set<String>> node2use, Map<CFGNode, String> node2def) {
 		this.cfg = cfg;
 		this.node2use = node2use;
@@ -64,6 +68,26 @@ public class SSAFormGraph implements OptimizationGraph {
 	public Map<String, CFGNode> getVarToDefMap() {
 		// TODO 
 		return null;
+	}
+
+	public void setCfg(ControlFlowGraph cfg) {
+		this.cfg = cfg;
+	}
+
+	public void setNode2use(Map<CFGNode, Set<String>> node2use) {
+		this.node2use = node2use;
+	}
+
+	public void setNode2def(Map<CFGNode, String> node2def) {
+		this.node2def = node2def;
+	}
+
+	public void setVar2use(Map<String, Set<CFGNode>> var2use) {
+		this.var2use = var2use;
+	}
+
+	public void setVar2def(Map<String, CFGNode> var2def) {
+		this.var2def = var2def;
 	}
 
 	/**

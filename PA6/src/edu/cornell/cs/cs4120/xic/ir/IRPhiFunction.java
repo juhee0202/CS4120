@@ -25,6 +25,10 @@ public class IRPhiFunction extends IRStmt {
 		return var;
 	}
 	
+	public void setVar(String v) {
+		var = v;
+	}
+	
 	public void setOperand(int i, String operand) {
 		operands[i] = operand;
 	}
@@ -71,6 +75,19 @@ public class IRPhiFunction extends IRStmt {
 
 	@Override
 	public void setRightChildEnumType(ChildType argEnum) {
+	}
+	
+	@Override
+	public String toString() {
+		String operandsString = "";
+		for (String operand : operands) {
+			if (operand != null) {
+				operandsString += operand + " ";
+			} else {
+				operandsString += var + " ";
+			}
+		}
+		return "(" + var + " = phi( " + operandsString + ")" + ")";
 	}
 
 }

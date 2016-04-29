@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.Stack;
 
@@ -28,6 +29,12 @@ public class SSAFormConverter {
 	
 	/** Maps CFGNode to the defined variable name */
 	private Map<CFGNode, String> node2def;
+	
+	/** Maps a variable to its use site */
+	private Map<String, Set<CFGNode>> var2use;
+	
+	/** Maps a variable to its def site */
+	private Map<String, CFGNode> var2def;
 	
 	/** Set of all variable names in cfg */
 	private Set<String> allVars;
@@ -78,12 +85,37 @@ public class SSAFormConverter {
 		computeDominanceFrontier();
 		// 2) add phi-functions for vars
 		insertPhiFunctions();
-		// 3) rename all defs&uses of vars using subscripts
+		// 3) rename all defs & uses of vars using subscripts
 		renameVariables();
-		// 4) construct SSAFormGraph
+		// 4) compute var2use & var2def maps
+		computeVarMaps();
+		// 5) construct SSAFormGraph
 		SSAFormGraph ssaGraph = new SSAFormGraph(cfg, node2use, node2def);
 		
 		return ssaGraph;
+	}
+
+	private void computeVarMaps() {
+		var2use = new HashMap<String, Set<CFGNode>>();
+		var2def = new HashMap<String, CFGNode>();
+		for (Entry<CFGNode, String> entry : node2def.entrySet()) {
+			var2def.put(entry.getValue(), entry.getKey());
+		}
+		
+		for (Entry<CFGNode, Set<String>> entry : node2use.entrySet()) {
+			CFGNode node = entry.getKey();
+			Set<String> use = entry.getValue();
+			for (String var : use) {
+				Set<CFGNode> usesites;
+				if (var2use.containsKey(var)) {
+					usesites = var2use.get(var);
+				} else {
+					usesites = new HashSet<CFGNode>();
+				}
+				usesites.add(node);
+				var2use.put(var, usesites);
+			}
+		}
 	}
 
 	/**
@@ -109,6 +141,8 @@ public class SSAFormConverter {
 	 * @param node
 	 */
 	private void rename(CFGNode node) {
+		System.out.println(node);
+		
 		IRStmt stmt = ((IRCFGNode)node).underlyingIRStmt;
 		
 		if (stmt instanceof IRReturn) {
@@ -146,7 +180,8 @@ public class SSAFormConverter {
 			IRStmt succStmt = ((IRCFGNode)succ).underlyingIRStmt;
 			if (succStmt instanceof IRPhiFunction) {
 				int i = succ.predecessors.indexOf(node);
-				String a = ((IRPhiFunction)succStmt).getVar();
+				String a = ((IRPhiFunction)succStmt).getOriginalVar();
+				
 				int a_count = var2stack.get(a).peek();
 				((IRPhiFunction)succStmt).setOperand(i, a + a_count);
 				Set<String> use = node2use.get(succ);

@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import edu.cornell.cs.cs4120.xic.ir.IRCJump;
@@ -28,32 +29,39 @@ public class AvailableExpressionAnalysis extends Dataflow<IRExpr> {
 	/**
 	 * A map of IRCFGNode's to the IRExprOverriders that it kills.
 	 */
-	private HashMap<IRCFGNode,List<IRExprOverrider>> registerKillsMap;
+	public HashMap<IRCFGNode,List<IRExprOverrider>> registerKillsMap;
 	
 	/**
 	 * A map of IRCFGNode's to a boolean to see if this node kills
 	 * everything or not.
 	 */
-	private HashMap<IRCFGNode,Boolean> allKillsMap;
+	public HashMap<IRCFGNode,Boolean> allKillsMap;
 	
 	/**
 	 * A map of IRCFGNode's to a SubTreeListMaker instance which
 	 * calculates all of the sub expressions that are inside a given
 	 * IRExpr.
 	 */
-	private HashMap<IRCFGNode,SubTreeListMaker> exprSubTreesMap;
+	public HashMap<IRCFGNode,SubTreeListMaker> exprSubTreesMap;
+	
+	/**
+	 * A map of IRCFGNode's to a SubTreeListMaker instance which
+	 * calculates all of the sub expressions that are used inside a
+	 * given IRExpr. Use it responsibly and only add uses.
+	 */
+	public HashMap<IRCFGNode,SubTreeListMaker> usesMap;
 	
 	/**
 	 * A map from IRCFGNode's to their ins.
 	 */
-	private HashMap<IRCFGNode, Set<IRExprOverrider>> inMap;
+	public HashMap<IRCFGNode, Set<IRExprOverrider>> inMap;
 	
 	/**
 	 * A map from IRCFGNode's to their outs.
 	 */
-	private HashMap<IRCFGNode, Set<IRExprOverrider>> outMap;
+	public HashMap<IRCFGNode, Set<IRExprOverrider>> outMap;
 	
-	private ControlFlowGraph cfg;
+	public ControlFlowGraph cfg;
 	
 	public AvailableExpressionAnalysis(ControlFlowGraph argCfg) {
 		cfg = argCfg;
@@ -65,6 +73,7 @@ public class AvailableExpressionAnalysis extends Dataflow<IRExpr> {
 			outMap.put((IRCFGNode) cfgNode, new HashSet<IRExprOverrider>());
 			computeKills((IRCFGNode) cfgNode);
 			computeExprs((IRCFGNode) cfgNode);
+			computeUses((IRCFGNode) cfgNode);
 		}
 	}
 	
@@ -82,21 +91,36 @@ public class AvailableExpressionAnalysis extends Dataflow<IRExpr> {
 		Set<IRExprOverrider> originalInSet = inMap.get(arg);
 		Set<IRExprOverrider> originalOutSet = outMap.get(arg);
 		Iterator<CFGNode> iteratorOfPred = arg.getPredecessors().iterator();
-		Set<IRExprOverrider> intersectionSet = null;
+		Map<IRExprOverrider,IRExprOverrider> intersectionMap = null;
 		while (iteratorOfPred.hasNext()) {
 			IRCFGNode currentPred = (IRCFGNode) iteratorOfPred.next();
-			if (intersectionSet == null) {
-				intersectionSet = new HashSet<IRExprOverrider>(outMap.get(currentPred));
+			if (intersectionMap == null) {
+				intersectionMap = new HashMap<IRExprOverrider,IRExprOverrider>();
+				Set<IRExprOverrider> tempSet = outMap.get(currentPred);
+				for (IRExprOverrider ireo : tempSet) {
+					intersectionMap.put(ireo, ireo);
+				}
+				
 			}
 			else {
-				intersectionSet.retainAll(outMap.get(currentPred));
+				// Have to iterate through outMap.get(currentPred) so that we can, when
+				// elements intersect, merge owners of the elements from both intersects.
+				Set<IRExprOverrider> currentOutSet = outMap.get(currentPred);
+				for (IRExprOverrider ireo : currentOutSet) {
+					if (intersectionMap.containsKey(ireo)) {
+						IRExprOverrider intersectedElement = intersectionMap.get(ireo);
+						IRExprOverrider mergedElement = new IRExprOverrider(intersectedElement,ireo);
+						intersectionMap.remove(intersectedElement);
+						intersectionMap.put(mergedElement, mergedElement);
+					}
+				}
 			}
 		}
-		if (intersectionSet == null) {
-			intersectionSet = new HashSet<IRExprOverrider>();
+		if (intersectionMap == null) {
+			intersectionMap = new HashMap<IRExprOverrider,IRExprOverrider>();
 		}
 		IRCFGNode cseView = (IRCFGNode) arg;
-		inMap.put(cseView,intersectionSet);
+		inMap.put(cseView,intersectionMap.keySet());
 		
 		
 		Set<IRExprOverrider> currentInSet = new HashSet<IRExprOverrider>(inMap.get(cseView));
@@ -228,5 +252,48 @@ public class AvailableExpressionAnalysis extends Dataflow<IRExpr> {
 		}
 		// Should never get here
 		assert(false);
+	}
+	
+	private void computeUses(IRCFGNode argNode) {
+		IRStmt underlyingStmt = argNode.underlyingIRStmt;
+		SubTreeListMaker tempMaker = new SubTreeListMaker();
+		if (underlyingStmt instanceof IRCJump) {
+			IRCJump cjumpView = (IRCJump) underlyingStmt;
+			tempMaker.add(cjumpView.expr(), argNode);
+			usesMap.put(argNode, tempMaker);
+			return;
+		}
+		else if (underlyingStmt instanceof IRExp) {
+			IRExp expView = (IRExp) underlyingStmt;
+			assert(expView.expr() instanceof IRCall);
+			IRCall callChild = (IRCall) expView.expr();
+			for (int i = 0; i < callChild.args().size(); i++) {
+				tempMaker.add(callChild.args().get(i),argNode);
+			}
+			usesMap.put(argNode, tempMaker);
+			return;
+		}
+		else if (underlyingStmt instanceof IRJump) {
+			// Nothing should be used here
+			return;
+		}
+		else if (underlyingStmt instanceof IRLabel) {
+			// Nothing should be used here
+			return;
+		}
+		else if (underlyingStmt instanceof IRMove) {
+			// In this case, technically both the source and target are expressions that are used
+			IRMove moveView = (IRMove) underlyingStmt;
+			tempMaker.add(moveView.expr(),argNode);
+			tempMaker.add(moveView.target(),argNode);
+			usesMap.put(argNode, tempMaker);
+			return;
+		}
+		else if (underlyingStmt instanceof IRReturn) {
+			// Nothing should be used here since IRReturn doesn't have any expressions inside of it
+			return;
+		}
+		assert(false);
+		// Should never fall through here.
 	}
 }

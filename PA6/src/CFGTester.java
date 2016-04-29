@@ -20,8 +20,8 @@ public class CFGTester {
 		for (IRFuncDecl fd : cu.functions().values()) {
 			ControlFlowGraph cfg = new ControlFlowGraph(fd);
 			
-//			System.out.println("*** Original CFG ***");
-//			cfg.print();
+			System.out.println("*** Original CFG ***");
+			cfg.print();
 			
 			SSAFormConverter converter = new SSAFormConverter(cfg);
 			SSAFormGraph ssaCfg = converter.convertToSSAForm();

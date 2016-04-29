@@ -1,6 +1,9 @@
 package jl2755.dataflow;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import edu.cornell.cs.cs4120.xic.ir.IRBinOp;
 import edu.cornell.cs.cs4120.xic.ir.IRCall;
@@ -10,6 +13,7 @@ import edu.cornell.cs.cs4120.xic.ir.IRMem;
 import edu.cornell.cs.cs4120.xic.ir.IRName;
 import edu.cornell.cs.cs4120.xic.ir.IRTemp;
 import jl2755.controlflow.IRCFGNode;
+import polyglot.util.Pair;
 
 /**
  * Class that wraps an IRExpr object. This is needed to have a seperate
@@ -18,12 +22,49 @@ import jl2755.controlflow.IRCFGNode;
  * to object ID's).
  */
 public class IRExprOverrider {
-	private IRExpr encapsulatedIRExpr;
-	public IRCFGNode nodeOfOrigin;
+	/**
+	 * The IRExpr that this instance represents.
+	 */
+	public IRExpr encapsulatedIRExpr;
+	
+	/**
+	 * All the nodes where this encapsulatedIRExpr has originated from.
+	 */
+	public List<IRCFGNode> nodesOfOrigin = new ArrayList<IRCFGNode>();
+	
+	/**
+	 * Boolean that represents if encapsulatedIRExpr has been hoisted for
+	 * all the nodesOfOrigin.
+	 */
+	public boolean hasBeenHoisted = false;
+	
+	/**
+	 * A mapping from a pair of IRExprOverrider and an IRCFGNode to a boolean.
+	 * This is used so that, for a given IRExpr, we can tell if it has been
+	 * hoisted at the particular IRCFGNode.
+	 */
+	private static Map<Pair<IRExprOverrider, IRCFGNode>,Boolean> ownerNodeMap = 
+			new HashMap<Pair<IRExprOverrider, IRCFGNode>,Boolean>();
+	
+	/**
+	 * Should only be used for merging two IRExprOverrider instances.
+	 */
+	private IRExprOverrider() {
+	}
 	
 	public IRExprOverrider(IRExpr argExpr, IRCFGNode argNode) {
 		encapsulatedIRExpr = argExpr;
-		nodeOfOrigin = argNode;
+		nodesOfOrigin.add(argNode);
+	}
+	
+	public IRExprOverrider(IRExprOverrider arg1, IRExprOverrider arg2) {
+		assert(arg1.equals(arg2));
+		IRExprOverrider temp = new IRExprOverrider();
+		temp.encapsulatedIRExpr = arg1.encapsulatedIRExpr;
+		temp.nodesOfOrigin.addAll(arg1.nodesOfOrigin);
+		temp.nodesOfOrigin.addAll(arg2.nodesOfOrigin);
+		assert(this.equals(arg1));
+		assert(this.equals(arg2));
 	}
 	
 	public IRExpr getIRExpr() {

@@ -132,7 +132,6 @@ public class RegisterAllocator extends Optimization {
 		boolean didActuallySpill = true;
 		while (didActuallySpill) {
 			build();
-			
 			didPotentiallySpill = true;
 			while (didPotentiallySpill) {
 				didFreeze = true;
@@ -152,6 +151,7 @@ public class RegisterAllocator extends Optimization {
 			}
 			didActuallySpill = select();
 		}
+		cleanUp();
 		return program;
 	}
 
@@ -161,12 +161,12 @@ public class RegisterAllocator extends Optimization {
 	private void build() {
 		// Construct CFG
 		cfg = constructCFG();
-		
+
 		// Run live variable analysis
 		LiveVariableAnalyzer lva = new LiveVariableAnalyzer(cfg);
 		lva.analyze();
 		nodeToLiveRegs = lva.getInMap();
-		
+
 		// Create interference graph
 		graph = new InterferenceGraph(nodeToLiveRegs);
 	}
@@ -350,6 +350,7 @@ public class RegisterAllocator extends Optimization {
 	 */
 	private void simplify() {
 		Set<Register> nodes = graph.getNodes();
+		Set<Register> remove = new HashSet<Register>();
 		for (Register reg : nodes) {
 			Map<Register,Set<Register>> edges = graph.getEdges();
 			if (!reg.isMoveRelated() && !reg.isBuiltIn()
@@ -359,8 +360,11 @@ public class RegisterAllocator extends Optimization {
 				neighborStack.push(edges.get(reg));
 				
 				// Remove reg from interference graph
-				graph.remove(reg);
+				remove.add(reg);
 			}
+		}
+		for (Register r : remove) {
+			graph.remove(r);
 		}
 	}
 	
@@ -452,16 +456,13 @@ public class RegisterAllocator extends Optimization {
 		// Choose a high-degree node
 		Set<Register> nodes = graph.getNodes();
 		Map<Register,Set<Register>> edges = graph.getEdges();
-		Register frozen = null;
 		for (Register reg : nodes) {
 			if (!reg.isBuiltIn() && reg.isMoveRelated() 
 					&& edges.get(reg).size() < NUM_COLORS) {
-				frozen = reg;
-				
-				// Freeze all moves related to frozen
-				frozen.setMoveRelated(false);
-				for (Instruction frozenMove : regToMovInstructions.get(frozen)) {
-					Register relatedReg = otherRegister(frozenMove,frozen);
+				// Freeze all moves related to frozen reg
+				reg.setMoveRelated(false);
+				for (Instruction frozenMove : regToMovInstructions.get(reg)) {
+					Register relatedReg = otherRegister(frozenMove,reg);
 					List<Instruction> relatedMoves = regToMovInstructions.get(relatedReg);
 					relatedMoves.remove(frozenMove);
 					if (relatedMoves.size() == 0) {
@@ -470,7 +471,7 @@ public class RegisterAllocator extends Optimization {
 						regToMovInstructions.remove(relatedReg);
 					}
 				}
-				regToMovInstructions.remove(frozen);
+				regToMovInstructions.remove(reg);
 				
 				result = true;
 				break;
@@ -530,11 +531,10 @@ public class RegisterAllocator extends Optimization {
 			assert(preColored.getType() != RegisterName.TEMP);
 			usedRegs.add(preColored);
 		}
-		Map<Register,Set<Register>> edges = graph.getEdges();
-		for (Register reg : regStack) {
-			System.out.println(reg);
+		while (!regStack.empty()) {
+			Register reg = regStack.pop();
 			// Attempt to color reg
-			Register color = color(reg,edges.get(reg));
+			Register color = color(reg, neighborStack.pop());
 			if (color == null) {
 				// Spill reg to stack
 				Constant addr = new Constant(-8*++stackCounter);
@@ -588,7 +588,6 @@ public class RegisterAllocator extends Optimization {
 	 */
 	private void replace(Register replaced, Register replacing) {
 		for (Instruction related : regToInstructions.get(replaced)) {
-			System.out.println(related);
 			Operand src = related.getSrc();
 			Operand dest = related.getDest();
 			if (src instanceof Register) {
@@ -624,6 +623,44 @@ public class RegisterAllocator extends Optimization {
 
 	public int getStackCounter() {
 		return stackCounter;
+	}
+	
+	/**
+	 * Cleans up any unallocated temps (dead code)
+	 */
+	private void cleanUp() {
+		List<Instruction> removes = new ArrayList<Instruction>();
+		for (Instruction inst : program) {
+			Operand source = inst.getSrc();
+			Operand target = inst.getDest();
+			Set<Register> sourceUsed = new HashSet<Register>();
+			Set<Register> targetUsed = new HashSet<Register>();
+			if (source != null) {
+				sourceUsed.addAll(source.getRegistersUsed());
+			}
+			if (target != null) {
+				targetUsed.addAll(target.getRegistersUsed());
+			}
+			boolean remove = false;
+			for (Register rS : sourceUsed) {
+				if (rS.getType() == RegisterName.TEMP) {
+					remove = true;
+					break;
+				}
+			}
+			for (Register rT : targetUsed) {
+				if (rT.getType() == RegisterName.TEMP) {
+					remove = true;
+					break;
+				}
+			}
+			if (remove) {
+				removes.add(inst);
+			}
+		}
+		for (Instruction i : removes) {
+			program.remove(i);
+		}
 	}
 	
 }

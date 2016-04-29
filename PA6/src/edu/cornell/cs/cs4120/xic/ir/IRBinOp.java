@@ -85,7 +85,7 @@ public class IRBinOp extends IRExpr {
     			}
     		}
     		if (right instanceof IRBinOp) {
-    			IRBinOp childNode = (IRBinOp) left;
+    			IRBinOp childNode = (IRBinOp) right;
     			if (childNode.index == 5 && operands == 1) {
     				index = 8;
     				return;

@@ -10,10 +10,7 @@ _Imain_paai:
 	pushq	%r13
 	pushq	%r14
 	pushq	%r15
-	movq	%rdi, %args
-	movq	$5, %x
-	movq	$6, %y
-	movq	$7, %z
+	movq	$5, %r9
 	movq	-8(%rbp), %rdi
 	movq	-16(%rbp), %rsi
 	movq	-24(%rbp), %rbx

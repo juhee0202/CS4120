@@ -22,6 +22,10 @@ public class IRTemp extends IRExpr {
     public String name() {
         return name;
     }
+    
+    public void setName(String n) {
+    	name = n;
+    }
 
     @Override
     public String label() {

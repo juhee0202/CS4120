@@ -48,7 +48,7 @@ public class DeadCodeEliminator extends Optimization{
 				//if stmt has no side effects other than the
 				//assignment to v
 				if (!hasSideEffect(stmt)) {
-					ssaGraph.remove(node);
+					ssaGraph.removeUnreachableNode(node);
 					node2use.remove(node);
 					node2def.remove(node);
 					var2def.remove(var);

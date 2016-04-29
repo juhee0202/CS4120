@@ -1,7 +1,18 @@
 package jl2755.controlflow;
 
+import java.util.List;
+
+import edu.cornell.cs.cs4120.xic.ir.IRBinOp;
+import edu.cornell.cs.cs4120.xic.ir.IRCJump;
+import edu.cornell.cs.cs4120.xic.ir.IRCall;
+import edu.cornell.cs.cs4120.xic.ir.IRExp;
 import edu.cornell.cs.cs4120.xic.ir.IRExpr;
+import edu.cornell.cs.cs4120.xic.ir.IRJump;
+import edu.cornell.cs.cs4120.xic.ir.IRMem;
+import edu.cornell.cs.cs4120.xic.ir.IRMove;
+import edu.cornell.cs.cs4120.xic.ir.IRPhiFunction;
 import edu.cornell.cs.cs4120.xic.ir.IRStmt;
+import edu.cornell.cs.cs4120.xic.ir.IRTemp;
 
 public class IRCFGNode extends CFGNode {
 	/** The IRStmt that this IRCFGNode represents. */
@@ -44,6 +55,71 @@ public class IRCFGNode extends CFGNode {
 			System.out.println("Already added 2 successors");
 		}
 	}
+	
+	/**
+	 * Replaces the usage of var to var_i
+	 * @param node
+	 * @param s
+	 * @param i
+	 */
+	public void replaceUsage(String var, String newVar) {
+		if (underlyingIRStmt instanceof IRCJump) {
+			replaceUsage(((IRCJump)underlyingIRStmt).expr(), var, newVar);
+		} else if (underlyingIRStmt instanceof IRExp) {
+			replaceUsage(((IRExp)underlyingIRStmt).expr(), var, newVar);
+		} else if (underlyingIRStmt instanceof IRJump) {
+			replaceUsage(((IRJump)underlyingIRStmt).target(), var, newVar);
+		} else if (underlyingIRStmt instanceof IRMove) {
+			replaceUsage(((IRMove)underlyingIRStmt).expr(), var, newVar);
+		}
+	}
+
+	/**
+	 * Replaces var to var_i in expr
+	 * @param expr
+	 * @param var
+	 * @param i
+	 */
+	public void replaceUsage(IRExpr expr, String var, String newVar) {
+		if (expr instanceof IRBinOp) {
+			replaceUsage(((IRBinOp)expr).left(), var, newVar);
+			replaceUsage(((IRBinOp)expr).right(), var, newVar);
+		} else if (expr instanceof IRCall) {
+			replaceUsage(((IRCall)expr).target(), var, newVar);			
+			List<IRExpr> args = ((IRCall)expr).args();
+			for (IRExpr arg : args) {
+				replaceUsage(arg, var, newVar);
+			}
+			((IRCall)expr).setArgs(args);
+		} else if (expr instanceof IRMem) {
+			replaceUsage(((IRMem)expr).expr(), var, newVar);
+		} else if (expr instanceof IRTemp) {
+			if (((IRTemp)expr).name().equals(var)) {
+				((IRTemp)expr).setName(newVar);
+			}
+		}
+	}
+
+	/**
+	 * Replaces the definition of var to var_i
+	 * @param node
+	 * @param var
+	 * @param i
+	 */
+	public void replaceDefinition(String var, String newVar) {
+		if (underlyingIRStmt instanceof IRMove) {
+			IRMove move = (IRMove)underlyingIRStmt;
+			IRTemp newTemp = new IRTemp(newVar);
+			IRMove newMove = new IRMove(newTemp, move.expr());
+			underlyingIRStmt = newMove;
+		} else if (underlyingIRStmt instanceof IRPhiFunction) {
+			((IRPhiFunction)underlyingIRStmt).setVar(newVar);
+		} else { 
+			assert(underlyingIRStmt instanceof IRMove);
+			// shouldn't get here
+		}
+	}
+	
 
 	public String getName() {
 		return name;

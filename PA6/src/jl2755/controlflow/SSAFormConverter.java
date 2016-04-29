@@ -39,7 +39,7 @@ public class SSAFormConverter {
 		allVars = new HashSet<String>();
 		initializeUseAndDefMaps();
 	}
-
+	
 	/**
 	 * Initialize node2use & node2def maps and allVariables 
 	 */
@@ -58,7 +58,9 @@ public class SSAFormConverter {
 				node2use.put(node, use);
 				node2def.put(node, def);
 				allVars.addAll(use);
-				allVars.add(def);
+				if (def != null) {
+					allVars.add(def);
+				}
 				Set<CFGNode> successors = node.getSuccessors();
 				stack.addAll(successors);
 				visitedNodes.add(node);
@@ -118,11 +120,13 @@ public class SSAFormConverter {
 		
 		// update the count and stack of def[node]
 		String def = node2def.get(node);
-		int count = var2count.get(def);
-		var2count.put(def, count+1);
-		Stack<Integer> stack = var2stack.get(def);
-		stack.push(count+1);
-		var2stack.put(def,stack);
+		if (def != null) {
+			int count = var2count.get(def);
+			var2count.put(def, count+1);
+			Stack<Integer> stack = var2stack.get(def);
+			stack.push(count+1);
+			var2stack.put(def,stack);			
+		}
 		
 		// update successor's phi-function if applicable
 		for (CFGNode succ : node.getSuccessors()) {

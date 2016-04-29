@@ -1620,7 +1620,6 @@ public class TilingVisitor implements IRTreeVisitor {
 			int numSpace = stackCounter % 2 == 1 ? stackCounter + 1 : stackCounter;
 			Constant space = new Constant(8*numSpace);
 			enter.setSrc(space);
-			System.out.println(functionTile);
 		}
 	}
 	

@@ -26,16 +26,16 @@ public class SubTreeListMaker {
 		irexprVersion = new ArrayList<IRExpr>();
 	}
 	
-	public void add(IRExpr argExpr) {
+	public void add(IRExpr argExpr, IRCFGNode ownerNode) {
 		List<IRExpr> exprList = extractAllSubTrees(argExpr);
 		irexprVersion.addAll(exprList);
 		for (int i = 0; i < exprList.size(); i++) {
-			backingList.add(new IRExprOverrider(exprList.get(i)));
+			backingList.add(new IRExprOverrider(exprList.get(i),ownerNode));
 		}
 	}
 	
 	public boolean contains(IRExpr argExpr) {
-		IRExprOverrider overridedView = new IRExprOverrider(argExpr);
+		IRExprOverrider overridedView = new IRExprOverrider(argExpr,null);
 		return backingList.contains(overridedView);
 	}
 	

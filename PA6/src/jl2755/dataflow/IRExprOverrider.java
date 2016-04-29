@@ -9,6 +9,7 @@ import edu.cornell.cs.cs4120.xic.ir.IRExpr;
 import edu.cornell.cs.cs4120.xic.ir.IRMem;
 import edu.cornell.cs.cs4120.xic.ir.IRName;
 import edu.cornell.cs.cs4120.xic.ir.IRTemp;
+import jl2755.controlflow.IRCFGNode;
 
 /**
  * Class that wraps an IRExpr object. This is needed to have a seperate
@@ -18,9 +19,11 @@ import edu.cornell.cs.cs4120.xic.ir.IRTemp;
  */
 public class IRExprOverrider {
 	private IRExpr encapsulatedIRExpr;
+	public IRCFGNode nodeOfOrigin;
 	
-	public IRExprOverrider(IRExpr argExpr) {
+	public IRExprOverrider(IRExpr argExpr, IRCFGNode argNode) {
 		encapsulatedIRExpr = argExpr;
+		nodeOfOrigin = argNode;
 	}
 	
 	public IRExpr getIRExpr() {

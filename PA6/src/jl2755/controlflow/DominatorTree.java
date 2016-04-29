@@ -2,8 +2,10 @@ package jl2755.controlflow;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Queue;
 import java.util.Set;
 
 public class DominatorTree {
@@ -30,7 +32,6 @@ public class DominatorTree {
 		constructDominatorTree(root, dominanceMap);
 	}
 	
-	// TODO: test
 	private void constructDominatorTree(CFGNode parent, Map<CFGNode, Set<CFGNode>> dominances) {
 		/* Create a copy of provided dominance map */
 		Map<CFGNode, Set<CFGNode>> dominance_copy = new HashMap<CFGNode, Set<CFGNode>>();
@@ -41,8 +42,10 @@ public class DominatorTree {
 		for (Entry<CFGNode, Set<CFGNode>> entry : dominance_copy.entrySet()) {
 			CFGNode node = entry.getKey();
 			Set<CFGNode> dominance = entry.getValue();
-			if (dominance.remove(parent)) {
-				dominance_copy.put(node, dominance);
+			Set<CFGNode> copy = new HashSet<CFGNode>();
+			copy.addAll(dominance);
+			if (copy.remove(parent)) {
+				dominance_copy.put(node, copy);
 			} else {
 				// remove nodes that aren't part of this subtree
 				dominance_copy.remove(node);
@@ -93,10 +96,10 @@ public class DominatorTree {
 				// compute the intersection of pred's dominance 
 				Set<CFGNode> predDominance = null;
 				for (CFGNode pred : node.predecessors) {
-					// skip head
-					if (pred == head) {
-						continue;
-					}
+//					// skip head
+//					if (pred == head) {
+//						continue;
+//					}
 					
 					Set<CFGNode> dominance = dominanceMap.get(pred);
 					if (predDominance == null) {
@@ -107,7 +110,9 @@ public class DominatorTree {
 				}
 				
 				// compute the new dominance
-				newDominance.addAll(predDominance);
+				if (predDominance != null) {
+					newDominance.addAll(predDominance);
+				}			
 				
 				// update dominance relation
 				if (oldDominance.size() != newDominance.size() 

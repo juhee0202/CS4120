@@ -237,7 +237,7 @@ public class RegisterAllocator extends Optimization {
 			}
 			
 			// link prev to curr
-			if (prev != null) {
+			if (prev != null && prev.underlyingInstruction.getOp() != Operation.RET) {
 				prev.addSuccessor(curr);
 			}
 			prev = curr;

@@ -114,7 +114,7 @@ public class ControlFlowGraph {
 ////			}
 //			
 			// link prev to curr
-			if (prev != null) {
+			if (prev != null && prev.underlyingInstruction.getOp() != Operation.RET) {
 				prev.addSuccessor(curr);
 			}
 			prev = curr;
@@ -165,7 +165,7 @@ public class ControlFlowGraph {
 			IRCFGNode curr = new IRCFGNode(stmt);
 			
 			// if it's a label instruction,
-			// get the next label and put the pair in label2node map
+			// get the next stmt and put the pair in label2node map
 			if (stmt instanceof IRLabel) {
 				String label = ((IRLabel) stmt).name();
 				stmt = stmts.get(++i);
@@ -191,7 +191,7 @@ public class ControlFlowGraph {
 			} 
 			
 			// link prev to curr
-			if (prev != null) {
+			if (prev != null && !(prev.underlyingIRStmt instanceof IRReturn)) {
 				prev.addSuccessor(curr);
 			}
 			prev = curr;
@@ -247,5 +247,29 @@ public class ControlFlowGraph {
 		s += head.dotOutput();
 		s += "}";
 		return s;
+	}
+	
+	/**
+	 * Very dumb print method
+	 */
+	public void print() {
+		if (head instanceof IRCFGNode) {
+			Set<CFGNode> set = new HashSet<CFGNode>();
+			Stack<CFGNode> stack = new Stack<CFGNode>();
+			stack.add(head);
+			while(!stack.isEmpty()) {
+				IRCFGNode node = (IRCFGNode) stack.pop();
+				System.out.println(node.underlyingIRStmt);
+//				System.out.println("\t" + node.);
+				for (CFGNode succ : node.getSuccessors()) {
+					if (!set.contains(succ)) {
+						stack.push(succ);
+						set.add(succ);
+					}
+				}
+			}
+		} else {
+			// TODO: implement print for AACFGNode
+		}
 	}
 }

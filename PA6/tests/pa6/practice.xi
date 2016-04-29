@@ -2,13 +2,11 @@ use io
 use conv
 
 main(args: int[][]) {
-	x:int = 5
-	if (x == 3) {
-		return
+	a:int = 1;
+	b:int = 2;
+	c:int = a + b;
+	if (c < 5) {
+		b = a + c;
 	}
-
-	x = 3
-	if (x == 5) {
-		return
-	}
+	c = b;
 }

@@ -111,11 +111,9 @@ public class LiveVariableAnalyzer extends Dataflow<Register> {
 		
 		Set<Register> originalInSet = inMap.get(arg);
 		
-		if (originalInSet.equals(tempSet)) {
-			return false;
-		}
-		
-		return true;
+		inMap.put(AAView, tempSet);
+
+		return !originalInSet.equals(tempSet);
 	}
 
 	/**

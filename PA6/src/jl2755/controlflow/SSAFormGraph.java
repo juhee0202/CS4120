@@ -6,17 +6,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
 
-import edu.cornell.cs.cs4120.xic.ir.IRBinOp;
-import edu.cornell.cs.cs4120.xic.ir.IRCJump;
-import edu.cornell.cs.cs4120.xic.ir.IRCall;
-import edu.cornell.cs.cs4120.xic.ir.IRExp;
-import edu.cornell.cs.cs4120.xic.ir.IRExpr;
-import edu.cornell.cs.cs4120.xic.ir.IRJump;
-import edu.cornell.cs.cs4120.xic.ir.IRMem;
-import edu.cornell.cs.cs4120.xic.ir.IRMove;
-import edu.cornell.cs.cs4120.xic.ir.IRPhiFunction;
-import edu.cornell.cs.cs4120.xic.ir.IRStmt;
-import edu.cornell.cs.cs4120.xic.ir.IRTemp;
 
 public class SSAFormGraph implements OptimizationGraph {
 	/** Underlying ControlFlowGraph */
@@ -142,6 +131,37 @@ public class SSAFormGraph implements OptimizationGraph {
 		
 		node2use.remove(node);
 		node2def.remove(node);
+	}
+	
+	/**
+	 * Removes the given node from the graph.
+	 * This function does not modify the maps. 
+	 * Updating the maps is handled by the caller.
+	 * @param node with 1> successor
+	 */
+	public void removeDefNode(CFGNode node) {
+		List<CFGNode> predecessors = node.predecessors;
+		CFGNode successor = node.successor1;
+		
+		// link predecessors to successor
+		for (CFGNode pred : predecessors) {
+			if (pred.successor1 == node) {
+				pred.successor1 = successor;
+			} else if (pred.successor2 == node) {
+				pred.successor2 = successor;
+			}
+		}
+		successor.predecessors = predecessors;
+		
+		Set<CFGNode> children = node.children;	// at most one child
+		assert(children.size() <= 1);
+		CFGNode idom = node.idom;
+		
+		// link idom to children
+		idom.children = children;
+		for (CFGNode child : children) {
+			child.idom = idom;
+		}
 	}
 	
 	/**

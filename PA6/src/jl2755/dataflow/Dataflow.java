@@ -17,6 +17,13 @@ public abstract class Dataflow<T> {
 	
 	public abstract Set<T> meetOperator(T... args);
 	
+	/**
+	 * Should return true if something changed after applying the
+	 * transfer function at this step.
+	 * 
+	 * @param arg the CFGNode to apply the transfer function to.
+	 * @return true iff something has changed in this node.
+	 */
 	public abstract boolean transferFunction(CFGNode arg);
 	
 	public abstract void analyze();

@@ -12,39 +12,50 @@ import jl2755.visitor.IRTreeVisitor;
 /** An IR function declaration */
 public class IRFuncDecl extends IRNode {
     private String name;
+    private String ABIName;
     private IRStmt body;
     private List<String> paramList;
     private int numArgs;
     private int numReturns;
     private int numSavedCalleeRegs;
 
+    public IRFuncDecl(String name, String ABIName, IRStmt stmt) {
+        this.name = name;
+        this.ABIName = ABIName;
+        body = stmt;
+    }
+    
     public IRFuncDecl(String name, IRStmt stmt) {
         this.name = name;
         body = stmt;
     }
 
-    public String name() {
-        return name;
+    public String getABIName() {
+        return ABIName;
     }
 
-    public IRStmt body() {
+    public String getName() {
+		return name;
+	}
+
+	public IRStmt body() {
         return body;
     }
     
     public String assemblyLabel() {
-    	return "FUNC(" + name.substring(1) + ")";
+    	return "FUNC(" + ABIName.substring(1) + ")";
     }
 
     @Override
     public String label() {
-        return "FUNC " + name;
+        return "FUNC " + ABIName;
     }
 
     @Override
     public IRNode visitChildren(IRVisitor v) {
         IRStmt stmt = (IRStmt) v.visit(this, body);
 
-        if (stmt != body) return new IRFuncDecl(name, stmt);
+        if (stmt != body) return new IRFuncDecl(name, ABIName, stmt);
 
         return this;
     }
@@ -58,7 +69,7 @@ public class IRFuncDecl extends IRNode {
 
     @Override
     public InsnMapsBuilder buildInsnMapsEnter(InsnMapsBuilder v) {
-        v.addNameToCurrentIndex(name);
+        v.addNameToCurrentIndex(ABIName);
         v.addInsn(this);
         return v;
     }
@@ -72,7 +83,7 @@ public class IRFuncDecl extends IRNode {
     public void printSExp(SExpPrinter p) {
         p.startList();
         p.printAtom("FUNC");
-        p.printAtom(name);
+        p.printAtom(ABIName);
         body.printSExp(p);
         p.endList();
     }
@@ -149,7 +160,7 @@ public class IRFuncDecl extends IRNode {
 
 	@Override
 	public IRNode copy() {
-		IRFuncDecl clone = new IRFuncDecl(name, (IRStmt)body.copy());
+		IRFuncDecl clone = new IRFuncDecl(name, ABIName, (IRStmt)body.copy());
 		clone.setParamList(paramList);
 		clone.setNumArgs(numArgs);
 		clone.setNumReturns(numReturns);

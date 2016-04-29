@@ -15,11 +15,36 @@ public class IRBinOp extends IRExpr {
     private OpType type;
     private IRExpr left, right;
     private ChildType leftType, rightType;
+    
+    /**
+     * 0:	add or sub
+     * 1:	mul
+     * 2:	add with 1 add child
+     * 3:	add with 1 mul child
+     * 4:	add with 1 add child and 1 mul child
+     * 5:	add with 1 add child and 1 mul grandchild
+     * 6:	other (non-interesting binop)
+     */
+    private int index;
 
     public IRBinOp(OpType type, IRExpr left, IRExpr right) {
+        this(type, left, right, 0);
+        computeIndex();
+    }
+    
+    /**
+     * Computes the corresponding index of this IRBinOp and sets the index field.
+     */
+    private void computeIndex() {
+		
+		
+	}
+
+	public IRBinOp(OpType type, IRExpr left, IRExpr right, int index) {
         this.type = type;
         this.left = left;
         this.right = right;
+        this.index = index;
     }
 
     public OpType opType() {

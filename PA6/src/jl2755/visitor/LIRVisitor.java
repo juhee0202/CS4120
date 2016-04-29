@@ -20,7 +20,7 @@ public class LIRVisitor implements IRTreeVisitor{
 	private int globalTempCount = 0;
 	private int globalLabelCount = 0;
 	private Map<String, BasicBlock> labelToBasicBlock;
-	public IRNode program;
+	public IRCompUnit program;
 	private static final IRConst TRUE = new IRConst(1);
 	
 	public LIRVisitor() {
@@ -136,12 +136,13 @@ public class LIRVisitor implements IRTreeVisitor{
 			
 
 			IRSeq seq = new IRSeq(stmtList);
-			IRFuncDecl newFuncDecl = new IRFuncDecl(funcDecl.name(),seq);
+			IRFuncDecl newFuncDecl = new IRFuncDecl(funcDecl.getName(), 
+					funcDecl.getABIName(), seq);
 			newFuncDecl.setNumArgs(funcDecl.getNumArgs());
 			newFuncDecl.setNumReturns(funcDecl.getNumReturns());
 			newFuncDecl.setParamList(funcDecl.getParamList());
 			newFuncDecls.add(newFuncDecl);
-			cu.functions().put(funcDecl.name(), newFuncDecl);
+			cu.functions().put(funcDecl.getABIName(), newFuncDecl);
 		}
 		
 		// After visiting tree

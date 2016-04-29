@@ -148,6 +148,10 @@ public class IRCall extends IRExpr {
 	public void setHasExtra8ByteSpace(boolean hasExtra8ByteSpace) {
 		this.hasExtra8ByteSpace = hasExtra8ByteSpace;
 	}
+	
+	public void setArgs(List<IRExpr> args) {
+		this.args = args;
+	}
 
 	@Override
 	public ChildType getLeftChildEnumType() {

@@ -13,16 +13,30 @@ import jl2755.visitor.IRTreeVisitor;
  */
 public class IRPhiFunction extends IRStmt {
 	
+	private String originalVar;
 	private String var;
 	private String[] operands;
 	
 	public IRPhiFunction(String argVar, int n) {
+		originalVar = argVar;
 		var = argVar;
 		operands = new String[n];
 	}
 	
+	public String getOriginalVar() {
+		return originalVar;
+	}
+	
 	public String getVar() {
 		return var;
+	}
+	
+	public void setVar(String v) {
+		var = v;
+	}
+	
+	public String[] getOperands() {
+		return operands;
 	}
 	
 	public void setOperand(int i, String operand) {
@@ -71,6 +85,19 @@ public class IRPhiFunction extends IRStmt {
 
 	@Override
 	public void setRightChildEnumType(ChildType argEnum) {
+	}
+	
+	@Override
+	public String toString() {
+		String operandsString = "";
+		for (String operand : operands) {
+			if (operand != null) {
+				operandsString += operand + " ";
+			} else {
+				operandsString += var + " ";
+			}
+		}
+		return "(" + var + " = phi( " + operandsString + ")" + ")";
 	}
 
 }

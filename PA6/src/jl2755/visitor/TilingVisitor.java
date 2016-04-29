@@ -1091,7 +1091,6 @@ public class TilingVisitor implements IRTreeVisitor {
 			}
 		}		
 		tileMap.put(cu, superTile);
-		
 	}
 
 	/**
@@ -1124,14 +1123,28 @@ public class TilingVisitor implements IRTreeVisitor {
 	@Override
 	public void visit(IRFuncDecl fd) {
 		List<Instruction> instructions = new ArrayList<Instruction>();
-		// Label
+		
+		/* Label */
 		Label fnLabel = new Label(fd.getABIName(), true);
 		instructions.add(new Instruction(Operation.LABEL, fnLabel));
-		// Prologue
+		
+		/* Prologue */
 		// TODO: replace enter with push/mov/sub for optimization
 		// "enter 8*l, 0" 8*l will be filled in later
 		Instruction enter = new Instruction(Operation.ENTER, new Constant(0), new Constant(0));
 		instructions.add(enter);
+
+		// save callee-saved registers
+		int currFnNumSpace = 0;
+		for (int i = 0; i < CALLEE_REG_LIST.length; i++) {
+			Register calleeReg = new Register(CALLEE_REG_LIST[i]);
+			// "pushq reg"
+			Instruction instr = new Instruction(Operation.PUSHQ, calleeReg);
+			instructions.add(instr);
+			currFnNumSpace++;
+		}
+		fd.setNumSavedCalleeRegs(currFnNumSpace);
+		
 		// move args to param regs
 		List<String> paramList = fd.getParamList();
 		int numArgs = fd.getNumArgs();
@@ -1157,8 +1170,6 @@ public class TilingVisitor implements IRTreeVisitor {
 		IRStmt body = fd.body();
 		if (body instanceof IRSeq) {
 			List<IRStmt> bodyStmtList = ((IRSeq) body).stmts();
-			
-			// prologue
 			// precondition: first n stmts are moving n arg stmts
 			// remove duplicate move(%ARG, %arg) instructions
 			// TODO fix
@@ -1174,9 +1185,42 @@ public class TilingVisitor implements IRTreeVisitor {
 		replaceReturnRegisters(bodyTile);		
 		instructions.addAll(bodyTile.getInstructions());
 		
+		/* Epilogue */
+		// restore callee saved registers
+		List<Instruction> epilogue = new ArrayList<Instruction>();
+		for (int i = 0; i < CALLEE_REG_LIST.length; i++) {
+			Register calleeReg = new Register(CALLEE_REG_LIST[i]);
+			// "movq k(%rbp), reg"
+			Constant memOffset = new Constant(-8*(i+1));
+			Memory mem = new Memory(memOffset, rbp);			
+			Instruction instr = new Instruction(Operation.MOVQ, mem, calleeReg);
+			epilogue.add(instr);
+		}
+		
+		insertEpilogue(instructions, epilogue);
+		
 		// create a tile for this node
 		Tile tile = new Tile(instructions);
 		tileMap.put(fd, tile);
+	}
+
+	/**
+	 * Insert epilogue instructions right before leave; ret instructions.
+	 * There is only one leave; ret instructinos
+	 * @param instructions
+	 * @param epilogue
+	 */
+	private void insertEpilogue(List<Instruction> instructions, List<Instruction> epilogue) {
+		int index = -1;
+		for (int i = 0; i < instructions.size(); i++) {
+			Instruction instr = instructions.get(i);
+			if (instr.getOp() == Operation.LEAVE) {
+				index = i;
+				break;
+			}
+		}
+		
+		instructions.addAll(index,epilogue);
 	}
 
 	@Override
@@ -1850,8 +1894,10 @@ public class TilingVisitor implements IRTreeVisitor {
 			
 			// complete "enter 8*l, 0"
 			Instruction enter = newInsts.get(1);
-			Constant space = new Constant(8*stackCounter);
+			int numSpace = stackCounter % 2 == 1 ? stackCounter + 1 : stackCounter;
+			Constant space = new Constant(8*numSpace);
 			enter.setSrc(space);
+			System.out.println(functionTile);
 		}
 	}
 	

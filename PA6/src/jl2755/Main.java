@@ -834,7 +834,7 @@ public class Main {
 	 * @return	the optimized IRNode (should be IRCompUnit)
 	 */
 	// TODO: SSA optimizations here
-	// USE, COPY
+	// UCE, COPY
 	public static IRCompUnit optimize(IRCompUnit node) {
 		boolean changed = true;
 		List<Optimization> opts = new ArrayList<Optimization>();

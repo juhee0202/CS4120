@@ -39,6 +39,9 @@ public class SSAFormConverter {
 	/** Set of all variable names in cfg */
 	private Set<String> allVars;
 	
+	/** Maps original variable name to set of new variable names */
+	private Map<String, Set<String>> var2newVar;
+	
 	/** Maps used in rename function */
 	private Map<String, Integer> var2count;
 	private Map<String, Stack<Integer>> var2stack;
@@ -93,6 +96,12 @@ public class SSAFormConverter {
 		SSAFormGraph ssaGraph = new SSAFormGraph(cfg, node2use, node2def, var2use, var2def);
 		
 		return ssaGraph;
+	}
+	
+	
+	public ControlFlowGraph convertBack() {
+		// TODO: do we need this?
+		return null;
 	}
 
 	private void computeVarMaps() {
@@ -157,7 +166,7 @@ public class SSAFormConverter {
 				Stack<Integer> stack = var2stack.get(s);
 				int i = stack.peek();
 				newUses.add(s + i);
-				replaceUsage(node, s, i);
+				((IRCFGNode) node).replaceUsage(s, s+i);
 			}
 			node2use.put(node, newUses);
 		}
@@ -171,7 +180,7 @@ public class SSAFormConverter {
 			Stack<Integer> stack = var2stack.get(def);
 			stack.push(count);
 			var2stack.put(def,stack);
-			replaceDefinition(node, def, count);
+			((IRCFGNode) node).replaceDefinition(def, def+count);
 			node2def.put(node, def + count);
 		}
 		
@@ -200,73 +209,6 @@ public class SSAFormConverter {
 			Stack<Integer> stack = var2stack.get(def);
 			stack.pop();
 			var2stack.put(def, stack);
-		}
-	}
-
-	/**
-	 * Replaces the usage of var to var_i
-	 * @param node
-	 * @param s
-	 * @param i
-	 */
-	private void replaceUsage(CFGNode node, String var, int i) {
-		IRStmt stmt = ((IRCFGNode)node).underlyingIRStmt;
-		if (stmt instanceof IRCJump) {
-			replaceUsage(((IRCJump)stmt).expr(), var, i);
-		} else if (stmt instanceof IRExp) {
-			replaceUsage(((IRExp)stmt).expr(), var, i);
-		} else if (stmt instanceof IRJump) {
-			replaceUsage(((IRJump)stmt).target(), var, i);
-		} else if (stmt instanceof IRMove) {
-			replaceUsage(((IRMove)stmt).expr(), var, i);
-		}
-	}
-
-	/**
-	 * Replaces var to var_i in expr
-	 * @param expr
-	 * @param var
-	 * @param i
-	 */
-	private void replaceUsage(IRExpr expr, String var, int i) {
-		if (expr instanceof IRBinOp) {
-			replaceUsage(((IRBinOp)expr).left(), var, i);
-			replaceUsage(((IRBinOp)expr).right(), var, i);
-		} else if (expr instanceof IRCall) {
-			replaceUsage(((IRCall)expr).target(), var, i);			
-			List<IRExpr> args = ((IRCall)expr).args();
-			for (IRExpr arg : args) {
-				replaceUsage(arg, var, i);
-			}
-			((IRCall)expr).setArgs(args);
-		} else if (expr instanceof IRMem) {
-			replaceUsage(((IRMem)expr).expr(), var, i);
-		} else if (expr instanceof IRTemp) {
-			if (((IRTemp)expr).name().equals(var)) {
-				((IRTemp)expr).setName(var + i);
-			}
-		}
-	}
-
-	/**
-	 * Replaces the definition of var to var_i
-	 * @param node
-	 * @param var
-	 * @param i
-	 */
-	private void replaceDefinition(CFGNode node, String var, int i) {
-		IRStmt stmt = ((IRCFGNode)node).underlyingIRStmt;
-		if (stmt instanceof IRMove) {
-			IRMove move = (IRMove)stmt;
-			IRTemp newTemp = new IRTemp(var + i);
-			IRMove newMove = new IRMove(newTemp, move.expr());
-			((IRCFGNode)node).underlyingIRStmt = newMove;
-		} else if (stmt instanceof IRPhiFunction) {
-			((IRPhiFunction)stmt).setVar(var + i);
-			((IRCFGNode)node).underlyingIRStmt = stmt;
-		} else { 
-			assert(stmt instanceof IRMove);
-			// shouldn't get here
 		}
 	}
 

@@ -81,10 +81,46 @@ public abstract class CFGNode {
 		return predecessors;
 	}
 	
+	public boolean hasPredecessor() {
+		return predecessors.size() > 0;
+	}
+	
+	public boolean hasSuccessor() {
+		return successor1 != null || successor2 != null;
+	}
+	
 	public void addChild(CFGNode node) {
 		children.add(node);
 		node.idom = this;
 	}
 	
+	public CFGNode getIdom() {
+		return idom;
+	}
+
+	public void setIdom(CFGNode idom) {
+		this.idom = idom;
+	}
+
+	public Set<CFGNode> getChildren() {
+		return children;
+	}
+
+	public void setChildren(Set<CFGNode> children) {
+		this.children = children;
+	}
+
+	public void setSuccessor1(CFGNode successor1) {
+		this.successor1 = successor1;
+	}
+
+	public void setSuccessor2(CFGNode successor2) {
+		this.successor2 = successor2;
+	}
+
+	public void setPredecessors(List<CFGNode> predecessors) {
+		this.predecessors = predecessors;
+	}
+
 	public abstract String dotOutput();
 }

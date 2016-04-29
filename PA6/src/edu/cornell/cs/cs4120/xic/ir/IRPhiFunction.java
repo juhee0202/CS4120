@@ -35,6 +35,10 @@ public class IRPhiFunction extends IRStmt {
 		var = v;
 	}
 	
+	public String[] getOperands() {
+		return operands;
+	}
+	
 	public void setOperand(int i, String operand) {
 		operands[i] = operand;
 	}

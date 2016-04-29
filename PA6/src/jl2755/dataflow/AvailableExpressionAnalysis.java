@@ -158,7 +158,7 @@ public class AvailableExpressionAnalysis extends Dataflow<IRExpr> {
 		else if (underlyingIRStmt instanceof IRMove) {
 			IRMove moveView = (IRMove) underlyingIRStmt;
 			if (moveView.target() instanceof IRTemp) {
-				registerKillsMap.get(argNode).add(new IRExprOverrider(moveView.target()));
+				registerKillsMap.get(argNode).add(new IRExprOverrider(moveView.target(),argNode));
 			}
 			else if (moveView.target() instanceof IRMem) {
 				allKillsMap.put(argNode, true);
@@ -185,7 +185,7 @@ public class AvailableExpressionAnalysis extends Dataflow<IRExpr> {
 		IRStmt underlyingIRStmt = argNode.underlyingIRStmt;
 		if (underlyingIRStmt instanceof IRCJump) {
 			IRCJump cjumpView = (IRCJump) underlyingIRStmt;
-			exprSubTreesMap.get(argNode).add(cjumpView.expr());
+			exprSubTreesMap.get(argNode).add(cjumpView.expr(),argNode);
 			return;
 		}
 		else if (underlyingIRStmt instanceof IRExp) {
@@ -193,7 +193,7 @@ public class AvailableExpressionAnalysis extends Dataflow<IRExpr> {
 			assert(expView.expr() instanceof IRCall);
 			IRCall callViewOfChild = (IRCall) expView.expr();
 			for (int i = 0; i < callViewOfChild.args().size(); i++) {
-				exprSubTreesMap.get(argNode).add(callViewOfChild.args().get(i));
+				exprSubTreesMap.get(argNode).add(callViewOfChild.args().get(i),argNode);
 			}
 			return;
 		}
@@ -210,14 +210,14 @@ public class AvailableExpressionAnalysis extends Dataflow<IRExpr> {
 			if (moveView.expr() instanceof IRCall) {
 				IRCall callViewOfChild = (IRCall) moveView.expr();
 				for (int i = 0; i < callViewOfChild.args().size(); i++) {
-					exprSubTreesMap.get(argNode).add(callViewOfChild.args().get(i));
+					exprSubTreesMap.get(argNode).add(callViewOfChild.args().get(i),argNode);
 				}
 			}
 			else {
-				exprSubTreesMap.get(argNode).add(moveView.expr());
+				exprSubTreesMap.get(argNode).add(moveView.expr(),argNode);
 			}
 			if (moveView.target() instanceof IRMem) {
-				exprSubTreesMap.get(argNode).add(moveView.target());
+				exprSubTreesMap.get(argNode).add(moveView.target(),argNode);
 			}
 			return;
 		}

@@ -68,6 +68,11 @@ public class IRCFGNode extends CFGNode {
 	public void setUnderlyingIRStmt(IRStmt underlyingIRStmt) {
 		this.underlyingIRStmt = underlyingIRStmt;
 	}
+	
+	@Override
+	public String toString() {
+		return underlyingIRStmt.toString();
+	}
 
 	@Override
 	public String dotOutput() {

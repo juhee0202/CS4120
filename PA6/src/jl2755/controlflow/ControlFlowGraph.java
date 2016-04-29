@@ -15,7 +15,7 @@ import java.util.Map.Entry;
 import jl2755.assembly.*;
 import jl2755.assembly.Instruction.Operation;
 
-public class ControlFlowGraph {
+public class ControlFlowGraph implements OptimizationGraph{
 	
 	private Set<CFGNode> allNodes;
 	private CFGNode head;
@@ -252,6 +252,7 @@ public class ControlFlowGraph {
 	/**
 	 * Very dumb print method
 	 */
+	@Override
 	public void print() {
 		if (head instanceof IRCFGNode) {
 			Set<CFGNode> set = new HashSet<CFGNode>();

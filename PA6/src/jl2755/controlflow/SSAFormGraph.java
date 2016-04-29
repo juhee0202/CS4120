@@ -5,7 +5,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
 
-public class SSAFormGraph {
+public class SSAFormGraph implements OptimizationGraph {
 	/** Underlying ControlFlowGraph */
 	private ControlFlowGraph cfg;
 	
@@ -30,6 +30,7 @@ public class SSAFormGraph {
 	/**
 	 * Very dumb print method
 	 */
+	@Override
 	public void print() {
 		CFGNode head = cfg.getHead();
 		if (head instanceof IRCFGNode) {

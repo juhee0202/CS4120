@@ -1,6 +1,7 @@
 package jl2755.controlflow;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
@@ -25,6 +26,44 @@ public class SSAFormGraph implements OptimizationGraph {
 	
 	public ControlFlowGraph getCfg() {
 		return cfg;
+	}
+	
+	public Set<String> getAllVariables() {
+		// TODO
+		return null;
+	}
+	
+	public Set<CFGNode> getAllNodes() {
+		// TODO
+		return null;
+	}
+	
+	public Map<CFGNode, Set<String>> getNodeToUseMap() {
+		return node2use;
+	}
+	
+	public Map<CFGNode, String> getNodeToDefMap() {
+		return node2def;
+	}
+
+	/** 
+	 * @return
+	 * given a variable name, this map returns
+	 *  a list of CFG nodes (stmts) that use that variable 
+	 */
+	public Map<String, List<CFGNode>> getVarToUsesMap() {
+		//TODO
+		return null;
+	}
+	
+	/**
+	 * @return 
+	 * Given a variable name, this map returns
+	 * the CGNode (assignment stmt) that defines this variable
+	 */
+	public Map<String, CFGNode> getVarToDefMap() {
+		// TODO 
+		return null;
 	}
 
 	/**

@@ -124,6 +124,7 @@ public class CommonSubExpElimination extends Optimization{
 					// Replace sub tree with move
 					IRMove moveToBeInserted = new IRMove(new IRTemp("csetemp" + tempToInt.get(theBest)),
 							theBest.encapsulatedIRExpr);
+					parentNode.putArgBeforeThisNode(moveToBeInserted);
 				}
 			}
 			

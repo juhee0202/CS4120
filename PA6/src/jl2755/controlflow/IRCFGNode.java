@@ -1,5 +1,8 @@
 package jl2755.controlflow;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+
 import edu.cornell.cs.cs4120.xic.ir.IRExpr;
 import edu.cornell.cs.cs4120.xic.ir.IRStmt;
 
@@ -47,7 +50,20 @@ public class IRCFGNode extends CFGNode {
 	
 	public void putArgBeforeThisNode(IRStmt argStmt) {
 		IRCFGNode blankNode = new IRCFGNode(argStmt);
-		blankNode.name
+		blankNode.name = name;
+		blankNode.ABIName = name;
+		blankNode.use1 = use1;
+		blankNode.use2 = use2;
+		blankNode.def = def;
+		blankNode.successor1 = this;
+		blankNode.predecessors = predecessors;
+		predecessors = new ArrayList<CFGNode>();
+		predecessors.add(blankNode);
+		blankNode.idom = idom;
+		idom = blankNode;
+		blankNode.children = new HashSet<CFGNode>();
+		blankNode.children.add(this);
+		
 	}
 
 	public String getName() {

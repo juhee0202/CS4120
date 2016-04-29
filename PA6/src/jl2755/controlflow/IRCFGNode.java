@@ -44,6 +44,11 @@ public class IRCFGNode extends CFGNode {
 			System.out.println("Already added 2 successors");
 		}
 	}
+	
+	public void putArgBeforeThisNode(IRStmt argStmt) {
+		IRCFGNode blankNode = new IRCFGNode(argStmt);
+		blankNode.name
+	}
 
 	public String getName() {
 		return name;

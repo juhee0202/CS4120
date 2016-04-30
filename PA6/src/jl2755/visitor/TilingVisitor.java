@@ -1119,9 +1119,10 @@ public class TilingVisitor implements IRTreeVisitor {
 		if (Oreg) {
 			regAllocation(cu);
 		} else {
+			System.out.println("HREE");
 			stackAllocation(cu);
 		}
-		stackAllocation(cu);
+//		stackAllocation(cu);
 		
 		Tile superTile = null;
 		

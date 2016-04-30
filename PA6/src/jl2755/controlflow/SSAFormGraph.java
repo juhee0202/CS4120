@@ -54,10 +54,7 @@ public class SSAFormGraph implements OptimizationGraph {
 	}
 	
 	public Set<CFGNode> getAllNodes() {
-		Set<CFGNode> allNodes = new HashSet<CFGNode>();
-		allNodes.addAll(node2use.keySet());
-		allNodes.addAll(node2def.keySet());
-		return allNodes;
+		return cfg.getAllNodes();
 	}
 	
 	public Map<CFGNode, Set<String>> getNodeToUseMap() {
@@ -158,11 +155,21 @@ public class SSAFormGraph implements OptimizationGraph {
 			newUsesites.add(node);
 		}
 		
+		
 		// update var2use map
+		var2use.remove(var); 
+		
 		if (var2use.containsKey(replaceVar)) {
 			newUsesites.addAll(var2use.get(replaceVar));
 		}
 		var2use.put(replaceVar, usesites);
+		
+		// update node2use map
+		for (CFGNode node : newUsesites) {
+			Set<String> use = node2use.get(node);
+			use.remove(var);
+			use.add(replaceVar);
+		}
 	}
 	
 	/**

@@ -211,11 +211,23 @@ public class SSAFormConverter {
 	private void rename(CFGNode node) {		
 		IRStmt stmt = ((IRCFGNode)node).underlyingIRStmt;
 		
+		/* Special cases */
 		if (stmt instanceof IRReturn) {
+			// Return is a leaf node
 			return;
+		} else if (stmt instanceof IRLabel) {
+			// Skip label
+			Set<CFGNode> children = ((IRCFGNode)node).children;
+			assert(children.size() <= 1);
+			if (children.size() == 1) {
+				rename(children.iterator().next());
+				return;
+			} else {
+				return;
+			}
 		}
 		
-		// rename each variable in use[node] 
+		/* Rename each variable in use[node] */ 
 		if (!(stmt instanceof IRPhiFunction)) {
 			Set<String> uses = node2use.get(node);
 			Set<String> newUses = new HashSet<String>();
@@ -230,83 +242,79 @@ public class SSAFormConverter {
 			node2use.put(node, newUses);
 		}
 		
-		// rename def 
+		/* Rename def */ 
 		// update the count and stack of def[node]
 		String def = node2def.get(node);
 		if (def != null) {
 			int count = var2count.get(def) + 1;
 			var2count.put(def, count);
+			
 			Stack<Integer> stack = var2stack.get(def);
 			stack.push(count);
 			var2stack.put(def,stack);
+			
 			String newVar = def + count;
 			newVars.add(newVar);	// update newVars set
-			((IRCFGNode) node).replaceDefinition(def, newVar);
 			node2def.put(node, newVar);
+			
+			// rename def to newVar
+			((IRCFGNode) node).replaceDefinition(def, newVar);
 		}
 		
-		// update successor's phi-function if applicable
+		/* Update use of successive phi functions if applicable */
 		// renamed flag is used for IRPhiFunction only
-		if (!((IRCFGNode)node).renamed) {
-			IRStmt nodeStmt = ((IRCFGNode)node).underlyingIRStmt;
-			for (CFGNode succ : node.getSuccessors()) {
-				CFGNode insertBeforePoint = succ; // insert before the phi function node.
-				IRStmt succStmt = ((IRCFGNode)succ).underlyingIRStmt;
-				if (succStmt instanceof IRLabel) {
-					if (nodeStmt instanceof IRJump || nodeStmt instanceof IRCJump) {
-						// insert before the jump
-						insertBeforePoint = node;
-					}
-					succ = succ.successor1;
-					succStmt = ((IRCFGNode)succ).underlyingIRStmt;
+		IRStmt nodeStmt = ((IRCFGNode)node).underlyingIRStmt;
+		for (CFGNode succ : node.getSuccessors()) {
+			IRStmt succStmt = ((IRCFGNode)succ).underlyingIRStmt;
+			
+			// phi function nodes are always after a label
+			if (succStmt instanceof IRLabel) {
+				
+				// determine insert before point (used when converting back to CFG)
+				CFGNode insertBeforePoint;
+				if (nodeStmt instanceof IRJump || nodeStmt instanceof IRCJump) {
+					// insert before the jump
+					insertBeforePoint = node;
+				} else {
+					// otherwise, insert before the label
+					insertBeforePoint = succ;
 				}
-				if (succStmt instanceof IRPhiFunction) {
-					((IRCFGNode)succ).renamed = true;
-					int i = ((IRCFGNode)succ).realPredecessors.indexOf(node);
-					String a = ((IRPhiFunction)succStmt).getOriginalVar();
-					// TODO: comeback
-					((IRPhiFunction)succStmt).setInsertBeforePoint(i, insertBeforePoint);
+				
+				CFGNode succsucc = succ.successor1;
+				IRStmt succsuccStmt = ((IRCFGNode)succsucc).underlyingIRStmt;
+				
+				// if label is followed by a phi function node
+				while (succsuccStmt instanceof IRPhiFunction) {
+					IRCFGNode phiNode = (IRCFGNode) succsucc;
+					IRPhiFunction phiFunction = (IRPhiFunction)succsuccStmt;
 					
-					int a_count = var2stack.get(a).peek();
-					String newVar = a + a_count;
+					int i = phiNode.realPredecessors.indexOf(node);	// operand's index
+					String var = phiFunction.getOriginalVar();
+					
+					// set insert before point
+					phiFunction.setInsertBeforePoint(i, insertBeforePoint);
+					
+					// set the i-th operand to the right variable name
+					int varCount = var2stack.get(var).peek();
+					String newVar = var + varCount;
+					phiFunction.setOperand(i, newVar);
 					newVars.add(newVar);	// update newVars set
-					((IRPhiFunction)succStmt).setOperand(i, newVar);
-					Set<String> use = node2use.get(succ);
-					use.remove(a);
-					use.add(newVar);
-					node2use.put(succ, use);
 					
-					// update successor's successor's phi-functions if applicable
-					// this happens when more than one var requires a phi-function
-					CFGNode succsucc = succ.successor1;
-					IRStmt succsuccStmt = ((IRCFGNode)succsucc).underlyingIRStmt;
-					while(succsuccStmt instanceof IRPhiFunction) {
-						((IRCFGNode)succsucc).renamed = true;
-						((IRPhiFunction)succsuccStmt).setInsertBeforePoint(i, insertBeforePoint);
-						a = ((IRPhiFunction)succsuccStmt).getOriginalVar();
-						a_count = var2stack.get(a).peek();
-						newVar = a + a_count;
-						newVars.add(newVar);	// update newVars set
-						((IRPhiFunction)succsuccStmt).setOperand(i, newVar);
-						use = node2use.get(succsucc);
-						use.remove(a);
-						use.add(newVar);
-						node2use.put(succsucc, use);	
-						succsucc = succsucc.successor1;
-						succsuccStmt = ((IRCFGNode)succsucc).underlyingIRStmt;
-					}
+					// update node2use map
+					Set<String> use = node2use.get(phiNode);
+					use.remove(var);
+					use.add(newVar);
+					node2use.put(phiNode, use);
+					
+					// look for the next phi function node
+					succsucc = succsucc.successor1;
+					succsuccStmt = ((IRCFGNode)succsucc).underlyingIRStmt;
 				}
 			}
 		}
 
-		
-		// rename children
+		/* Rename children */
 		for (CFGNode child : node.children) {
-			IRStmt childStmt = ((IRCFGNode)child).underlyingIRStmt;
-			if (childStmt instanceof IRLabel) {
-				child = child.successor1;
-				((IRCFGNode)child).realPredecessor = node;
-			}
 			rename(child);
 		}
 		
@@ -370,13 +378,12 @@ public class SSAFormConverter {
 						cfg.insert(y, newNode);
 						
 						// update tree information
-						Set<CFGNode> children = y.children;
-						newNode.children = children;
+						newNode.children.addAll(y.children);
 						y.children.clear();
 						y.children.add(newNode);
 						
 						newNode.idom = y;
-						for (CFGNode child : children) {
+						for (CFGNode child : newNode.children) {
 							child.idom = newNode;
 						}
 						
@@ -390,7 +397,7 @@ public class SSAFormConverter {
 						sites.add(newNode);
 						phisites.put(var, sites);
 						
-						if (!node2def.get(y).equals(var)) {
+						if (node2def.get(y) != null && !node2def.get(y).equals(var)) {
 							W.push(y);
 						}
 					}

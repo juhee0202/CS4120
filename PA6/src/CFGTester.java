@@ -8,12 +8,14 @@ import jl2755.Main;
 import jl2755.controlflow.ControlFlowGraph;
 import jl2755.controlflow.SSAFormConverter;
 import jl2755.controlflow.SSAFormGraph;
+import jl2755.optimization.DeadCodeEliminator;
 
 public class CFGTester {
 	@Test
 	public void test1() {
 //		String fileName = "/Users/thomasaeyo/Desktop/CS4120_hw/vm-1/shared/xth/tests/pa4/primes.xi";
 		String fileName = "/Users/thomasaeyo/Desktop/CS4120/PA6/tests/pa6/practice.xi";
+//		String fileName = "/Users/Juhee/Desktop/CS4120/PA6/tests/test.xi";
 		Main.main(new String[] {"-irrun", "-O", fileName, "-libpath", "runtime/include", "-target"});
 		HashMap<String, IRCompUnit> file2IR = Main.fileToIR;
 		IRCompUnit cu = file2IR.get(fileName);
@@ -29,9 +31,12 @@ public class CFGTester {
 			System.out.println("*** SSA Form ***");
 			ssaCfg.print();
 			
-//			System.out.println("*** Convert back ***");
-//			ControlFlowGraph newCfg = converter.convertBack();
-//			newCfg.print();
+			DeadCodeEliminator dc = new DeadCodeEliminator();
+			
+			dc.run(ssaCfg);
+			
+			System.out.println("*** SSA Form: Dead code Eliminated succesfully ***");
+			ssaCfg.print();			
 		}
 	}
 }

@@ -267,4 +267,9 @@ public class IRBinOp extends IRExpr {
 		// TODO Auto-generated method stub
 		return new IRBinOp(type, (IRExpr)left.copy(), (IRExpr)right.copy());
 	}
+
+	@Override
+	public int hashCode() {
+		return left.hashCode() + right.hashCode() + type.hashCode();
+	}
 }

@@ -135,7 +135,7 @@ public class SSAFormConverter {
 				
 				IRTemp expr = new IRTemp(operands[i]);
 				IRMove move = new IRMove(target, expr);
-				CFGNode newPred = new IRCFGNode(move);
+				CFGNode newPred = new IRCFGNode(move,"");
 				
 				// update links
 				if (originalPred.successor1 == phiNode) {
@@ -337,7 +337,7 @@ public class SSAFormConverter {
 						List<CFGNode> predecessors = y.predecessors;
 						int numPhiOperand = predecessors.size();
 						IRPhiFunction phiFunction = new IRPhiFunction(var, numPhiOperand);
-						IRCFGNode newNode = new IRCFGNode(phiFunction);
+						IRCFGNode newNode = new IRCFGNode(phiFunction,"");
 						newNode.realPredecessors = predecessors;
 						
 						// update successor's link

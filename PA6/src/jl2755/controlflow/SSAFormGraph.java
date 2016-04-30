@@ -168,10 +168,11 @@ public class SSAFormGraph implements OptimizationGraph {
 		// link idom to children
 		if (idom != null) {
 			idom.children = children;
-			for (CFGNode child : children) {
-				child.idom = idom;
-			}	
 		}
+		for (CFGNode child : children) {
+			child.idom = idom;
+		}	
+		
 	}
 	
 	/**
@@ -179,7 +180,6 @@ public class SSAFormGraph implements OptimizationGraph {
 	 */
 	@Override
 	public void print() {
-		CFGNode head = cfg.getHead();
 		if (head instanceof IRCFGNode) {
 			Set<CFGNode> set = new HashSet<CFGNode>();
 			Stack<CFGNode> stack = new Stack<CFGNode>();

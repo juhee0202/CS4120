@@ -229,6 +229,8 @@ public class Main {
 				}
 			}
 		}
+		
+		
 	}
 
 	public static void lex(String filename) throws FileNotFoundException {
@@ -508,12 +510,13 @@ public class Main {
 			program.accept(mir);
 
 			// Output MIR
-			//            			StringWriter sww = new StringWriter();
-			//            	        try (PrintWriter pw = new PrintWriter(sww);
-			//            		             SExpPrinter sp = new CodeWriterSExpPrinter(pw)) {
-			//            				mir.program.printSExp(sp);
-			//            		        }
-			//            	        bw.write(sww.toString());
+//			StringWriter sww = new StringWriter();
+//			try (PrintWriter pw = new PrintWriter(sww);
+//					SExpPrinter sp = new CodeWriterSExpPrinter(pw)) {
+//				mir.program.printSExp(sp);
+//			}
+//			bw.write(sww.toString());
+//			bw.close();
 
 			/* Lower to LIR */
 			LIRVisitor lir = new LIRVisitor();
@@ -540,7 +543,7 @@ public class Main {
 			}
 			
 			/* Optimize */
-//			result = optimize(result);
+			result = optimize(result);
 			
 			// Update global map
 			fileToIR.put(filename, result);
@@ -633,7 +636,7 @@ public class Main {
 
 		/* strip path in front of filename.xi
 		 * ex: /Users/PA6/tests/test.xi -> test/xi */
-		if (!destDPath.equals("")) {
+		if (!destAPath.equals("")) {
 			int indexOfLastSlash = filename.lastIndexOf('/');
 			if (indexOfLastSlash != -1) {
 				rmExtension = rmExtension.substring(indexOfLastSlash + 1);

@@ -82,4 +82,9 @@ public class IRTemp extends IRExpr {
 	public IRNode copy() {
 		return new IRTemp(name);
 	}
+
+	@Override
+	public int hashCode() {
+		return name.hashCode();
+	}
 }

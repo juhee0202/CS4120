@@ -2,7 +2,7 @@
 	.globl	_Imain_paai
 	.align	4
 _Imain_paai:
-	enter	$80, $0
+	enter	$64, $0
 	movq	%rdi, -8(%rbp)
 	movq	%rsi, -16(%rbp)
 	movq	%rbx, -24(%rbp)
@@ -10,12 +10,11 @@ _Imain_paai:
 	movq	%r13, -40(%rbp)
 	movq	%r14, -48(%rbp)
 	movq	%r15, -56(%rbp)
-	movq	%rdi, %rcx
+	movq	%rdx, %rcx
 	movq	%rcx, -64(%rbp)
 	movq	$5, %rcx
 	movq	%rcx, -72(%rbp)
-	movq	-72(%rbp), %rdx
-	movq	%rdx, %rcx
+	movq	$5, %rcx
 	movq	%rcx, -80(%rbp)
 	movq	-8(%rbp), %rdi
 	movq	-16(%rbp), %rsi

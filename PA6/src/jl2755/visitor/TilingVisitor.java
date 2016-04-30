@@ -311,7 +311,7 @@ public class TilingVisitor implements IRTreeVisitor {
 				instrList.add(moveOne);
 				instrList.add(moveZero);
 				
-				Instruction cmove = new Instruction(Operation.CMOVE, freshOne, result);	    // dest = 1 if equal
+				Instruction cmove = new Instruction(Operation.CMOVE, freshOne.getNewOperand(), result.getNewOperand());	    // dest = 1 if equal
 				Instruction cmovne = new Instruction(Operation.CMOVNE, freshZero, result);      // dest = 0 if not equal
 				instrList.add(cmove);
 				instrList.add(cmovne);
@@ -642,7 +642,7 @@ public class TilingVisitor implements IRTreeVisitor {
 				cost += tempInst.getCost();
 				
 				// jnz l
-				tempInst = new Instruction(Operation.JNZ,label);
+				tempInst = new Instruction(Operation.JZ,label);
 				instructions.add(tempInst);
 				cost += tempInst.getCost();
 				

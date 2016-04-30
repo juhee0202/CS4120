@@ -104,7 +104,7 @@ public class SSAFormConverter {
 	 * For each phi-function node:
 	 * 	for each operand:
 	 * 		create an assignment stmt node 
-	 * @return
+	 * @return ControlFlowGraph
 	 */
 	public ControlFlowGraph convertBack() {
 		/* Find all IRPhiFunction nodes */
@@ -126,8 +126,11 @@ public class SSAFormConverter {
 			String[] operands = phiStmt.getOperands();
 			IRTemp target = new IRTemp(phiStmt.getVar());
 			List<CFGNode> newPredecessors = new ArrayList<CFGNode>();
+			
 			for (int i = 0; i < predecessors.size(); i++) {
 				CFGNode originalPred = predecessors.get(i);
+				
+				
 				IRTemp expr = new IRTemp(operands[i]);
 				IRMove move = new IRMove(target, expr);
 				CFGNode newPred = new IRCFGNode(move);
@@ -152,7 +155,10 @@ public class SSAFormConverter {
 		var2use = new HashMap<String, Set<CFGNode>>();
 		var2def = new HashMap<String, CFGNode>();
 		for (Entry<CFGNode, String> entry : node2def.entrySet()) {
-			var2def.put(entry.getValue(), entry.getKey());
+			if (entry.getValue() != null) {
+				var2def.put(entry.getValue(), entry.getKey());
+				var2use.put(entry.getValue(), new HashSet<CFGNode>());
+			}	
 		}
 		
 		for (Entry<CFGNode, Set<String>> entry : node2use.entrySet()) {

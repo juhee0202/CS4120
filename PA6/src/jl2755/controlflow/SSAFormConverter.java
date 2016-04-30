@@ -152,7 +152,9 @@ public class SSAFormConverter {
 		var2use = new HashMap<String, Set<CFGNode>>();
 		var2def = new HashMap<String, CFGNode>();
 		for (Entry<CFGNode, String> entry : node2def.entrySet()) {
-			var2def.put(entry.getValue(), entry.getKey());
+			if (entry.getValue() != null) {
+				var2def.put(entry.getValue(), entry.getKey());
+			}	
 		}
 		
 		for (Entry<CFGNode, Set<String>> entry : node2use.entrySet()) {
@@ -168,6 +170,7 @@ public class SSAFormConverter {
 				usesites.add(node);
 				var2use.put(var, usesites);
 			}
+			int x = 5;
 		}
 	}
 

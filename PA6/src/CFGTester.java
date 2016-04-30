@@ -26,9 +26,6 @@ public class CFGTester {
 			SSAFormConverter converter = new SSAFormConverter(cfg);
 			SSAFormGraph ssaCfg = converter.convertToSSAForm();
 			
-			System.out.println("*** Converted CFG ***");
-			ssaCfg.getCfg().print();
-			
 			System.out.println("*** SSA Form ***");
 			ssaCfg.print();
 			

@@ -162,9 +162,11 @@ public class SSAFormGraph implements OptimizationGraph {
 		CFGNode idom = node.idom;
 		
 		// link idom to children
-		idom.children = children;
-		for (CFGNode child : children) {
-			child.idom = idom;
+		if (idom != null) {
+			idom.children = children;
+			for (CFGNode child : children) {
+				child.idom = idom;
+			}	
 		}
 	}
 	

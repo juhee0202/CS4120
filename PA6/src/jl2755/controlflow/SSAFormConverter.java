@@ -104,6 +104,8 @@ public class SSAFormConverter {
 	 * For each phi-function node:
 	 * 	for each operand:
 	 * 		create an assignment stmt node 
+	 * 
+	 * TODO: keep track of where to insert split phi-function node
 	 * @return ControlFlowGraph
 	 */
 	public ControlFlowGraph convertBack() {

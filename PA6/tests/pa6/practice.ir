@@ -4,13 +4,6 @@
   _Imain_paai
   (SEQ
    (MOVE (TEMP args) (TEMP _ARG0))
-   (MOVE (TEMP a) (CONST 1))
-   (MOVE (TEMP b) (CONST 2))
-   (MOVE (TEMP c) (ADD (TEMP a) (TEMP b)))
-   (CJUMP (LT (TEMP c) (CONST 5)) l0)
-   (LABEL l1)
-   (MOVE (TEMP c) (TEMP b))
-   (RETURN)
-   (LABEL l0)
-   (MOVE (TEMP b) (ADD (TEMP a) (TEMP c)))
-   (JUMP (NAME l1)))))
+   (MOVE (TEMP x) (CONST 5))
+   (MOVE (TEMP y) (CONST 1))
+   (RETURN))))

@@ -1,5 +1,8 @@
 package jl2755.optimization;
 
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -53,23 +56,39 @@ public class CommonSubExpElimination extends Optimization{
 		tempToInt = new HashMap<IRExprOverrider,Integer>();
 		AvailableExpressionAnalysis analyzerObject = new AvailableExpressionAnalysis(cfg);
 		analyzerObject.analyze();
+		try {
+			PrintStream out = new PrintStream(new FileOutputStream("C:/Users/Jonathan/Desktop/"
+					+ "Files/CS4120/vmstuff/shared/CS4120/PA6/tests/CSETests/current.txt"));
+			System.setOut(out);
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
 		outer:
 		for (CFGNode node: cfg.getAllNodes()) {
 			Set<IRExprOverrider> setOfIn = analyzerObject.inMap.get(node);
+			Map<IRExprOverrider,IRExprOverrider> mapOfIn = new HashMap<IRExprOverrider,IRExprOverrider>();
+			for (IRExprOverrider ee : setOfIn) {
+				mapOfIn.put(ee, ee);
+			}
 			SubTreeListMaker setOfUse = analyzerObject.usesMap.get(node);
 			List<IRExprOverrider> listOfUseExprs = setOfUse.getList();
 			List<IRExprOverrider> listOfUseAndIn = new ArrayList<IRExprOverrider>();
 			for (int i = 0; i < listOfUseExprs.size(); i++) {
-				if (setOfIn.contains(listOfUseExprs.get(i))) {
-					listOfUseAndIn.add(listOfUseExprs.get(i));
+				if (mapOfIn.containsKey(listOfUseExprs.get(i))) {
+					listOfUseAndIn.add(mapOfIn.get(listOfUseExprs.get(i)));
 				}
 			}
+			
+			System.out.println("This is the node: " + node);
+			System.out.println("This is the set of in: " + setOfIn);
+			System.out.println("This is the set of use: " + listOfUseExprs);
+			System.out.println("This is the list of use and in: " + listOfUseAndIn);
 			
 			if (listOfUseAndIn.size() == 0) {
 				continue;
 			}
 			
-			boolean allGood = true;
+			boolean allGood = false;
 			IRExprOverrider theBest = null;
 			while (!allGood) {
 				allGood = true;
@@ -107,11 +126,12 @@ public class CommonSubExpElimination extends Optimization{
 				continue;
 			}
 			
-			
 			if (!tempToInt.containsKey(theBest)) {
 				tempToInt.put(theBest, currentInt);
 				currentInt++;
 			}
+			
+			System.out.println("This is the nodes of origin: " + theBest.nodesOfOrigin);
 			
 			// Check that each parent has hoisted this particular IRExprOverrider or if it
 			// hasn't hoisted anything at all. Loop until you find an expression that can be
@@ -127,8 +147,11 @@ public class CommonSubExpElimination extends Optimization{
 					IRMove moveToBeInserted = new IRMove(new IRTemp("csetemp" + tempToInt.get(theBest)),
 							theBest.encapsulatedIRExpr);
 					parentNode.putArgBeforeThisNode(moveToBeInserted);
+					IRExprOverrider.replaceExprInStmt(tempToInt.get(theBest), parentNode.underlyingIRStmt, theBest);
 				}
 			}
+			
+			IRExprOverrider.replaceExprInStmt(tempToInt.get(theBest),((IRCFGNode) node).underlyingIRStmt, theBest);
 			
 			// "Claim" the owners of theBest expression.
 			for (int i = 0; i < theBest.nodesOfOrigin.size(); i++) {
@@ -136,7 +159,7 @@ public class CommonSubExpElimination extends Optimization{
 			}
 		}
 		
-		
+//		cfg.print();
 		return false;
 	}
 	

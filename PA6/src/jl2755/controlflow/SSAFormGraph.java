@@ -107,6 +107,65 @@ public class SSAFormGraph implements OptimizationGraph {
 	}
 	
 	/**
+	 * Removes node from the graph
+	 * @param node with one successor
+	 */
+	public void remove(CFGNode node) {
+		if (node == head) {
+			head = node.successor1;
+		}
+		cfg.remove(node);
+
+		// update tree information
+		Set<CFGNode> children = node.children;	// at most one child
+		assert(children.size() <= 1);
+		CFGNode idom = node.idom;
+		
+		if (idom != null) {
+			idom.children = children;
+		}
+		for (CFGNode child : children) {
+			child.idom = idom;
+		}	
+		
+		// update maps
+		Set<String> use = node2use.get(node);
+		String def = node2def.get(node);
+		node2use.remove(node);
+		node2def.remove(def);
+		
+		for (String var : use) {
+			Set<CFGNode> usesites = var2use.get(var);
+			usesites.remove(node);
+			var2use.put(var, usesites);
+		}
+		if (def != null) {
+			var2def.put(def, null);
+		}
+	}
+	
+	/**
+	 * Replace every usage of var with replaceVar
+	 * @param var
+	 * @param replaceVar
+	 */
+	public void substitute(String var, String replaceVar) {
+		Set<CFGNode> usesites = var2use.get(var);
+		Set<CFGNode> newUsesites = new HashSet<CFGNode>();
+		for (CFGNode node : usesites) {
+			// replace the usage in IRStmt
+			((IRCFGNode)node).replaceUsage(var, replaceVar);
+			newUsesites.add(node);
+		}
+		
+		// update var2use map
+		if (var2use.containsKey(replaceVar)) {
+			newUsesites.addAll(var2use.get(replaceVar));
+		}
+		var2use.put(replaceVar, usesites);
+	}
+	
+	/**
 	 * Removes predecessor-less node from the graph while properly updating the maps
 	 * @param node
 	 */
@@ -141,26 +200,15 @@ public class SSAFormGraph implements OptimizationGraph {
 	 * Removes the given node from the graph.
 	 * This function does not modify the maps. 
 	 * Updating the maps is handled by the caller.
-	 * @param node with 1> successor
+	 * @param node with less than or equal to one successor
 	 */
 	public void removeDefNode(CFGNode node) {
-		List<CFGNode> predecessors = node.predecessors;
-		CFGNode successor = node.successor1;
-		
 		if (node == head) {
 			head = node.successor1;
 		}
-		
-		// link predecessors to successor
-		for (CFGNode pred : predecessors) {
-			if (pred.successor1 == node) {
-				pred.successor1 = successor;
-			} else if (pred.successor2 == node) {
-				pred.successor2 = successor;
-			}
-		}
-		successor.predecessors = predecessors;
-		
+		cfg.remove(node);
+
+		// update tree information
 		Set<CFGNode> children = node.children;	// at most one child
 		assert(children.size() <= 1);
 		CFGNode idom = node.idom;
@@ -168,10 +216,10 @@ public class SSAFormGraph implements OptimizationGraph {
 		// link idom to children
 		if (idom != null) {
 			idom.children = children;
-			for (CFGNode child : children) {
-				child.idom = idom;
-			}	
 		}
+		for (CFGNode child : children) {
+			child.idom = idom;
+		}	
 	}
 	
 	/**
@@ -179,7 +227,6 @@ public class SSAFormGraph implements OptimizationGraph {
 	 */
 	@Override
 	public void print() {
-		CFGNode head = cfg.getHead();
 		if (head instanceof IRCFGNode) {
 			Set<CFGNode> set = new HashSet<CFGNode>();
 			Stack<CFGNode> stack = new Stack<CFGNode>();

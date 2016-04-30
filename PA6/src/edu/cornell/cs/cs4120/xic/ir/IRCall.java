@@ -189,4 +189,9 @@ public class IRCall extends IRExpr {
 		clone.setReturnBoolList(returnBoolList);
 		return clone;
 	}
+
+	@Override
+	public int hashCode() {
+		return target.hashCode() + args.hashCode();
+	}
 }

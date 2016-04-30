@@ -114,4 +114,9 @@ public class IRESeq extends IRExpr {
 	public IRNode copy() {
 		return new IRESeq((IRStmt)stmt.copy(), (IRExpr)expr.copy());
 	}
+
+	@Override
+	public int hashCode() {
+		return expr.hashCode() + stmt.hashCode();
+	}
 }

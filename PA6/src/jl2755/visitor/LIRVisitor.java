@@ -21,7 +21,6 @@ public class LIRVisitor implements IRTreeVisitor{
 	private int globalLabelCount = 0;
 	private Map<String, BasicBlock> labelToBasicBlock;
 	public IRCompUnit program;
-//	private static final IRConst TRUE = new IRConst(1);
 	
 	public LIRVisitor() {
 		labelToBasicBlock = new HashMap<String, BasicBlock>();

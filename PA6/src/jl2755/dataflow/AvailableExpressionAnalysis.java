@@ -65,6 +65,13 @@ public class AvailableExpressionAnalysis extends Dataflow<IRExpr> {
 	
 	public AvailableExpressionAnalysis(ControlFlowGraph argCfg) {
 		cfg = argCfg;
+		registerKillsMap = new HashMap<IRCFGNode, List<IRExprOverrider>>();
+		allKillsMap = new HashMap<IRCFGNode,Boolean>();
+		exprSubTreesMap = new HashMap<IRCFGNode, SubTreeListMaker>();
+		usesMap = new HashMap<IRCFGNode, SubTreeListMaker>();
+		inMap = new HashMap<IRCFGNode, Set<IRExprOverrider>>();
+		outMap = new HashMap<IRCFGNode, Set<IRExprOverrider>>();
+		
 		for (CFGNode cfgNode: argCfg.getAllNodes()) {
 			registerKillsMap.put((IRCFGNode) cfgNode, new ArrayList<IRExprOverrider>());
 			allKillsMap.put((IRCFGNode) cfgNode, false);
@@ -257,6 +264,7 @@ public class AvailableExpressionAnalysis extends Dataflow<IRExpr> {
 	private void computeUses(IRCFGNode argNode) {
 		IRStmt underlyingStmt = argNode.underlyingIRStmt;
 		SubTreeListMaker tempMaker = new SubTreeListMaker();
+		usesMap.put(argNode, tempMaker);
 		if (underlyingStmt instanceof IRCJump) {
 			IRCJump cjumpView = (IRCJump) underlyingStmt;
 			tempMaker.add(cjumpView.expr(), argNode);

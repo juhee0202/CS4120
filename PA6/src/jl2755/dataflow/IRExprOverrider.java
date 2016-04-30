@@ -86,6 +86,11 @@ public class IRExprOverrider {
 		return compareTwoIRTrees(encapsulatedIRExpr, otherIRExpr);
 	}
 	
+	@Override
+	public int hashCode() {
+		return encapsulatedIRExpr.hashCode();
+	}
+	
 	/**
 	 * Checks if two trees are identical (not object pointers wise).
 	 * 
@@ -222,7 +227,6 @@ public class IRExprOverrider {
 	 */
 	public static void replaceExprTreeWithMove(int globalCounter, 
 			IRExprOverrider ownerTree, IRExprOverrider subTree) {
-		assert(!(subTree.encapsulatedIRExpr instanceof IRTemp));
 		
 		if (ownerTree.encapsulatedIRExpr instanceof IRBinOp) {
 			IRBinOp binOpView = (IRBinOp) ownerTree.encapsulatedIRExpr;
@@ -230,7 +234,7 @@ public class IRExprOverrider {
 				IRTemp tempNode = new IRTemp("csetemp" + globalCounter);
 				binOpView.addLeft(tempNode);
 			}
-			if (compareTwoIRTrees(subTree.encapsulatedIRExpr,binOpView.right())) {
+			else if (compareTwoIRTrees(subTree.encapsulatedIRExpr,binOpView.right())) {
 				IRTemp tempNode = new IRTemp("csetemp" + globalCounter);
 				binOpView.addRight(tempNode);
 			}
@@ -268,8 +272,6 @@ public class IRExprOverrider {
 			}
 			return;
 		}
-		
-		assert(false);
 		// The subtree that got matched shouldn't be of IRConst, IRESeq,
 		// IRName or IRTemp. This is because IRESeq and IRName shouldn't even be in
 		// relevant in this analysis, and IRTemp and IRConst shouldn't even be considered
@@ -277,25 +279,55 @@ public class IRExprOverrider {
 	}
 	
 	public static void replaceExprInStmt(int globalCounter, IRStmt argStmt, IRExprOverrider argExpr) {
+		IRTemp temp = new IRTemp("csetemp" + globalCounter);
 		if (argStmt instanceof IRCJump) {
 			IRCJump cjumpView = (IRCJump) argStmt;
-			replaceExprTreeWithMove(globalCounter, new IRExprOverrider(cjumpView.expr()), argExpr);
+			IRExprOverrider wrapper = new IRExprOverrider(cjumpView.expr());
+			if (wrapper.equals(argExpr)) {
+				cjumpView.addLeft(temp);
+			}
+			else {
+				replaceExprTreeWithMove(globalCounter, new IRExprOverrider(cjumpView.expr()), argExpr);
+			}
 		}
 		else if (argStmt instanceof IRExp) {
 			IRExp expView = (IRExp) argStmt;
 			assert(expView.expr() instanceof IRCall);
+			IRCall callView = (IRCall) expView.expr();
+			for (int i = 0; i < callView.args().size(); i++) {
+				IRExprOverrider wrapper = new IRExprOverrider(callView.args().get(i));
+				if (wrapper.equals(argExpr)) {
+					callView.args().set(i, temp);
+				}
+			}
 			replaceExprTreeWithMove(globalCounter, new IRExprOverrider(expView.expr()), argExpr);
 		}
 		else if (argStmt instanceof IRMove) {
 			IRMove moveView = (IRMove) argStmt;
-			replaceExprTreeWithMove(globalCounter, new IRExprOverrider(moveView.expr()), argExpr);
-			replaceExprTreeWithMove(globalCounter, new IRExprOverrider(moveView.target()), argExpr);
-			
+			IRExprOverrider wrapperExpr = new IRExprOverrider(moveView.expr());
+			IRExprOverrider wrapperTarget = new IRExprOverrider(moveView.target());
+			if (wrapperExpr.equals(argExpr)) {
+				moveView.addLeft(temp);
+			}
+			else {
+				replaceExprTreeWithMove(globalCounter, new IRExprOverrider(moveView.expr()), argExpr);
+			}
+			if (wrapperTarget.equals(argExpr)) {
+				moveView.addRight(temp);
+			}
+			else {
+				replaceExprTreeWithMove(globalCounter, new IRExprOverrider(moveView.target()), argExpr);
+			}
 		}
 		// Nothing else should be in this statement if there is an available expression for it.
 		// It cannot be IRJump since that doesn't have any meaningful expressions in it.
 		// It cannot be IRLabel since labels don't use any other expressions.
 		// It cannot be IRReturn since returns don't have any expressions in it.
 		// It cannot be IRSeq since there cannot be nested IRSeq's, and we never have IRSeq nodes in the CFG.
+	}
+	
+	@Override
+	public String toString() {
+		return encapsulatedIRExpr.toString();
 	}
 }

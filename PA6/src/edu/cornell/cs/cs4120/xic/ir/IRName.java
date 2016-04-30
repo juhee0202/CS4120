@@ -78,4 +78,9 @@ public class IRName extends IRExpr {
 	public IRNode copy() {
 		return new IRName(name);
 	}
+
+	@Override
+	public int hashCode() {
+		return name.hashCode();
+	}
 }

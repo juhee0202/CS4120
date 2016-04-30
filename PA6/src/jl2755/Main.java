@@ -843,18 +843,22 @@ public class Main {
 	// UCE, COPY
 	public static IRCompUnit optimize(IRCompUnit node) {
 		boolean changed = true;
+		boolean optimize = false;
 		List<Optimization> opts = new ArrayList<Optimization>();
 		if (enabled[UCE]) {
 			UnreachableCodeEliminator uce = new UnreachableCodeEliminator();
-			opts.add(uce);
+//			opts.add(uce);
+			optimize = true;
 		}
 		if (enabled[COPY]) {
 			CopyPropagator copy = new CopyPropagator();
-			opts.add(copy);
+//			opts.add(copy);
+			optimize = true;
 		}
 		if (enabled[DCE]) {
 			DeadCodeEliminator dce = new DeadCodeEliminator();
-			opts.add(dce);
+//			opts.add(dce);
+			optimize = true;
 		}
 		
 		if (enabled[CSE]) {
@@ -862,21 +866,25 @@ public class Main {
 			// call constructor
 			// add to opts
 			CommonSubExpElimination cse = new CommonSubExpElimination();
-			opts.add(cse);
+//			opts.add(cse);
+			optimize = true;
 		}
 		
-		Map<String, IRFuncDecl> nameToFD = node.functions();
-		for (IRFuncDecl fd : nameToFD.values()) {
-			ControlFlowGraph cfg = new ControlFlowGraph(fd);
-			while (changed) {
-				changed = false;
-				for (Optimization o : opts) {
-					changed |= o.run(cfg);
+		if (optimize) {
+			Map<String, IRFuncDecl> nameToFD = node.functions();
+			for (IRFuncDecl fd : nameToFD.values()) {
+				ControlFlowGraph cfg = new ControlFlowGraph(fd);
+				while (changed) {
+					changed = false;
+					for (Optimization o : opts) {
+						changed |= o.run(cfg);
+					}
 				}
+				IRFuncDecl newFD = cfg.flattenIntoIR();
+				nameToFD.put(fd.getABIName(), newFD);
 			}
-			IRFuncDecl newFD = cfg.flattenIntoIR();
-			nameToFD.put(fd.getABIName(), newFD);
 		}
+		
 		
 		return node;
 	}

@@ -1121,7 +1121,7 @@ public class TilingVisitor implements IRTreeVisitor {
 		} else {
 			stackAllocation(cu);
 		}
-//		stackAllocation(cu);
+		stackAllocation(cu);
 		
 		Tile superTile = null;
 		

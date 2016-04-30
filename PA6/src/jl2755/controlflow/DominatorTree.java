@@ -34,32 +34,32 @@ public class DominatorTree {
 	
 	private void constructDominatorTree(CFGNode parent, Map<CFGNode, Set<CFGNode>> dominances) {
 		/* Create a copy of provided dominance map */
-		Map<CFGNode, Set<CFGNode>> dominance_copy = new HashMap<CFGNode, Set<CFGNode>>();
-		dominance_copy.putAll(dominances);
-		dominance_copy.remove(parent);
+		Map<CFGNode, Set<CFGNode>> dominances_copy = new HashMap<CFGNode, Set<CFGNode>>();
+		dominances_copy.putAll(dominances);
+		dominances_copy.remove(parent);
 	
 		/* Remove parent from each dominance set */
-		for (Entry<CFGNode, Set<CFGNode>> entry : dominance_copy.entrySet()) {
+		for (Entry<CFGNode, Set<CFGNode>> entry : dominances.entrySet()) {
 			CFGNode node = entry.getKey();
 			Set<CFGNode> dominance = entry.getValue();
-			Set<CFGNode> copy = new HashSet<CFGNode>();
-			copy.addAll(dominance);
-			if (copy.remove(parent)) {
-				dominance_copy.put(node, copy);
+			Set<CFGNode> dominance_copy = new HashSet<CFGNode>();
+			dominance_copy.addAll(dominance);
+			if (dominance_copy.remove(parent)) {
+				dominances_copy.put(node, dominance_copy);
 			} else {
 				// remove nodes that aren't part of this subtree
-				dominance_copy.remove(node);
+				dominances_copy.remove(node);
 			}
 		}
 		
 		/* Add nodes to the tree */
-		for (Entry<CFGNode, Set<CFGNode>> entry : dominance_copy.entrySet()) {
+		for (Entry<CFGNode, Set<CFGNode>> entry : dominances_copy.entrySet()) {
 			CFGNode node = entry.getKey();
 			Set<CFGNode> dominance = entry.getValue();
 			if (dominance.size() == 1) {
 				assert(dominance.contains(node));  // should contain itself
 				parent.addChild(node);
-				constructDominatorTree(node, dominance_copy);
+				constructDominatorTree(node, dominances_copy);
 			}
 		}
 	}

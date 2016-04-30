@@ -342,7 +342,7 @@ public class MIRVisitor implements ASTVisitor{
 			tempOp = OpType.AND;
 			List<IRStmt> stmts1 = new ArrayList<IRStmt>();
 			IRTemp temp1 = new IRTemp("t" + tempCount++);
-			IRMove moveFalseToTemp = new IRMove(temp1, new IRConst(FALSE));
+			IRMove moveFalseToTemp = new IRMove(temp1, new IRConst(0));
 			stmts1.add(moveFalseToTemp);
 			
 			IRLabel tL = new IRLabel("l" + labelCount++);
@@ -363,7 +363,7 @@ public class MIRVisitor implements ASTVisitor{
 
 			List<IRStmt> stmts2 = new ArrayList<IRStmt>();
 			IRTemp temp2 = new IRTemp("t" + tempCount++);
-			IRMove moveTrueToTemp = new IRMove(temp2, new IRConst(TRUE));
+			IRMove moveTrueToTemp = new IRMove(temp2, new IRConst(1));
 			stmts2.add(moveTrueToTemp);
 			
 			IRLabel tL2 = new IRLabel("l" + labelCount++);
@@ -606,7 +606,7 @@ public class MIRVisitor implements ASTVisitor{
 			tempNode = new IRConst(character);
 			break;
 		case 3:
-			tempNode = l.getBoolLit()? new IRConst(TRUE) : new IRConst(FALSE);
+			tempNode = l.getBoolLit()? new IRConst(1) : new IRConst(0);
 			break;
 		}
 	}
@@ -724,11 +724,10 @@ public class MIRVisitor implements ASTVisitor{
 
 		switch (op) {
 		case INT_NEG: 
-			IRExpr zero = new IRConst(0);
-			tempNode = new IRBinOp(OpType.SUB, zero, expr);
+			tempNode = new IRBinOp(OpType.SUB, new IRConst(0), expr);
 			break;
 		case LOG_NEG: 
-			tempNode = new IRBinOp(OpType.XOR, expr, new IRConst(TRUE));
+			tempNode = new IRBinOp(OpType.XOR, expr, new IRConst(1));
 			break;
 		}
 	}

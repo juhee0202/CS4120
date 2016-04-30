@@ -1,9 +1,11 @@
 package jl2755.controlflow;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.Stack;
 
@@ -28,8 +30,21 @@ public class SSAFormConverter {
 	/** Maps CFGNode to the defined variable name */
 	private Map<CFGNode, String> node2def;
 	
+	/** Maps a variable to its use site */
+	private Map<String, Set<CFGNode>> var2use;
+	
+	/** Maps a variable to its def site */
+	private Map<String, CFGNode> var2def;
+	
 	/** Set of all variable names in cfg */
 	private Set<String> allVars;
+	
+	/** Maps original variable name to set of new variable names */
+	private Map<String, Set<String>> var2newVar;
+	
+	/** Maps used in rename function */
+	private Map<String, Integer> var2count;
+	private Map<String, Stack<Integer>> var2stack;
 	
 	public SSAFormConverter(ControlFlowGraph argCfg) {
 		cfg = argCfg;
@@ -73,12 +88,43 @@ public class SSAFormConverter {
 		computeDominanceFrontier();
 		// 2) add phi-functions for vars
 		insertPhiFunctions();
-		// 3) rename all defs&uses of vars using subscripts
+		// 3) rename all defs & uses of vars using subscripts
 		renameVariables();
-		// 4) construct SSAFormGraph
-		SSAFormGraph ssaGraph = new SSAFormGraph(cfg, node2use, node2def);
+		// 4) compute var2use & var2def maps
+		computeVarMaps();
+		// 5) construct SSAFormGraph
+		SSAFormGraph ssaGraph = new SSAFormGraph(cfg, node2use, node2def, var2use, var2def);
 		
 		return ssaGraph;
+	}
+	
+	
+	public ControlFlowGraph convertBack() {
+		// TODO: do we need this?
+		return null;
+	}
+
+	private void computeVarMaps() {
+		var2use = new HashMap<String, Set<CFGNode>>();
+		var2def = new HashMap<String, CFGNode>();
+		for (Entry<CFGNode, String> entry : node2def.entrySet()) {
+			var2def.put(entry.getValue(), entry.getKey());
+		}
+		
+		for (Entry<CFGNode, Set<String>> entry : node2use.entrySet()) {
+			CFGNode node = entry.getKey();
+			Set<String> use = entry.getValue();
+			for (String var : use) {
+				Set<CFGNode> usesites;
+				if (var2use.containsKey(var)) {
+					usesites = var2use.get(var);
+				} else {
+					usesites = new HashSet<CFGNode>();
+				}
+				usesites.add(node);
+				var2use.put(var, usesites);
+			}
+		}
 	}
 
 	/**
@@ -86,8 +132,8 @@ public class SSAFormConverter {
 	 */
 	private void renameVariables() {
 		/* Initialize */
-		Map<String, Integer> var2count = new HashMap<String, Integer>();
-		Map<String, Stack<Integer>> var2stack = new HashMap<String, Stack<Integer>>();
+		var2count = new HashMap<String, Integer>();
+		var2stack = new HashMap<String, Stack<Integer>>();
 		for (String var : allVars) {
 			var2count.put(var, 0);
 			Stack<Integer> stack = new Stack<Integer>();
@@ -96,15 +142,21 @@ public class SSAFormConverter {
 		}
 		
 		/* Rename */
-		rename(dominatorTree.getRoot(), var2count, var2stack);
+		rename(dominatorTree.getRoot());
 	}
 
 	/**
 	 * Renames variables in node
 	 * @param node
 	 */
-	private void rename(CFGNode node, Map<String, Integer> var2count, Map<String, Stack<Integer>> var2stack) {
+	private void rename(CFGNode node) {
+		System.out.println(node);
+		
 		IRStmt stmt = ((IRCFGNode)node).underlyingIRStmt;
+		
+		if (stmt instanceof IRReturn) {
+			return;
+		}
 		
 		// rename each variable in use[node] 
 		if (!(stmt instanceof IRPhiFunction)) {
@@ -114,18 +166,22 @@ public class SSAFormConverter {
 				Stack<Integer> stack = var2stack.get(s);
 				int i = stack.peek();
 				newUses.add(s + i);
+				((IRCFGNode) node).replaceUsage(s, s+i);
 			}
 			node2use.put(node, newUses);
 		}
 		
+		// rename def 
 		// update the count and stack of def[node]
 		String def = node2def.get(node);
 		if (def != null) {
-			int count = var2count.get(def);
-			var2count.put(def, count+1);
+			int count = var2count.get(def) + 1;
+			var2count.put(def, count);
 			Stack<Integer> stack = var2stack.get(def);
-			stack.push(count+1);
-			var2stack.put(def,stack);			
+			stack.push(count);
+			var2stack.put(def,stack);
+			((IRCFGNode) node).replaceDefinition(def, def+count);
+			node2def.put(node, def + count);
 		}
 		
 		// update successor's phi-function if applicable
@@ -133,18 +189,27 @@ public class SSAFormConverter {
 			IRStmt succStmt = ((IRCFGNode)succ).underlyingIRStmt;
 			if (succStmt instanceof IRPhiFunction) {
 				int i = succ.predecessors.indexOf(node);
-				String a = ((IRPhiFunction)succStmt).getVar();
+				String a = ((IRPhiFunction)succStmt).getOriginalVar();
+				
 				int a_count = var2stack.get(a).peek();
 				((IRPhiFunction)succStmt).setOperand(i, a + a_count);
+				Set<String> use = node2use.get(succ);
+				use.remove(a);
+				use.add(a + a_count);
+				node2use.put(succ, use);
 			}
 		}
 		
 		// rename children
 		for (CFGNode child : node.children) {
-			rename(child, var2count, var2stack);
+			rename(child);
 		}
 		
-		var2stack.remove(def);
+		if (def != null) {
+			Stack<Integer> stack = var2stack.get(def);
+			stack.pop();
+			var2stack.put(def, stack);
+		}
 	}
 
 	/**
@@ -200,6 +265,8 @@ public class SSAFormConverter {
 						}
 						newNode.predecessors = predecessors;
 						newNode.successor1 = y;
+						y.predecessors = new ArrayList<CFGNode>();
+						y.predecessors.add(newNode);
 						
 						// update idom's links
 						CFGNode idom = y.idom;
@@ -208,6 +275,12 @@ public class SSAFormConverter {
 						newNode.idom = idom;
 						newNode.children.add(y);
 						y.idom = newNode;
+						
+						// update node2use & node2def maps
+						Set<String> use = new HashSet<String>();
+						use.add(var);
+						node2use.put(newNode, use);
+						node2def.put(newNode, var);
 						
 						// update phisites map
 						sites.add(newNode);
@@ -247,9 +320,9 @@ public class SSAFormConverter {
 		}
 		
 		/*
-		 * Compute DF_up[n]
-		 * DF_up[n] = Nodes in the dominance frontier of n that are not 
-		 * 			  strictly dominated by n's immediate dominator.
+		 * Compute union of DF_up[c] for all child c
+		 * DF_up[c] = Nodes in the dominance frontier of c that are not 
+		 * 			  strictly dominated by c's immediate dominator.
 		 */
 		for (CFGNode child : node.children) {
 			computeDominanceFrontier(child);

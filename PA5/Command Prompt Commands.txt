@@ -8,4 +8,4 @@ java -cp java_cup.jar java_cup.Main -interface /home/vagrant/shared/cs4120/pa4/c
 
 ./linkxi.sh /home/vagrant/shared/cs4120/pa5/tests/pa5/simple2.s -o simple2
 
-xth /home/vagrant/xth/tests/pa4/xthScript -compilerpath /home/vagrant/shared/cs4120/pa4new -testpath /home/vagrant/xth/tests/pa4 -args -D /home/vagrant/shared/cs4120/pa4new > /home/vagrant/shared/cs4120/pa4new/testOutput.txt
+xth /home/vagrant/xth/tests/pa4/xthScript -compilerpath /home/vagrant/shared/cs4120/pa4new -testpath /home/vagrant/xth/tests/pa4 -args "-D /home/vagrant/shared/cs4120/pa4new" > /home/vagrant/shared/cs4120/pa4new/testOutput.txt

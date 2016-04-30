@@ -543,7 +543,7 @@ public class Main {
 			}
 			
 			/* Optimize */
-			result = optimize(result);
+//			result = optimize(result);
 			
 			// Update global map
 			fileToIR.put(filename, result);
@@ -1231,24 +1231,30 @@ public class Main {
 			Arrays.fill(enabled, false);
 			enables = true;
 			initialized = true;
-		} else {
-			Arrays.fill(enabled, true);
 		}
 		for (int i = 0; i < OPTS.length; i++) {
 			String opt = OPTS[i];
 			if (cmd.hasOption("O" + opt)) {
+				if (!initialized) {
+					Arrays.fill(enabled, false);
+				}
 				enabled[i] = true;
 				if (initialized && !enables) {
 					throw new Exception("Cannot simultaneously enable "
 							+ "and disable optimizations");
 				}
 				enables = true;
+				initialized = true;
 			} else if (cmd.hasOption("O-no-" + opt)) {
+				if (!initialized) {
+					Arrays.fill(enabled, true);
+				}
 				enabled[i] = false;
 				if (initialized && enables) {
 					throw new Exception();
 				}
 				enables = false;
+				initialized = true;
 			}
 		}
 	}

@@ -28,7 +28,7 @@ import jl2755.controlflow.OptimizationGraph;
 import jl2755.dataflow.InterferenceGraph;
 import jl2755.dataflow.LiveVariableAnalyzer;
 
-public class RegisterAllocator extends Optimization {
+public class RegisterAllocator {
 	
 	/** Current list of instructions. */
 	private List<Instruction> program;
@@ -111,12 +111,6 @@ public class RegisterAllocator extends Optimization {
 		neighborStack = new Stack<Set<Register>>();
 		Omc = omc;
 		remove = new HashSet<Instruction>();
-	}
-	
-	@Override
-	public boolean run(OptimizationGraph cfg) {
-		// TODO Auto-generated method stub
-		return false;
 	}
 	
 	/**

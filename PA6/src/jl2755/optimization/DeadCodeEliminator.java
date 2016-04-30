@@ -36,6 +36,7 @@ public class DeadCodeEliminator extends Optimization{
 	@Override
 	public boolean run(OptimizationGraph graph) {
 		// TODO Auto-generated method stub
+		boolean optimized = false;
 		
 		// initialization
 		SSAFormGraph ssaGraph = (SSAFormGraph) graph;
@@ -51,15 +52,18 @@ public class DeadCodeEliminator extends Optimization{
 			if ((var2use.get(var)).isEmpty()) {
 				//stmt = v's statement of def
 				IRCFGNode node = (IRCFGNode) var2def.get(var);
+				//skip if the var is never defined.
+				if (node == null) {
+					continue;
+				}
 				IRStmt stmt = node.underlyingIRStmt;
 				
 				//if stmt has no side effects other than the
 				//assignment to v. (precond: stmt must be IRMove because it's a def)
 				if (!hasSideEffect(stmt)) {
+					optimized = true;
+					
 					ssaGraph.removeDefNode(node);
-					node2use.remove(node);
-					node2def.remove(node);
-					var2def.remove(var);
 					
 					// for each var x_i used by node
 					for (String v: node2use.get(node)) {
@@ -69,6 +73,10 @@ public class DeadCodeEliminator extends Optimization{
 						var2use.put(v, useSet);
 						variables.add(v);
 					}
+					node2use.remove(node);
+					node2def.remove(node);
+					var2def.remove(var);
+					var2use.remove(var);
 				}
 			}
 		}
@@ -77,7 +85,7 @@ public class DeadCodeEliminator extends Optimization{
 		ssaGraph.setNode2use(node2use);
 		ssaGraph.setVar2def(var2def);
 		ssaGraph.setVar2use(var2use);
-		return true;
+		return optimized;
 	}
 	
 	/** pecondition: stmt is an IRMove*/
@@ -86,39 +94,6 @@ public class DeadCodeEliminator extends Optimization{
 		return (moveStmt.expr() instanceof IRCall) ||
 			   (moveStmt.target() instanceof IRCall);
 		// division by zero -> run time failure = side effect.
-//		if (stmt instanceof IRCJump) {
-//			IRCJump s = (IRCJump) stmt;
-//			return s.expr() instanceof IRCall;
-//		}
-//		else if (stmt instanceof IRExp) {
-//			return true;
-//		}
-//		else if (stmt instanceof IRJump) {
-//			IRJump s = (IRJump) stmt;
-//			return s.target() instanceof IRCall;
-//		}
-//		else if (stmt instanceof IRLabel) {
-//			return false;
-//		}
-//		else if (stmt instanceof IRLea) {
-//			// TODO
-//		}
-//		else if (stmt instanceof IRMove) {
-//			IRMove s = (IRMove) stmt;
-//			return (s.expr() instanceof IRCall) || (s.target() instanceof IRCall);
-//		}
-//		else if (stmt instanceof IRPhiFunction) {
-//			return false;
-//		}
-//		else if (stmt instanceof IRReturn) {
-//			IRReturn s = (IRReturn) stmt;
-//			// TODO
-//		}
-//		else {
-//			System.out.println("error in dead code elimination: should"
-//					+ "should never reach this case");
-//		}
-//		return false;
 	}
 
 }

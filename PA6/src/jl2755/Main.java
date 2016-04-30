@@ -543,7 +543,7 @@ public class Main {
 			}
 			
 			/* Optimize */
-			result = optimize(result);
+//			result = optimize(result);
 			
 			// Update global map
 			fileToIR.put(filename, result);
@@ -636,7 +636,7 @@ public class Main {
 
 		/* strip path in front of filename.xi
 		 * ex: /Users/PA6/tests/test.xi -> test/xi */
-		if (!destDPath.equals("")) {
+		if (!destAPath.equals("")) {
 			int indexOfLastSlash = filename.lastIndexOf('/');
 			if (indexOfLastSlash != -1) {
 				rmExtension = rmExtension.substring(indexOfLastSlash + 1);
@@ -843,18 +843,22 @@ public class Main {
 	// UCE, COPY
 	public static IRCompUnit optimize(IRCompUnit node) {
 		boolean changed = true;
+		boolean optimize = false;
 		List<Optimization> opts = new ArrayList<Optimization>();
 		if (enabled[UCE]) {
 			UnreachableCodeEliminator uce = new UnreachableCodeEliminator();
-			opts.add(uce);
+//			opts.add(uce);
+			optimize = true;
 		}
 		if (enabled[COPY]) {
 			CopyPropagator copy = new CopyPropagator();
-			opts.add(copy);
+//			opts.add(copy);
+			optimize = true;
 		}
 		if (enabled[DCE]) {
 			DeadCodeEliminator dce = new DeadCodeEliminator();
-			opts.add(dce);
+//			opts.add(dce);
+			optimize = true;
 		}
 		
 		if (enabled[CSE]) {
@@ -862,21 +866,25 @@ public class Main {
 			// call constructor
 			// add to opts
 			CommonSubExpElimination cse = new CommonSubExpElimination();
-			opts.add(cse);
+//			opts.add(cse);
+			optimize = true;
 		}
 		
-		Map<String, IRFuncDecl> nameToFD = node.functions();
-		for (IRFuncDecl fd : nameToFD.values()) {
-			ControlFlowGraph cfg = new ControlFlowGraph(fd);
-			while (changed) {
-				changed = false;
-				for (Optimization o : opts) {
-					changed |= o.run(cfg);
+		if (optimize) {
+			Map<String, IRFuncDecl> nameToFD = node.functions();
+			for (IRFuncDecl fd : nameToFD.values()) {
+				ControlFlowGraph cfg = new ControlFlowGraph(fd);
+				while (changed) {
+					changed = false;
+					for (Optimization o : opts) {
+						changed |= o.run(cfg);
+					}
 				}
+				IRFuncDecl newFD = cfg.flattenIntoIR();
+				nameToFD.put(fd.getABIName(), newFD);
 			}
-			IRFuncDecl newFD = cfg.flattenIntoIR();
-			nameToFD.put(fd.getABIName(), newFD);
 		}
+		
 		
 		return node;
 	}
@@ -1223,24 +1231,30 @@ public class Main {
 			Arrays.fill(enabled, false);
 			enables = true;
 			initialized = true;
-		} else {
-			Arrays.fill(enabled, true);
 		}
 		for (int i = 0; i < OPTS.length; i++) {
 			String opt = OPTS[i];
 			if (cmd.hasOption("O" + opt)) {
+				if (!initialized) {
+					Arrays.fill(enabled, false);
+				}
 				enabled[i] = true;
 				if (initialized && !enables) {
 					throw new Exception("Cannot simultaneously enable "
 							+ "and disable optimizations");
 				}
 				enables = true;
+				initialized = true;
 			} else if (cmd.hasOption("O-no-" + opt)) {
+				if (!initialized) {
+					Arrays.fill(enabled, true);
+				}
 				enabled[i] = false;
 				if (initialized && enables) {
 					throw new Exception();
 				}
 				enables = false;
+				initialized = true;
 			}
 		}
 	}

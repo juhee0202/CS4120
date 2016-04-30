@@ -17,7 +17,6 @@ public class UnreachableCodeEliminator extends Optimization {
 		
 		if (cfg instanceof ControlFlowGraph) {
 			// probably don't need this
-			// ControlFlowGraph ssaGraph = (ControlFlowGraph)cfg;
 		} else {
 			SSAFormGraph ssaGraph = (SSAFormGraph)cfg;
 			CFGNode head = ssaGraph.getHead();

@@ -17,13 +17,13 @@ public class IRPhiFunction extends IRStmt {
 	private String originalVar;
 	private String var;
 	private String[] operands;
-	private CFGNode[] insertionPoints;
+	private CFGNode[] insertBeforePoints;
 	
 	public IRPhiFunction(String argVar, int n) {
 		originalVar = argVar;
 		var = argVar;
 		operands = new String[n];
-		insertionPoints = new CFGNode[n];
+		insertBeforePoints = new CFGNode[n];
 	}
 	
 	public String getOriginalVar() {
@@ -42,8 +42,8 @@ public class IRPhiFunction extends IRStmt {
 		return operands;
 	}
 	
-	public void setInsertionPoint(int i, CFGNode insertionPoint) {
-		insertionPoints[i] = insertionPoint;
+	public void setInsertBeforePoint(int i, CFGNode insertBeforePoint) {
+		insertBeforePoints[i] = insertBeforePoint;
 	}
 	
 	public void setOperand(int i, String operand) {
@@ -68,12 +68,12 @@ public class IRPhiFunction extends IRStmt {
 	public void accept(IRTreeVisitor irv) {
 	}
 
-	public CFGNode[] getInsertionPoints() {
-		return insertionPoints;
+	public CFGNode[] getInsertBeforePoints() {
+		return insertBeforePoints;
 	}
 
-	public void setInsertionPoints(CFGNode[] insertionPoints) {
-		this.insertionPoints = insertionPoints;
+	public void setInsertBeforePoints(CFGNode[] insertBeforePoints) {
+		this.insertBeforePoints = insertBeforePoints;
 	}
 
 	@Override

@@ -50,6 +50,14 @@ public class Memory implements Operand {
 		this(co,null,ro,cf);
 	}
 	
+	public Memory(Constant co, Register rb, Register ro) {
+		this(co,rb,ro,null);
+	}
+	
+	public Memory(Register rb, Register ro, Constant cf) {
+		this(null,rb,ro,cf);
+	}
+	
 	public Memory(Constant co, Register base, Register ro, Constant cf) {
 		constantOffset = co;
 		registerBase = base;

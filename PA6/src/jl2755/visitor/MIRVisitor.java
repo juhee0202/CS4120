@@ -384,6 +384,13 @@ public class MIRVisitor implements ASTVisitor{
 		case NOT_EQUAL:
 			tempOp = OpType.NEQ;	break;
 		}
+		if (tempOp == OpType.SUB && rightNode instanceof IRConst) {
+			long val = ((IRConst) rightNode).value();
+			if (val != Long.MIN_VALUE) {
+				rightNode = new IRConst(-val);
+				tempOp = OpType.ADD;
+			}
+		}
 		tempNode = new IRBinOp(tempOp, leftNode, rightNode);
 	}
 

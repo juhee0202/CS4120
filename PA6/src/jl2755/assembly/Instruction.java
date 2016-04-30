@@ -225,12 +225,6 @@ public class Instruction {
 				((Register) destination).setMoveRelated(true);
 				isMoveWithTwoRegs = true;
 			}
-//			if (source instanceof Register) {
-//				((Register) source).setMoveRelated(true);
-//			}
-//			if (destination instanceof Register) {
-//				((Register) destination).setMoveRelated(true);
-//			}
 		}
 	}
 	
@@ -269,6 +263,7 @@ public class Instruction {
 			temp.dest = dest.getNewOperand();
 		}
 		temp.cost = cost;
+		temp.isMoveWithTwoRegs = isMoveWithTwoRegs;
 		return temp;
 	}
 	

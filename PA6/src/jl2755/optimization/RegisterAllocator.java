@@ -183,11 +183,7 @@ public class RegisterAllocator extends Optimization {
 		
 		// Create interference graph
 		graph = new InterferenceGraph(nodeToLiveRegs);
-//		for (Register r : graph.getNodes()) {
-//			if (regToMovInstructions.containsKey(r)) {
-//				r.setMoveRelated(true);
-//			}
-//		}
+		
 		// If there is a register in the def of a node that is not live coming out, remove it
 		boolean result = false;
 		Set<CFGNode> nodes = new HashSet<CFGNode>();
@@ -209,55 +205,11 @@ public class RegisterAllocator extends Optimization {
 				continue;
 			}
 			if (defs.get(n) != null && !union.contains(defs.get(n))) {
-				
-//				program.remove(i);
-//				for (List<Instruction> is : regToInstructions.values()) {
-//					if (is.contains(i)) {
-//						is.remove(i);
-//					}
-//				}
-//				for (List<Instruction> mis : regToMovInstructions.values()) {
-//					if (mis.contains(i)) {
-//						mis.remove(i);
-//					}
-//				}
-				System.out.println(i);
 				program.remove(i);
 				result = true;
 			}
 		}
 		return result;
-		
-		
-//		Set<Register> removes = new HashSet<Register>();
-//		for (Register r : regToInstructions.keySet()) {
-//			if (!graph.getNodes().contains(r) && !r.isBuiltIn()) {
-//				// Flag to remove
-//				removes.add(r);
-//				System.out.println(r);
-//			}
-//		}
-//		for (Register r : removes) {
-//			List<Instruction> ri = new ArrayList<Instruction>();
-//			ri.addAll(regToInstructions.get(r));
-//			for (Instruction i : ri) {
-//				for (List<Instruction> is : regToInstructions.values()) {
-//					if (is.contains(i)) {
-//						is.remove(i);
-//					}
-//				}
-//				for (List<Instruction> mis : regToMovInstructions.values()) {
-//					if (mis.contains(i)) {
-//						mis.remove(i);
-//					}
-//				}
-//				program.remove(i);
-//			}
-//			regToInstructions.remove(r);
-//			regToMovInstructions.remove(r);
-//		}
-//		System.out.println(graph.getEdges());
-//		System.out.println(regToMovInstructions);
 	}
 	
 	/**
@@ -455,7 +407,7 @@ public class RegisterAllocator extends Optimization {
 				// Push reg onto stack
 				regStack.push(reg);
 				neighborStack.push(edges.get(reg));
-				
+
 				// Remove reg from interference graph
 				remove.add(reg);
 			}
@@ -643,6 +595,9 @@ public class RegisterAllocator extends Optimization {
 //				highest.setMoveRelated(false);
 				result = true;
 				break;
+			} else if (!highest.isBuiltIn()) {
+				result = true;
+				break;
 			}
 		}
 		return result;
@@ -659,11 +614,11 @@ public class RegisterAllocator extends Optimization {
 		Set<Register> usedRegs = new HashSet<Register>();
 		Set<Register> nodes = graph.getNodes();
 		Map<Register, Set<Register>> edges = graph.getEdges();
+
 		for (Register preColored : nodes) {
 			assert(preColored.getType() != RegisterName.TEMP);
 			usedRegs.add(preColored);
 		}
-//		Map<String, Integer> regToStack = new HashMap<String, Integer>();
 		while (!regStack.empty()) {
 			// Pop from stack
 			Register reg = regStack.pop();
@@ -705,11 +660,11 @@ public class RegisterAllocator extends Optimization {
 		Instruction movToStack = new Instruction(Operation.MOVQ,spillingReg,mem);
 		Instruction restoreFromStack = new Instruction(Operation.POPQ,spillingReg);
 		List<Instruction> list = new ArrayList<Instruction>();
-		list.add(saveToStack);
-		list.add(movToStack);
-		list.add(restoreFromStack);
 		
 		for (Instruction inst : regToInstructions.get(reg)) {
+			list.add(saveToStack);
+			list.add(movToStack);
+			list.add(restoreFromStack);
 			Operand dest = inst.getDest();
 			Operand src = inst.getSrc();
 			boolean isDest = false;
@@ -743,16 +698,28 @@ public class RegisterAllocator extends Optimization {
 				}
 			}
 			int i = 1;
-			if (inst.getOp() != Operation.MOVQ || isDest) {
+			// if instruction is not move where reg is dest, shuttle from stack
+			if (! (inst.getOp() == Operation.MOVQ && isDest) ) {
 				list.add(i++, movFromStack);
 			}
 			list.add(i, inst);
 			int index = program.indexOf(inst);
-			program.remove(index);
+			program.remove(inst);
 			program.addAll(index, list);
-			
+			list.clear();
 		}		
 		graph.remove(reg);
+//		int i = 0;
+//		while (i < program.size() - 1) {
+//			if (program.get(i).getOp() == Operation.POPQ &&
+//					program.get(i+1).getOp() == Operation.PUSHQ &&
+//					program.get(i).getDest() == program.get(i+1).getDest()) {
+//				program.remove(i);
+//				program.remove(i);
+//			} else {
+//				i++;
+//			}
+//		}
 	}
 
 	/**

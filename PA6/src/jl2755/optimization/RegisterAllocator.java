@@ -24,6 +24,7 @@ import jl2755.assembly.Register.RegisterName;
 import jl2755.controlflow.AACFGNode;
 import jl2755.controlflow.CFGNode;
 import jl2755.controlflow.ControlFlowGraph;
+import jl2755.controlflow.OptimizationGraph;
 import jl2755.dataflow.InterferenceGraph;
 import jl2755.dataflow.LiveVariableAnalyzer;
 
@@ -106,7 +107,7 @@ public class RegisterAllocator extends Optimization {
 	}
 	
 	@Override
-	public boolean run(ControlFlowGraph cfg) {
+	public boolean run(OptimizationGraph cfg) {
 		// TODO Auto-generated method stub
 		return false;
 	}

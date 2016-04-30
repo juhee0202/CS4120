@@ -119,20 +119,23 @@ public class RegisterAllocator extends Optimization {
 	public List<Instruction> registerAllocation(List<Instruction> instructions,
 			IRFuncDecl currentFunc) {
 		// Clear all globals
-//		funcToRegsUsed.clear();
+		System.out.println("FUNC: "+currentFunc.getName());
 		regStack.clear();
 		neighborStack.clear();
 		program = instructions;
 		stackCounter = currentFunc.getNumSavedCalleeRegs();
 		currentFunction = currentFunc.getABIName();
-		
+		int count = 0;
 		boolean didCoalesce;
 		boolean didFreeze;
 		boolean didPotentiallySpill;
 		boolean didActuallySpill = true;
+		
+//		// Construct CFG
+//		cfg = constructCFG();
+		
 		while (didActuallySpill) {
 			build();
-
 			didPotentiallySpill = true;
 			while (didPotentiallySpill) {
 				didFreeze = true;
@@ -148,26 +151,61 @@ public class RegisterAllocator extends Optimization {
 					}
 					didFreeze = freeze();
 				}
-				didPotentiallySpill = spill();		
+				didPotentiallySpill = spill();	
 			}
 			didActuallySpill = select();
 		}
+		cleanUp();
+		stackCounter++;
 		return program;
 	}
 
 	/**
-	 * 	Build: Construct CFG, run LVA, create Interference Graph
+	 * 	Build: Run LVA, create Interference Graph
 	 */
 	private void build() {
 		// Construct CFG
 		cfg = constructCFG();
-		
 		// Run live variable analysis
 		LiveVariableAnalyzer lva = new LiveVariableAnalyzer(cfg);
+		lva.analyze();
 		nodeToLiveRegs = lva.getInMap();
 		
 		// Create interference graph
 		graph = new InterferenceGraph(nodeToLiveRegs);
+		for (Register r : graph.getNodes()) {
+			if (regToMovInstructions.containsKey(r)) {
+				r.setMoveRelated(true);
+			}
+		}
+		Set<Register> removes = new HashSet<Register>();
+		for (Register r : regToInstructions.keySet()) {
+			if (!graph.getNodes().contains(r) && !r.isBuiltIn()) {
+				// Flag to remove
+				removes.add(r);
+			}
+		}
+		for (Register r : removes) {
+			List<Instruction> ri = new ArrayList<Instruction>();
+			ri.addAll(regToInstructions.get(r));
+			for (Instruction i : ri) {
+				for (List<Instruction> is : regToInstructions.values()) {
+					if (is.contains(i)) {
+						is.remove(i);
+					}
+				}
+				for (List<Instruction> mis : regToMovInstructions.values()) {
+					if (mis.contains(i)) {
+						mis.remove(i);
+					}
+				}
+				program.remove(i);
+			}
+			regToInstructions.remove(r);
+			regToMovInstructions.remove(r);
+		}
+//		System.out.println(graph.getEdges());
+//		System.out.println(regToMovInstructions);
 	}
 	
 	/**
@@ -229,8 +267,10 @@ public class RegisterAllocator extends Optimization {
 				node2label.put(curr,label);
 				
 				if (op == Operation.JMP) {
-					prev.addSuccessor(curr);
-					prev = null;
+					if (prev != null) {
+						prev.addSuccessor(curr);
+						prev = null;
+					}
 					continue;
 				}
 			}
@@ -322,8 +362,9 @@ public class RegisterAllocator extends Optimization {
 				regToInstructions.put(offset, list);
 			}
 		}
-		
 		if (instr.isMoveWithTwoRegs()) {
+			((Register) src).setMoveRelated(true);
+			((Register) dest).setMoveRelated(true);
 			List<Instruction> srcList;
 			if (regToMovInstructions.containsKey(src)) {
 				srcList = regToMovInstructions.get(src);
@@ -331,7 +372,7 @@ public class RegisterAllocator extends Optimization {
 				srcList = new ArrayList<Instruction>();
 			}
 			srcList.add(instr);
-			regToInstructions.put((Register) src, srcList);
+			regToMovInstructions.put((Register) src, srcList);
 			
 			List<Instruction> destList;
 			if (regToMovInstructions.containsKey(dest)) {
@@ -340,26 +381,36 @@ public class RegisterAllocator extends Optimization {
 				destList = new ArrayList<Instruction>();
 			}
 			destList.add(instr);
-			regToInstructions.put((Register) dest, destList);
+			regToMovInstructions.put((Register) dest, destList);
 		}
 	}
+	
+//	private void pushToStack(Register reg) {
+//		regStack.push(reg);
+//		
+//	}
 
 	/**
 	 * 	Simplify: Push onto stack all low-degree non-move-related nodes
 	 */
 	private void simplify() {
 		Set<Register> nodes = graph.getNodes();
+		Set<Register> remove = new HashSet<Register>();
 		for (Register reg : nodes) {
 			Map<Register,Set<Register>> edges = graph.getEdges();
-			if (!reg.isMoveRelated() && !reg.isBuiltIn()
+			if (!regToMovInstructions.containsKey(reg) && !reg.isBuiltIn()
 					&& edges.get(reg).size() < NUM_COLORS) {
 				// Push reg onto stack
 				regStack.push(reg);
 				neighborStack.push(edges.get(reg));
 				
 				// Remove reg from interference graph
-				graph.remove(reg);
+				remove.add(reg);
 			}
+		}
+		for (Register r : remove) {
+			graph.remove(r);
+//			regToMovInstructions.remove(r);
 		}
 	}
 	
@@ -373,54 +424,85 @@ public class RegisterAllocator extends Optimization {
 	 */
 	private boolean coalesce() {
 		boolean result = false;
+		Set<Register> nodes = graph.getNodes();
 		Map<Register,Set<Register>> edges = graph.getEdges();
+		Instruction removeMove = null;
+		Register removeReg1 = null;
+		Register removeReg2 = null;
+		Set<Register> totalEdges;
+		outer:
 		for (Register reg : regToMovInstructions.keySet()) {
+			if (!nodes.contains(reg)) {
+				continue;
+			}
 			List<Instruction> moves = regToMovInstructions.get(reg);
 			for (Instruction move : moves) {
 				Register otherReg = otherRegister(move,reg);
-				if (edges.get(reg).size() + edges.get(otherReg).size() < NUM_COLORS
-						&& !edges.get(reg).contains(otherReg)
-						&& !(reg.isBuiltIn() && otherReg.isBuiltIn())) {
-					// Remove move from program
-					program.remove(move);
-					// Remove move from both move lists
-					regToMovInstructions.get(reg).remove(move);
-					regToMovInstructions.get(otherReg).remove(move);
-					// Remove move from both instruction lists
-					regToInstructions.get(reg).remove(move);
-					regToInstructions.get(otherReg).remove(move);
-					
-					// Replace all instances of otherReg with reg unless otherReg is built-in
-					Register replacedReg;
-					Register replacingReg;
-					if (otherReg.isBuiltIn()) {
-						replacedReg = reg;
-						replacingReg = otherReg;
-					} else {
-						replacedReg = otherReg;
-						replacingReg = reg;
-					}
-					
-					// Replace replacedReg of all related instructions with replacingReg
-					replace(replacedReg,replacingReg);
-					
-					// Converge instruction lists
-					regToInstructions.get(replacingReg).addAll(regToInstructions.get(replacedReg));
-					regToInstructions.remove(replacedReg);
-					// Converge move lists
-					List<Instruction> replacedMovs = regToMovInstructions.get(replacedReg);
-					regToMovInstructions.get(replacingReg).addAll(replacedMovs);
-					regToMovInstructions.remove(replacedReg);
-					
-					// Check if replacingReg is still move-related
-					if (regToMovInstructions.get(replacingReg).size() == 0) {
-						replacingReg.setMoveRelated(false);
-					}
+				if (!nodes.contains(otherReg) || edges.get(reg).contains(otherReg)) {
+					continue;
+				}
+				totalEdges = new HashSet<Register>();
+				totalEdges.addAll(edges.get(reg));
+				totalEdges.addAll(edges.get(otherReg));
+				if (totalEdges.size() < NUM_COLORS &&
+						!(reg.isBuiltIn() && otherReg.isBuiltIn())) {
+					removeMove = move;
+					removeReg1 = reg;
+					removeReg2 = otherReg;
 					
 					result = true;
-					break;
+					break outer;
 				}
 			}
+		}
+		if (result) {
+			// Replace all instances of otherReg with reg unless otherReg is built-in
+			Register replacedReg;
+			Register replacingReg;
+			if (removeReg2.isBuiltIn()) {
+				assert(!removeReg1.isBuiltIn());
+				replacedReg = removeReg1;
+				replacingReg = removeReg2;
+			} else {
+				replacedReg = removeReg2;
+				replacingReg = removeReg1;
+			}			
+			
+			// Replace replacedReg of all related instructions with replacingReg
+			replace(replacedReg, replacingReg, true);
+			
+			// Converge instruction lists
+			regToInstructions.get(replacingReg).addAll(regToInstructions.get(replacedReg));
+			regToInstructions.remove(replacedReg);
+			// Converge move lists
+			regToMovInstructions.get(replacingReg).addAll(regToMovInstructions.get(replacedReg));
+			regToMovInstructions.remove(replacedReg);
+			
+			// Remove move from program
+			program.remove(removeMove);
+			// Remove move from replacing move list
+			regToMovInstructions.get(replacingReg).remove(removeMove);
+			// Remove move from replacingS instruction list
+			regToInstructions.get(replacingReg).remove(removeMove);
+			
+			// Check for moves to itself and remove
+			List<Instruction> removes = new ArrayList<Instruction>();
+			for (Instruction move : regToMovInstructions.get(replacingReg)) {
+				if (move.getDest().equals(move.getSrc())) {
+					program.remove(move);
+					regToInstructions.get(replacingReg).remove(move);
+					removes.add(move);
+				}
+			}
+			for (Instruction m : removes) {
+				regToMovInstructions.get(replacingReg).remove(m);
+			}
+			
+			// Check if replacingReg is still move-related
+			if (regToMovInstructions.get(replacingReg).size() == 0) {
+//				replacingReg.setMoveRelated(false);
+				regToMovInstructions.remove(replacingReg);
+			}			
 		}
 		return result;
 	}
@@ -431,7 +513,7 @@ public class RegisterAllocator extends Optimization {
 	 * @return	the other register in the move instruction
 	 */
 	private Register otherRegister(Instruction move, Register reg) {
-		if (move.getDest() == reg) {
+		if (move.getDest().equals(reg)) {
 			return (Register) move.getSrc();
 		} else {
 			return (Register) move.getDest();
@@ -451,34 +533,31 @@ public class RegisterAllocator extends Optimization {
 		// Choose a high-degree node
 		Set<Register> nodes = graph.getNodes();
 		Map<Register,Set<Register>> edges = graph.getEdges();
-		Register frozen = null;
 		for (Register reg : nodes) {
-			if (!reg.isBuiltIn() && reg.isMoveRelated() 
+			if (!reg.isBuiltIn() && regToMovInstructions.containsKey(reg)
 					&& edges.get(reg).size() < NUM_COLORS) {
-				frozen = reg;
-				
-				// Freeze all moves related to frozen
-				frozen.setMoveRelated(false);
-				for (Instruction frozenMove : regToMovInstructions.get(frozen)) {
-					Register relatedReg = otherRegister(frozenMove,frozen);
-					List<Instruction> relatedMoves = regToMovInstructions.get(relatedReg);
-					relatedMoves.remove(frozenMove);
-					if (relatedMoves.size() == 0) {
-						// Mark relatedReg as non-move-related
-						relatedReg.setMoveRelated(false);
-						regToMovInstructions.remove(relatedReg);
+				// Freeze all moves related to frozen reg
+				List<Instruction> insts = new ArrayList<Instruction>();
+				insts.addAll(regToMovInstructions.get(reg));
+				for (Instruction frozenMove : insts) {
+					Register relatedReg = otherRegister(frozenMove,reg);
+					if (regToMovInstructions.containsKey(relatedReg)) {
+						List<Instruction> relatedMoves = regToMovInstructions.get(relatedReg);
+						relatedMoves.remove(frozenMove);
+						if (relatedMoves.size() == 0) {
+							// Mark relatedReg as non-move-related
+							regToMovInstructions.remove(relatedReg);
+						}
 					}
 				}
-				regToMovInstructions.remove(frozen);
+				
+				regToMovInstructions.remove(reg);
 				
 				result = true;
 				break;
 			}
 		}
-		if (!result) {
-			return false;
-		}
-		return true;
+		return result;
 	}
 	
 	/**
@@ -507,7 +586,8 @@ public class RegisterAllocator extends Optimization {
 				
 				// Remove highest from interference graph
 				graph.remove(highest);
-					
+				regToMovInstructions.remove(highest);
+//				highest.setMoveRelated(false);
 				result = true;
 				break;
 			}
@@ -525,34 +605,102 @@ public class RegisterAllocator extends Optimization {
 		boolean result = false;
 		Set<Register> usedRegs = new HashSet<Register>();
 		Set<Register> nodes = graph.getNodes();
+		Map<Register, Set<Register>> edges = graph.getEdges();
 		for (Register preColored : nodes) {
 			assert(preColored.getType() != RegisterName.TEMP);
 			usedRegs.add(preColored);
 		}
-		Map<Register,Set<Register>> edges = graph.getEdges();
-		for (Register reg : regStack) {
+		Map<String, Integer> regToStack = new HashMap<String, Integer>();
+		while (!regStack.empty()) {
+			// Pop from stack
+			Register reg = regStack.pop();
+			Set<Register> neighbors = neighborStack.pop();
+			
+			// Add back to interference graph
+			graph.add(reg, neighbors);
+			System.out.println(reg);
+			System.out.println(neighbors);
 			// Attempt to color reg
-			Register color = color(reg,edges.get(reg));
+			Register color = color(reg, edges.get(reg));
 			if (color == null) {
 				// Spill reg to stack
-				Constant addr = new Constant(-8*++stackCounter);
-				Memory mem = new Memory(addr,RBP);
-				Instruction movFromStack = new Instruction(Operation.MOVQ,mem,reg);
-				Instruction movToStack = new Instruction(Operation.MOVQ,reg,mem);
-				for (Instruction inst : regToInstructions.get(reg)) {
-					int index = program.indexOf(inst);
-					program.add(index+1, movToStack);
-					program.add(index, movFromStack);
-				}
+				actuallySpill(reg);
+				System.out.println("HELLO");
 				result = true;
 			} else {
 				// Set all related instruction to use color
 				usedRegs.add(color);
-				replace(reg,color);
+				replace(reg, color, true);
 			}
 		}
+		System.out.println("DONE");
 		funcToRegsUsed.put(currentFunction, usedRegs);
 		return result;
+	}
+
+	private void actuallySpill(Register reg) {
+		// Choose stack location
+		int add = -8*++stackCounter;
+		Constant addr = new Constant(add);
+		Memory mem = new Memory(addr,RBP);
+		
+		// Choose a random register
+		int rand = (int) Math.round((NUM_COLORS-1)*Math.random());
+		System.out.println(rand);
+		assert(rand < NUM_COLORS);
+		Register spillingReg = availableRegs[rand];
+		
+		Instruction saveToStack = new Instruction(Operation.PUSHQ,spillingReg);
+		Instruction movFromStack = new Instruction(Operation.MOVQ,mem,spillingReg);
+		Instruction movToStack = new Instruction(Operation.MOVQ,spillingReg,mem);
+		Instruction restoreFromStack = new Instruction(Operation.POPQ,spillingReg);
+//		regToStack.put(reg.getName(), add);
+		for (Instruction inst : regToInstructions.get(reg)) {
+			int index = program.indexOf(inst);
+			program.add(index+1, restoreFromStack);
+			program.add(index+1, movToStack);
+			if (inst.getOp() != Operation.MOVQ) {
+				program.add(index, movFromStack);
+			};
+			program.add(index, saveToStack);
+			
+			
+			
+//			List<Instruction> newInsts = 
+//					addNecessaryInstruction(inst, regToStack, reg);
+//			program.remove(index);
+//			program.addAll(index, newInsts);
+			
+		}
+		replace(reg, spillingReg, false);
+		
+		
+		
+		
+//		Set<CFGNode> cfgNodes = new HashSet<CFGNode>();
+//		cfgNodes.addAll(cfg.getAllNodes());
+//		for (CFGNode n : cfgNodes) {
+//			Instruction i = ((AACFGNode) n).getUnderlyingInstruction();
+//			if (regToInstructions.get(reg).contains(i)) {
+//				AACFGNode mFS = new AACFGNode(movFromStack);
+//				AACFGNode mTS = new AACFGNode(movToStack);
+//				AACFGNode newN = new AACFGNode(i);
+//				
+//				for (CFGNode pred : n.getPredecessors()) {
+//					((AACFGNode) pred).replaceSuccessor((AACFGNode) n, mFS);;
+//				}
+//				mFS.addSuccessor(newN);
+//				newN.addSuccessor(mTS);
+//				cfg.remove(n);
+//				if (n.getSuccessor1() != null) {
+//					mTS.addSuccessor((AACFGNode) n.getSuccessor1());
+//					if (n.getSuccessor2() != null) {
+//						mTS.addSuccessor((AACFGNode) n.getSuccessor2());
+//					}
+//				}
+//			}
+//		}
+		
 	}
 
 	/**
@@ -584,8 +732,10 @@ public class RegisterAllocator extends Optimization {
 	 * @param replace	the register to replace
 	 * @param replacing	the register that replaces
 	 */
-	private void replace(Register replaced, Register replacing) {
-		for (Instruction related : regToInstructions.get(replaced)) {
+	private void replace(Register replaced, Register replacing, boolean color) {
+		// Replace uses of replaced in instructions
+		Register temp = (color) ? replaced : replacing;
+		for (Instruction related : regToInstructions.get(temp)) {
 			Operand src = related.getSrc();
 			Operand dest = related.getDest();
 			if (src instanceof Register) {
@@ -598,7 +748,7 @@ public class RegisterAllocator extends Optimization {
 				Register offset = mem.getRegisterOffset();
 				if (replaced.equals(base)) {
 					mem.setRegisterBase(replacing);
-				} else if (replaced.equals(offset)) {
+				} else if (offset != null && replaced.equals(offset)) {
 					mem.setRegisterOffset(replacing);
 				}
 			}
@@ -612,15 +762,378 @@ public class RegisterAllocator extends Optimization {
 				Register offset = mem.getRegisterOffset();
 				if (replaced.equals(base)) {
 					mem.setRegisterBase(replacing);
-				} else if (replaced.equals(offset)) {
+				} else if (offset != null && replaced.equals(offset)) {
 					mem.setRegisterOffset(replacing);
 				}
+			}
+		}
+		
+		// Replace uses of replace in interference graph
+		Set<Register> nodes = graph.getNodes();
+		nodes.remove(replaced);
+		nodes.add(replacing);
+		Map<Register, Set<Register>> edges = graph.getEdges();
+		if (edges.containsKey(replacing)) {
+			edges.get(replacing).addAll(edges.get(replaced));
+		} else {
+			edges.put(replacing, edges.get(replaced));
+		}
+		edges.remove(replaced);
+		for (Set<Register> neighbors : edges.values()) {
+			if (neighbors.contains(replaced)) {
+				neighbors.remove(replaced);
+				neighbors.add(replacing);
+			}
+		}
+		
+		// Replace uses of replace in stacks
+		if (regStack.contains(replaced)) {
+			assert(false);
+			int index = regStack.indexOf(replaced);
+			regStack.add(index, replacing);
+		}
+		for (Object o : neighborStack.toArray()) {
+			Set<Register> neighbors = (Set<Register>) o;
+			if (neighbors.contains(replaced)) {
+				neighbors.remove(replaced);
+				neighbors.add(replacing);
 			}
 		}
 	}
 
 	public int getStackCounter() {
 		return stackCounter;
+	}
+	
+	/**
+	 * Cleans up any unallocated temps (dead code)
+	 */
+	private void cleanUp() {
+		List<Instruction> removes = new ArrayList<Instruction>();
+		for (Instruction inst : program) {
+			Operand source = inst.getSrc();
+			Operand target = inst.getDest();
+			Set<Register> sourceUsed = new HashSet<Register>();
+			Set<Register> targetUsed = new HashSet<Register>();
+			if (source != null) {
+				sourceUsed.addAll(source.getRegistersUsed());
+			}
+			if (target != null) {
+				targetUsed.addAll(target.getRegistersUsed());
+			}
+			boolean remove = false;
+			for (Register rS : sourceUsed) {
+				if (rS.getType() == RegisterName.TEMP) {
+					remove = true;
+					break;
+				}
+			}
+			for (Register rT : targetUsed) {
+				if (rT.getType() == RegisterName.TEMP) {
+					remove = true;
+					break;
+				}
+			}
+			if (remove) {
+				removes.add(inst);
+			}
+		}
+		for (Instruction i : removes) {
+			program.remove(i);
+		}
+	}
+	
+	/**
+	 * Inserts the necessary instructions to shuttle values to and from stack
+	 * 
+	 * @param instructions	the list of instructions for our program
+	 * @param regToStack	the map of register names to the relative stack offset
+	 * @return				list of instructions with correct insertions
+	 */
+	public List<Instruction> addNecessaryInstruction(
+			Instruction currentInstruction, Map<String, Integer> regToStack,
+			Register replaced, Register replacing) {
+		Operand src = currentInstruction.getSrc();
+		Operand dest = currentInstruction.getDest();
+		
+		List<Instruction> added = new ArrayList<Instruction>();
+		
+		Register rcx = new Register(RegisterName.RCX);
+		Register rdx = new Register(RegisterName.RDX);
+		Register r11 = new Register(RegisterName.R11);
+		Register rbp = new Register(RegisterName.RBP);
+		
+		if (src == null || src instanceof Constant) {
+			// push, pop, call, jumps, div?
+			if (dest instanceof Register) {
+				assert(((Register) dest).getType() == RegisterName.TEMP);
+				
+				String reg = ((Register) dest).getName();
+				Memory mem;
+				if (regToStack.containsKey(reg)) {
+					int addr = regToStack.get(reg);
+					mem = new Memory(new Constant(addr),rbp);
+					if (currentInstruction.getOp() != Operation.MOVQ) {
+						Instruction movToReg = new Instruction(Operation.MOVQ,mem,replacing);
+						added.add(movToReg);
+					}
+				} else {
+					int addr = -8*++stackCounter;
+					mem = new Memory(new Constant(addr),rbp);
+					regToStack.put(reg,addr);
+				}
+				added.add(currentInstruction);
+				
+				if (src != null) {
+					Instruction movToMem = new Instruction(Operation.MOVQ,rcx,mem);
+					added.add(movToMem);
+				}
+			} else if (dest instanceof Memory) {
+				Memory memOp = (Memory) dest;
+				Register regBase = memOp.getRegisterBase();
+				Register regOff = memOp.getRegisterOffset();
+				Constant cons = memOp.getConstantOffset();
+				Constant fact = memOp.getConstantFactor();
+				Memory newMem;
+				
+				if (regBase.getType() == RegisterName.TEMP) {
+					int addr1 = regToStack.get(regBase.getName());
+					Memory mem1 = new Memory(new Constant(addr1),rbp);
+					Instruction movToReg1 = new Instruction(Operation.MOVQ,mem1,rcx);
+					added.add(movToReg1);
+					if (regOff != null && regOff.getType() == RegisterName.TEMP) {
+						// two register operands for memory
+						int addr2 = regToStack.get(regOff.getName());
+						Memory mem2 = new Memory(new Constant(addr2),rbp);
+						Instruction movToReg2 = new Instruction(Operation.MOVQ,mem2,rdx);
+						newMem = new Memory(cons,rcx,rdx,fact);
+						added.add(movToReg2);
+					} else {
+						newMem = new Memory(cons,rcx,regOff,fact);
+					}
+				} else {
+					if (regOff != null && regOff.getType() == RegisterName.TEMP) {
+						// two register operands for memory
+						int addr2 = regToStack.get(regOff.getName());
+						Memory mem2 = new Memory(new Constant(addr2),rbp);
+						Instruction movToReg2 = new Instruction(Operation.MOVQ,mem2,rdx);
+						newMem = new Memory(cons,rcx,rdx,memOp.getConstantFactor());
+						added.add(movToReg2);
+					} else {
+						// both registers are built-in
+						newMem = memOp;
+					}
+				}
+				currentInstruction.setDest(newMem);
+				added.add(currentInstruction);
+			} else {
+				// dest is constant or label
+				Operation op = currentInstruction.getOp();
+				Operand label = currentInstruction.getDest();
+				added.add(currentInstruction);
+			}
+		} else {
+			// src is not null and is not constant
+			if (dest instanceof Memory && src instanceof Register) {
+				// src must be register that must be in stack
+				if (((Register) src).getType() == RegisterName.TEMP) {
+					int addr1 = regToStack.get(((Register) src).getName());
+					Memory mem1 = new Memory(new Constant(addr1),rbp);
+					Instruction movToReg1 = new Instruction(Operation.MOVQ,mem1,r11);
+					currentInstruction.setSrc(r11);
+					added.add(movToReg1);
+				}
+				
+				Memory memOp = (Memory) dest;
+				Register regBase = memOp.getRegisterBase();
+				Register regOff = memOp.getRegisterOffset();
+				Constant cons = memOp.getConstantOffset();
+				Constant fact = memOp.getConstantFactor();
+				Memory newMem;
+				
+				if (regBase.getType() == RegisterName.TEMP) {
+					int addr2 = regToStack.get(regBase.getName());
+					Memory mem1 = new Memory(new Constant(addr2),rbp);
+					Instruction movToReg1 = new Instruction(Operation.MOVQ,mem1,rcx);
+					added.add(movToReg1);
+					if (regOff != null && regOff.getType() == RegisterName.TEMP) {
+						// two register operands for memory
+						int addr3 = regToStack.get(regOff.getName());
+						Memory mem2 = new Memory(new Constant(addr3),rbp);
+						Instruction movToReg2 = new Instruction(Operation.MOVQ,mem2,rdx);
+						newMem = new Memory(cons,rcx,rdx,fact);
+						added.add(movToReg2);
+					} else {
+						newMem = new Memory(cons,rcx,regOff,fact);
+					}
+				} else {
+					if (regOff != null && regOff.getType() == RegisterName.TEMP) {
+						// two register operands for memory
+						int addr3 = regToStack.get(regOff.getName());
+						Memory mem2 = new Memory(new Constant(addr3),rbp);
+						Instruction movToReg2 = new Instruction(Operation.MOVQ,mem2,rdx);
+						newMem = new Memory(cons,rcx,rdx,memOp.getConstantFactor());
+						added.add(movToReg2);
+					} else {
+						// both registers are built-in
+						newMem = memOp;
+					}
+				}
+				currentInstruction.setDest(newMem);
+				added.add(currentInstruction);			
+			} else if (dest instanceof Register && src instanceof Register) {
+				// dest and src are registers
+				String regD = ((Register) dest).getName();
+				String regS = ((Register) src).getName();
+				Memory memD;
+				Instruction movToMemD = null;
+				if (((Register) dest).getType() == RegisterName.TEMP) {
+					if (regToStack.containsKey(regD)) {
+						int addrD = regToStack.get(regD);
+						memD = new Memory(new Constant(addrD),rbp);
+						if (currentInstruction.getOp() != Operation.MOVQ) {
+							Instruction movToRegD = new Instruction(Operation.MOVQ,memD,rcx);
+							added.add(movToRegD);
+						}
+					} else {
+						// Need to create a new memory address
+						int addrD = -8*++stackCounter;
+						memD = new Memory(new Constant(addrD),rbp);
+						regToStack.put(regD,addrD);
+					}
+					currentInstruction.setDest(rcx);
+					movToMemD = new Instruction(Operation.MOVQ,rcx,memD);
+				}
+				if (((Register) src).getType() == RegisterName.TEMP) {
+					if (regToStack.containsKey(regS)) {
+						int addrS = regToStack.get(regS);
+						Memory memS = new Memory(new Constant(addrS),rbp);
+						Instruction movToRegS = new Instruction(Operation.MOVQ,memS,rdx);
+						added.add(movToRegS);
+					} else {
+						System.out.println(currentInstruction);
+						System.out.println(regS);
+						System.out.println(regToStack);
+						System.out.println("Access a register that hasn't been set!");
+						assert(false);
+					}
+					currentInstruction.setSrc(rdx);
+				}
+				added.add(currentInstruction);
+				if (movToMemD != null) {
+					added.add(movToMemD);
+				}
+			} else if (dest instanceof Register && src instanceof Memory){	
+				// dest is register, src is memory
+				String reg = ((Register) dest).getName();
+				Memory mem1;
+				Instruction movToMem1 = null;
+				if (((Register) dest).getType() == RegisterName.TEMP) {
+					if (regToStack.containsKey(reg)) {
+						int addr1 = regToStack.get(reg);
+						mem1 = new Memory(new Constant(addr1),rbp);
+						if (currentInstruction.getOp() != Operation.MOVQ) {
+							Instruction movToReg1 = new Instruction(Operation.MOVQ,mem1,rcx);
+							added.add(movToReg1);
+						}
+					} else {
+						int addr1 = -8*++stackCounter;
+						mem1 = new Memory(new Constant(addr1),rbp);
+						regToStack.put(reg,addr1);
+					}
+					currentInstruction.setDest(r11);
+					movToMem1 = new Instruction(Operation.MOVQ,r11,mem1);
+				}
+				
+				Memory memOp = (Memory) src;
+				Register regBase = memOp.getRegisterBase();
+				Register regOff = memOp.getRegisterOffset();
+				Constant cons = memOp.getConstantOffset();
+				Constant fact = memOp.getConstantFactor();
+				Memory newMem;
+				
+				if (regBase.getType() == RegisterName.TEMP) {
+					int addr1 = regToStack.get(regBase.getName());
+					Memory mem2 = new Memory(new Constant(addr1),rbp);
+					Instruction movToReg1 = new Instruction(Operation.MOVQ,mem2,rcx);
+					added.add(movToReg1);
+					if (regOff != null && regOff.getType() == RegisterName.TEMP) {
+						// two register operands for memory
+						int addr2 = regToStack.get(regOff.getName());
+						Memory mem3 = new Memory(new Constant(addr2),rbp);
+						Instruction movToReg2 = new Instruction(Operation.MOVQ,mem3,rdx);
+						newMem = new Memory(cons,rcx,rdx,fact);
+						added.add(movToReg2);
+					} else {
+						newMem = new Memory(cons,rcx,regOff,fact);
+					}
+				} else {
+					if (regOff != null && regOff.getType() == RegisterName.TEMP) {
+						// two register operands for memory
+						int addr2 = regToStack.get(regOff.getName());
+						Memory mem2 = new Memory(new Constant(addr2),rbp);
+						Instruction movToReg2 = new Instruction(Operation.MOVQ,mem2,rdx);
+						newMem = new Memory(cons,rcx,rdx,memOp.getConstantFactor());
+						added.add(movToReg2);
+					} else {
+						// both registers are built-in
+						newMem = memOp;
+					}
+				}
+				currentInstruction.setSrc(newMem);
+				added.add(currentInstruction);
+				if (movToMem1 != null) {
+					added.add(movToMem1);
+				}
+			} else {
+				// dest is constant, src is not
+				Instruction movToReg1;
+				if (src instanceof Memory) {
+					Memory memOp = (Memory) src;
+					Register regBase = memOp.getRegisterBase();
+					Register regOff = memOp.getRegisterOffset();
+					Constant cons = memOp.getConstantOffset();
+					Memory newMem;
+					
+					int addr1 = regToStack.get(regBase.getName());
+					Memory mem1 = new Memory(new Constant(addr1),rbp);
+					movToReg1 = new Instruction(Operation.MOVQ,mem1,rcx);
+					if (regOff != null && regOff.getType() == RegisterName.TEMP) {
+						// two register operands for memory
+						int addr2 = regToStack.get(regOff.getName());
+						Memory mem2 = new Memory(new Constant(addr2),rbp);
+						Instruction movToReg2 = new Instruction(Operation.MOVQ,mem2,rdx);
+						newMem = new Memory(cons,rcx,rdx,memOp.getConstantFactor());
+						added.add(movToReg2);
+					} else if (regBase.getType() == RegisterName.TEMP) {
+						if (regOff == null) {
+							newMem = new Memory(cons,rcx);
+						} else {
+							newMem = new Memory(cons,rcx,regOff,memOp.getConstantFactor());
+						}
+						added.add(movToReg1);
+					} else {
+						// both registers are built-in
+						newMem = memOp;
+					}
+					currentInstruction.setSrc(newMem);
+				} else {
+					// src uses a built-in register
+					if (((Register) src).getType() != RegisterName.TEMP) {
+						added.add(currentInstruction);
+						return added;
+					}
+					// src uses a temp register
+					int addr1 = regToStack.get(((Register) src).getName());
+					Memory mem1 = new Memory(new Constant(addr1),rbp);
+					movToReg1 = new Instruction(Operation.MOVQ,mem1,r11);
+					currentInstruction.setSrc(r11);
+					added.add(movToReg1);
+				}
+				added.add(currentInstruction);
+			}
+		}
+		return added;
 	}
 	
 }

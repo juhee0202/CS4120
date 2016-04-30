@@ -21,7 +21,7 @@ public class LIRVisitor implements IRTreeVisitor{
 	private int globalLabelCount = 0;
 	private Map<String, BasicBlock> labelToBasicBlock;
 	public IRCompUnit program;
-	private static final IRConst TRUE = new IRConst(1);
+//	private static final IRConst TRUE = new IRConst(1);
 	
 	public LIRVisitor() {
 		labelToBasicBlock = new HashMap<String, BasicBlock>();
@@ -723,7 +723,7 @@ public class LIRVisitor implements IRTreeVisitor{
 					cjump = new IRCJump(old.expr(),old.trueLabel());
 				} else {
 					// followed by true label
-					IRBinOp negateOld = new IRBinOp(OpType.XOR,TRUE,old.expr());
+					IRBinOp negateOld = new IRBinOp(OpType.XOR, new IRConst(1) ,old.expr());
 					cjump = new IRCJump(negateOld,old.falseLabel());
 				}
 				currBlock.setLastStmt(cjump);

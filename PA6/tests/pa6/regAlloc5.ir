@@ -1,0 +1,70 @@
+(COMPUNIT
+ Program
+ (FUNC
+  _Imain_paai
+  (SEQ
+   (MOVE (TEMP args) (TEMP _ARG0))
+   (MOVE (TEMP temp0) (CONST 2))
+   (MOVE (TEMP temp1) (CALL (NAME _Ilargestprime_ii) (TEMP temp0)))
+   (MOVE (TEMP temp2) (TEMP temp1))
+   (MOVE (TEMP temp3) (CALL (NAME _IunparseInt_aii) (TEMP temp2)))
+   (MOVE (TEMP temp4) (TEMP temp3))
+   (EXP (CALL (NAME _Iprint_pai) (TEMP temp4)))
+   (RETURN)))
+ (FUNC
+  _Igcd_iii
+  (SEQ
+   (MOVE (TEMP a) (TEMP _ARG0))
+   (MOVE (TEMP b) (TEMP _ARG1))
+   (LABEL l0)
+   (CJUMP (NEQ (TEMP a) (CONST 0)) l1)
+   (MOVE (TEMP _RET0) (TEMP b))
+   (RETURN)
+   (LABEL l1)
+   (CJUMP (LT (TEMP a) (TEMP b)) l3)
+   (MOVE (TEMP a) (SUB (TEMP a) (TEMP b)))
+   (LABEL l5)
+   (JUMP (NAME l0))
+   (LABEL l3)
+   (MOVE (TEMP b) (SUB (TEMP b) (TEMP a)))
+   (JUMP (NAME l5))))
+ (FUNC
+  _Iisprime_bi
+  (SEQ
+   (MOVE (TEMP n) (TEMP _ARG0))
+   (MOVE (TEMP i) (CONST 2))
+   (LABEL l6)
+   (CJUMP (LEQ (MUL (TEMP i) (TEMP i)) (TEMP n)) l7)
+   (MOVE (TEMP _RET0) (CONST 1))
+   (LABEL label2)
+   (RETURN)
+   (LABEL l7)
+   (MOVE (TEMP temp6) (TEMP i))
+   (MOVE (TEMP temp7) (TEMP n))
+   (MOVE (TEMP temp8) (CALL (NAME _Igcd_iii) (TEMP temp6) (TEMP temp7)))
+   (CJUMP (NEQ (TEMP temp8) (CONST 1)) l9)
+   (MOVE (TEMP i) (ADD (TEMP i) (CONST 1)))
+   (JUMP (NAME l6))
+   (LABEL l9)
+   (MOVE (TEMP _RET0) (CONST 0))
+   (JUMP (NAME label2))))
+ (FUNC
+  _Ilargestprime_ii
+  (SEQ
+   (MOVE (TEMP max) (TEMP _ARG0))
+   (MOVE (TEMP a) (CONST 1))
+   (MOVE (TEMP largest) (CONST 1))
+   (LABEL l11)
+   (CJUMP (LT (TEMP a) (TEMP max)) l12)
+   (MOVE (TEMP _RET0) (TEMP largest))
+   (RETURN)
+   (LABEL l12)
+   (MOVE (TEMP temp9) (TEMP a))
+   (MOVE (TEMP temp10) (CALL (NAME _Iisprime_bi) (TEMP temp9)))
+   (CJUMP (TEMP temp10) l14)
+   (LABEL l15)
+   (MOVE (TEMP a) (ADD (TEMP a) (CONST 1)))
+   (JUMP (NAME l11))
+   (LABEL l14)
+   (MOVE (TEMP largest) (TEMP a))
+   (JUMP (NAME l15)))))

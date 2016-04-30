@@ -55,7 +55,9 @@ public abstract class CFGNode {
 	}
 	
 	protected void proposeToSuccessor(CFGNode argNode) {
-		argNode.predecessors.add(this);
+		if (argNode.predecessors != null) {
+			argNode.predecessors.add(this);
+		}
 	}
 
 	public CFGNode getSuccessor1() {

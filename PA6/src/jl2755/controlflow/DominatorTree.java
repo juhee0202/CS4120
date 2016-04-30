@@ -89,6 +89,11 @@ public class DominatorTree {
 		while (!converged) {
 			converged = true;
 			for (CFGNode node : allNodes) {
+				// skip head
+				if (node == head) {
+					continue;
+				}
+				
 				Set<CFGNode> oldDominance = dominanceMap.get(node);
 				Set<CFGNode> newDominance = new HashSet<CFGNode>();
 				newDominance.add(node);	// a node's dominance always contains itself.
@@ -96,11 +101,6 @@ public class DominatorTree {
 				// compute the intersection of pred's dominance 
 				Set<CFGNode> predDominance = null;
 				for (CFGNode pred : node.predecessors) {
-//					// skip head
-//					if (pred == head) {
-//						continue;
-//					}
-					
 					Set<CFGNode> dominance = dominanceMap.get(pred);
 					if (predDominance == null) {
 						predDominance = dominance;
@@ -115,8 +115,7 @@ public class DominatorTree {
 				}			
 				
 				// update dominance relation
-				if (oldDominance.size() != newDominance.size() 
-						|| !oldDominance.containsAll(newDominance)) {
+				if (oldDominance.size() > newDominance.size()) {					
 					dominanceMap.put(node, newDominance);
 					converged = false;
 				}

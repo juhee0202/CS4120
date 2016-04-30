@@ -1,0 +1,19 @@
+(COMPUNIT
+ Program
+ (FUNC
+  _Imain_paai
+  (SEQ
+   (MOVE (TEMP args) (TEMP _ARG0))
+   (MOVE (TEMP x) (CONST 5))
+   (MOVE (TEMP y) (ADD (TEMP x) (CONST 1)))
+   (MOVE (TEMP h) (CONST 10))
+   (MOVE (TEMP temp0) (ADD (TEMP x) (CONST 1)))
+   (MOVE (TEMP temp1) (CALL (NAME _If_ii) (TEMP temp0)))
+   (CJUMP (EQ (TEMP temp1) (CONST 9)) l0)
+   (LABEL l1)
+   (RETURN)
+   (LABEL l0)
+   (MOVE (TEMP a) (CONST 3))
+   (JUMP (NAME l1))))
+ (FUNC _If_ii
+  (SEQ (MOVE (TEMP x) (TEMP _ARG0)) (MOVE (TEMP _RET0) (TEMP x)) (RETURN))))

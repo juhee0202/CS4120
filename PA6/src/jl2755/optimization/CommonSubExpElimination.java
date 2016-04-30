@@ -56,13 +56,16 @@ public class CommonSubExpElimination extends Optimization{
 		tempToInt = new HashMap<IRExprOverrider,Integer>();
 		AvailableExpressionAnalysis analyzerObject = new AvailableExpressionAnalysis(cfg);
 		analyzerObject.analyze();
-		try {
-			PrintStream out = new PrintStream(new FileOutputStream("C:/Users/Jonathan/Desktop/"
-					+ "Files/CS4120/vmstuff/shared/CS4120/PA6/tests/CSETests/current.txt"));
-			System.setOut(out);
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		}
+//		try {
+//			PrintStream out = new PrintStream(new FileOutputStream("C:/Users/Jonathan/Desktop/"
+//					+ "Files/CS4120/vmstuff/shared/CS4120/PA6/tests/CSETests/current.txt"));
+//			System.setOut(out);
+//		} catch (FileNotFoundException e) {
+//			e.printStackTrace();
+//		}
+		
+		boolean hasChanged = false;
+		
 		outer:
 		for (CFGNode node: cfg.getAllNodes()) {
 			Set<IRExprOverrider> setOfIn = analyzerObject.inMap.get(node);
@@ -79,10 +82,10 @@ public class CommonSubExpElimination extends Optimization{
 				}
 			}
 			
-			System.out.println("This is the node: " + node);
-			System.out.println("This is the set of in: " + setOfIn);
-			System.out.println("This is the set of use: " + listOfUseExprs);
-			System.out.println("This is the list of use and in: " + listOfUseAndIn);
+//			System.out.println("This is the node: " + node);
+//			System.out.println("This is the set of in: " + setOfIn);
+//			System.out.println("This is the set of use: " + listOfUseExprs);
+//			System.out.println("This is the list of use and in: " + listOfUseAndIn);
 			
 			if (listOfUseAndIn.size() == 0) {
 				continue;
@@ -131,7 +134,7 @@ public class CommonSubExpElimination extends Optimization{
 				currentInt++;
 			}
 			
-			System.out.println("This is the nodes of origin: " + theBest.nodesOfOrigin);
+//			System.out.println("This is the nodes of origin: " + theBest.nodesOfOrigin);
 			
 			// Check that each parent has hoisted this particular IRExprOverrider or if it
 			// hasn't hoisted anything at all. Loop until you find an expression that can be
@@ -142,6 +145,7 @@ public class CommonSubExpElimination extends Optimization{
 				// If parentsHoisted is null, that means that no one else has ever hoisted
 				// this particular parent before. It should be done here.
 				if (parentsHoisted == null) {
+					hasChanged = true;
 					IRCFGNode parentNode = theBest.nodesOfOrigin.get(i);
 					// Replace sub tree with move
 					IRMove moveToBeInserted = new IRMove(new IRTemp("csetemp" + tempToInt.get(theBest)),
@@ -159,8 +163,9 @@ public class CommonSubExpElimination extends Optimization{
 			}
 		}
 		
-//		cfg.print();
-		return false;
+		
+		
+		return hasChanged;
 	}
 	
 }

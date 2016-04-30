@@ -856,9 +856,9 @@ public class Main {
 			optimize = true;
 		}
 		if (enabled[DCE]) {
-			DeadCodeEliminator dce = new DeadCodeEliminator();
-//			opts.add(dce);
-			optimize = true;
+//			DeadCodeEliminator dce = new DeadCodeEliminator();
+////			opts.add(dce);
+//			optimize = true;
 		}
 		
 		if (enabled[CSE]) {

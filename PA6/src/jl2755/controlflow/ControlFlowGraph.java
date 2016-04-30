@@ -146,7 +146,8 @@ public class ControlFlowGraph implements OptimizationGraph{
 
 		IRSeq body = (IRSeq) func.body();
 		List<IRStmt> stmts = body.stmts();
-		IRCFGNode head1 = new IRCFGNode(stmts.get(0),func.getABIName());
+		IRCFGNode head1 = new IRCFGNode(stmts.get(0));
+		head1.setABIName(func.getABIName());
 		head1.setName(func.getABIName());
 		head = head1;
 		allNodes.add(head);
@@ -155,14 +156,16 @@ public class ControlFlowGraph implements OptimizationGraph{
 		IRCFGNode prev = head1;
 		for (int i = 1; i < stmts.size(); i++) {
 			IRStmt stmt = stmts.get(i);
-			IRCFGNode curr = new IRCFGNode(stmt,func.getABIName());
+			IRCFGNode curr = new IRCFGNode(stmt);
+			curr.setABIName(func.getABIName());
 			
 			// if it's a label instruction,
 			// get the next stmt and put the pair in label2node map
 			if (stmt instanceof IRLabel) {
 				String label = ((IRLabel) stmt).name();
 				stmt = stmts.get(++i);
-				curr = new IRCFGNode(stmt,func.getABIName());
+				curr = new IRCFGNode(stmt);
+				curr.setABIName(func.getABIName());
 				label2node.put(label, curr);
 			}
 			// add node to nodeSet 

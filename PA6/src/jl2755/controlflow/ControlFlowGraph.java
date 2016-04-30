@@ -3,17 +3,25 @@ package jl2755.controlflow;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Queue;
 import java.util.Set;
 import java.util.Stack;
 
-import edu.cornell.cs.cs4120.xic.ir.*;
-
-import java.util.Map.Entry;
-
-import jl2755.assembly.*;
+import edu.cornell.cs.cs4120.xic.ir.IRCJump;
+import edu.cornell.cs.cs4120.xic.ir.IRFuncDecl;
+import edu.cornell.cs.cs4120.xic.ir.IRJump;
+import edu.cornell.cs.cs4120.xic.ir.IRLabel;
+import edu.cornell.cs.cs4120.xic.ir.IRName;
+import edu.cornell.cs.cs4120.xic.ir.IRReturn;
+import edu.cornell.cs.cs4120.xic.ir.IRSeq;
+import edu.cornell.cs.cs4120.xic.ir.IRStmt;
+import jl2755.assembly.Instruction;
 import jl2755.assembly.Instruction.Operation;
+import jl2755.assembly.Label;
 
 public class ControlFlowGraph implements OptimizationGraph{
 	
@@ -238,10 +246,21 @@ public class ControlFlowGraph implements OptimizationGraph{
 		String name = next.getName();
 		String ABIName = next.getABIName();
 		Map<CFGNode, Boolean> hasPrintedCFGNode = new HashMap<CFGNode, Boolean>();
+		for (CFGNode node : allNodes) {
+			hasPrintedCFGNode.put(node, false);
+		}
+		hasPrintedCFGNode.put(next, true);
+		Queue<CFGNode> trueLabelsToBeFlattened = new LinkedList<CFGNode>();
+		outer:
 		while (next != null) {
-			
 			stmts.add(next.getUnderlyingIRStmt());
+			if (next.successor2 != null) {
+				trueLabelsToBeFlattened.add(next.successor2);
+			}
 			next = (IRCFGNode) next.successor1;
+			if (hasPrintedCFGNode.get(next).equals(Boolean.TRUE)) {
+				next = (IRCFGNode) trueLabelsToBeFlattened.poll();
+			}
 		}
 		IRSeq seq = new IRSeq(stmts);
 		return new IRFuncDecl(name, ABIName, seq);

@@ -1,0 +1,61 @@
+This is the node: (MOVE (TEMP args) (TEMP _ARG0))
+
+This is the set of in: []
+This is the set of use: []
+This is the list of use and in: []
+This is the node: (MOVE (TEMP x) (CONST 5))
+
+This is the set of in: []
+This is the set of use: []
+This is the list of use and in: []
+This is the node: (RETURN)
+
+This is the set of in: []
+This is the set of use: []
+This is the list of use and in: []
+This is the node: (JUMP (NAME l1))
+
+This is the set of in: []
+This is the set of use: []
+This is the list of use and in: []
+This is the node: (MOVE (TEMP temp1) (CALL (NAME _If_ii) (TEMP temp0)))
+
+This is the set of in: [(ADD (TEMP x) (CONST 1))
+]
+This is the set of use: []
+This is the list of use and in: []
+This is the node: (CJUMP (EQ (TEMP temp1) (CONST 9)) l0)
+
+This is the set of in: []
+This is the set of use: [(EQ (TEMP temp1) (CONST 9))
+]
+This is the list of use and in: []
+This is the node: (MOVE (TEMP y) (ADD (TEMP x) (CONST 1)))
+
+This is the set of in: []
+This is the set of use: [(ADD (TEMP x) (CONST 1))
+]
+This is the list of use and in: []
+This is the node: (MOVE (TEMP h) (CONST 10))
+
+This is the set of in: [(ADD (TEMP x) (CONST 1))
+]
+This is the set of use: []
+This is the list of use and in: []
+This is the node: (MOVE (TEMP temp0) (ADD (TEMP x) (CONST 1)))
+
+This is the set of in: [(ADD (TEMP x) (CONST 1))
+]
+This is the set of use: [(ADD (TEMP x) (CONST 1))
+]
+This is the list of use and in: [(ADD (TEMP x) (CONST 1))
+]
+This is the nodes of origin: [(MOVE (TEMP y) (ADD (TEMP x) (CONST 1)))
+]
+This is the node: (MOVE (TEMP a) (CONST 3))
+
+This is the set of in: [(EQ (TEMP temp1) (CONST 9))
+]
+This is the set of use: []
+This is the list of use and in: []
+[xic] Generating intermediate code completed

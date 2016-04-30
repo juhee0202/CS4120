@@ -1179,9 +1179,14 @@ public class TilingVisitor implements IRTreeVisitor {
 		// save callee-saved registers
 		int currFnNumSpace = 0;
 		for (int i = 0; i < CALLEE_REG_LIST.length; i++) {
+			Register rbp = new Register(RegisterName.RBP);
 			Register calleeReg = new Register(CALLEE_REG_LIST[i]);
-			// "pushq reg"
-			Instruction instr = new Instruction(Operation.PUSHQ, calleeReg);
+			Constant offset = new Constant(-8*(i+1));
+			Memory mem = new Memory(offset, rbp);
+			// "movq calleeReg k(rbp)"
+			Instruction instr = new Instruction(Operation.MOVQ, calleeReg, mem);
+//			// "pushq reg"
+//			Instruction instr = new Instruction(Operation.PUSHQ, calleeReg);
 			instructions.add(instr);
 			currFnNumSpace++;
 		}

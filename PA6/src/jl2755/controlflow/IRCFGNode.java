@@ -31,7 +31,6 @@ public class IRCFGNode extends CFGNode {
 	private IRExpr use2;
 	/** The one and only (if applicable) def of this AACFGNode. */
 	private IRExpr def;
-	
 	/** 
 	 * True if its use is already renamed
 	 * Should only be used for IRPhiFunction Node
@@ -41,10 +40,11 @@ public class IRCFGNode extends CFGNode {
 	protected List<CFGNode> realPredecessors;
 	/** Real predecessor in the path to this node */
 	protected CFGNode realPredecessor;
-	
-	public IRCFGNode(IRStmt argStmt) {
+
+	public IRCFGNode(IRStmt argStmt, String argABIName) {
 		super();
 		underlyingIRStmt = argStmt;
+		ABIName = argABIName;
 	}
 	
 	private void computeKills() {
@@ -70,7 +70,7 @@ public class IRCFGNode extends CFGNode {
 	}
 	
 	public void putArgBeforeThisNode(IRStmt argStmt) {
-		IRCFGNode blankNode = new IRCFGNode(argStmt);
+		IRCFGNode blankNode = new IRCFGNode(argStmt,null);
 		blankNode.name = name;
 		blankNode.ABIName = name;
 		blankNode.use1 = use1;
@@ -78,13 +78,20 @@ public class IRCFGNode extends CFGNode {
 		blankNode.def = def;
 		blankNode.successor1 = this;
 		blankNode.predecessors = predecessors;
+		for (CFGNode node : predecessors) {
+			if (equals(node.successor1)) {
+				node.successor1 = blankNode;
+			}
+			else if (equals(node.successor2)) {
+				node.successor2 = blankNode;
+			}
+		}
 		predecessors = new ArrayList<CFGNode>();
 		predecessors.add(blankNode);
 		blankNode.idom = idom;
 		idom = blankNode;
 		blankNode.children = new HashSet<CFGNode>();
 		blankNode.children.add(this);
-		
 	}
 
 	/**

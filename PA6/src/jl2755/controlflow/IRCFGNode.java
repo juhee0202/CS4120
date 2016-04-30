@@ -29,6 +29,16 @@ public class IRCFGNode extends CFGNode {
 	/** The one and only (if applicable) def of this AACFGNode. */
 	private IRExpr def;
 	
+	/** 
+	 * True if its use is already renamed
+	 * Should only be used for IRPhiFunction Node
+	 *  */
+	protected boolean renamed;
+	/** List of real predecessors for IRPhiFunction node */
+	protected List<CFGNode> realPredecessors;
+	/** Real predecessor in the path to this node */
+	protected CFGNode realPredecessor;
+	
 	public IRCFGNode(IRStmt argStmt) {
 		super();
 		underlyingIRStmt = argStmt;
@@ -145,6 +155,14 @@ public class IRCFGNode extends CFGNode {
 		this.underlyingIRStmt = underlyingIRStmt;
 	}
 	
+	public List<CFGNode> getRealPredecessors() {
+		return realPredecessors;
+	}
+
+	public void setRealPredecessors(List<CFGNode> realPredecessors) {
+		this.realPredecessors = realPredecessors;
+	}
+
 	@Override
 	public String toString() {
 		return underlyingIRStmt.toString();

@@ -28,6 +28,7 @@ public class DominatorTree {
 		/* Compute dominance relation */
 		computeDominanceRelation();
 		
+		/* Construct dominator tree */
 		root = cfg.getHead();
 		constructDominatorTree(root, dominanceMap);
 	}
@@ -103,7 +104,8 @@ public class DominatorTree {
 				for (CFGNode pred : node.predecessors) {
 					Set<CFGNode> dominance = dominanceMap.get(pred);
 					if (predDominance == null) {
-						predDominance = dominance;
+						predDominance = new HashSet<CFGNode>(); 
+						predDominance.addAll(dominance);
 					} else {
 						predDominance.retainAll(dominance);
 					}

@@ -6,6 +6,8 @@ main(args: int[][]) {
 	y:int = 4;
 	if (x > 5) {
 		y = x;
+	} else {
+		y = x + 5;
 	}
-	z:int = y + 5;
+	z:int = y + 3;
 }

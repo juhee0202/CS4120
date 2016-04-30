@@ -1,12 +1,16 @@
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 
 import org.junit.Test;
 
 import edu.cornell.cs.cs4120.xic.ir.IRCompUnit;
 import edu.cornell.cs.cs4120.xic.ir.IRFuncDecl;
 import jl2755.Main;
+import jl2755.controlflow.CFGNode;
 import jl2755.controlflow.ControlFlowGraph;
 import jl2755.controlflow.SSAFormConverter;
 import jl2755.controlflow.SSAFormGraph;
@@ -66,6 +70,20 @@ public class CFGTester {
 			SSAFormConverter converter = new SSAFormConverter(cfg);
 			SSAFormGraph ssaCfg = converter.convertToSSAForm();
 			ssaCfg.print();
+			
+//			System.out.println("********************");
+//			System.out.println("*** DominanceMap ***");
+//			System.out.println("********************");
+//			Map<CFGNode, Set<CFGNode>> map = converter.dominanceMap;
+//			for (Entry<CFGNode, Set<CFGNode>> entry : map.entrySet()) {
+//				CFGNode node = entry.getKey();
+//				System.out.println(node);
+//				Set<CFGNode> set = entry.getValue();
+//				for (CFGNode n : set) {
+//					System.out.println("\t" + n);
+//				}
+//				System.out.println("********************");
+//			}
 
 			List<Optimization> opts = new ArrayList<Optimization>();
 			CopyPropagator copy = new CopyPropagator();

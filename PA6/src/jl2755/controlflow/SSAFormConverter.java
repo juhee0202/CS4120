@@ -22,7 +22,8 @@ public class SSAFormConverter {
 	private Map<CFGNode, Set<CFGNode>> dominanceFrontier;
 	
 	/** Dominance Relation map */
-	private Map<CFGNode, Set<CFGNode>> dominanceMap;
+	// TODO: make it private
+	public Map<CFGNode, Set<CFGNode>> dominanceMap;
 	
 	/** Maps CFGNode to its set of used variable names */
 	private Map<CFGNode, Set<String>> node2use;
@@ -272,7 +273,8 @@ public class SSAFormConverter {
 				CFGNode insertBeforePoint;
 				if (nodeStmt instanceof IRJump || nodeStmt instanceof IRCJump) {
 					// insert before the jump
-					insertBeforePoint = node;
+					assert(node.predecessors.size() == 1);
+					insertBeforePoint = node.predecessors.get(0);
 				} else {
 					// otherwise, insert before the label
 					insertBeforePoint = succ;
@@ -392,7 +394,7 @@ public class SSAFormConverter {
 						node2def.put(newNode, var);
 						
 						// update phisites map
-						sites.add(newNode);
+						sites.add(y);
 						phisites.put(var, sites);
 						
 						if (node2def.get(y) != null && !node2def.get(y).equals(var)) {

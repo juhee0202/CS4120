@@ -356,10 +356,11 @@ public class ControlFlowGraph implements OptimizationGraph{
 				System.out.println(node.underlyingIRStmt);
 //				System.out.println("\t" + node.);
 				for (CFGNode succ : node.getSuccessors()) {
-					if (!set.contains(succ)) {
-						stack.push(succ);
-						set.add(succ);
-					}
+					stack.push(succ);
+//					if (!set.contains(succ)) {
+//						stack.push(succ);
+//						set.add(succ);
+//					}
 				}
 			}
 		} else {

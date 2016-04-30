@@ -36,6 +36,8 @@ import jl2755.ast.Interface;
 import jl2755.ast.InterfaceFunc;
 import jl2755.ast.Program;
 import jl2755.controlflow.ControlFlowGraph;
+import jl2755.controlflow.SSAFormConverter;
+import jl2755.controlflow.SSAFormGraph;
 import jl2755.exceptions.LexicalError;
 import jl2755.exceptions.SemanticError;
 import jl2755.exceptions.SyntaxError;
@@ -693,7 +695,7 @@ public class Main {
 				result = lir.program;
 				
 				/* Optimize */
-//				result = optimize(result);
+				result = optimize(result);
 				
 				// Update global map
 				fileToIR.put(filename, result);
@@ -852,7 +854,7 @@ public class Main {
 		}
 		if (enabled[COPY]) {
 			CopyPropagator copy = new CopyPropagator();
-//			opts.add(copy);
+			opts.add(copy);
 			optimize = true;
 		}
 		if (enabled[DCE]) {
@@ -874,10 +876,12 @@ public class Main {
 			Map<String, IRFuncDecl> nameToFD = node.functions();
 			for (IRFuncDecl fd : nameToFD.values()) {
 				ControlFlowGraph cfg = new ControlFlowGraph(fd);
+				SSAFormConverter converter = new SSAFormConverter(cfg);
+				SSAFormGraph ssaGraph = converter.convertToSSAForm();
 				while (changed) {
 					changed = false;
 					for (Optimization o : opts) {
-						changed |= o.run(cfg);
+						changed |= o.run(ssaGraph);
 					}
 				}
 				IRFuncDecl newFD = cfg.flattenIntoIR();

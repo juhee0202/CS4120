@@ -249,10 +249,11 @@ public class SSAFormGraph implements OptimizationGraph {
 				System.out.println("\t use: " + useString);
 				System.out.println("\t def: " + node2def.get(node));
 				for (CFGNode succ : node.getSuccessors()) {
-					if (!set.contains(succ)) {
-						stack.push(succ);
-						set.add(succ);
-					}
+					stack.push(succ);
+//					if (!set.contains(succ)) {
+//						stack.push(succ);
+//						set.add(succ);
+//					}
 				}
 			}
 		} else if (head == null) {

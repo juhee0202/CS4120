@@ -19,8 +19,7 @@ _Imain_paai:
 	cmpq	$5, %rcx
 	movq	%rcx, -64(%rbp)
 	jg	l0
-l1:
-	movq	-72(%rbp), %rdx
+	movq	-64(%rbp), %rdx
 	movq	%rdx, %rcx
 	movq	%rcx, -80(%rbp)
 	movq	-80(%rbp), %rcx
@@ -28,7 +27,17 @@ l1:
 	movq	%rcx, -80(%rbp)
 	movq	-80(%rbp), %rdx
 	movq	%rdx, %rcx
+	movq	%rcx, -72(%rbp)
+l2:
+	movq	-72(%rbp), %rdx
+	movq	%rdx, %rcx
 	movq	%rcx, -88(%rbp)
+	movq	-88(%rbp), %rcx
+	addq	$3, %rcx
+	movq	%rcx, -88(%rbp)
+	movq	-88(%rbp), %rdx
+	movq	%rdx, %rcx
+	movq	%rcx, -96(%rbp)
 	movq	-8(%rbp), %rbx
 	movq	-16(%rbp), %rbp
 	movq	-24(%rbp), %r12
@@ -41,4 +50,4 @@ l0:
 	movq	-64(%rbp), %rdx
 	movq	%rdx, %rcx
 	movq	%rcx, -72(%rbp)
-	jmp	l1
+	jmp	l2

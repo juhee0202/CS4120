@@ -37,6 +37,9 @@ public class CFGTester {
 			
 			dc.run(ssaCfg);
 			
+			System.out.println("*** SSA Form: Dead code Eliminated succesfully ***");
+			ssaCfg.print();
+			
 		}
 	}
 }

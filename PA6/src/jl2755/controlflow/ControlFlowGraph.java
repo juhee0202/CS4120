@@ -17,7 +17,7 @@ import jl2755.assembly.Instruction.Operation;
 
 public class ControlFlowGraph implements OptimizationGraph{
 	
-	private Set<CFGNode> allNodes;
+	private Set<CFGNode> allNodes; // be careful. this isn't updated properly.
 	private CFGNode head;
 	
 	public ControlFlowGraph(Set<CFGNode> allNodes, CFGNode head) {

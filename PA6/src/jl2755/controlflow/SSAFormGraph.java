@@ -49,11 +49,15 @@ public class SSAFormGraph implements OptimizationGraph {
 		Set<String >allVars = new HashSet<String>();
 		allVars.addAll(var2use.keySet());
 		allVars.addAll(var2def.keySet());
+		allVars.remove(null);
 		return allVars;
 	}
 	
 	public Set<CFGNode> getAllNodes() {
-		return cfg.getAllNodes();
+		Set<CFGNode> allNodes = new HashSet<CFGNode>();
+		allNodes.addAll(node2use.keySet());
+		allNodes.addAll(node2def.keySet());
+		return allNodes;
 	}
 	
 	public Map<CFGNode, Set<String>> getNodeToUseMap() {

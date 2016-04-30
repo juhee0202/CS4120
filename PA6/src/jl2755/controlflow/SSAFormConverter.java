@@ -1,5 +1,6 @@
 package jl2755.controlflow;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -35,11 +36,11 @@ public class SSAFormConverter {
 	/** Maps a variable to its def site */
 	private Map<String, CFGNode> var2def;
 	
+	/** SSA form of the given cfg */
+	private SSAFormGraph ssaGraph;
+	
 	/** Set of all variable names in cfg */
 	private Set<String> allVars;
-	
-	/** Maps original variable name to set of new variable names */
-	private Map<String, Set<String>> var2newVar;
 	
 	/** Maps used in rename function */
 	private Map<String, Integer> var2count;
@@ -94,13 +95,57 @@ public class SSAFormConverter {
 		// 5) construct SSAFormGraph
 		SSAFormGraph ssaGraph = new SSAFormGraph(cfg, node2use, node2def, var2use, var2def);
 		
+		this.ssaGraph = ssaGraph;
 		return ssaGraph;
 	}
 	
-	
+	/**
+	 * Revert to ControlFlowGraph form
+	 * For each phi-function node:
+	 * 	for each operand:
+	 * 		create an assignment stmt node 
+	 * @return
+	 */
 	public ControlFlowGraph convertBack() {
-		// TODO: do we need this?
-		return null;
+		/* Find all IRPhiFunction nodes */
+		Set<CFGNode> phiNodes = new HashSet<CFGNode>();
+		Set<CFGNode> allNodes = ssaGraph.getAllNodes();
+		for (CFGNode node : allNodes) {
+			IRStmt stmt = ((IRCFGNode)node).underlyingIRStmt;
+			if (stmt instanceof IRPhiFunction) {
+				phiNodes.add(node);
+			}
+		}
+		
+		/* Split each phi-function node */
+		for (CFGNode phiNode : phiNodes) {
+			List<CFGNode> predecessors = ((IRCFGNode)phiNode).predecessors;
+			CFGNode successor = ((IRCFGNode)phiNode).successor1;
+			
+			IRPhiFunction phiStmt = (IRPhiFunction) ((IRCFGNode)phiNode).underlyingIRStmt;
+			String[] operands = phiStmt.getOperands();
+			IRTemp target = new IRTemp(phiStmt.getVar());
+			List<CFGNode> newPredecessors = new ArrayList<CFGNode>();
+			for (int i = 0; i < predecessors.size(); i++) {
+				CFGNode originalPred = predecessors.get(i);
+				IRTemp expr = new IRTemp(operands[i]);
+				IRMove move = new IRMove(target, expr);
+				CFGNode newPred = new IRCFGNode(move);
+				
+				// update links
+				if (originalPred.successor1 == phiNode) {
+					originalPred.successor1 = newPred;
+				} else if (originalPred.successor2 == phiNode) {
+					originalPred.successor2 = newPred;
+				}
+				newPred.predecessors.add(predecessors.get(i));
+				((IRCFGNode)newPred).addSuccessor((IRCFGNode)successor);
+				
+				newPredecessors.add(newPred);
+			}
+		}
+		
+		return cfg;
 	}
 
 	private void computeVarMaps() {

@@ -1,4 +1,6 @@
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import org.junit.Test;
 
@@ -8,13 +10,17 @@ import jl2755.Main;
 import jl2755.controlflow.ControlFlowGraph;
 import jl2755.controlflow.SSAFormConverter;
 import jl2755.controlflow.SSAFormGraph;
+import jl2755.optimization.CopyPropagator;
 import jl2755.optimization.DeadCodeEliminator;
+import jl2755.optimization.Optimization;
+import jl2755.optimization.UnreachableCodeEliminator;
 
 public class CFGTester {
 	@Test
 	public void test1() {
 //		String fileName = "/Users/thomasaeyo/Desktop/CS4120_hw/vm-1/shared/xth/tests/pa4/primes.xi";
-		String fileName = "/Users/Juhee/Desktop/CS4120/PA6/tests/test.xi";
+		String fileName = "/Users/thomasaeyo/Desktop/CS4120/PA6/tests/pa6/practice.xi";
+//		String fileName = "/Users/Juhee/Desktop/CS4120/PA6/tests/test.xi";
 		Main.main(new String[] {"-irrun", "-O", fileName, "-libpath", "runtime/include", "-target"});
 		HashMap<String, IRCompUnit> file2IR = Main.fileToIR;
 		IRCompUnit cu = file2IR.get(fileName);
@@ -35,8 +41,48 @@ public class CFGTester {
 			dc.run(ssaCfg);
 			
 			System.out.println("*** SSA Form: Dead code Eliminated succesfully ***");
-			ssaCfg.print();
+			ssaCfg.print();			
+		}
+	}
+	
+	@Test
+	public void test2() {
+//		String fileName = "/Users/thomasaeyo/Desktop/CS4120_hw/vm-1/shared/xth/tests/pa4/primes.xi";
+		String fileName = "/Users/thomasaeyo/Desktop/CS4120/PA6/tests/pa6/practice.xi";
+		Main.main(new String[] {"-irrun", "-O", fileName, "-libpath", "runtime/include", "-target"});
+		HashMap<String, IRCompUnit> file2IR = Main.fileToIR;
+		IRCompUnit cu = file2IR.get(fileName);
+		for (IRFuncDecl fd : cu.functions().values()) {
+			System.out.println("************" + fd.getABIName() + "************");
+			System.out.println("********************");
+			System.out.println("*** Original CFG ***");
+			System.out.println("********************");
+			ControlFlowGraph cfg = new ControlFlowGraph(fd);
+			cfg.print();
 			
+//			System.out.println("*****************");
+//			System.out.println("*** SSA Form ***");
+//			System.out.println("*****************");
+			SSAFormConverter converter = new SSAFormConverter(cfg);
+			SSAFormGraph ssaCfg = converter.convertToSSAForm();
+//			ssaCfg.print();
+
+			List<Optimization> opts = new ArrayList<Optimization>();
+			CopyPropagator copy = new CopyPropagator();
+//			UnreachableCodeEliminator uce = new UnreachableCodeEliminator();
+			opts.add(copy);
+			
+			System.out.println("*********************");
+			System.out.println("*** Optimized CFG ***");
+			System.out.println("*********************");
+			boolean optimized = false;
+			while (!optimized) {
+				for (int i = 0; i < opts.size(); i++) {
+					optimized |= opts.get(i).run(ssaCfg);
+				}
+			}
+			ControlFlowGraph newCfg = converter.convertBack();
+			newCfg.print();	
 		}
 	}
 }

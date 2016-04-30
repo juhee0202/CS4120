@@ -33,13 +33,13 @@ public class TilingVisitor implements IRTreeVisitor {
 	
 	/** list of callee-saved registers (except rbp) */
 	private static final String[] CALLEE_REG_LIST = {
-			"rdi", "rsi", "rbx", "r12", "r13", "r14", "r15"
+			"rbx", "rbp", "r12", "r13", "r14", "r15"
 	};
 	
 	/** list of caller-saved registers */
 	// TODO: temporarily added rdi and rsi here but i should refactor.
 	private static final String[] CALLER_REG_LIST = {
-			"rax", "rcx", "rdx", "r8", "r9", "r10", "r11", "rdi", "rsi"
+			"rax", "rcx", "rdx", "r8", "r9", "r10", "r11", "rdi", "rsi", "rsp"
 	};
 	// shuttle regs: rcx, rdx, r11
 	
@@ -2282,19 +2282,23 @@ public class TilingVisitor implements IRTreeVisitor {
 		int numCallerReg = CALLER_REG_LIST.length;
 		int totalOffset = argOffset + extraSpaceOffset + retOffset;
 		Register rsp = new Register(RegisterName.RSP);
-		for (int i = 0; i < numCallerReg; i++) {
-			Constant offset = new Constant(8*(numCallerReg + totalOffset - 1 - i));
-			Memory mem = new Memory(offset, rsp);
-			// "movq offset(rsp) caller_saved_reg"
-			Instruction instr = new Instruction(Operation.MOVQ, mem, new Register(CALLER_REG_LIST[i]));
+		for (int i = numCallerReg-1; i >= 0; i--) {
+//			Constant offset = new Constant(8*(numCallerReg + totalOffset - 1 - i));
+//			Memory mem = new Memory(offset, rsp);
+//			// "movq offset(rsp) caller_saved_reg"
+//			Instruction instr = new Instruction(Operation.MOVQ, mem, new Register(CALLER_REG_LIST[i]));
+//			instructions.add(instr);
+			Register reg = new Register(CALLER_REG_LIST[i]);
+			// "pushq reg"
+			Instruction instr = new Instruction(Operation.POPQ, reg);
 			instructions.add(instr);
 		}
 		
 		// back to original rsp
-		Constant offset = new Constant(8*call.getNum8ByteSpace());
-		// "addq offset rsp" 
-		Instruction instr = new Instruction(Operation.ADDQ, offset, rsp);
-		instructions.add(instr);
+//		Constant offset = new Constant(8*call.getNum8ByteSpace());
+//		// "addq offset rsp" 
+//		Instruction instr = new Instruction(Operation.ADDQ, offset, rsp);
+//		instructions.add(instr);
 		
 		// calculate total cost
 		int totalCost = 0;

@@ -52,6 +52,14 @@ public class DeadCodeEliminator extends Optimization{
 			if ((var2use.get(var)).isEmpty()) {
 				//stmt = v's statement of def
 				IRCFGNode node = (IRCFGNode) var2def.get(var);
+				
+				// def[var] = null indicates that it must have been passed in
+				// using special register, ex: __ARG00
+				if (node == null) {
+					var2def.remove(var);
+					var2use.remove(var);
+					continue;
+				}
 				IRStmt stmt = node.underlyingIRStmt;
 				
 				//if stmt has no side effects other than the

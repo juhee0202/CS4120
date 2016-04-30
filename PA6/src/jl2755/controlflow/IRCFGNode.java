@@ -41,10 +41,9 @@ public class IRCFGNode extends CFGNode {
 	/** Real predecessor in the path to this node */
 	protected CFGNode realPredecessor;
 
-	public IRCFGNode(IRStmt argStmt, String argABIName) {
+	public IRCFGNode(IRStmt argStmt) {
 		super();
 		underlyingIRStmt = argStmt;
-		ABIName = argABIName;
 	}
 	
 	private void computeKills() {
@@ -70,9 +69,9 @@ public class IRCFGNode extends CFGNode {
 	}
 	
 	public void putArgBeforeThisNode(IRStmt argStmt) {
-		IRCFGNode blankNode = new IRCFGNode(argStmt,null);
+		IRCFGNode blankNode = new IRCFGNode(argStmt);
 		blankNode.name = name;
-		blankNode.ABIName = name;
+		blankNode.ABIName = ABIName;
 		blankNode.use1 = use1;
 		blankNode.use2 = use2;
 		blankNode.def = def;

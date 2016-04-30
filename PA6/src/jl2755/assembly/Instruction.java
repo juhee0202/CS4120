@@ -186,6 +186,7 @@ public class Instruction {
 			}
 			return false;
 		}
+
 	}
 	
 	protected Operation op;

@@ -31,6 +31,10 @@ public class CFGTester {
 			
 			System.out.println("*** SSA Form ***");
 			ssaCfg.print();
+			
+			System.out.println("*** Convert back ***");
+			ControlFlowGraph newCfg = converter.convertBack();
+			newCfg.print();
 		}
 	}
 }

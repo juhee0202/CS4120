@@ -56,7 +56,6 @@ l0:
 	movq	-120(%rbp), %rcx
 	addq	$1, %rcx
 	movq	%rcx, -120(%rbp)
-	movq	-72(%rbp), %rcx
 	movq	-120(%rbp), %rdx
 	movq	%rdx, %rcx
 	movq	%rcx, -72(%rbp)
@@ -66,7 +65,6 @@ l0:
 	movq	-128(%rbp), %rcx
 	addq	$1, %rcx
 	movq	%rcx, -128(%rbp)
-	movq	-80(%rbp), %rcx
 	movq	-128(%rbp), %rdx
 	movq	%rdx, %rcx
 	movq	%rcx, -80(%rbp)
@@ -77,7 +75,6 @@ l0:
 	movq	-72(%rbp), %rdx
 	addq	%rdx, %rcx
 	movq	%rcx, -136(%rbp)
-	movq	-88(%rbp), %rcx
 	movq	-136(%rbp), %rdx
 	movq	%rdx, %rcx
 	movq	%rcx, -88(%rbp)

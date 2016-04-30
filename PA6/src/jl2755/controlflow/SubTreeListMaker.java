@@ -85,7 +85,7 @@ public class SubTreeListMaker {
 		return null;
 	}
 	
-	private int getValue(IRExpr argExpr) {
+	public static int getValue(IRExpr argExpr) {
 		if (argExpr instanceof IRBinOp) {
 			return 1 + getValue(((IRBinOp) argExpr).left()) + getValue(((IRBinOp) argExpr).right());
 		}

@@ -1,12 +1,19 @@
 package jl2755.optimization;
 
-import java.util.List;
 import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.Queue;
 import java.util.Set;
 
-import edu.cornell.cs.cs4120.xic.ir.*;
+import edu.cornell.cs.cs4120.xic.ir.IRCJump;
+import edu.cornell.cs.cs4120.xic.ir.IRCall;
+import edu.cornell.cs.cs4120.xic.ir.IRExp;
+import edu.cornell.cs.cs4120.xic.ir.IRJump;
+import edu.cornell.cs.cs4120.xic.ir.IRLabel;
+import edu.cornell.cs.cs4120.xic.ir.IRMove;
+import edu.cornell.cs.cs4120.xic.ir.IRPhiFunction;
+import edu.cornell.cs.cs4120.xic.ir.IRReturn;
+import edu.cornell.cs.cs4120.xic.ir.IRStmt;
 import jl2755.controlflow.CFGNode;
 import jl2755.controlflow.IRCFGNode;
 import jl2755.controlflow.OptimizationGraph;

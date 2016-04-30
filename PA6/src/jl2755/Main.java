@@ -543,7 +543,7 @@ public class Main {
 			}
 			
 			/* Optimize */
-//			result = optimize(result);
+			result = optimize(result);
 			
 			// Update global map
 			fileToIR.put(filename, result);
@@ -1231,6 +1231,8 @@ public class Main {
 			Arrays.fill(enabled, false);
 			enables = true;
 			initialized = true;
+		} else {
+			Arrays.fill(enabled, true);
 		}
 		for (int i = 0; i < OPTS.length; i++) {
 			String opt = OPTS[i];

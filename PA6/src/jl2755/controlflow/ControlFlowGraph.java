@@ -221,6 +221,25 @@ public class ControlFlowGraph implements OptimizationGraph{
 	}
 	
 	/**
+	 * Inserts newNode before node.
+	 * newNode
+	 * 	- successor1 = node
+	 * 	- predecessors = node's predecessors
+	 * @param node
+	 * @param newNode
+	 */
+	public void insertBefore(CFGNode node, CFGNode newNode) {
+		// link newNode with node's predecessors
+		newNode.predecessors = node.predecessors;
+		
+		// link newNode with node
+		node.predecessors.clear();
+		newNode.proposeToSuccessor(node);
+		
+		allNodes.add(newNode);
+	}
+	
+	/**
 	 * Removes the node from the graph.
 	 * @param node with only one successor
 	 * @return true if successful, false otherwise

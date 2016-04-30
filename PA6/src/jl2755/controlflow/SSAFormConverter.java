@@ -122,33 +122,28 @@ public class SSAFormConverter {
 		
 		/* Split each phi-function node */
 		for (CFGNode phiNode : phiNodes) {
-			List<CFGNode> predecessors = ((IRCFGNode)phiNode).predecessors;
 			CFGNode successor = ((IRCFGNode)phiNode).successor1;
 			
 			IRPhiFunction phiStmt = (IRPhiFunction) ((IRCFGNode)phiNode).underlyingIRStmt;
 			String[] operands = phiStmt.getOperands();
+			CFGNode[] insertBeforePoints = phiStmt.getInsertBeforePoints();
 			IRTemp target = new IRTemp(phiStmt.getVar());
-			List<CFGNode> newPredecessors = new ArrayList<CFGNode>();
 			
-			for (int i = 0; i < predecessors.size(); i++) {
-				CFGNode originalPred = predecessors.get(i);
+			for (int i = 0; i < operands.length; i++) {
+				// insert before point of i-th operand's move node
+				CFGNode insertBeforePoint = insertBeforePoints[i];
 				
-				
+				// i-th operand's move node
 				IRTemp expr = new IRTemp(operands[i]);
 				IRMove move = new IRMove(target, expr);
-				CFGNode newPred = new IRCFGNode(move,"");
+				CFGNode operandMoveNode = new IRCFGNode(move,"");
 				
-				// update links
-				if (originalPred.successor1 == phiNode) {
-					originalPred.successor1 = newPred;
-				} else if (originalPred.successor2 == phiNode) {
-					originalPred.successor2 = newPred;
-				}
-				newPred.predecessors.add(predecessors.get(i));
-				((IRCFGNode)newPred).addSuccessor((IRCFGNode)successor);
-				
-				newPredecessors.add(newPred);
+				// insert the operand's move node
+				cfg.insertBefore(insertBeforePoint, operandMoveNode);
 			}
+			
+			// remove the phi function node
+			cfg.remove(phiNode);
 		}
 		
 		return cfg;
@@ -203,6 +198,7 @@ public class SSAFormConverter {
 		/* Rename */
 		rename(dominatorTree.getRoot());
 		
+		// may not need this
 		if (newVars.size() == 0) {
 			newVars = originalVars;
 		}
@@ -252,9 +248,15 @@ public class SSAFormConverter {
 		// update successor's phi-function if applicable
 		// renamed flag is used for IRPhiFunction only
 		if (!((IRCFGNode)node).renamed) {
+			IRStmt nodeStmt = ((IRCFGNode)node).underlyingIRStmt;
 			for (CFGNode succ : node.getSuccessors()) {
+				CFGNode insertBeforePoint = succ; // insert before the phi function node.
 				IRStmt succStmt = ((IRCFGNode)succ).underlyingIRStmt;
 				if (succStmt instanceof IRLabel) {
+					if (nodeStmt instanceof IRJump || nodeStmt instanceof IRCJump) {
+						// insert before the jump
+						insertBeforePoint = node;
+					}
 					succ = succ.successor1;
 					succStmt = ((IRCFGNode)succ).underlyingIRStmt;
 				}
@@ -262,6 +264,8 @@ public class SSAFormConverter {
 					((IRCFGNode)succ).renamed = true;
 					int i = ((IRCFGNode)succ).realPredecessors.indexOf(node);
 					String a = ((IRPhiFunction)succStmt).getOriginalVar();
+					// TODO: comeback
+					((IRPhiFunction)succStmt).setInsertBeforePoint(i, insertBeforePoint);
 					
 					int a_count = var2stack.get(a).peek();
 					String newVar = a + a_count;
@@ -278,6 +282,7 @@ public class SSAFormConverter {
 					IRStmt succsuccStmt = ((IRCFGNode)succsucc).underlyingIRStmt;
 					while(succsuccStmt instanceof IRPhiFunction) {
 						((IRCFGNode)succsucc).renamed = true;
+						((IRPhiFunction)succsuccStmt).setInsertBeforePoint(i, insertBeforePoint);
 						a = ((IRPhiFunction)succsuccStmt).getOriginalVar();
 						a_count = var2stack.get(a).peek();
 						newVar = a + a_count;

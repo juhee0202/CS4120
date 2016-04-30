@@ -305,7 +305,6 @@ public class ControlFlowGraph implements OptimizationGraph{
 			}
 			if (next.successor2 != null && !trueLabelsToBeFlattened.contains(next.successor2)) {
 				if (!hasPrintedCFGNode.contains(next.successor2)) {
-					System.out.println(next.successor2);
 					trueLabelsToBeFlattened.add(next.successor2);
 				}
 			}

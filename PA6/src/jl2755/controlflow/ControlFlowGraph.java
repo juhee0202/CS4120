@@ -200,16 +200,42 @@ public class ControlFlowGraph implements OptimizationGraph{
 		}
 	}
 	
+	/**
+	 * Inserts newNode in between node and node's successor. 
+	 * @param node with one successor
+	 * @param newNode
+	 */
+	public void insert(CFGNode node, CFGNode newNode) {
+		CFGNode succ = node.successor1;
+
+		// connect node and newNode
+		node.successor1 = newNode;
+		node.proposeToSuccessor(newNode);
+		
+		// connect newNode and succ
+		succ.children.remove(node);
+		newNode.successor1 = succ;
+		newNode.proposeToSuccessor(succ);
+		
+		allNodes.add(newNode);
+	}
+	
+	/**
+	 * Removes the node from the graph.
+	 * @param node with only one successor
+	 * @return true if successful, false otherwise
+	 */
 	public boolean remove(CFGNode node) {
 		boolean result = true;
 		List<CFGNode> preds = node.predecessors;
-		result &= node.getSuccessor1().predecessors.remove(node);
-		result &= node.getSuccessor1().predecessors.addAll(preds);
+		CFGNode succ = node.successor1;
+		result &= succ.predecessors.remove(node);
+		result &= succ.predecessors.addAll(preds);
 		for (CFGNode pred : preds) {
 			if (pred.successor1 == node) {
-				pred.successor1 = node.getSuccessor1();
+				pred.successor1 = succ;
 			} else {
-				pred.successor1 = node.getSuccessor1();
+				pred.successor2 = succ;
 			}	
 		}
 		if (head == node) {

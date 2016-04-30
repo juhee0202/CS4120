@@ -122,4 +122,9 @@ public class IRMem extends IRExpr {
 	public IRNode copy() {
 		return new IRMem((IRExpr)expr.copy(), memType);
 	}
+
+	@Override
+	public int hashCode() {
+		return expr.hashCode() + memType.hashCode();
+	}
 }

@@ -78,4 +78,9 @@ public class IRConst extends IRExpr {
 	public IRNode copy() {
 		return new IRConst(value);
 	}
+
+	@Override
+	public int hashCode() {
+		return (int) (value ^ (value >>> 32));
+	}
 }

@@ -116,4 +116,9 @@ public class SubTreeListMaker {
 		// taken out long ago.
 		return 0;
 	}
+	
+	@Override
+	public String toString() {
+		return backingList.toString();
+	}
 }

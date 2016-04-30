@@ -12,4 +12,7 @@ public abstract class IRExpr extends IRNode {
             CheckCanonicalIRVisitor v) {
         return v.enterExpr();
     }
+    
+    @Override
+    public abstract int hashCode();
 }

@@ -153,7 +153,7 @@ public class ControlFlowGraph implements OptimizationGraph{
 
 		IRSeq body = (IRSeq) func.body();
 		List<IRStmt> stmts = body.stmts();
-		IRCFGNode head1 = new IRCFGNode(stmts.get(0));
+		IRCFGNode head1 = new IRCFGNode(stmts.get(0),func.getABIName());
 		head1.setName(func.getABIName());
 		head = head1;
 		allNodes.add(head);
@@ -162,14 +162,14 @@ public class ControlFlowGraph implements OptimizationGraph{
 		IRCFGNode prev = head1;
 		for (int i = 1; i < stmts.size(); i++) {
 			IRStmt stmt = stmts.get(i);
-			IRCFGNode curr = new IRCFGNode(stmt);
+			IRCFGNode curr = new IRCFGNode(stmt,func.getABIName());
 			
 			// if it's a label instruction,
 			// get the next stmt and put the pair in label2node map
 			if (stmt instanceof IRLabel) {
 				String label = ((IRLabel) stmt).name();
 				stmt = stmts.get(++i);
-				curr = new IRCFGNode(stmt);
+				curr = new IRCFGNode(stmt,func.getABIName());
 				label2node.put(label, curr);
 			}
 			// add node to nodeSet 
@@ -188,6 +188,7 @@ public class ControlFlowGraph implements OptimizationGraph{
 				IRCJump cjump = (IRCJump) stmt;
 				String label = cjump.trueLabel();
 				node2label.put(curr,label);
+				
 			} 
 			
 			// link prev to curr
@@ -221,12 +222,19 @@ public class ControlFlowGraph implements OptimizationGraph{
 		IRCFGNode next = (IRCFGNode) head;
 		String name = next.getName();
 		String ABIName = next.getABIName();
+		Map<CFGNode, Boolean> hasPrintedCFGNode = new HashMap<CFGNode, Boolean>();
 		while (next != null) {
+			
 			stmts.add(next.getUnderlyingIRStmt());
 			next = (IRCFGNode) next.successor1;
 		}
 		IRSeq seq = new IRSeq(stmts);
 		return new IRFuncDecl(name, ABIName, seq);
+	}
+	
+	private List<IRStmt> flattenStmtIntoIR() {
+		
+		return null;
 	}
 	
 	public Set<CFGNode> getAllNodes() {

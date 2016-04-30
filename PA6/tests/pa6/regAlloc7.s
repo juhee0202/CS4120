@@ -1,8 +1,8 @@
 	.text
-	.globl	_If_p
+	.globl	_Imain_paai
 	.align	4
-_If_p:
-	enter	$96, $0
+_Imain_paai:
+	enter	$64, $0
 	pushq	%rdi
 	pushq	%rsi
 	pushq	%rbx
@@ -10,8 +10,7 @@ _If_p:
 	pushq	%r13
 	pushq	%r14
 	pushq	%r15
-	movq	$24, %rcx
-	movq	%rcx, -64(%rbp)
+	movq	$1000, %rbx
 	pushq	%rax
 	pushq	%rcx
 	pushq	%rdx
@@ -21,12 +20,10 @@ _If_p:
 	pushq	%r11
 	pushq	%rdi
 	pushq	%rsi
-	movq	-64(%rbp), %rdx
-	movq	%rdx, %rdi
+	movq	%rbx, %rdi
 	subq	$8, %rsp
-	callq	_I_alloc_i
-	movq	%rax, %rcx
-	movq	%rcx, -72(%rbp)
+	callq	_Ilargestprime_ii
+	movq	%rax, %rbx
 	movq	72(%rsp), %rax
 	movq	64(%rsp), %rcx
 	movq	56(%rsp), %rdx
@@ -37,28 +34,6 @@ _If_p:
 	movq	16(%rsp), %rdi
 	movq	8(%rsp), %rsi
 	addq	$80, %rsp
-	movq	-72(%rbp), %rdx
-	movq	%rdx, %rcx
-	movq	%rcx, -80(%rbp)
-	movq	-80(%rbp), %rcx
-	movq	$2, (%rcx)
-	movq	-80(%rbp), %rcx
-	movq	$104, 8(%rcx)
-	movq	-80(%rbp), %rcx
-	movq	$105, 16(%rcx)
-	movq	-80(%rbp), %rdx
-	movq	%rdx, %rcx
-	movq	%rcx, -88(%rbp)
-	movq	-88(%rbp), %rcx
-	addq	$8, %rcx
-	movq	%rcx, -88(%rbp)
-	movq	-80(%rbp), %rcx
-	movq	-88(%rbp), %rdx
-	movq	%rdx, %rcx
-	movq	%rcx, -80(%rbp)
-	movq	-80(%rbp), %rdx
-	movq	%rdx, %rcx
-	movq	%rcx, -96(%rbp)
 	pushq	%rax
 	pushq	%rcx
 	pushq	%rdx
@@ -68,8 +43,30 @@ _If_p:
 	pushq	%r11
 	pushq	%rdi
 	pushq	%rsi
-	movq	-96(%rbp), %rdx
-	movq	%rdx, %rdi
+	movq	%rbx, %rdi
+	subq	$8, %rsp
+	callq	_IunparseInt_aii
+	movq	%rax, %rbx
+	movq	72(%rsp), %rax
+	movq	64(%rsp), %rcx
+	movq	56(%rsp), %rdx
+	movq	48(%rsp), %r8
+	movq	40(%rsp), %r9
+	movq	32(%rsp), %r10
+	movq	24(%rsp), %r11
+	movq	16(%rsp), %rdi
+	movq	8(%rsp), %rsi
+	addq	$80, %rsp
+	pushq	%rax
+	pushq	%rcx
+	pushq	%rdx
+	pushq	%r8
+	pushq	%r9
+	pushq	%r10
+	pushq	%r11
+	pushq	%rdi
+	pushq	%rsi
+	movq	%rbx, %rdi
 	subq	$8, %rsp
 	callq	_Iprint_pai
 	movq	72(%rsp), %rax
@@ -92,10 +89,10 @@ _If_p:
 	leave
 	ret
 
-	.globl	_Imain_paai
+	.globl	_Ilargestprime_ii
 	.align	4
-_Imain_paai:
-	enter	$96, $0
+_Ilargestprime_ii:
+	enter	$64, $0
 	pushq	%rdi
 	pushq	%rsi
 	pushq	%rbx
@@ -103,14 +100,12 @@ _Imain_paai:
 	pushq	%r13
 	pushq	%r14
 	pushq	%r15
-	movq	%rdi, %rcx
-	movq	%rcx, -64(%rbp)
-	movq	$5, %rcx
-	movq	%rcx, -72(%rbp)
-	movq	$6, %rcx
-	movq	%rcx, -80(%rbp)
-	movq	$7, %rcx
-	movq	%rcx, -88(%rbp)
+	movq	$1, %r8
+	movq	$1, %rbx
+l0:
+	cmpq	%rdi, %r8
+	jl	l1
+	movq	%rbx, %rax
 	movq	-8(%rbp), %rdi
 	movq	-16(%rbp), %rsi
 	movq	-24(%rbp), %rbx
@@ -120,3 +115,45 @@ _Imain_paai:
 	movq	-56(%rbp), %r15
 	leave
 	ret
+l1:
+	movq	%r8, %rax
+	movq	$2, %rsi
+	movq	$1, %r14
+l3:
+	movq	%rsi, %r15
+	imulq	%rsi, %r15
+	cmpq	%rax, %r15
+	jle	l4
+	testq	%r14, %r14
+	jnz	l14
+l15:
+	addq	$1, %r8
+	jmp	l0
+l4:
+	movq	%rsi, %r11
+	movq	%rax, %r15
+l6:
+	movq	$0, %r10
+	cmpq	%r11, %r10
+	jne	l7
+	movq	$1, %r11
+	cmpq	%r15, %r11
+	jne	l12
+l13:
+	addq	$1, %rsi
+	jmp	l3
+l7:
+	cmpq	%r15, %r11
+	jl	l9
+	subq	%r15, %r11
+l11:
+	jmp	l6
+l9:
+	subq	%r11, %r15
+	jmp	l11
+l12:
+	movq	$0, %r14
+	jmp	l13
+l14:
+	movq	%r8, %rbx
+	jmp	l15

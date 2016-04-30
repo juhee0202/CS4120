@@ -36,11 +36,11 @@ public class SSAFormConverter {
 	/** Maps a variable to its def site */
 	private Map<String, CFGNode> var2def;
 	
+	/** SSA form of the given cfg */
+	private SSAFormGraph ssaGraph;
+	
 	/** Set of all variable names in cfg */
 	private Set<String> allVars;
-	
-	/** Maps original variable name to set of new variable names */
-	private Map<String, Set<String>> var2newVar;
 	
 	/** Maps used in rename function */
 	private Map<String, Integer> var2count;
@@ -95,20 +95,72 @@ public class SSAFormConverter {
 		// 5) construct SSAFormGraph
 		SSAFormGraph ssaGraph = new SSAFormGraph(cfg, node2use, node2def, var2use, var2def);
 		
+		this.ssaGraph = ssaGraph;
 		return ssaGraph;
 	}
 	
-	
+	/**
+	 * Revert to ControlFlowGraph form
+	 * For each phi-function node:
+	 * 	for each operand:
+	 * 		create an assignment stmt node 
+	 * 
+	 * TODO: keep track of where to insert split phi-function node
+	 * @return ControlFlowGraph
+	 */
 	public ControlFlowGraph convertBack() {
-		// TODO: do we need this?
-		return null;
+		/* Find all IRPhiFunction nodes */
+		Set<CFGNode> phiNodes = new HashSet<CFGNode>();
+		Set<CFGNode> allNodes = ssaGraph.getAllNodes();
+		for (CFGNode node : allNodes) {
+			IRStmt stmt = ((IRCFGNode)node).underlyingIRStmt;
+			if (stmt instanceof IRPhiFunction) {
+				phiNodes.add(node);
+			}
+		}
+		
+		/* Split each phi-function node */
+		for (CFGNode phiNode : phiNodes) {
+			List<CFGNode> predecessors = ((IRCFGNode)phiNode).predecessors;
+			CFGNode successor = ((IRCFGNode)phiNode).successor1;
+			
+			IRPhiFunction phiStmt = (IRPhiFunction) ((IRCFGNode)phiNode).underlyingIRStmt;
+			String[] operands = phiStmt.getOperands();
+			IRTemp target = new IRTemp(phiStmt.getVar());
+			List<CFGNode> newPredecessors = new ArrayList<CFGNode>();
+			
+			for (int i = 0; i < predecessors.size(); i++) {
+				CFGNode originalPred = predecessors.get(i);
+				
+				
+				IRTemp expr = new IRTemp(operands[i]);
+				IRMove move = new IRMove(target, expr);
+				CFGNode newPred = new IRCFGNode(move);
+				
+				// update links
+				if (originalPred.successor1 == phiNode) {
+					originalPred.successor1 = newPred;
+				} else if (originalPred.successor2 == phiNode) {
+					originalPred.successor2 = newPred;
+				}
+				newPred.predecessors.add(predecessors.get(i));
+				((IRCFGNode)newPred).addSuccessor((IRCFGNode)successor);
+				
+				newPredecessors.add(newPred);
+			}
+		}
+		
+		return cfg;
 	}
 
 	private void computeVarMaps() {
 		var2use = new HashMap<String, Set<CFGNode>>();
 		var2def = new HashMap<String, CFGNode>();
 		for (Entry<CFGNode, String> entry : node2def.entrySet()) {
-			var2def.put(entry.getValue(), entry.getKey());
+			if (entry.getValue() != null) {
+				var2def.put(entry.getValue(), entry.getKey());
+				var2use.put(entry.getValue(), new HashSet<CFGNode>());
+			}	
 		}
 		
 		for (Entry<CFGNode, Set<String>> entry : node2use.entrySet()) {
@@ -149,9 +201,7 @@ public class SSAFormConverter {
 	 * Renames variables in node
 	 * @param node
 	 */
-	private void rename(CFGNode node) {
-		System.out.println(node);
-		
+	private void rename(CFGNode node) {		
 		IRStmt stmt = ((IRCFGNode)node).underlyingIRStmt;
 		
 		if (stmt instanceof IRReturn) {
@@ -185,23 +235,54 @@ public class SSAFormConverter {
 		}
 		
 		// update successor's phi-function if applicable
-		for (CFGNode succ : node.getSuccessors()) {
-			IRStmt succStmt = ((IRCFGNode)succ).underlyingIRStmt;
-			if (succStmt instanceof IRPhiFunction) {
-				int i = succ.predecessors.indexOf(node);
-				String a = ((IRPhiFunction)succStmt).getOriginalVar();
-				
-				int a_count = var2stack.get(a).peek();
-				((IRPhiFunction)succStmt).setOperand(i, a + a_count);
-				Set<String> use = node2use.get(succ);
-				use.remove(a);
-				use.add(a + a_count);
-				node2use.put(succ, use);
+		// renamed is only for IRPhiFunction
+		if (!((IRCFGNode)node).renamed) {
+			for (CFGNode succ : node.getSuccessors()) {
+				IRStmt succStmt = ((IRCFGNode)succ).underlyingIRStmt;
+				if (succStmt instanceof IRLabel) {
+					succ = succ.successor1;
+					succStmt = ((IRCFGNode)succ).underlyingIRStmt;
+				}
+				if (succStmt instanceof IRPhiFunction) {
+					((IRCFGNode)succ).renamed = true;
+					int i = ((IRCFGNode)succ).realPredecessors.indexOf(node);
+					String a = ((IRPhiFunction)succStmt).getOriginalVar();
+					
+					int a_count = var2stack.get(a).peek();
+					((IRPhiFunction)succStmt).setOperand(i, a + a_count);
+					Set<String> use = node2use.get(succ);
+					use.remove(a);
+					use.add(a + a_count);
+					node2use.put(succ, use);
+					
+					// update successor's successor's phi-functions if applicable
+					// this happens when more than one var requires a phi-function
+					CFGNode succsucc = succ.successor1;
+					IRStmt succsuccStmt = ((IRCFGNode)succsucc).underlyingIRStmt;
+					while(succsuccStmt instanceof IRPhiFunction) {
+						((IRCFGNode)succsucc).renamed = true;
+						a = ((IRPhiFunction)succsuccStmt).getOriginalVar();
+						a_count = var2stack.get(a).peek();
+						((IRPhiFunction)succsuccStmt).setOperand(i, a + a_count);
+						use = node2use.get(succsucc);
+						use.remove(a);
+						use.add(a + a_count);
+						node2use.put(succsucc, use);	
+						succsucc = succsucc.successor1;
+						succsuccStmt = ((IRCFGNode)succsucc).underlyingIRStmt;
+					}
+				}
 			}
 		}
+
 		
 		// rename children
 		for (CFGNode child : node.children) {
+			IRStmt childStmt = ((IRCFGNode)child).underlyingIRStmt;
+			if (childStmt instanceof IRLabel) {
+				child = child.successor1;
+				((IRCFGNode)child).realPredecessor = node;
+			}
 			rename(child);
 		}
 		
@@ -248,33 +329,34 @@ public class SSAFormConverter {
 				CFGNode node = W.pop();
 				for (CFGNode y : dominanceFrontier.get(node)) {
 					Set<CFGNode> sites = phisites.get(var);
-					if (!sites.contains(y)) {
+					if (!sites.contains(y)) {						
 						// create a new IRPhiFunction stmt
-						// insert it right before y
+						// insert it right after y where y is a label
+						IRStmt yStmt = ((IRCFGNode)y).underlyingIRStmt;
+						assert(yStmt instanceof IRLabel);
 						List<CFGNode> predecessors = y.predecessors;
-						IRPhiFunction phiFunction = new IRPhiFunction(var, predecessors.size());
-						CFGNode newNode = new IRCFGNode(phiFunction);
+						int numPhiOperand = predecessors.size();
+						IRPhiFunction phiFunction = new IRPhiFunction(var, numPhiOperand);
+						IRCFGNode newNode = new IRCFGNode(phiFunction);
+						newNode.realPredecessors = predecessors;
 						
-						// update predecessors' links
-						for (CFGNode pred : predecessors) {
-							if (pred.successor1 == y) {
-								pred.successor1 = newNode;
-							} else {
-								pred.successor2 = newNode;
-							}
+						// update successor's link
+						CFGNode succ = y.successor1;
+						y.successor1 = newNode;
+						newNode.predecessors.add(y);
+						newNode.successor1 = succ;
+						succ.predecessors.remove(y);
+						succ.predecessors.add(newNode);
+						
+						// update idom links
+						Set<CFGNode> children = y.children;
+						y.children = new HashSet<CFGNode>();
+						y.children.add(newNode);
+						newNode.children = children;
+						newNode.idom = y;
+						for (CFGNode child : children) {
+							child.idom = newNode;
 						}
-						newNode.predecessors = predecessors;
-						newNode.successor1 = y;
-						y.predecessors = new ArrayList<CFGNode>();
-						y.predecessors.add(newNode);
-						
-						// update idom's links
-						CFGNode idom = y.idom;
-						idom.children.remove(y);
-						idom.children.add(newNode);
-						newNode.idom = idom;
-						newNode.children.add(y);
-						y.idom = newNode;
 						
 						// update node2use & node2def maps
 						Set<String> use = new HashSet<String>();
@@ -286,7 +368,7 @@ public class SSAFormConverter {
 						sites.add(newNode);
 						phisites.put(var, sites);
 						
-						if (!node2def.get(y).contains(var)) {
+						if (node2def.get(y) != null && !node2def.get(y).equals(var)) {
 							W.push(y);
 						}
 					}

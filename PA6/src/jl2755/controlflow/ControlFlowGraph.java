@@ -17,7 +17,7 @@ import jl2755.assembly.Instruction.Operation;
 
 public class ControlFlowGraph implements OptimizationGraph{
 	
-	private Set<CFGNode> allNodes;
+	private Set<CFGNode> allNodes; // be careful. this isn't updated properly.
 	private CFGNode head;
 	
 	public ControlFlowGraph(Set<CFGNode> allNodes, CFGNode head) {
@@ -143,13 +143,6 @@ public class ControlFlowGraph implements OptimizationGraph{
 		
 		/* Maps a label to the node of instruction that immediately follows */
 		Map<String, IRCFGNode> label2node = new HashMap<String, IRCFGNode>();
-//		
-////		Map<String, IRFuncDecl> functions = program.functions();
-//		
-		/* Get the head node */
-//		
-////		IRFuncDecl func = functions.get("_Imain_paai");
-//		
 
 		IRSeq body = (IRSeq) func.body();
 		List<IRStmt> stmts = body.stmts();
@@ -205,6 +198,25 @@ public class ControlFlowGraph implements OptimizationGraph{
 			IRCFGNode node2 = label2node.get(label);
 			node1.addSuccessor(node2);
 		}
+	}
+	
+	public boolean remove(CFGNode node) {
+		boolean result = true;
+		List<CFGNode> preds = node.predecessors;
+		result &= node.getSuccessor1().predecessors.remove(node);
+		result &= node.getSuccessor1().predecessors.addAll(preds);
+		for (CFGNode pred : preds) {
+			if (pred.successor1 == node) {
+				pred.successor1 = node.getSuccessor1();
+			} else {
+				pred.successor1 = node.getSuccessor1();
+			}	
+		}
+		if (head == node) {
+			head = node.getSuccessor1();
+		}
+		result &= allNodes.remove(node);
+		return result;
 	}
 	
 	public List<Instruction> flattenIntoAA() {

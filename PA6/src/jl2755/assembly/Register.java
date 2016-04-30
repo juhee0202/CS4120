@@ -339,6 +339,7 @@ public class Register implements Operand {
 		Register temp = new Register();
 		temp.name = name;
 		temp.type = type;
+		temp.isMoveRelated = isMoveRelated;
 		return temp;
 	}
 	
@@ -418,7 +419,7 @@ public class Register implements Operand {
 	@Override
 	public boolean equals(Object o) {
 		Register reg = (Register) o;
-		if (type == reg.type && name == reg.name) {
+		if (type == reg.type && name.equals(reg.name)) {
 			return true;
 		}
 		return false;

@@ -31,14 +31,15 @@ public class InterferenceGraph {
 	public InterferenceGraph(Map<AACFGNode, Set<Register>> map) {
 		// Initialize globals
 		nodes = new HashSet<Register>();
-		edges = new HashMap<Register,Set<Register>>();
+		edges = new HashMap<Register, Set<Register>>();
 		
 		// For each node, add each register in the set to nodes
 		for (CFGNode node : map.keySet()) {
 			HashSet<Register> regSet = (HashSet<Register>) map.get(node);
 			// For each register in the set, add all other registers to its neighbors
 			for (Register currReg : regSet) {
-				HashSet<Register> setWithoutCurrReg = (HashSet<Register>) regSet.clone();
+				Set<Register> setWithoutCurrReg = new HashSet<Register>();
+				setWithoutCurrReg.addAll(regSet);
 				setWithoutCurrReg.remove(currReg);
 				if (!nodes.contains(currReg)) {
 					nodes.add(currReg);
@@ -46,20 +47,39 @@ public class InterferenceGraph {
 				} else {
 					Set<Register> newSet = edges.get(currReg);
 					newSet.addAll(setWithoutCurrReg);
-					edges.put(currReg, newSet);
 				}
-				
+			}
+		}
+	}
+	
+	public void add(Register reg, Set<Register> neighbors) {
+		nodes.add(reg);
+		edges.put(reg, neighbors);
+		// Add myself to my neighbors
+		for (Register r : neighbors) {
+			if (!nodes.contains(r)) {
+				nodes.add(r);
+				Set<Register> rNeighbors = new HashSet<Register>();
+				rNeighbors.add(reg);
+				edges.put(r, rNeighbors);
+			} else {
+				edges.get(r).add(reg);
+			}
+		}
+		// Add my neighbors to my own set
+		for (Register n : edges.keySet()) {
+			if (edges.get(n).contains(reg)) {
+				edges.get(reg).add(n);
 			}
 		}
 	}
 	
 	public void remove(Register reg) {
 		nodes.remove(reg);
-		for (Register neighbor : edges.get(reg)) {
-			Set<Register> neighbors = edges.get(neighbor);
-			edges.remove(reg);
-			edges.put(neighbor,neighbors);
+		for (Set<Register> neighbors : edges.values()) {
+			neighbors.remove(reg);
 		}
+		edges.remove(reg);
 	}
 	
 	public Set<Register> getNodes() {

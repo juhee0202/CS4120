@@ -49,11 +49,15 @@ public class SSAFormGraph implements OptimizationGraph {
 		Set<String >allVars = new HashSet<String>();
 		allVars.addAll(var2use.keySet());
 		allVars.addAll(var2def.keySet());
+		allVars.remove(null);
 		return allVars;
 	}
 	
 	public Set<CFGNode> getAllNodes() {
-		return cfg.getAllNodes();
+		Set<CFGNode> allNodes = new HashSet<CFGNode>();
+		allNodes.addAll(node2use.keySet());
+		allNodes.addAll(node2def.keySet());
+		return allNodes;
 	}
 	
 	public Map<CFGNode, Set<String>> getNodeToUseMap() {
@@ -143,6 +147,10 @@ public class SSAFormGraph implements OptimizationGraph {
 		List<CFGNode> predecessors = node.predecessors;
 		CFGNode successor = node.successor1;
 		
+		if (node == head) {
+			head = node.successor1;
+		}
+		
 		// link predecessors to successor
 		for (CFGNode pred : predecessors) {
 			if (pred.successor1 == node) {
@@ -158,9 +166,11 @@ public class SSAFormGraph implements OptimizationGraph {
 		CFGNode idom = node.idom;
 		
 		// link idom to children
-		idom.children = children;
-		for (CFGNode child : children) {
-			child.idom = idom;
+		if (idom != null) {
+			idom.children = children;
+			for (CFGNode child : children) {
+				child.idom = idom;
+			}	
 		}
 	}
 	
@@ -191,6 +201,8 @@ public class SSAFormGraph implements OptimizationGraph {
 					}
 				}
 			}
+		} else if (head == null) {
+			System.out.println("Head is null");
 		} else {
 			// TODO: implement print for AACFGNode
 		}

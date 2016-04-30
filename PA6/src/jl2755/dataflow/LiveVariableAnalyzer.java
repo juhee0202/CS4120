@@ -98,11 +98,10 @@ public class LiveVariableAnalyzer extends Dataflow<Register> {
 		
 		if (firstSuccessor != null) {
 			tempSet.addAll(inMap.get(firstSuccessor));
+			if (secondSuccessor != null) {
+				tempSet.addAll(inMap.get(secondSuccessor));
+			}
 		}
-		if (secondSuccessor != null) {
-			tempSet.addAll(inMap.get(secondSuccessor));
-		}
-		
 		if (defs.get(AAView) != null) {
 			tempSet.remove(defs.get(AAView));
 		}
@@ -161,15 +160,12 @@ public class LiveVariableAnalyzer extends Dataflow<Register> {
 		if (target != null) {
 			targetUsed.addAll(target.getRegistersUsed());
 		}
+		if (target instanceof Memory) {
+			sourceUsed.addAll(targetUsed);
+		}
 		Set<Register> bothCombined = new HashSet<Register>();
 		bothCombined.addAll(sourceUsed);
 		bothCombined.addAll(targetUsed);
-//		sourceUsed.addAll(targetUsed);
-//		assert(sourceUsed.size() <= 3);
-//		Iterator<Register> iteratorOfUses = sourceUsed.iterator();
-//		while (iteratorOfUses.hasNext()) {
-//			addUse(iteratorOfUses.next());
-//		}
 		switch(argNode.underlyingInstruction.getOp()) {
 			case ADDQ :
 				addUse(argNode,bothCombined);

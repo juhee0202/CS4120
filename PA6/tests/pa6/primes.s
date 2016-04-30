@@ -37,7 +37,7 @@ l3:
 	.globl	_Imain_paai
 	.align	4
 _Imain_paai:
-	enter	$64, $0
+	enter	$80, $0
 	pushq	%rdi
 	pushq	%rsi
 	pushq	%rbx
@@ -92,9 +92,11 @@ _Imain_paai:
 	movq	16(%rsp), %rdi
 	movq	8(%rsp), %rsi
 	addq	$80, %rsp
-	movq	-64(%rbp), %r12
-	movq	%r13, %r12
-	movq	%r12, -64(%rbp)
+	pushq	%r11
+	movq	-64(%rbp), %r11
+	movq	%r13, %r11
+	movq	%r11, -64(%rbp)
+	popq	%r11
 	movq	$272, %r13
 	pushq	%rax
 	pushq	%rcx
@@ -158,9 +160,13 @@ _Imain_paai:
 	addq	$8, %r13
 	movq	%r13, %r13
 	movq	-8(%r13), %r14
-	movq	-64(%rbp), %r12
-	addq	-8(%r12), %r14
-	movq	%r12, -64(%rbp)
+	pushq	%r11
+	movq	-64(%rbp), %r11
+	addq	-8(%r11), %r14
+	movq	-64(%rbp), %r11
+	movq	%r13, %r11
+	movq	%r11, -64(%rbp)
+	popq	%r11
 	movq	%r14, %r14
 	movq	%r14, %r12
 	addq	$1, %r12
@@ -201,9 +207,14 @@ l16:
 	movq	$0, %r15
 	movq	-8(%r13), %r14
 l19:
-	movq	-64(%rbp), %r12
-	movq	-8(%r12), %r13
-	movq	%r12, -64(%rbp)
+	pushq	%r11
+	movq	-8(%r11), %r13
+	movq	-64(%rbp), %r11
+	addq	-8(%r11), %r14
+	movq	-64(%rbp), %r11
+	movq	%r13, %r11
+	movq	%r11, -64(%rbp)
+	popq	%r11
 	cmpq	%r13, %r15
 	jl	l20
 	movq	%rbx, %r13
@@ -252,9 +263,15 @@ l20:
 	imulq	$8, %r12
 	movq	%rbx, %r13
 	addq	%r12, %r13
-	movq	-64(%rbp), %r12
-	movq	(%r12,%r15,8), %r13
-	movq	%r12, -64(%rbp)
+	pushq	%r11
+	movq	(%r11,%r15,8), %r13
+	movq	-8(%r11), %r13
+	movq	-64(%rbp), %r11
+	addq	-8(%r11), %r14
+	movq	-64(%rbp), %r11
+	movq	%r13, %r11
+	movq	%r11, -64(%rbp)
+	popq	%r11
 	movq	%r13, (%r13)
 	movq	%r15, %r13
 	addq	$1, %r13

@@ -209,14 +209,16 @@ public class ControlFlowGraph implements OptimizationGraph{
 	public boolean remove(CFGNode node) {
 		boolean result = true;
 		List<CFGNode> preds = node.predecessors;
-		result &= node.getSuccessor1().predecessors.remove(node);
-		result &= node.getSuccessor1().predecessors.addAll(preds);
-		for (CFGNode pred : preds) {
-			if (pred.successor1 == node) {
-				pred.successor1 = node.getSuccessor1();
-			} else {
-				pred.successor1 = node.getSuccessor1();
-			}	
+		if (preds != null && node.getSuccessor1() != null) {
+			result &= node.getSuccessor1().predecessors.remove(node);
+			result &= node.getSuccessor1().predecessors.addAll(preds);
+			for (CFGNode pred : preds) {
+				if (pred.successor1 == node) {
+					pred.successor1 = node.getSuccessor1();
+				} else {
+					pred.successor1 = node.getSuccessor1();
+				}	
+			}
 		}
 		if (head == node) {
 			head = node.getSuccessor1();

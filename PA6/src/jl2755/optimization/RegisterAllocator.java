@@ -201,7 +201,6 @@ public class RegisterAllocator {
 			}
 			if (defs.get(n) != null && !union.contains(defs.get(n))) {
 				program.remove(i);
-				System.out.println(i);
 				result = true;
 			}
 		}

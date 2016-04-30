@@ -14,8 +14,21 @@ _Imain_paai:
 	movq	%rcx, -64(%rbp)
 	movq	$5, %rcx
 	movq	%rcx, -72(%rbp)
-	movq	$5, %rcx
+	movq	$4, %rcx
 	movq	%rcx, -80(%rbp)
+	movq	-72(%rbp), %rcx
+	cmpq	$5, %rcx
+	movq	%rcx, -72(%rbp)
+	jg	l0
+	movq	-80(%rbp), %rdx
+	movq	%rdx, %rcx
+	movq	%rcx, -88(%rbp)
+	movq	-88(%rbp), %rcx
+	addq	$5, %rcx
+	movq	%rcx, -88(%rbp)
+	movq	-88(%rbp), %rdx
+	movq	%rdx, %rcx
+	movq	%rcx, -96(%rbp)
 	movq	-8(%rbp), %rdi
 	movq	-16(%rbp), %rsi
 	movq	-24(%rbp), %rbx

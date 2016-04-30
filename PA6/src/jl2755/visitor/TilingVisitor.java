@@ -1185,8 +1185,6 @@ public class TilingVisitor implements IRTreeVisitor {
 			Memory mem = new Memory(offset, rbp);
 			// "movq calleeReg k(rbp)"
 			Instruction instr = new Instruction(Operation.MOVQ, calleeReg, mem);
-//			// "pushq reg"
-//			Instruction instr = new Instruction(Operation.PUSHQ, calleeReg);
 			instructions.add(instr);
 			currFnNumSpace++;
 		}

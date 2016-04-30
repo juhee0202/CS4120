@@ -296,20 +296,21 @@ public class ControlFlowGraph implements OptimizationGraph{
 		IRCFGNode next = (IRCFGNode) head;
 		String name = next.getName();
 		String ABIName = next.getABIName();
-		Map<CFGNode, Boolean> hasPrintedCFGNode = new HashMap<CFGNode, Boolean>();
-		for (CFGNode node : allNodes) {
-			hasPrintedCFGNode.put(node, false);
-		}
-		hasPrintedCFGNode.put(next, true);
+		Set<CFGNode> hasPrintedCFGNode = new HashSet<CFGNode>();
 		Queue<CFGNode> trueLabelsToBeFlattened = new LinkedList<CFGNode>();
-		outer:
 		while (next != null) {
-			stmts.add(next.getUnderlyingIRStmt());
-			if (next.successor2 != null) {
-				trueLabelsToBeFlattened.add(next.successor2);
+			if (!hasPrintedCFGNode.contains(next)) {
+				stmts.add(next.getUnderlyingIRStmt());
+				hasPrintedCFGNode.add(next);
+			}
+			if (next.successor2 != null && !trueLabelsToBeFlattened.contains(next.successor2)) {
+				if (!hasPrintedCFGNode.contains(next.successor2)) {
+					System.out.println(next.successor2);
+					trueLabelsToBeFlattened.add(next.successor2);
+				}
 			}
 			next = (IRCFGNode) next.successor1;
-			if (hasPrintedCFGNode.get(next).equals(Boolean.TRUE)) {
+			if (next == null || hasPrintedCFGNode.contains(next)) {
 				next = (IRCFGNode) trueLabelsToBeFlattened.poll();
 			}
 		}
@@ -317,13 +318,12 @@ public class ControlFlowGraph implements OptimizationGraph{
 		return new IRFuncDecl(name, ABIName, seq);
 	}
 	
-	private List<IRStmt> flattenStmtIntoIR() {
-		
-		return null;
-	}
-	
 	public Set<CFGNode> getAllNodes() {
 		return allNodes;
+	}
+	
+	public void addTheseNodes(Set<CFGNode> argNodes) {
+		allNodes.addAll(argNodes);
 	}
 
 	public CFGNode getHead() {

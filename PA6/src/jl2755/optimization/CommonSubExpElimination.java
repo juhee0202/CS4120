@@ -5,6 +5,7 @@ import java.io.FileOutputStream;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -65,6 +66,8 @@ public class CommonSubExpElimination extends Optimization{
 //		}
 		
 		boolean hasChanged = false;
+		
+		Set<CFGNode> nodesToAddToAllList = new HashSet<CFGNode>();
 		
 		outer:
 		for (CFGNode node: cfg.getAllNodes()) {
@@ -150,7 +153,8 @@ public class CommonSubExpElimination extends Optimization{
 					// Replace sub tree with move
 					IRMove moveToBeInserted = new IRMove(new IRTemp("csetemp" + tempToInt.get(theBest)),
 							theBest.encapsulatedIRExpr);
-					parentNode.putArgBeforeThisNode(moveToBeInserted);
+					IRCFGNode newNode = parentNode.putArgBeforeThisNode(moveToBeInserted);
+					nodesToAddToAllList.add(newNode);
 					IRExprOverrider.replaceExprInStmt(tempToInt.get(theBest), parentNode.underlyingIRStmt, theBest);
 				}
 			}
@@ -163,7 +167,7 @@ public class CommonSubExpElimination extends Optimization{
 			}
 		}
 		
-		
+		cfg.addTheseNodes(nodesToAddToAllList);
 		
 		return hasChanged;
 	}

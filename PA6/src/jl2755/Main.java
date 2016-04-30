@@ -866,7 +866,7 @@ public class Main {
 			// call constructor
 			// add to opts
 			CommonSubExpElimination cse = new CommonSubExpElimination();
-//			opts.add(cse);
+			opts.add(cse);
 			optimize = true;
 		}
 		

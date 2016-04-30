@@ -194,12 +194,14 @@ public class RegisterAllocator {
 			}
 			if (i.getDest() instanceof Memory) {
 				continue;
-			} 
-			else if (i.getDest() instanceof Register && ((Register) i.getDest()).isBuiltIn()) {
+			} else if (i.getDest() instanceof Register && ((Register) i.getDest()).isBuiltIn()) {
+				continue;
+			} else if (op != Operation.MOVQ) {
 				continue;
 			}
 			if (defs.get(n) != null && !union.contains(defs.get(n))) {
 				program.remove(i);
+				System.out.println(i);
 				result = true;
 			}
 		}
@@ -488,7 +490,8 @@ public class RegisterAllocator {
 			List<Instruction> removes = new ArrayList<Instruction>();
 			for (Instruction move : regToMovInstructions.get(replacingReg)) {
 				if (move.getDest().equals(move.getSrc())) {
-					program.remove(move);
+//					program.remove(move);
+					remove.add(move);
 					regToInstructions.get(replacingReg).remove(move);
 					removes.add(move);
 				}

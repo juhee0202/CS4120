@@ -1836,10 +1836,10 @@ public class TilingVisitor implements IRTreeVisitor {
 						Constant offset = new Constant(8*(j-2));
 						Memory mem = new Memory(offset, rdi);
 						if (dest instanceof Memory) {
-							Register r11 = new Register(RegisterName.R11);
-							Instruction shuttle = new Instruction(Operation.MOVQ, mem, r11);
+							Register reg = new Register("tileRegister" + registerCount++);
+							Instruction shuttle = new Instruction(Operation.MOVQ, mem, reg);
 							tempInstructions.add(shuttle);
-							instr = new Instruction(Operation.MOVQ, r11, dest);
+							instr = new Instruction(Operation.MOVQ, reg, dest);
 						} else {
 							instr = new Instruction(Operation.MOVQ, mem, dest);
 						}

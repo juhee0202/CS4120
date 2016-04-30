@@ -2,14 +2,14 @@
 	.globl	_Imain_paai
 	.align	4
 _Imain_paai:
-	enter	$48, $0
+	enter	$96, $0
 	movq	%rbx, -8(%rbp)
 	movq	%rbp, -16(%rbp)
 	movq	%r12, -24(%rbp)
 	movq	%r13, -32(%rbp)
 	movq	%r14, -40(%rbp)
 	movq	%r15, -48(%rbp)
-	movq	%rdx, %rcx
+	movq	%rdi, %rcx
 	movq	%rcx, -56(%rbp)
 	movq	$5, %rcx
 	movq	%rcx, -64(%rbp)
@@ -19,6 +19,7 @@ _Imain_paai:
 	cmpq	$5, %rcx
 	movq	%rcx, -64(%rbp)
 	jg	l0
+l1:
 	movq	-72(%rbp), %rdx
 	movq	%rdx, %rcx
 	movq	%rcx, -80(%rbp)
@@ -36,3 +37,8 @@ _Imain_paai:
 	movq	-48(%rbp), %r15
 	leave
 	ret
+l0:
+	movq	-64(%rbp), %rdx
+	movq	%rdx, %rcx
+	movq	%rcx, -72(%rbp)
+	jmp	l1

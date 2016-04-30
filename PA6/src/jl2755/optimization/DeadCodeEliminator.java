@@ -49,11 +49,21 @@ public class DeadCodeEliminator extends Optimization{
 		// QUESTION: isn't this gonna be an infinite loop?
 		while (!variables.isEmpty()) {
 			String var = variables.poll();
+			
+			// if var is _RET01, then even if no one uses _RET01, we don't want to
+			// eliminate the stmt because we must return the return value
+			if (var.equals("_RET01")) {
+				continue;
+			}
 			if ((var2use.get(var)).isEmpty()) {
 				//stmt = v's statement of def
 				IRCFGNode node = (IRCFGNode) var2def.get(var);
-				//skip if the var is never defined.
+				
+				// def[var] = null indicates that it must have been passed in
+				// using special register, ex: __ARG00
 				if (node == null) {
+					var2def.remove(var);
+					var2use.remove(var);
 					continue;
 				}
 				IRStmt stmt = node.underlyingIRStmt;

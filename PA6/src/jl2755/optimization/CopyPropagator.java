@@ -1,5 +1,6 @@
 package jl2755.optimization;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -26,7 +27,8 @@ public class CopyPropagator extends Optimization {
 			// ControlFlowGraph ssaGraph = (ControlFlowGraph)cfg;
 		} else {
 			SSAFormGraph ssaGraph = (SSAFormGraph)cfg;
-			Set<CFGNode> allNodes = ssaGraph.getAllNodes();
+			Set<CFGNode> allNodes = new HashSet<CFGNode>();
+			allNodes.addAll(ssaGraph.getAllNodes());
 			for (CFGNode node : allNodes) {
 				IRStmt stmt = ((IRCFGNode)node).underlyingIRStmt;
 				String var = null;
@@ -55,7 +57,6 @@ public class CopyPropagator extends Optimization {
 					// remove & substitute
 					ssaGraph.remove(node);
 					ssaGraph.substitute(var, replaceVar);
-					
 					modified = true;
 				}
 			}

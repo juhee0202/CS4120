@@ -108,6 +108,15 @@ public class IRCFGNode extends CFGNode {
 			replaceUsage(((IRJump)underlyingIRStmt).target(), var, newVar);
 		} else if (underlyingIRStmt instanceof IRMove) {
 			replaceUsage(((IRMove)underlyingIRStmt).expr(), var, newVar);
+		} else if (underlyingIRStmt instanceof IRPhiFunction) {
+			String[] operands = ((IRPhiFunction)underlyingIRStmt).getOperands();
+			for (int i = 0; i < operands.length; i ++) {
+				if (operands[i].equals(var)) {
+					operands[i] = newVar;
+					break;
+				}
+			}
+			((IRPhiFunction)underlyingIRStmt).setOperands(operands);
 		}
 	}
 

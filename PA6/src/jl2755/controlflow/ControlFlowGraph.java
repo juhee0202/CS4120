@@ -143,13 +143,6 @@ public class ControlFlowGraph implements OptimizationGraph{
 		
 		/* Maps a label to the node of instruction that immediately follows */
 		Map<String, IRCFGNode> label2node = new HashMap<String, IRCFGNode>();
-//		
-////		Map<String, IRFuncDecl> functions = program.functions();
-//		
-		/* Get the head node */
-//		
-////		IRFuncDecl func = functions.get("_Imain_paai");
-//		
 
 		IRSeq body = (IRSeq) func.body();
 		List<IRStmt> stmts = body.stmts();
@@ -168,8 +161,6 @@ public class ControlFlowGraph implements OptimizationGraph{
 			// get the next stmt and put the pair in label2node map
 			if (stmt instanceof IRLabel) {
 				String label = ((IRLabel) stmt).name();
-				stmt = stmts.get(++i);
-				curr = new IRCFGNode(stmt);
 				label2node.put(label, curr);
 			}
 			// add node to nodeSet 

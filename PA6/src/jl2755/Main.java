@@ -39,8 +39,11 @@ import jl2755.controlflow.ControlFlowGraph;
 import jl2755.exceptions.LexicalError;
 import jl2755.exceptions.SemanticError;
 import jl2755.exceptions.SyntaxError;
+import jl2755.optimization.CopyPropagator;
+import jl2755.optimization.DeadCodeEliminator;
 import jl2755.optimization.CommonSubExpElimination;
 import jl2755.optimization.Optimization;
+import jl2755.optimization.UnreachableCodeEliminator;
 import jl2755.type.FunType;
 import jl2755.type.VType;
 import jl2755.visitor.ConstantFolderVisitor;
@@ -66,14 +69,15 @@ public class Main {
 
 	// Optimization fields
 	public static final String[] OPTS = 
-		{"cf", "reg", "mc", "uce", "cse", "temp"};
-	public static boolean[] enabled = new boolean[6];
+		{"cf", "reg", "mc", "uce", "cse", "copy", "dce"};
+	public static boolean[] enabled = new boolean[OPTS.length];
 	public static final int CF = 0;
 	public static final int REG = 1;
 	public static final int MC = 2;
 	public static final int UCE = 3;
 	public static final int CSE = 4;
-	public static final int TEMP = 5;
+	public static final int COPY = 5;
+	public static final int DCE = 6;
 	
 	public static HashMap<String, Symbol> fileToSymbol;
 	public static HashMap<String, Program> fileToAST;
@@ -838,10 +842,18 @@ public class Main {
 		boolean changed = true;
 		List<Optimization> opts = new ArrayList<Optimization>();
 		if (enabled[UCE]) {
-			// TODO: UCE
-			// call constructor
-			// add to opts
+			UnreachableCodeEliminator uce = new UnreachableCodeEliminator();
+			opts.add(uce);
 		}
+		if (enabled[COPY]) {
+			CopyPropagator copy = new CopyPropagator();
+			opts.add(copy);
+		}
+		if (enabled[DCE]) {
+			DeadCodeEliminator dce = new DeadCodeEliminator();
+			opts.add(dce);
+		}
+		
 		if (enabled[CSE]) {
 			// TODO: CSE
 			// call constructor
@@ -849,11 +861,7 @@ public class Main {
 			CommonSubExpElimination cse = new CommonSubExpElimination();
 			opts.add(cse);
 		}
-		if (enabled[TEMP]) {
-			// TODO: 4th opt
-			// call constructor
-			// add to opts
-		}
+		
 		Map<String, IRFuncDecl> nameToFD = node.functions();
 		for (IRFuncDecl fd : nameToFD.values()) {
 			ControlFlowGraph cfg = new ControlFlowGraph(fd);

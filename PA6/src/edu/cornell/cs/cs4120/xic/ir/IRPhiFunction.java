@@ -94,7 +94,7 @@ public class IRPhiFunction extends IRStmt {
 			if (operand != null) {
 				operandsString += operand + " ";
 			} else {
-				operandsString += var + " ";
+				operandsString += originalVar + " ";
 			}
 		}
 		return "(" + var + " = phi( " + operandsString + ")" + ")";

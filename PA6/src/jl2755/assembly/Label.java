@@ -68,4 +68,19 @@ public class Label implements Operand{
 	public boolean isFuncLabel() {
 		return isFuncLabel;
 	}
+	
+	@Override
+	public boolean equals(Object o) {
+		Label l = (Label) o;
+		if (labelName.equals(l.labelName) && isFuncLabel == l.isFuncLabel) {
+			return true;
+		}
+		return false;
+	}
+	
+	@Override
+	public int hashCode() {
+		Boolean bool = (Boolean) isFuncLabel;
+		return labelName.hashCode() + bool.hashCode();
+	}
 }

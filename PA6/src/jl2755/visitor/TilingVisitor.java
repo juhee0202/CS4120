@@ -1872,7 +1872,9 @@ public class TilingVisitor implements IRTreeVisitor {
 			
 			// complete "enter 8*l, 0"
 			Instruction enter = newInsts.get(1);
-			Constant space = new Constant(8*rAlloc.getStackCounter());
+			int counter = rAlloc.getStackCounter();
+			int numSpace = counter % 2 == 1 ? counter + 1 : counter;
+			Constant space = new Constant(8*numSpace);
 			enter.setSrc(space);
 		}
 	}
@@ -1907,7 +1909,7 @@ public class TilingVisitor implements IRTreeVisitor {
 	 * @param regToStack	the map of register names to the relative stack offset
 	 * @return				list of instructions with correct insertions
 	 */
-	private List<Instruction> addNecessaryInstruction(
+	public List<Instruction> addNecessaryInstruction(
 			List<Instruction> instructions, Map<String, Integer> regToStack,
 			int num) {
 		int size = instructions.size();
@@ -1947,8 +1949,10 @@ public class TilingVisitor implements IRTreeVisitor {
 				if (regToStack.containsKey(reg)) {
 					int addr = regToStack.get(reg);
 					mem = new Memory(new Constant(addr),rbp);
-					Instruction movToReg = new Instruction(Operation.MOVQ,mem,rcx);
-					added.add(movToReg);
+					if (currentInstruction.getOp() != Operation.MOVQ) {
+						Instruction movToReg = new Instruction(Operation.MOVQ,mem,rcx);
+						added.add(movToReg);
+					}
 				} else {
 					int addr = -8*++stackCounter;
 					mem = new Memory(new Constant(addr),rbp);
@@ -2070,8 +2074,10 @@ public class TilingVisitor implements IRTreeVisitor {
 					if (regToStack.containsKey(regD)) {
 						int addrD = regToStack.get(regD);
 						memD = new Memory(new Constant(addrD),rbp);
-						Instruction movToRegD = new Instruction(Operation.MOVQ,memD,rcx);
-						added.add(movToRegD);
+						if (currentInstruction.getOp() != Operation.MOVQ) {
+							Instruction movToRegD = new Instruction(Operation.MOVQ,memD,rcx);
+							added.add(movToRegD);
+						}
 					} else {
 						// Need to create a new memory address
 						int addrD = -8*++stackCounter;
@@ -2109,8 +2115,10 @@ public class TilingVisitor implements IRTreeVisitor {
 					if (regToStack.containsKey(reg)) {
 						int addr1 = regToStack.get(reg);
 						mem1 = new Memory(new Constant(addr1),rbp);
-						Instruction movToReg1 = new Instruction(Operation.MOVQ,mem1,r11);
-						added.add(movToReg1);
+						if (currentInstruction.getOp() != Operation.MOVQ) {
+							Instruction movToReg1 = new Instruction(Operation.MOVQ,mem1,rcx);
+							added.add(movToReg1);
+						}
 					} else {
 						int addr1 = -8*++stackCounter;
 						mem1 = new Memory(new Constant(addr1),rbp);

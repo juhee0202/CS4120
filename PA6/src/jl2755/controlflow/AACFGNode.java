@@ -2,6 +2,7 @@ package jl2755.controlflow;
 
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
 import jl2755.assembly.Instruction;
@@ -281,6 +282,19 @@ public class AACFGNode extends CFGNode {
 			assert(false);
 			System.out.println("Already added 2 successors");
 		}
+	}
+	
+	public void setPredecessors(List<CFGNode> argNodes) {
+		predecessors = argNodes;
+	}
+	
+	public void replaceSuccessor(AACFGNode old, AACFGNode node) {
+		if (successor1 == old) {
+			successor1 = null;
+		} else if (successor2 == old) {
+			successor2 = null;
+		}
+		addSuccessor(node);
 	}
 
 	public Instruction getUnderlyingInstruction() {

@@ -145,6 +145,10 @@ public class LiveVariableAnalyzer extends Dataflow<Register> {
 		return inMap;
 	}
 	
+	public HashMap<AACFGNode, Register> getDefs() {
+		return defs;
+	}
+
 	private void computeUses(AACFGNode argNode) {
 		// TODO: Complete
 		Operand source = argNode.underlyingInstruction.getSrc();
@@ -234,8 +238,10 @@ public class LiveVariableAnalyzer extends Dataflow<Register> {
 				addUse(argNode,bothCombined);
 				break;
 			case POPQ :
+				addUse(argNode,targetUsed);
 				break;
 			case PUSHQ :
+				addUse(argNode,targetUsed);
 				break;
 			case RET :
 				break;
@@ -243,6 +249,7 @@ public class LiveVariableAnalyzer extends Dataflow<Register> {
 				addUse(argNode,bothCombined);
 				break;
 			case TESTQ :
+				addUse(argNode,bothCombined);
 				break;
 			case XORQ :
 				addUse(argNode,bothCombined);

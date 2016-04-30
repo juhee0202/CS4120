@@ -339,6 +339,7 @@ public class Register implements Operand {
 		Register temp = new Register();
 		temp.name = name;
 		temp.type = type;
+		temp.isMoveRelated = isMoveRelated;
 		return temp;
 	}
 	

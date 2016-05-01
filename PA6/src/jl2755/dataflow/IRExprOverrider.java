@@ -61,10 +61,9 @@ public class IRExprOverrider {
 	
 	public IRExprOverrider(IRExprOverrider arg1, IRExprOverrider arg2) {
 		assert(arg1.equals(arg2));
-		IRExprOverrider temp = new IRExprOverrider();
-		temp.encapsulatedIRExpr = arg1.encapsulatedIRExpr;
-		temp.nodesOfOrigin.addAll(arg1.nodesOfOrigin);
-		temp.nodesOfOrigin.addAll(arg2.nodesOfOrigin);
+		encapsulatedIRExpr = arg1.encapsulatedIRExpr;
+		nodesOfOrigin.addAll(arg1.nodesOfOrigin);
+		nodesOfOrigin.addAll(arg2.nodesOfOrigin);
 		assert(this.equals(arg1));
 		assert(this.equals(arg2));
 	}
@@ -83,7 +82,8 @@ public class IRExprOverrider {
 		}
 		IRExprOverrider irexprView = (IRExprOverrider) o;
 		IRExpr otherIRExpr = irexprView.getIRExpr();
-		return compareTwoIRTrees(encapsulatedIRExpr, otherIRExpr);
+		boolean temp = compareTwoIRTrees(encapsulatedIRExpr, otherIRExpr);
+		return temp;
 	}
 	
 	@Override
@@ -99,11 +99,20 @@ public class IRExprOverrider {
 	 * @return
 	 */
 	public static boolean compareTwoIRTrees(IRExpr arg1, IRExpr arg2) {
+		if (arg1 == null) {
+			if (arg2 == null) {
+				return true;
+			}
+			return false;
+		}
 		if (arg1 instanceof IRBinOp) {
 			if (arg2 instanceof IRBinOp) {
 				IRBinOp binopView1 = (IRBinOp) arg1;
 				IRBinOp binopView2 = (IRBinOp) arg2;
 				if (binopView1.opType() == binopView2.opType()) {
+//					boolean temp = compareTwoIRTrees(binopView1.left(),binopView2.left()) &&
+//							compareTwoIRTrees(binopView1.right(),binopView2.right());
+//					System.out.println(temp);
 					return compareTwoIRTrees(binopView1.left(),binopView2.left()) &&
 							compareTwoIRTrees(binopView1.right(),binopView2.right());
 				}

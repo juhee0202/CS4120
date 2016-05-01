@@ -36,6 +36,8 @@ import jl2755.ast.Interface;
 import jl2755.ast.InterfaceFunc;
 import jl2755.ast.Program;
 import jl2755.controlflow.ControlFlowGraph;
+import jl2755.controlflow.SSAFormConverter;
+import jl2755.controlflow.SSAFormGraph;
 import jl2755.exceptions.LexicalError;
 import jl2755.exceptions.SemanticError;
 import jl2755.exceptions.SyntaxError;
@@ -543,7 +545,7 @@ public class Main {
 			}
 			
 			/* Optimize */
-			result = optimize(result);
+//			result = optimize(result);
 			
 			// Update global map
 			fileToIR.put(filename, result);
@@ -693,7 +695,7 @@ public class Main {
 				result = lir.program;
 				
 				/* Optimize */
-//				result = optimize(result);
+				result = optimize(result);
 				
 				// Update global map
 				fileToIR.put(filename, result);
@@ -845,20 +847,21 @@ public class Main {
 		boolean changed = true;
 		boolean optimize = false;
 		List<Optimization> opts = new ArrayList<Optimization>();
+		List<Optimization> ssaOpts = new ArrayList<Optimization>();
 		if (enabled[UCE]) {
 			UnreachableCodeEliminator uce = new UnreachableCodeEliminator();
-//			opts.add(uce);
-			optimize = true;
+//			ssaOpts.add(uce);
+//			optimize = true;
 		}
 		if (enabled[COPY]) {
 			CopyPropagator copy = new CopyPropagator();
-//			opts.add(copy);
-			optimize = true;
+//			ssaOpts.add(copy);
+//			optimize = true;
 		}
 		if (enabled[DCE]) {
-			DeadCodeEliminator dce = new DeadCodeEliminator();
-//			opts.add(dce);
-			optimize = true;
+//			DeadCodeEliminator dce = new DeadCodeEliminator();
+////			opts.add(dce);
+//			optimize = true;
 		}
 		
 		if (enabled[CSE]) {
@@ -867,17 +870,32 @@ public class Main {
 			// add to opts
 			CommonSubExpElimination cse = new CommonSubExpElimination();
 //			opts.add(cse);
-			optimize = true;
+//			optimize = true;
 		}
 		
 		if (optimize) {
 			Map<String, IRFuncDecl> nameToFD = node.functions();
 			for (IRFuncDecl fd : nameToFD.values()) {
 				ControlFlowGraph cfg = new ControlFlowGraph(fd);
+				
+				/* Optimization using SSA Form Graph*/
+				SSAFormConverter converter = new SSAFormConverter(cfg);
+				SSAFormGraph ssaGraph = converter.convertToSSAForm();
+				while (changed) {
+					changed = false;
+					for (Optimization o : ssaOpts) {
+						changed |= o.run(ssaGraph);
+					}
+				}
+				
+				changed = true;
+				
+				/* Optimization using Control Flow Graph */
+				ControlFlowGraph newCfg = converter.convertBack();
 				while (changed) {
 					changed = false;
 					for (Optimization o : opts) {
-						changed |= o.run(cfg);
+						changed |= o.run(newCfg);
 					}
 				}
 				IRFuncDecl newFD = cfg.flattenIntoIR();

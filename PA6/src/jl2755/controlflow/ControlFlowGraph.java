@@ -168,11 +168,9 @@ public class ControlFlowGraph implements OptimizationGraph{
 			curr.setABIName(func.getABIName());
 			
 			// if it's a label instruction,
-			// get the next stmt and put the pair in label2node map
+			// store (label,node) in label2node map
 			if (stmt instanceof IRLabel) {
 				String label = ((IRLabel) stmt).name();
-				stmt = stmts.get(++i);
-				curr = new IRCFGNode(stmt);
 				curr.setABIName(func.getABIName());
 				label2node.put(label, curr);
 			}
@@ -192,7 +190,6 @@ public class ControlFlowGraph implements OptimizationGraph{
 				IRCJump cjump = (IRCJump) stmt;
 				String label = cjump.trueLabel();
 				node2label.put(curr,label);
-				
 			} 
 			
 			// link prev to curr
@@ -224,7 +221,7 @@ public class ControlFlowGraph implements OptimizationGraph{
 		node.proposeToSuccessor(newNode);
 		
 		// connect newNode and succ
-		succ.children.remove(node);
+		succ.predecessors.remove(node);
 		newNode.successor1 = succ;
 		newNode.proposeToSuccessor(succ);
 		
@@ -241,10 +238,18 @@ public class ControlFlowGraph implements OptimizationGraph{
 	 */
 	public void insertBefore(CFGNode node, CFGNode newNode) {
 		// link newNode with node's predecessors
-		newNode.predecessors = node.predecessors;
+		for (CFGNode pred : node.predecessors) {
+			if (pred.successor1 == node) {
+				pred.successor1 = newNode;
+			} else {
+				pred.successor2 = newNode;
+			}
+		}
+		newNode.predecessors.addAll(node.predecessors);
 		
 		// link newNode with node
 		node.predecessors.clear();
+		newNode.successor1 = node;
 		newNode.proposeToSuccessor(node);
 		
 		allNodes.add(newNode);
@@ -252,7 +257,7 @@ public class ControlFlowGraph implements OptimizationGraph{
 	
 	/**
 	 * Removes the node from the graph.
-	 * @param node with only one successor
+	 * @param node with less than or equal to one successor
 	 * @return true if successful, false otherwise
 	 */
 	public boolean remove(CFGNode node) {
@@ -291,20 +296,20 @@ public class ControlFlowGraph implements OptimizationGraph{
 		IRCFGNode next = (IRCFGNode) head;
 		String name = next.getName();
 		String ABIName = next.getABIName();
-		Map<CFGNode, Boolean> hasPrintedCFGNode = new HashMap<CFGNode, Boolean>();
-		for (CFGNode node : allNodes) {
-			hasPrintedCFGNode.put(node, false);
-		}
-		hasPrintedCFGNode.put(next, true);
+		Set<CFGNode> hasPrintedCFGNode = new HashSet<CFGNode>();
 		Queue<CFGNode> trueLabelsToBeFlattened = new LinkedList<CFGNode>();
-		outer:
 		while (next != null) {
-			stmts.add(next.getUnderlyingIRStmt());
-			if (next.successor2 != null) {
-				trueLabelsToBeFlattened.add(next.successor2);
+			if (!hasPrintedCFGNode.contains(next)) {
+				stmts.add(next.getUnderlyingIRStmt());
+				hasPrintedCFGNode.add(next);
+			}
+			if (next.successor2 != null && !trueLabelsToBeFlattened.contains(next.successor2)) {
+				if (!hasPrintedCFGNode.contains(next.successor2)) {
+					trueLabelsToBeFlattened.add(next.successor2);
+				}
 			}
 			next = (IRCFGNode) next.successor1;
-			if (hasPrintedCFGNode.get(next).equals(Boolean.TRUE)) {
+			if (next == null || hasPrintedCFGNode.contains(next)) {
 				next = (IRCFGNode) trueLabelsToBeFlattened.poll();
 			}
 		}
@@ -312,13 +317,12 @@ public class ControlFlowGraph implements OptimizationGraph{
 		return new IRFuncDecl(name, ABIName, seq);
 	}
 	
-	private List<IRStmt> flattenStmtIntoIR() {
-		
-		return null;
-	}
-	
 	public Set<CFGNode> getAllNodes() {
 		return allNodes;
+	}
+	
+	public void addTheseNodes(Set<CFGNode> argNodes) {
+		allNodes.addAll(argNodes);
 	}
 
 	public CFGNode getHead() {
@@ -351,10 +355,11 @@ public class ControlFlowGraph implements OptimizationGraph{
 				System.out.println(node.underlyingIRStmt);
 //				System.out.println("\t" + node.);
 				for (CFGNode succ : node.getSuccessors()) {
-					if (!set.contains(succ)) {
-						stack.push(succ);
-						set.add(succ);
-					}
+					stack.push(succ);
+//					if (!set.contains(succ)) {
+//						stack.push(succ);
+//						set.add(succ);
+//					}
 				}
 			}
 		} else {

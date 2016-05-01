@@ -54,10 +54,7 @@ public class SSAFormGraph implements OptimizationGraph {
 	}
 	
 	public Set<CFGNode> getAllNodes() {
-		Set<CFGNode> allNodes = new HashSet<CFGNode>();
-		allNodes.addAll(node2use.keySet());
-		allNodes.addAll(node2def.keySet());
-		return allNodes;
+		return cfg.getAllNodes();
 	}
 	
 	public Map<CFGNode, Set<String>> getNodeToUseMap() {
@@ -108,7 +105,7 @@ public class SSAFormGraph implements OptimizationGraph {
 	
 	/**
 	 * Removes node from the graph
-	 * @param node with one successor
+	 * @param node with less than or equal to one successor
 	 */
 	public void remove(CFGNode node) {
 		if (node == head) {
@@ -158,42 +155,36 @@ public class SSAFormGraph implements OptimizationGraph {
 			newUsesites.add(node);
 		}
 		
+		
 		// update var2use map
+		var2use.remove(var); 
+		
 		if (var2use.containsKey(replaceVar)) {
 			newUsesites.addAll(var2use.get(replaceVar));
 		}
 		var2use.put(replaceVar, usesites);
+		
+		// update node2use map
+		for (CFGNode node : newUsesites) {
+			Set<String> use = node2use.get(node);
+			use.remove(var);
+			use.add(replaceVar);
+		}
 	}
 	
 	/**
-	 * Removes predecessor-less node from the graph while properly updating the maps
+	 * Removes predecessor-less node
 	 * @param node
 	 */
-	public void removeUnreachableNode(CFGNode node) {
-		Set<CFGNode> successors = node.getSuccessors();
-		for (CFGNode succ : successors) {
+	public void removeUnreachableNodes(CFGNode node) {
+		// break the link with its predecessors
+		for (CFGNode succ : node.getSuccessors()) {
 			succ.predecessors.remove(node);
 		}
-		
-		Set<CFGNode> children = node.children;
-		for (CFGNode child : children) {
-			child.idom = null;
-		}
-		
-		Set<String> use = node2use.get(node);
-		String def = node2def.get(node);
-		
-		for (String var : use) {
-			Set<CFGNode> usesites = var2use.get(var);
-			usesites.remove(node);
-			var2use.put(var, usesites);
-		}
-		if (def != null) {
-			var2def.remove(def);
-		}
-		
-		node2use.remove(node);
-		node2def.remove(node);
+		node.successor1 = null;
+		node.successor2 = null;
+		// now we can delete this successor-less node
+		remove(node);
 	}
 	
 	/**
@@ -242,10 +233,11 @@ public class SSAFormGraph implements OptimizationGraph {
 				System.out.println("\t use: " + useString);
 				System.out.println("\t def: " + node2def.get(node));
 				for (CFGNode succ : node.getSuccessors()) {
-					if (!set.contains(succ)) {
-						stack.push(succ);
-						set.add(succ);
-					}
+					stack.push(succ);
+//					if (!set.contains(succ)) {
+//						stack.push(succ);
+//						set.add(succ);
+//					}
 				}
 			}
 		} else if (head == null) {

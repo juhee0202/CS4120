@@ -888,6 +888,8 @@ public class MIRVisitor implements ASTVisitor{
 		IRCall oobCall = new IRCall(nameOfOob);
 		IRExp oobExp = new IRExp(oobCall);
 		stmtList.add(oobExp);
+		IRReturn ret = new IRReturn();
+		stmtList.add(ret);
 		stmtList.add(label3);
 		
 		return new IRSeq(stmtList);

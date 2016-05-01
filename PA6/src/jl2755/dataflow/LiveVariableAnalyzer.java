@@ -10,6 +10,7 @@ import java.util.Set;
 import jl2755.controlflow.AACFGNode;
 import jl2755.controlflow.CFGNode;
 import jl2755.controlflow.ControlFlowGraph;
+import jl2755.assembly.Instruction;
 import jl2755.assembly.Memory;
 import jl2755.assembly.Operand;
 import jl2755.assembly.Register;
@@ -31,12 +32,12 @@ public class LiveVariableAnalyzer extends Dataflow<Register> {
 	/**
 	 * A mapping to keep track of the uses for each AACFGNode.
 	 */
-	private HashMap<AACFGNode, Set<Register>> uses;
+	private HashMap<Instruction, Set<Register>> uses;
 	
 	/**
 	 * A mapping to keep track of the def for each AACFGNode.
 	 */
-	private HashMap<AACFGNode, Register> defs;
+	private HashMap<Instruction, Register> defs;
 	
 	
 	/**
@@ -47,11 +48,11 @@ public class LiveVariableAnalyzer extends Dataflow<Register> {
 	 */
 	public LiveVariableAnalyzer(ControlFlowGraph argCFG) {
 		inMap = new HashMap<AACFGNode, Set<Register>>();
-		uses = new HashMap<AACFGNode, Set<Register>>();
-		defs = new HashMap<AACFGNode, Register>();
+		uses = new HashMap<Instruction, Set<Register>>();
+		defs = new HashMap<Instruction, Register>();
 		cfg = argCFG;
 		for (CFGNode cfgNode : argCFG.getAllNodes()) {
-			uses.put((AACFGNode) cfgNode, new HashSet<Register>());
+			uses.put(((AACFGNode) cfgNode).underlyingInstruction, new HashSet<Register>());
 		}
 		for (CFGNode cfgNode : argCFG.getAllNodes()) {
 			computeUses((AACFGNode) cfgNode);
@@ -102,11 +103,11 @@ public class LiveVariableAnalyzer extends Dataflow<Register> {
 				tempSet.addAll(inMap.get(secondSuccessor));
 			}
 		}
-		if (defs.get(AAView) != null) {
-			tempSet.remove(defs.get(AAView));
+		if (defs.get(AAView.underlyingInstruction) != null) {
+			tempSet.remove(defs.get(AAView.underlyingInstruction));
 		}
 		
-		tempSet.addAll(uses.get(AAView));
+		tempSet.addAll(uses.get(AAView.underlyingInstruction));
 		
 		Set<Register> originalInSet = inMap.get(arg);
 		
@@ -144,12 +145,15 @@ public class LiveVariableAnalyzer extends Dataflow<Register> {
 		return inMap;
 	}
 	
-	public HashMap<AACFGNode, Register> getDefs() {
+	public HashMap<Instruction, Register> getDefs() {
 		return defs;
+	}
+	
+	public HashMap<Instruction, Set<Register>> getUses() {
+		return uses;
 	}
 
 	private void computeUses(AACFGNode argNode) {
-		// TODO: Complete
 		Operand source = argNode.underlyingInstruction.getSrc();
 		Operand target = argNode.underlyingInstruction.getDest();
 		Set<Register> sourceUsed = new HashSet<Register>();
@@ -353,18 +357,18 @@ public class LiveVariableAnalyzer extends Dataflow<Register> {
 	}
 	
 	private void addUse(AACFGNode argNode, Set<Register> argRegisters) {
-		Set<Register> currentUses = uses.get(argNode);
+		Set<Register> currentUses = uses.get(argNode.underlyingInstruction);
 		currentUses.addAll(argRegisters);
 		assert(currentUses.size() <= 3);
 	}
 	
 	private void addDef(AACFGNode argNode, Register argRegister) {
-		if (defs.containsKey(argNode)) {
+		if (defs.containsKey(argNode.underlyingInstruction)) {
 			// Something weird was done with calculating defs twice for a node
 			assert(false);
 		}
 		else {
-			defs.put(argNode, argRegister);
+			defs.put(argNode.underlyingInstruction, argRegister);
 		}
 	}
 }

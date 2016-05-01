@@ -49,7 +49,10 @@ public class RegisterAllocator {
 	private Map<AACFGNode, Set<Register>> nodeToLiveRegs;
 	
 	/** Map of CFGNodes to defs. */
-	private Map<AACFGNode, Register> defs;
+	private Map<Instruction, Register> defs;
+	
+	/** Map of Instructions to uses. */
+	private Map<Instruction, Set<Register>> uses;
 
 	/** Stack to use for register allocation. */
 	private Stack<Register> regStack;
@@ -131,6 +134,7 @@ public class RegisterAllocator {
 		boolean didFreeze;
 		boolean didPotentiallySpill;
 		boolean didActuallySpill = true;
+		boolean extraSpace = false;
 		
 		while (didActuallySpill) {
 			while(build());
@@ -152,9 +156,12 @@ public class RegisterAllocator {
 				didPotentiallySpill = spill();	
 			}
 			didActuallySpill = select();
+			extraSpace |= didActuallySpill;
 		}
 		cleanUp();
-		stackCounter++;
+		if (extraSpace) {
+			stackCounter++;
+		}
 		for (Instruction i : remove) {
 			program.remove(i);
 		}
@@ -174,6 +181,7 @@ public class RegisterAllocator {
 		lva.analyze();
 		nodeToLiveRegs = lva.getInMap();
 		defs = lva.getDefs();
+		uses = lva.getUses();
 		
 		// Create interference graph
 		graph = new InterferenceGraph(nodeToLiveRegs);
@@ -182,28 +190,28 @@ public class RegisterAllocator {
 		boolean result = false;
 		Set<CFGNode> nodes = new HashSet<CFGNode>();
 		nodes.addAll(cfg.getAllNodes());
-		for (CFGNode n : nodes) {
-			Set<Register> union = new HashSet<Register>();
-			for (CFGNode succ : n.getSuccessors()) {
-				union.addAll(nodeToLiveRegs.get(succ));
-			}
-			Instruction i = ((AACFGNode) n).getUnderlyingInstruction();
-			Operation op = i.getOp();
-			if (i.getDest() == null) {
-				continue;
-			}
-			if (i.getDest() instanceof Memory) {
-				continue;
-			} else if (i.getDest() instanceof Register && ((Register) i.getDest()).isBuiltIn()) {
-				continue;
-			} else if (op != Operation.MOVQ) {
-				continue;
-			}
-			if (defs.get(n) != null && !union.contains(defs.get(n))) {
-				program.remove(i);
-				result = true;
-			}
-		}
+//		for (CFGNode n : nodes) {
+//			Set<Register> union = new HashSet<Register>();
+//			for (CFGNode succ : n.getSuccessors()) {
+//				union.addAll(nodeToLiveRegs.get(succ));
+//			}
+//			Instruction i = ((AACFGNode) n).getUnderlyingInstruction();
+//			Operation op = i.getOp();
+//			if (i.getDest() == null) {
+//				continue;
+//			}
+//			if (i.getDest() instanceof Memory) {
+//				continue;
+//			} else if (i.getDest() instanceof Register && ((Register) i.getDest()).isBuiltIn()) {
+//				continue;
+//			} else if (op != Operation.MOVQ) {
+//				continue;
+//			}
+//			if (defs.get(i) != null && !union.contains(defs.get(i))) {
+//				program.remove(i);
+//				result = true;
+//			}
+//		}
 		return result;
 	}
 	
@@ -645,58 +653,64 @@ public class RegisterAllocator {
 		Constant addr = new Constant(add);
 		Memory mem = new Memory(addr,RBP);
 		
-		// Choose a random register
-		int rand = (int) Math.round((NUM_COLORS-1)*Math.random());
-		assert(rand < NUM_COLORS);
-		Register spillingReg = availableRegs[rand];
-		
-		// Set up shuttling instructions
-		Instruction saveToStack = new Instruction(Operation.PUSHQ,spillingReg);
-		Instruction movFromStack = new Instruction(Operation.MOVQ,mem,spillingReg);
-		Instruction movToStack = new Instruction(Operation.MOVQ,spillingReg,mem);
-		Instruction restoreFromStack = new Instruction(Operation.POPQ,spillingReg);
-		List<Instruction> list = new ArrayList<Instruction>();
-		
 		for (Instruction inst : regToInstructions.get(reg)) {
-			list.add(saveToStack);
-			list.add(movToStack);
-			list.add(restoreFromStack);
+			// Check colors of neighbors
+			Set<Register> colors = new HashSet<Register>();
+			colors.addAll(Arrays.asList(availableRegs));
+			colors.removeAll(uses.get(inst));
+			Register spillingReg = colors.iterator().next();
+			
+			// Set up shuttling instructions
+			Instruction saveToStack = new Instruction(Operation.PUSHQ,spillingReg);
+			Instruction movFromStack = new Instruction(Operation.MOVQ,mem,spillingReg);
+			Instruction movToStack = new Instruction(Operation.MOVQ,spillingReg,mem);
+			Instruction restoreFromStack = new Instruction(Operation.POPQ,spillingReg);
+			List<Instruction> list = new ArrayList<Instruction>();
+			
 			Operand dest = inst.getDest();
 			Operand src = inst.getSrc();
 			boolean isDest = false;
 			if (dest instanceof Register && dest.equals(reg)) {
 				inst.setDest(spillingReg);
 				isDest = true;
-			} else if (src instanceof Register && src.equals(reg)) {
-				inst.setSrc(spillingReg);
-			} else {
-				if (dest instanceof Memory) {
-					Memory oldMem = (Memory) dest;
-					Register base = oldMem.getRegisterBase();
-					Register off = oldMem.getRegisterOffset();
-					if (base.equals(reg)) {
-						oldMem.setRegisterBase(spillingReg);
-					}
-					if (off != null && off.equals(reg)) {
-						oldMem.setRegisterOffset(spillingReg);
-					}
-				} else {
-					assert(src instanceof Memory);
-					Memory oldMem = (Memory) src;
-					Register base = oldMem.getRegisterBase();
-					Register off = oldMem.getRegisterOffset();
-					if (base.equals(reg)) {
-						oldMem.setRegisterBase(spillingReg);
-					}
-					if (off != null && off.equals(reg)) {
-						oldMem.setRegisterOffset(spillingReg);
-					}
-				}
 			}
+			if (src instanceof Register && src.equals(reg)) {
+				inst.setSrc(spillingReg);
+				isDest = false;
+			}
+			if (dest instanceof Memory) {
+				Memory oldMem = (Memory) dest;
+				Register base = oldMem.getRegisterBase();
+				Register off = oldMem.getRegisterOffset();
+				if (base.equals(reg)) {
+					oldMem.setRegisterBase(spillingReg);
+				}
+				if (off != null && off.equals(reg)) {
+					oldMem.setRegisterOffset(spillingReg);
+				}
+				isDest = false;
+			} 
+			if  (src instanceof Memory) {
+				Memory oldMem = (Memory) src;
+				Register base = oldMem.getRegisterBase();
+				Register off = oldMem.getRegisterOffset();
+				if (base.equals(reg)) {
+					oldMem.setRegisterBase(spillingReg);
+				}
+				if (off != null && off.equals(reg)) {
+					oldMem.setRegisterOffset(spillingReg);
+				}
+				isDest = false;
+			}
+			list.add(saveToStack);
+			list.add(restoreFromStack);
 			int i = 1;
 			// if instruction is not move where reg is dest, shuttle from stack
 			if (! (inst.getOp() == Operation.MOVQ && isDest) ) {
 				list.add(i++, movFromStack);
+			}
+			if (defs.containsKey(inst) && defs.get(inst).equals(reg)) {
+				list.add(i, movToStack);
 			}
 			list.add(i, inst);
 			int index = program.indexOf(inst);
@@ -727,21 +741,20 @@ public class RegisterAllocator {
 	 * 				null otherwise
 	 */
 	private Register color(Register reg, Set<Register> neighbors) {
-		// Check colors of neighbors
 		Set<Register> colors = new HashSet<Register>();
 		colors.addAll(Arrays.asList(availableRegs));
+		// Check colors of neighbors
 		for (Register neighbor : neighbors) {
 			colors.remove(neighbor);
 		}
-		for (CFGNode n : cfg.getAllNodes()) {
-			if (nodeToLiveRegs.get(n).contains(reg)) {
-				colors.remove(defs.get(n));
-			}
-		}
+		// Check colors of ???
+//		for (CFGNode n : cfg.getAllNodes()) {
+//			if (nodeToLiveRegs.get(n).contains(reg)) {
+//				colors.remove(defs.get(n));
+//			}
+//		}
 		if (colors.size() > 0) {
-			for (Register color : colors) {
-				return color;
-			}
+			return colors.iterator().next();
 		}
 		return null;
 	}
@@ -829,7 +842,6 @@ public class RegisterAllocator {
 	 * Cleans up any unallocated temps (dead code)
 	 */
 	private void cleanUp() {
-		List<Instruction> removes = new ArrayList<Instruction>();
 		for (Instruction inst : program) {
 			Operand source = inst.getSrc();
 			Operand target = inst.getDest();
@@ -841,25 +853,22 @@ public class RegisterAllocator {
 			if (target != null) {
 				targetUsed.addAll(target.getRegistersUsed());
 			}
-			boolean remove = false;
 			for (Register rS : sourceUsed) {
 				if (rS.getType() == RegisterName.TEMP) {
-					remove = true;
+					remove.add(inst);
 					break;
 				}
 			}
 			for (Register rT : targetUsed) {
 				if (rT.getType() == RegisterName.TEMP) {
-					remove = true;
+					remove.add(inst);
 					break;
 				}
 			}
-			if (remove) {
-				removes.add(inst);
+			if (source instanceof Register && target instanceof Register
+					&& inst.getOp() == Operation.MOVQ && source.equals(target)) {
+				remove.add(inst);
 			}
-		}
-		for (Instruction i : removes) {
-			program.remove(i);
 		}
 	}
 	

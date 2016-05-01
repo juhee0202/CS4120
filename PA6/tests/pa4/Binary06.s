@@ -2,7 +2,7 @@
 	.globl	_Imain_paai
 	.align	4
 _Imain_paai:
-	enter	$64, $0
+	enter	$48, $0
 	movq	%rbx, -8(%rbp)
 	movq	%rbp, -16(%rbp)
 	movq	%r12, -24(%rbp)
@@ -1589,7 +1589,7 @@ l6:
 	.globl	_If_bb
 	.align	4
 _If_bb:
-	enter	$64, $0
+	enter	$48, $0
 	movq	%rbx, -8(%rbp)
 	movq	%rbp, -16(%rbp)
 	movq	%r12, -24(%rbp)
@@ -1716,7 +1716,7 @@ _If_bb:
 	.globl	_Ib2s_aib
 	.align	4
 _Ib2s_aib:
-	enter	$64, $0
+	enter	$48, $0
 	movq	%rbx, -8(%rbp)
 	movq	%rbp, -16(%rbp)
 	movq	%r12, -24(%rbp)

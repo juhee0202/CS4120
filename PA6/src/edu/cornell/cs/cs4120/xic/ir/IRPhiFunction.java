@@ -42,6 +42,10 @@ public class IRPhiFunction extends IRStmt {
 		return operands;
 	}
 	
+	public void setOperands(String[] operands) {
+		this.operands = operands;
+	}
+	
 	public void setInsertBeforePoint(int i, CFGNode insertBeforePoint) {
 		insertBeforePoints[i] = insertBeforePoint;
 	}

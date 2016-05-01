@@ -1,5 +1,6 @@
 package jl2755.optimization;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -15,6 +16,15 @@ import jl2755.controlflow.IRCFGNode;
 import jl2755.controlflow.OptimizationGraph;
 import jl2755.controlflow.SSAFormGraph;
 
+/**
+ * 
+ * Removes assignment statements of the following forms:
+ * 	x = y
+ *  x = phi(x)
+ * 
+ * and replaces the usage of x with y or phi(x) 
+ *
+ */
 public class CopyPropagator extends Optimization {
 
 	@Override
@@ -26,7 +36,8 @@ public class CopyPropagator extends Optimization {
 			// ControlFlowGraph ssaGraph = (ControlFlowGraph)cfg;
 		} else {
 			SSAFormGraph ssaGraph = (SSAFormGraph)cfg;
-			Set<CFGNode> allNodes = ssaGraph.getAllNodes();
+			Set<CFGNode> allNodes = new HashSet<CFGNode>();
+			allNodes.addAll(ssaGraph.getAllNodes());
 			for (CFGNode node : allNodes) {
 				IRStmt stmt = ((IRCFGNode)node).underlyingIRStmt;
 				String var = null;
@@ -55,7 +66,6 @@ public class CopyPropagator extends Optimization {
 					// remove & substitute
 					ssaGraph.remove(node);
 					ssaGraph.substitute(var, replaceVar);
-					
 					modified = true;
 				}
 			}

@@ -213,9 +213,10 @@ public class dohMyGod {
 		list.add(ret);
 		ControlFlowGraph cfg = new ControlFlowGraph(list);
 		System.out.println(cfg.dotOutput());
-		
+			
 		try{
 		File file = new File("cfgtest" + "_" + "main" + "_" + "initial.dot");
+		System.out.println(file.getAbsolutePath());
 		if (!file.exists()) {
 			file.createNewFile();
 		}

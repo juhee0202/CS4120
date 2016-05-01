@@ -134,7 +134,7 @@ public class SSAFormConverter {
 				
 				// i-th operand's move node
 				IRTemp expr = new IRTemp(operands[i]);
-				IRMove move = new IRMove(target, expr);
+				IRMove move = new IRMove((IRExpr) target.copy(), expr);
 				CFGNode operandMoveNode = new IRCFGNode(move);
 				
 				// insert the operand's move node

@@ -9,15 +9,15 @@ _Imain_paai:
 	movq	%r13, -32(%rbp)
 	movq	%r14, -40(%rbp)
 	movq	%r15, -48(%rbp)
-	movq	$5, %r15
-	cmpq	$5, %r15
+	movq	$5, %r13
+	cmpq	$5, %r13
 	jg	l0
-	movq	%r15, %r14
-	addq	$5, %r14
+	movq	%r13, %rbx
+	addq	$5, %rbx
 l2:
-	movq	%r14, %r13
-	addq	$3, %r13
-	movq	%r13, %r13
+	movq	%rbx, %r15
+	addq	$3, %r15
+	movq	%r15, %r15
 	pushq	%rax
 	pushq	%rcx
 	pushq	%rdx
@@ -28,76 +28,9 @@ l2:
 	pushq	%rdi
 	pushq	%rsi
 	pushq	%rsp
-	movq	%r15, %rdi
+	movq	%r13, %rdi
 	callq	_IunparseInt_aii
-	movq	%rax, %r15
-	popq	%rsp
-	popq	%rsi
-	popq	%rdi
-	popq	%r11
-	popq	%r10
-	popq	%r9
-	popq	%r8
-	popq	%rdx
-	popq	%rcx
-	popq	%rax
-	pushq	%rax
-	pushq	%rcx
-	pushq	%rdx
-	pushq	%r8
-	pushq	%r9
-	pushq	%r10
-	pushq	%r11
-	pushq	%rdi
-	pushq	%rsi
-	pushq	%rsp
-	movq	%r15, %rdi
-	callq	_Iprintln_pai
-	popq	%rsp
-	popq	%rsi
-	popq	%rdi
-	popq	%r11
-	popq	%r10
-	popq	%r9
-	popq	%r8
-	popq	%rdx
-	popq	%rcx
-	popq	%rax
-	pushq	%rax
-	pushq	%rcx
-	pushq	%rdx
-	pushq	%r8
-	pushq	%r9
-	pushq	%r10
-	pushq	%r11
-	pushq	%rdi
-	pushq	%rsi
-	pushq	%rsp
-	movq	%r14, %rdi
-	callq	_IunparseInt_aii
-	movq	%rax, %r14
-	popq	%rsp
-	popq	%rsi
-	popq	%rdi
-	popq	%r11
-	popq	%r10
-	popq	%r9
-	popq	%r8
-	popq	%rdx
-	popq	%rcx
-	popq	%rax
-	pushq	%rax
-	pushq	%rcx
-	pushq	%rdx
-	pushq	%r8
-	pushq	%r9
-	pushq	%r10
-	pushq	%r11
-	pushq	%rdi
-	pushq	%rsi
-	pushq	%rsp
-	movq	%r14, %rdi
-	callq	_Iprintln_pai
+	movq	%rax, %r13
 	popq	%rsp
 	popq	%rsi
 	popq	%rdi
@@ -119,8 +52,7 @@ l2:
 	pushq	%rsi
 	pushq	%rsp
 	movq	%r13, %rdi
-	callq	_IunparseInt_aii
-	movq	%rax, %r14
+	callq	_Iprintln_pai
 	popq	%rsp
 	popq	%rsi
 	popq	%rdi
@@ -141,7 +73,75 @@ l2:
 	pushq	%rdi
 	pushq	%rsi
 	pushq	%rsp
-	movq	%r14, %rdi
+	movq	%rbx, %rdi
+	callq	_IunparseInt_aii
+	movq	%rax, %rbx
+	popq	%rsp
+	popq	%rsi
+	popq	%rdi
+	popq	%r11
+	popq	%r10
+	popq	%r9
+	popq	%r8
+	popq	%rdx
+	popq	%rcx
+	popq	%rax
+	pushq	%rax
+	pushq	%rcx
+	pushq	%rdx
+	pushq	%r8
+	pushq	%r9
+	pushq	%r10
+	pushq	%r11
+	pushq	%rdi
+	pushq	%rsi
+	pushq	%rsp
+	movq	%rbx, %rdi
+	callq	_Iprintln_pai
+	popq	%rsp
+	popq	%rsi
+	popq	%rdi
+	popq	%r11
+	popq	%r10
+	popq	%r9
+	popq	%r8
+	popq	%rdx
+	popq	%rcx
+	popq	%rax
+	pushq	%rax
+	pushq	%rcx
+	pushq	%rdx
+	pushq	%r8
+	pushq	%r9
+	pushq	%r10
+	pushq	%r11
+	pushq	%rdi
+	pushq	%rsi
+	pushq	%rsp
+	movq	%r15, %rdi
+	callq	_IunparseInt_aii
+	movq	%rax, %rbx
+	popq	%rsp
+	popq	%rsi
+	popq	%rdi
+	popq	%r11
+	popq	%r10
+	popq	%r9
+	popq	%r8
+	popq	%rdx
+	popq	%rcx
+	popq	%rax
+	pushq	%rax
+	pushq	%rcx
+	pushq	%rdx
+	pushq	%r8
+	pushq	%r9
+	pushq	%r10
+	pushq	%r11
+	pushq	%rdi
+	pushq	%rsi
+	pushq	%rsp
+	movq	%rbx, %rdi
 	callq	_Iprintln_pai
 	popq	%rsp
 	popq	%rsi
@@ -162,5 +162,5 @@ l2:
 	leave
 	ret
 l0:
-	movq	%r15, %r14
+	movq	%r13, %rbx
 	jmp	l2

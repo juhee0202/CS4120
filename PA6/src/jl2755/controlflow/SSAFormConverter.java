@@ -136,7 +136,7 @@ public class SSAFormConverter {
 				// i-th operand's move node
 				IRTemp expr = new IRTemp(operands[i]);
 				IRMove move = new IRMove(target, expr);
-				CFGNode operandMoveNode = new IRCFGNode(move,"");
+				CFGNode operandMoveNode = new IRCFGNode(move);
 				
 				// insert the operand's move node
 				cfg.insertBefore(insertBeforePoint, operandMoveNode);
@@ -364,7 +364,7 @@ public class SSAFormConverter {
 						List<CFGNode> predecessors = y.predecessors;
 						int numPhiOperand = predecessors.size();
 						IRPhiFunction phiFunction = new IRPhiFunction(var, numPhiOperand);
-						IRCFGNode newNode = new IRCFGNode(phiFunction,"");
+						IRCFGNode newNode = new IRCFGNode(phiFunction);
 						newNode.realPredecessors = predecessors;
 						// insert it right after y (IRLabel)
 						cfg.insert(y, newNode);

@@ -1,4 +1,4 @@
-// dce test3: should remove only y:int = x
+// dce test3: should remove only y:int = x since f() produces side effects
 
 use io
 use conv

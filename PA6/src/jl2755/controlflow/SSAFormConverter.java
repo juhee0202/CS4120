@@ -22,7 +22,8 @@ public class SSAFormConverter {
 	private Map<CFGNode, Set<CFGNode>> dominanceFrontier;
 	
 	/** Dominance Relation map */
-	private Map<CFGNode, Set<CFGNode>> dominanceMap;
+	// TODO: make it private
+	public Map<CFGNode, Set<CFGNode>> dominanceMap;
 	
 	/** Maps CFGNode to its set of used variable names */
 	private Map<CFGNode, Set<String>> node2use;
@@ -133,7 +134,7 @@ public class SSAFormConverter {
 				
 				// i-th operand's move node
 				IRTemp expr = new IRTemp(operands[i]);
-				IRMove move = new IRMove(target, expr);
+				IRMove move = new IRMove((IRExpr) target.copy(), expr);
 				CFGNode operandMoveNode = new IRCFGNode(move);
 				
 				// insert the operand's move node
@@ -392,7 +393,7 @@ public class SSAFormConverter {
 						node2def.put(newNode, var);
 						
 						// update phisites map
-						sites.add(newNode);
+						sites.add(y);
 						phisites.put(var, sites);
 						
 						if (node2def.get(y) != null && !node2def.get(y).equals(var)) {

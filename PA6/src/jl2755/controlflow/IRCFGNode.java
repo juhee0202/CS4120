@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 
 import java.util.List;
+import java.util.Set;
 
 import edu.cornell.cs.cs4120.xic.ir.IRBinOp;
 import edu.cornell.cs.cs4120.xic.ir.IRCJump;
@@ -199,26 +200,31 @@ public class IRCFGNode extends CFGNode {
 		this.realPredecessors = realPredecessors;
 	}
 
-	@Override
-	public String toString() {
-		return underlyingIRStmt.toString();
-	}
+//	@Override
+//	public String toString() {
+//		return underlyingIRStmt.toString();
+//	}
 
 	@Override
-	public String dotOutput() {
-		String s = "\t" + "\"" + underlyingIRStmt + "\"";
+	public String dotOutput(Set<CFGNode> visited) {
+		if (visited.contains(this)) {
+			return "";
+		}
+		visited.add(this);
+		System.out.println(underlyingIRStmt);
+		String s = "\t" + "\"" + underlyingIRStmt + "\n" + this + "\"";
 		s += " -> {";
 		if (successor1 != null) {
-			s += "\"" + ((IRCFGNode) successor1).underlyingIRStmt + "\"";
+			s += "\"" + ((IRCFGNode) successor1).underlyingIRStmt + "\n" + successor1 + "\"";
 			if (successor2 != null) {
-				s += ", \"" + ((IRCFGNode) successor2).underlyingIRStmt + "\"";
+				s += ", \"" + ((IRCFGNode) successor2).underlyingIRStmt + "\n" + successor2 + "\"";
 			}
 		}
 		s += "}\n";
 		if (successor1 != null) {
-			s += successor1.dotOutput();
+			s += successor1.dotOutput(visited);
 			if (successor2 != null) {
-				s += successor2.dotOutput();
+				s += successor2.dotOutput(visited);
 			}
 		}
 		return s;

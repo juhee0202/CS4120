@@ -16,6 +16,15 @@ import jl2755.controlflow.IRCFGNode;
 import jl2755.controlflow.OptimizationGraph;
 import jl2755.controlflow.SSAFormGraph;
 
+/**
+ * 
+ * Removes assignment statements of the following forms:
+ * 	x = y
+ *  x = phi(x)
+ * 
+ * and replaces the usage of x with y or phi(x) 
+ *
+ */
 public class CopyPropagator extends Optimization {
 
 	@Override

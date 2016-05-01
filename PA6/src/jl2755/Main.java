@@ -29,6 +29,8 @@ import edu.cornell.cs.cs4120.util.CodeWriterSExpPrinter;
 import edu.cornell.cs.cs4120.util.SExpPrinter;
 import edu.cornell.cs.cs4120.xic.ir.IRCompUnit;
 import edu.cornell.cs.cs4120.xic.ir.IRFuncDecl;
+import edu.cornell.cs.cs4120.xic.ir.IRSeq;
+import edu.cornell.cs.cs4120.xic.ir.IRStmt;
 import edu.cornell.cs.cs4120.xic.ir.interpret.IRSimulator;
 import java_cup.runtime.Symbol;
 import jl2755.ast.Identifier;
@@ -36,6 +38,8 @@ import jl2755.ast.Interface;
 import jl2755.ast.InterfaceFunc;
 import jl2755.ast.Program;
 import jl2755.controlflow.ControlFlowGraph;
+import jl2755.controlflow.SSAFormConverter;
+import jl2755.controlflow.SSAFormGraph;
 import jl2755.exceptions.LexicalError;
 import jl2755.exceptions.SemanticError;
 import jl2755.exceptions.SyntaxError;
@@ -543,7 +547,7 @@ public class Main {
 			}
 			
 			/* Optimize */
-			result = optimize(result);
+//			result = optimize(result);
 			
 			// Update global map
 			fileToIR.put(filename, result);
@@ -778,8 +782,11 @@ public class Main {
 			
 			if (CFGPhases.contains("initial")) {
 				for (IRFuncDecl fd : result.functions().values()) {
+					for (IRStmt s : ((IRSeq) fd.body()).stmts()) {
+						System.out.println(s);
+					}
 					ControlFlowGraph initialCFG = new ControlFlowGraph(fd);
-					File file = new File(rmExtension + "_" + fd.getABIName() + "_" + "initial.dot");
+					File file = new File(rmExtension + "_" + fd.getName() + "_" + "initial.dot");
 					if (!file.exists()) {
 						file.createNewFile();
 					}
@@ -845,15 +852,16 @@ public class Main {
 		boolean changed = true;
 		boolean optimize = false;
 		List<Optimization> opts = new ArrayList<Optimization>();
+		List<Optimization> ssaOpts = new ArrayList<Optimization>();
 		if (enabled[UCE]) {
 			UnreachableCodeEliminator uce = new UnreachableCodeEliminator();
-//			opts.add(uce);
-			optimize = true;
+//			ssaOpts.add(uce);
+//			optimize = true;
 		}
 		if (enabled[COPY]) {
 			CopyPropagator copy = new CopyPropagator();
-//			opts.add(copy);
-			optimize = true;
+//			ssaOpts.add(copy);
+//			optimize = true;
 		}
 		if (enabled[DCE]) {
 //			DeadCodeEliminator dce = new DeadCodeEliminator();
@@ -866,18 +874,33 @@ public class Main {
 			// call constructor
 			// add to opts
 			CommonSubExpElimination cse = new CommonSubExpElimination();
-			opts.add(cse);
-			optimize = true;
+//			opts.add(cse);
+//			optimize = true;
 		}
 		
 		if (optimize) {
 			Map<String, IRFuncDecl> nameToFD = node.functions();
 			for (IRFuncDecl fd : nameToFD.values()) {
 				ControlFlowGraph cfg = new ControlFlowGraph(fd);
+				
+				/* Optimization using SSA Form Graph*/
+				SSAFormConverter converter = new SSAFormConverter(cfg);
+				SSAFormGraph ssaGraph = converter.convertToSSAForm();
+				while (changed) {
+					changed = false;
+					for (Optimization o : ssaOpts) {
+						changed |= o.run(ssaGraph);
+					}
+				}
+				
+				changed = true;
+				
+				/* Optimization using Control Flow Graph */
+				ControlFlowGraph newCfg = converter.convertBack();
 				while (changed) {
 					changed = false;
 					for (Optimization o : opts) {
-						changed |= o.run(cfg);
+						changed |= o.run(newCfg);
 					}
 				}
 				IRFuncDecl newFD = cfg.flattenIntoIR();

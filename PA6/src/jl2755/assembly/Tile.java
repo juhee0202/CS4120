@@ -94,13 +94,13 @@ public class Tile {
 	
 	/**
 	 * Static method that merges two Tiles. The leftTile should be the
-	 * "parent" Tile of the rightTile. That is, the root of the subtree
-	 * of this new Tile should be the root of leftTile. Therefore,
-	 * the instructions in the right are performed first, and
+	 * "child" Tile to be executed first. That is, the root of the subtree
+	 * of this new Tile should be the root of rightTile. Therefore,
+	 * the instructions in the right are performed later, and
 	 * the dest in the parent becomes the dest of the final Tile.
 	 * 
-	 * @param leftTile is the parent Tile
-	 * @param rightTile is the child Tile
+	 * @param leftTile is the child Tile
+	 * @param rightTile is the parent Tile
 	 * @return a merged Tile
 	 */
 	public static Tile mergeTiles(Tile leftTile, Tile rightTile) {

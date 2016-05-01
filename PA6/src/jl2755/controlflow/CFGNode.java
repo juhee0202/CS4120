@@ -124,5 +124,5 @@ public abstract class CFGNode {
 		this.predecessors = predecessors;
 	}
 
-	public abstract String dotOutput();
+	public abstract String dotOutput(Set<CFGNode> visited);
 }

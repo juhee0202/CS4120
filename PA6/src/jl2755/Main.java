@@ -29,6 +29,8 @@ import edu.cornell.cs.cs4120.util.CodeWriterSExpPrinter;
 import edu.cornell.cs.cs4120.util.SExpPrinter;
 import edu.cornell.cs.cs4120.xic.ir.IRCompUnit;
 import edu.cornell.cs.cs4120.xic.ir.IRFuncDecl;
+import edu.cornell.cs.cs4120.xic.ir.IRSeq;
+import edu.cornell.cs.cs4120.xic.ir.IRStmt;
 import edu.cornell.cs.cs4120.xic.ir.interpret.IRSimulator;
 import java_cup.runtime.Symbol;
 import jl2755.ast.Identifier;
@@ -780,8 +782,11 @@ public class Main {
 			
 			if (CFGPhases.contains("initial")) {
 				for (IRFuncDecl fd : result.functions().values()) {
+					for (IRStmt s : ((IRSeq) fd.body()).stmts()) {
+						System.out.println(s);
+					}
 					ControlFlowGraph initialCFG = new ControlFlowGraph(fd);
-					File file = new File(rmExtension + "_" + fd.getABIName() + "_" + "initial.dot");
+					File file = new File(rmExtension + "_" + fd.getName() + "_" + "initial.dot");
 					if (!file.exists()) {
 						file.createNewFile();
 					}

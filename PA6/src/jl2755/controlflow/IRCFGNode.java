@@ -206,12 +206,12 @@ public class IRCFGNode extends CFGNode {
 
 	@Override
 	public String dotOutput() {
-		String s = "\t" + "\"" + underlyingIRStmt + "\"";
+		String s = "\t" + "\"" + underlyingIRStmt + "\n" + this + "\"";
 		s += " -> {";
 		if (successor1 != null) {
-			s += "\"" + ((IRCFGNode) successor1).underlyingIRStmt + "\"";
+			s += "\"" + ((IRCFGNode) successor1).underlyingIRStmt + "\n" + successor1 + "\"";
 			if (successor2 != null) {
-				s += ", \"" + ((IRCFGNode) successor2).underlyingIRStmt + "\"";
+				s += ", \"" + ((IRCFGNode) successor2).underlyingIRStmt + "\n" + successor2 + "\"";
 			}
 		}
 		s += "}\n";

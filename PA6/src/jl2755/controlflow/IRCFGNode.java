@@ -68,7 +68,7 @@ public class IRCFGNode extends CFGNode {
 		}
 	}
 	
-	public void putArgBeforeThisNode(IRStmt argStmt) {
+	public IRCFGNode putArgBeforeThisNode(IRStmt argStmt) {
 		IRCFGNode blankNode = new IRCFGNode(argStmt);
 		blankNode.name = name;
 		blankNode.ABIName = ABIName;
@@ -91,6 +91,7 @@ public class IRCFGNode extends CFGNode {
 		idom = blankNode;
 		blankNode.children = new HashSet<CFGNode>();
 		blankNode.children.add(this);
+		return blankNode;
 	}
 
 	/**
@@ -108,6 +109,15 @@ public class IRCFGNode extends CFGNode {
 			replaceUsage(((IRJump)underlyingIRStmt).target(), var, newVar);
 		} else if (underlyingIRStmt instanceof IRMove) {
 			replaceUsage(((IRMove)underlyingIRStmt).expr(), var, newVar);
+		} else if (underlyingIRStmt instanceof IRPhiFunction) {
+			String[] operands = ((IRPhiFunction)underlyingIRStmt).getOperands();
+			for (int i = 0; i < operands.length; i ++) {
+				if (operands[i].equals(var)) {
+					operands[i] = newVar;
+					break;
+				}
+			}
+			((IRPhiFunction)underlyingIRStmt).setOperands(operands);
 		}
 	}
 

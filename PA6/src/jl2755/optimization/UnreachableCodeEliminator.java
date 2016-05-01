@@ -20,11 +20,12 @@ public class UnreachableCodeEliminator extends Optimization {
 		} else {
 			SSAFormGraph ssaGraph = (SSAFormGraph)cfg;
 			CFGNode head = ssaGraph.getHead();
-			Set<CFGNode> allNodes = ssaGraph.getAllNodes();
+			Set<CFGNode> allNodes = new HashSet<CFGNode>(); 
+			allNodes.addAll(ssaGraph.getAllNodes());
 			for (CFGNode node : allNodes) {
 				if (!node.hasPredecessor() && node != head) {
 					modified = true;
-					ssaGraph.removeUnreachableNode(node);
+					ssaGraph.removeUnreachableNodes(node);
 				}
 			}
 		}

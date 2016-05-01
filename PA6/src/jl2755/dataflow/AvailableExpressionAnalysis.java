@@ -107,7 +107,6 @@ public class AvailableExpressionAnalysis extends Dataflow<IRExpr> {
 				for (IRExprOverrider ireo : tempSet) {
 					intersectionMap.put(ireo, ireo);
 				}
-				
 			}
 			else {
 				// Have to iterate through outMap.get(currentPred) so that we can, when

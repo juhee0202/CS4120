@@ -10,4 +10,8 @@ main(args: int[][]) {
 		y = x + 5;
 	}
 	z:int = y + 3;
+
+	println(unparseInt(x)); 	// x = 5
+	println(unparseInt(y));		// y = 10
+	println(unparseInt(z));		// z = 13
 }

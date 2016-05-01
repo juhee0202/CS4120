@@ -68,7 +68,7 @@ public class IRCFGNode extends CFGNode {
 		}
 	}
 	
-	public void putArgBeforeThisNode(IRStmt argStmt) {
+	public IRCFGNode putArgBeforeThisNode(IRStmt argStmt) {
 		IRCFGNode blankNode = new IRCFGNode(argStmt);
 		blankNode.name = name;
 		blankNode.ABIName = ABIName;
@@ -91,6 +91,7 @@ public class IRCFGNode extends CFGNode {
 		idom = blankNode;
 		blankNode.children = new HashSet<CFGNode>();
 		blankNode.children.add(this);
+		return blankNode;
 	}
 
 	/**

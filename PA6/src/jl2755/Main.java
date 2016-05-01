@@ -847,14 +847,15 @@ public class Main {
 		boolean changed = true;
 		boolean optimize = false;
 		List<Optimization> opts = new ArrayList<Optimization>();
+		List<Optimization> ssaOpts = new ArrayList<Optimization>();
 		if (enabled[UCE]) {
 			UnreachableCodeEliminator uce = new UnreachableCodeEliminator();
-//			opts.add(uce);
+			ssaOpts.add(uce);
 			optimize = true;
 		}
 		if (enabled[COPY]) {
 			CopyPropagator copy = new CopyPropagator();
-			opts.add(copy);
+			ssaOpts.add(copy);
 			optimize = true;
 		}
 		if (enabled[DCE]) {
@@ -876,12 +877,25 @@ public class Main {
 			Map<String, IRFuncDecl> nameToFD = node.functions();
 			for (IRFuncDecl fd : nameToFD.values()) {
 				ControlFlowGraph cfg = new ControlFlowGraph(fd);
+				
+				/* Optimization using SSA Form Graph*/
 				SSAFormConverter converter = new SSAFormConverter(cfg);
 				SSAFormGraph ssaGraph = converter.convertToSSAForm();
 				while (changed) {
 					changed = false;
-					for (Optimization o : opts) {
+					for (Optimization o : ssaOpts) {
 						changed |= o.run(ssaGraph);
+					}
+				}
+				
+				changed = true;
+				
+				/* Optimization using Control Flow Graph */
+				ControlFlowGraph newCfg = converter.convertBack();
+				while (changed) {
+					changed = false;
+					for (Optimization o : opts) {
+						changed |= o.run(newCfg);
 					}
 				}
 				IRFuncDecl newFD = cfg.flattenIntoIR();

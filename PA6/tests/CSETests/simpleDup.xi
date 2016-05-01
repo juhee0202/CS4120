@@ -1,12 +1,11 @@
 main(args:int[][]) {
     x: int = 5;
-    y: int = x + 1;
-    h:int = 10;
-    if (f(x+1) == 9) {
-        a: int = 3;
+    i: int = 0;
+    a: int;
+    c: int;
+    while (i < 10000) {
+    a = x*x*x*x*x*x;
+    c = x*x*x*x*x*x;
     }
-}
-
-f(x: int): int {
-    return x;
+    b: int = a + c;
 }

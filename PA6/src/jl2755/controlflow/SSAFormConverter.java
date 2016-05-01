@@ -273,8 +273,7 @@ public class SSAFormConverter {
 				CFGNode insertBeforePoint;
 				if (nodeStmt instanceof IRJump || nodeStmt instanceof IRCJump) {
 					// insert before the jump
-					assert(node.predecessors.size() == 1);
-					insertBeforePoint = node.predecessors.get(0);
+					insertBeforePoint = node;
 				} else {
 					// otherwise, insert before the label
 					insertBeforePoint = succ;

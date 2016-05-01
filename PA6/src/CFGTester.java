@@ -102,6 +102,12 @@ public class CFGTester {
 			}
 			ControlFlowGraph newCfg = converter.convertBack();
 			newCfg.print();	
+			
+			System.out.println("********************");
+			System.out.println("*** Flattened IR ***");
+			System.out.println("********************");
+			IRFuncDecl newFd = newCfg.flattenIntoIR();
+			System.out.println(newFd);
 		}
 	}
 }

@@ -138,4 +138,5 @@ public class IRCJump extends IRStmt {
 	public IRNode copy() {
 		return new IRCJump((IRExpr) expr.copy(), trueLabel, falseLabel);
 	}
+
 }

@@ -850,13 +850,13 @@ public class Main {
 		List<Optimization> ssaOpts = new ArrayList<Optimization>();
 		if (enabled[UCE]) {
 			UnreachableCodeEliminator uce = new UnreachableCodeEliminator();
-			ssaOpts.add(uce);
-			optimize = true;
+//			ssaOpts.add(uce);
+//			optimize = true;
 		}
 		if (enabled[COPY]) {
 			CopyPropagator copy = new CopyPropagator();
-			ssaOpts.add(copy);
-			optimize = true;
+//			ssaOpts.add(copy);
+//			optimize = true;
 		}
 		if (enabled[DCE]) {
 //			DeadCodeEliminator dce = new DeadCodeEliminator();
@@ -870,7 +870,7 @@ public class Main {
 			// add to opts
 			CommonSubExpElimination cse = new CommonSubExpElimination();
 //			opts.add(cse);
-			optimize = true;
+//			optimize = true;
 		}
 		
 		if (optimize) {

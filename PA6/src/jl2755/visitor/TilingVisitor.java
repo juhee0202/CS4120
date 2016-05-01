@@ -2246,7 +2246,6 @@ public class TilingVisitor implements IRTreeVisitor {
 					added.add(movToMemD);
 				}
 			} else if (dest instanceof Register && src instanceof Memory){	
-				System.out.println(currentInstruction);
 				// dest is register, src is memory
 				String reg = ((Register) dest).getName();
 				Memory mem1;
@@ -2256,7 +2255,7 @@ public class TilingVisitor implements IRTreeVisitor {
 						int addr1 = regToStack.get(reg);
 						mem1 = new Memory(new Constant(addr1),rbp);
 						if (currentInstruction.getOp() != Operation.MOVQ) {
-							Instruction movToReg1 = new Instruction(Operation.MOVQ,mem1,rcx);
+							Instruction movToReg1 = new Instruction(Operation.MOVQ,mem1,r11);
 							added.add(movToReg1);
 						}
 					} else {

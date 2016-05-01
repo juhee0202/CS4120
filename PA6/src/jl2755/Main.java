@@ -547,7 +547,7 @@ public class Main {
 			}
 			
 			/* Optimize */
-//			result = optimize(result);
+			result = optimize(result);
 			
 			// Update global map
 			fileToIR.put(filename, result);
@@ -874,8 +874,8 @@ public class Main {
 			// call constructor
 			// add to opts
 			CommonSubExpElimination cse = new CommonSubExpElimination();
-//			opts.add(cse);
-//			optimize = true;
+			opts.add(cse);
+			optimize = true;
 		}
 		
 		if (optimize) {
@@ -884,23 +884,23 @@ public class Main {
 				ControlFlowGraph cfg = new ControlFlowGraph(fd);
 				
 				/* Optimization using SSA Form Graph*/
-				SSAFormConverter converter = new SSAFormConverter(cfg);
-				SSAFormGraph ssaGraph = converter.convertToSSAForm();
-				while (changed) {
-					changed = false;
-					for (Optimization o : ssaOpts) {
-						changed |= o.run(ssaGraph);
-					}
-				}
-				
-				changed = true;
+//				SSAFormConverter converter = new SSAFormConverter(cfg);
+//				SSAFormGraph ssaGraph = converter.convertToSSAForm();
+//				while (changed) {
+//					changed = false;
+//					for (Optimization o : ssaOpts) {
+//						changed |= o.run(ssaGraph);
+//					}
+//				}
+//				
+//				changed = true;
 				
 				/* Optimization using Control Flow Graph */
-				ControlFlowGraph newCfg = converter.convertBack();
+//				ControlFlowGraph newCfg = converter.convertBack();
 				while (changed) {
 					changed = false;
 					for (Optimization o : opts) {
-						changed |= o.run(newCfg);
+						changed |= o.run(cfg);
 					}
 				}
 				IRFuncDecl newFD = cfg.flattenIntoIR();

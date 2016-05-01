@@ -56,7 +56,9 @@ public class IRExprOverrider {
 	
 	public IRExprOverrider(IRExpr argExpr, IRCFGNode argNode) {
 		encapsulatedIRExpr = argExpr;
-		nodesOfOrigin.add(argNode);
+		if (argNode != null) {
+			nodesOfOrigin.add(argNode);
+		}
 	}
 	
 	public IRExprOverrider(IRExprOverrider arg1, IRExprOverrider arg2) {

@@ -132,8 +132,8 @@ public class AvailableExpressionAnalysis extends Dataflow<IRExpr> {
 					if (intersectionMap.containsKey(ireo)) {
 						IRExprOverrider intersectedElement = intersectionMap
 								.get(ireo);
-						IRExprOverrider mergedElement = new IRExprOverrider(
-								intersectedElement, ireo);
+							IRExprOverrider mergedElement = new IRExprOverrider(
+									intersectedElement, ireo);
 						intersectionMap.remove(intersectedElement);
 						intersectionMap.put(mergedElement, mergedElement);
 					} else {
@@ -153,7 +153,18 @@ public class AvailableExpressionAnalysis extends Dataflow<IRExpr> {
 
 		Set<IRExprOverrider> currentInSet = new HashSet<IRExprOverrider>(
 				inMap.get(cseView));
-		currentInSet.addAll(exprSubTreesMap.get(cseView).getList());
+		List<IRExprOverrider> definedExprs = exprSubTreesMap.get(cseView).getList();
+		for (IRExprOverrider ireo : definedExprs) {
+			if (currentInSet.contains(ireo)) {
+				IRExprOverrider nullParents = new IRExprOverrider(ireo.encapsulatedIRExpr,null);
+				currentInSet.remove(ireo);
+				currentInSet.add(nullParents);
+			}
+			else {
+				currentInSet.add(ireo);
+			}
+		}
+//		currentInSet.addAll(exprSubTreesMap.get(cseView).getList());
 
 		if (allKillsMap.get(cseView)) {
 			currentInSet.clear();
@@ -180,75 +191,6 @@ public class AvailableExpressionAnalysis extends Dataflow<IRExpr> {
 //		}
 //		System.out.println("This is the out set: " + outMap.get(cseView));
 //		System.out.println("This is the in set: " + inMap.get(cseView));
-
-		// // If both ARE equal, (i.e. transferFunction would return false,
-		// // and the parent function would think that there was NOT a change
-		// // with this node) we should check if maybe the parents haven't
-		// // changed, because that still would affect whether there was a
-		// // change using the worklist algorithm.
-		// if (((outMap.get(cseView).equals(originalOutSet)) &&
-		// (inMap.get(cseView).equals(originalInSet)))) {
-		// boolean hasChanged = false;
-		// Set<IRExprOverrider> outSet = outMap.get(cseView);
-		// Map<IRExprOverrider,IRExprOverrider> outSelfMap = new
-		// HashMap<IRExprOverrider,IRExprOverrider>();
-		// for (IRExprOverrider ireo : outSet) {
-		// outSelfMap.put(ireo, ireo);
-		// }
-		//
-		// Set<IRExprOverrider> inSet = inMap.get(cseView);
-		// Map<IRExprOverrider,IRExprOverrider> inSelfMap = new
-		// HashMap<IRExprOverrider,IRExprOverrider>();
-		// for (IRExprOverrider ireo : inSet) {
-		// inSelfMap.put(ireo, ireo);
-		// }
-		//
-		// // At this point we should have a self map of the new out and in
-		// sets.
-		// // Iterate through the old set. Grab the equivalent new elements from
-		// // the self maps, and check if the predecessors are the same.
-		//
-		// for (IRExprOverrider ireo : originalOutSet) {
-		// IRExprOverrider equivalentNew = outSelfMap.get(ireo);
-		// // Check if ireo and equivalentNew have the same set of predecessors.
-		// Set<IRCFGNode> setOfOldParents = new
-		// HashSet<IRCFGNode>(ireo.nodesOfOrigin);
-		// Set<IRCFGNode> setOfNewParents = new
-		// HashSet<IRCFGNode>(equivalentNew.nodesOfOrigin);
-		// // We want to return true if there WAS a change. If the in and out
-		// // sets are equal, and the parents are all the same, then there was
-		// NO change.
-		// // Basically, if there was at least one set of new/old parents who
-		// weren't equal,
-		// // then we should not return false--return TRUE.
-		// hasChanged |= !setOfOldParents.equals(setOfNewParents);
-		// if (!setOfOldParents.equals(setOfNewParents)) {
-		// System.out.println("\nThis is the node: " + cseView);
-		// System.out.println("This is old out parents: " + setOfOldParents);
-		// System.out.println("This is new out parents: " + setOfNewParents);
-		// }
-		// }
-		//
-		// // Same theory for the in sets
-		//
-		// for (IRExprOverrider ireo : originalInSet) {
-		// IRExprOverrider equivalentNew = inSelfMap.get(ireo);
-		// // Check if ireo and equivalentNew have the same set of predecessors.
-		// Set<IRCFGNode> setOfOldParents = new
-		// HashSet<IRCFGNode>(ireo.nodesOfOrigin);
-		// Set<IRCFGNode> setOfNewParents = new
-		// HashSet<IRCFGNode>(equivalentNew.nodesOfOrigin);
-		// hasChanged |= !setOfOldParents.equals(setOfNewParents);
-		// if (!setOfOldParents.equals(setOfNewParents)) {
-		// System.out.println("\nThis is the node: " + cseView);
-		// System.out.println("This is old in parents: " + setOfOldParents);
-		// System.out.println("This is new in parents: " + setOfNewParents);
-		// }
-		// }
-		// System.out.println("??");
-		//
-		// return hasChanged;
-		// }
 
 		return ((!outMap.get(cseView).equals(originalOutSet))
 				|| (!inMap.get(cseView).equals(originalInSet)));

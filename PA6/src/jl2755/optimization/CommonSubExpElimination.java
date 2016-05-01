@@ -180,8 +180,8 @@ public class CommonSubExpElimination extends Optimization{
 		// causes errors by making 1 pointless move for each node that uses an
 		// available expression. I think this happens if multiple rounds are done
 		// on the same CFG.
-		return hasChanged;
-//		return false;
+//		return hasChanged;
+		return false;
 	}
 	
 }

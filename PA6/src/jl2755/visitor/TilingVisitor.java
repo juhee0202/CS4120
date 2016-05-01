@@ -882,7 +882,7 @@ public class TilingVisitor implements IRTreeVisitor {
 			cost += tempInst.getCost();
 			
 			tempTile = new Tile(instructions,cost);
-			tempTile = Tile.mergeTiles(tempTile, condTile);
+			tempTile = Tile.mergeTiles(condTile, tempTile);
 		} else if (condition instanceof IRTemp) {		
 			// Visit condition child
 			condition.accept(this);
@@ -901,7 +901,7 @@ public class TilingVisitor implements IRTreeVisitor {
 			cost += tempInst.getCost();
 			
 			tempTile = new Tile(instructions,cost);
-			tempTile = Tile.mergeTiles(tempTile, condTile);
+			tempTile = Tile.mergeTiles(condTile, tempTile);
 		} else if (condition instanceof IRMem) {
 			// Visit condition child
 			condition.accept(this);
@@ -921,7 +921,7 @@ public class TilingVisitor implements IRTreeVisitor {
 			cost += tempInst.getCost();
 			
 			tempTile = new Tile(instructions,cost);
-			tempTile = Tile.mergeTiles(tempTile, condTile);
+			tempTile = Tile.mergeTiles(condTile, tempTile);
 		} else {
 			IRBinOp expr = (IRBinOp) condition;
 			IRExpr left = expr.left();
@@ -951,7 +951,7 @@ public class TilingVisitor implements IRTreeVisitor {
 				cost += tempInst.getCost();
 				
 				tempTile = new Tile(instructions, cost);
-				tempTile = Tile.mergeTiles(tempTile, condTile);
+				tempTile = Tile.mergeTiles(condTile, tempTile);
 				break;
 			case EQ:
 				// Visit left and right
@@ -990,8 +990,8 @@ public class TilingVisitor implements IRTreeVisitor {
 				cost += tempInst.getCost();
 				
 				tempTile = new Tile(instructions,cost);
-				tempTile = Tile.mergeTiles(tempTile, leftTile);
-				tempTile = Tile.mergeTiles(tempTile, rightTile);
+				tempTile = Tile.mergeTiles(leftTile, tempTile);
+				tempTile = Tile.mergeTiles(rightTile, tempTile);
 				break;
 			case NEQ:
 				// Visit left and right
@@ -1030,8 +1030,8 @@ public class TilingVisitor implements IRTreeVisitor {
 				cost += tempInst.getCost();
 				
 				tempTile = new Tile(instructions,cost);
-				tempTile = Tile.mergeTiles(tempTile, leftTile);
-				tempTile = Tile.mergeTiles(tempTile, rightTile);
+				tempTile = Tile.mergeTiles(leftTile, tempTile);
+				tempTile = Tile.mergeTiles(rightTile, tempTile);
 				break;
 			case LT:
 				// Visit left and right
@@ -1049,7 +1049,7 @@ public class TilingVisitor implements IRTreeVisitor {
 					Instruction moveMemory = new Instruction(Operation.MOVQ,tempDest, tempDestRegister);
 					instructions.add(moveMemory);
 					cost = moveMemory.getCost();
-					tempInst = new Instruction(Operation.CMPQ,tempSrc,tempDestRegister);
+					tempInst = new Instruction(Operation.CMPQ,tempDestRegister,tempSrc);
 				} else if (tempDest instanceof Constant && !(tempSrc instanceof Constant)) {
 					tempInst = new Instruction(Operation.CMPQ,tempDest,tempSrc);
 				} else if (tempDest instanceof Constant && tempSrc instanceof Constant) {
@@ -1057,9 +1057,9 @@ public class TilingVisitor implements IRTreeVisitor {
 					tempInst = new Instruction(Operation.MOVQ,tempDest,cons);
 					instructions.add(tempInst);
 					cost = tempInst.getCost();
-					tempInst = new Instruction(Operation.CMPQ,tempSrc,cons);
+					tempInst = new Instruction(Operation.CMPQ,cons,tempSrc);
 				} else {
-					tempInst = new Instruction(Operation.CMPQ,tempSrc,tempDest);
+					tempInst = new Instruction(Operation.CMPQ,tempDest,tempSrc);
 				}
 				instructions.add(tempInst);
 				cost += tempInst.getCost();
@@ -1070,8 +1070,8 @@ public class TilingVisitor implements IRTreeVisitor {
 				cost += tempInst.getCost();
 				
 				tempTile = new Tile(instructions,cost);
-				tempTile = Tile.mergeTiles(tempTile, leftTile);
-				tempTile = Tile.mergeTiles(tempTile, rightTile);
+				tempTile = Tile.mergeTiles(leftTile, tempTile);
+				tempTile = Tile.mergeTiles(rightTile, tempTile);
 				break;
 			case LEQ:
 				// Visit left and right
@@ -1089,7 +1089,7 @@ public class TilingVisitor implements IRTreeVisitor {
 					Instruction moveMemory = new Instruction(Operation.MOVQ,tempDest, tempDestRegister);
 					instructions.add(moveMemory);
 					cost = moveMemory.getCost();
-					tempInst = new Instruction(Operation.CMPQ,tempSrc,tempDestRegister);
+					tempInst = new Instruction(Operation.CMPQ,tempDestRegister,tempSrc);
 				} else if (tempDest instanceof Constant && !(tempSrc instanceof Constant)) {
 					tempInst = new Instruction(Operation.CMPQ,tempDest,tempSrc);
 				} else if (tempDest instanceof Constant && tempSrc instanceof Constant) {
@@ -1097,9 +1097,9 @@ public class TilingVisitor implements IRTreeVisitor {
 					tempInst = new Instruction(Operation.MOVQ,tempDest,cons);
 					instructions.add(tempInst);
 					cost = tempInst.getCost();
-					tempInst = new Instruction(Operation.CMPQ,tempSrc,cons);
+					tempInst = new Instruction(Operation.CMPQ,cons,tempSrc);
 				} else {
-					tempInst = new Instruction(Operation.CMPQ,tempSrc,tempDest);
+					tempInst = new Instruction(Operation.CMPQ,tempDest,tempSrc);
 				}
 				instructions.add(tempInst);
 				cost += tempInst.getCost();
@@ -1110,8 +1110,8 @@ public class TilingVisitor implements IRTreeVisitor {
 				cost += tempInst.getCost();
 				
 				tempTile = new Tile(instructions,cost);
-				tempTile = Tile.mergeTiles(tempTile, leftTile);
-				tempTile = Tile.mergeTiles(tempTile, rightTile);
+				tempTile = Tile.mergeTiles(leftTile, tempTile);
+				tempTile = Tile.mergeTiles(rightTile, tempTile);
 				break;
 			case GT:
 				// Visit left and right
@@ -1129,7 +1129,7 @@ public class TilingVisitor implements IRTreeVisitor {
 					Instruction moveMemory = new Instruction(Operation.MOVQ,tempDest, tempDestRegister);
 					instructions.add(moveMemory);
 					cost = moveMemory.getCost();
-					tempInst = new Instruction(Operation.CMPQ,tempSrc,tempDestRegister);
+					tempInst = new Instruction(Operation.CMPQ,tempDestRegister,tempSrc);
 				} else if (tempDest instanceof Constant && !(tempSrc instanceof Constant)) {
 					tempInst = new Instruction(Operation.CMPQ,tempDest,tempSrc);
 				} else if (tempDest instanceof Constant && tempSrc instanceof Constant) {
@@ -1137,9 +1137,9 @@ public class TilingVisitor implements IRTreeVisitor {
 					tempInst = new Instruction(Operation.MOVQ,tempDest,cons);
 					instructions.add(tempInst);
 					cost = tempInst.getCost();
-					tempInst = new Instruction(Operation.CMPQ,tempSrc,cons);
+					tempInst = new Instruction(Operation.CMPQ,cons,tempSrc);
 				} else {
-					tempInst = new Instruction(Operation.CMPQ,tempSrc,tempDest);
+					tempInst = new Instruction(Operation.CMPQ,tempDest,tempSrc);
 				}
 				instructions.add(tempInst);
 				cost += tempInst.getCost();
@@ -1150,8 +1150,8 @@ public class TilingVisitor implements IRTreeVisitor {
 				cost += tempInst.getCost();
 				
 				tempTile = new Tile(instructions,cost);
-				tempTile = Tile.mergeTiles(tempTile, leftTile);
-				tempTile = Tile.mergeTiles(tempTile, rightTile);
+				tempTile = Tile.mergeTiles(leftTile, tempTile);
+				tempTile = Tile.mergeTiles(rightTile, tempTile);
 				break;
 			case GEQ:
 				// Visit left and right
@@ -1169,7 +1169,7 @@ public class TilingVisitor implements IRTreeVisitor {
 					Instruction moveMemory = new Instruction(Operation.MOVQ,tempDest, tempDestRegister);
 					instructions.add(moveMemory);
 					cost = moveMemory.getCost();
-					tempInst = new Instruction(Operation.CMPQ,tempSrc,tempDestRegister);
+					tempInst = new Instruction(Operation.CMPQ,tempDestRegister,tempSrc);
 				} else if (tempDest instanceof Constant && !(tempSrc instanceof Constant)) {
 					tempInst = new Instruction(Operation.CMPQ,tempDest,tempSrc);
 				} else if (tempDest instanceof Constant && tempSrc instanceof Constant) {
@@ -1177,9 +1177,9 @@ public class TilingVisitor implements IRTreeVisitor {
 					tempInst = new Instruction(Operation.MOVQ,tempDest,cons);
 					instructions.add(tempInst);
 					cost = tempInst.getCost();
-					tempInst = new Instruction(Operation.CMPQ,tempSrc,cons);
+					tempInst = new Instruction(Operation.CMPQ,cons,tempSrc);
 				} else {
-					tempInst = new Instruction(Operation.CMPQ,tempSrc,tempDest);
+					tempInst = new Instruction(Operation.CMPQ,tempDest,tempSrc);
 				}
 				instructions.add(tempInst);
 				cost += tempInst.getCost();
@@ -1190,8 +1190,8 @@ public class TilingVisitor implements IRTreeVisitor {
 				cost += tempInst.getCost();
 				
 				tempTile = new Tile(instructions,cost);
-				tempTile = Tile.mergeTiles(tempTile, leftTile);
-				tempTile = Tile.mergeTiles(tempTile, rightTile);
+				tempTile = Tile.mergeTiles(leftTile, tempTile);
+				tempTile = Tile.mergeTiles(rightTile, tempTile);
 				break;
 			default:
 				System.out.println("Invalid operator for conditional!");
@@ -2246,6 +2246,7 @@ public class TilingVisitor implements IRTreeVisitor {
 					added.add(movToMemD);
 				}
 			} else if (dest instanceof Register && src instanceof Memory){	
+				System.out.println(currentInstruction);
 				// dest is register, src is memory
 				String reg = ((Register) dest).getName();
 				Memory mem1;

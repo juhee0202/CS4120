@@ -605,9 +605,9 @@ public class TilingVisitor implements IRTreeVisitor {
 				Instruction move = new Instruction(Operation.MOVQ,dest,cons);
 				instrList.add(move);
 				cost += move.getCost();
-				compare = new Instruction(Operation.CMPQ,src,cons);
+				compare = new Instruction(Operation.CMPQ,cons,src);
 			} else {
-				compare = new Instruction(Operation.CMPQ,src,dest);
+				compare = new Instruction(Operation.CMPQ,dest,src);
 			}
 			instrList.add(compare);
 			cost++;
@@ -1210,12 +1210,12 @@ public class TilingVisitor implements IRTreeVisitor {
 		}		
 		
 		// Register/Stack allocation
-		if (Oreg) {
-			regAllocation(cu);
-		} else {
-			stackAllocation(cu);
-		}
-//		stackAllocation(cu);
+//		if (Oreg) {
+//			regAllocation(cu);
+//		} else {
+//			stackAllocation(cu);
+//		}
+		stackAllocation(cu);
 		
 		Tile superTile = null;
 		

@@ -2368,8 +2368,12 @@ public class TilingVisitor implements IRTreeVisitor {
 		int extraSpaceOffset = call.hasExtra8ByteSpace() ? 1 : 0;
 		int retOffset = call.getNumReturns() > 2 ? 1 : 0;
 		int numCallerReg = CALLER_REG_LIST.length;
-		int totalOffset = argOffset + extraSpaceOffset + retOffset;
+//		int totalOffset = argOffset + extraSpaceOffset + retOffset;
 		Register rsp = new Register(RegisterName.RSP);
+		if (call.hasExtra8ByteSpace()) {
+			Instruction extraPop = new Instruction(Operation.ADDQ, new Constant(8), rsp);
+			instructions.add(extraPop);
+		}
 		for (int i = numCallerReg-1; i >= 0; i--) {
 //			Constant offset = new Constant(8*(numCallerReg + totalOffset - 1 - i));
 //			Memory mem = new Memory(offset, rsp);

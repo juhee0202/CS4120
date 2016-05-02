@@ -47,7 +47,7 @@ public class LIRVisitor implements IRTreeVisitor{
 			combinedSeq = combineTwoStmt(combinedSeq, s2);
 			IRTemp holyTemp2 = new IRTemp(holyTemp.name());
 			IRNode holyBinOp = new IRBinOp(bo.opType(), holyTemp2, (IRExpr) e2);
-			combinedSeq = combineTwoStmt(combinedSeq, (IRStmt) holyBinOp);
+//			combinedSeq = combineTwoStmt(combinedSeq, (IRStmt) holyBinOp);
 			tempSeq = new Pair<IRSeq, IRNode>(combinedSeq, holyBinOp);
 		}
 	}

@@ -1295,7 +1295,8 @@ public class TilingVisitor implements IRTreeVisitor {
 		}
 		Register rbp = new Register(RegisterName.RBP);
 		for (int i = numRegParams; i < numArgs; i++) {
-			Memory arg = new Memory(new Constant(8*(2+i-numRegParams)), rbp);
+			int off = numArgs%2 == 0 ? 3+i-numRegParams : 2+i-numRegParams;
+			Memory arg = new Memory(new Constant(8*off), rbp);
 			Register param = new Register(paramList.get(i));
 			Instruction moveArgtoParam = new Instruction(Operation.MOVQ, arg, 
 					 param);

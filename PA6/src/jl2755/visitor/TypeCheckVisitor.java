@@ -260,7 +260,6 @@ public class TypeCheckVisitor implements ASTVisitor {
 				Main.handleSemanticError(seo);
 			}
 			
-		
 		//ex: arr[2] = 3;
 		} else if (index == 1) {
 			
@@ -312,7 +311,7 @@ public class TypeCheckVisitor implements ASTVisitor {
 			}
 		
 		//ex: f(3)[0] = "herro"
-		} else {
+		} else if (index == 2){
 			as.getFunctionCall().accept(this);
 			VType functionCallType = tempType;
 			if (!(functionCallType instanceof VarType)) {
@@ -347,6 +346,80 @@ public class TypeCheckVisitor implements ASTVisitor {
 											s
 											);
 				Main.handleSemanticError(seo);
+			}
+			
+			// check that all the indices inside indexedBrackets are ints
+			List<Expr> exprs = as.getIndexedBrackets().getContent();
+			for (Expr e: exprs) {
+				e.accept(this);
+				VarType eType = (VarType) tempType;
+				if (!eType.isInt()) {
+					String s = "Expected an int, but found " + 
+							eType.toString();
+					SemanticErrorObject seo = new SemanticErrorObject(
+							e.getLineNumber(),
+							e.getColumnNumber(), 
+							s
+							);
+					Main.handleSemanticError(seo);
+				}
+			}
+		}
+		// index = 3 array literal assignment statement
+		else {
+			ArrayLiteral al = as.getArrayLiteral();
+			al.accept(this);
+			VType arrayLiteralType = tempType;
+			
+			if (!(arrayLiteralType instanceof VarType)) {
+				String s;
+				if (arrayLiteralType instanceof TupleType) {
+					s = "Expected variable type, but found tuple type";
+				} else if (arrayLiteralType instanceof UnitType) {
+					 s = "Expected variable type, but found unit type";
+				} else {
+					 s = "Expected variable type, but found incompatible type";
+				}
+				SemanticErrorObject seo = new SemanticErrorObject(
+											as.getFunctionCall().getLineNumber(), 
+											as.getFunctionCall().getColumnNumber(),
+											s
+											);
+				Main.handleSemanticError(seo);
+			}
+			
+			VarType arrayLitType = (VarType) arrayLiteralType;
+			VType elementType = new VarType (arrayLitType, as.getIndexedBrackets(), as.getArrayLiteral());
+			
+			as.getExpr().accept(this);
+			VType exprType = tempType;
+			
+			if (!elementType.equals(exprType)) {
+				String s = "Expected " + elementType.toString() 
+				+ ", but found " + exprType.toString();
+				SemanticErrorObject seo = new SemanticErrorObject(
+											as.getExpr().getLineNumber(), 
+											as.getExpr().getColumnNumber(),
+											s
+											);
+				Main.handleSemanticError(seo);
+			}
+
+			// check that all the indices inside indexedBrackets are ints
+			List<Expr> exprs = as.getIndexedBrackets().getContent();
+			for (Expr e: exprs) {
+				e.accept(this);
+				VarType eType = (VarType) tempType;
+				if (!eType.isInt()) {
+					String s = "Expected an int, but found " + 
+							eType.toString();
+					SemanticErrorObject seo = new SemanticErrorObject(
+							e.getLineNumber(),
+							e.getColumnNumber(), 
+							s
+							);
+					Main.handleSemanticError(seo);
+				}
 			}
 		}
 		tempType = new UnitType();

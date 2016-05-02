@@ -1,30 +1,21 @@
-import static org.junit.Assert.*;
-
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.OutputStream;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import org.junit.Test;
 
-import edu.cornell.cs.cs4120.util.CodeWriterSExpPrinter;
-import edu.cornell.cs.cs4120.util.SExpPrinter;
-import edu.cornell.cs.cs4120.xic.ir.IRNode;
+import edu.cornell.cs.cs4120.xic.ir.IRMem;
+import edu.cornell.cs.cs4120.xic.ir.IRTemp;
 import jl2755.assembly.Constant;
 import jl2755.assembly.Instruction;
 import jl2755.assembly.Instruction.Operation;
 import jl2755.assembly.Label;
 import jl2755.assembly.Register;
-import jl2755.assembly.Tile;
 import jl2755.controlflow.ControlFlowGraph;
-import jl2755.visitor.IRTreeEqualsVisitor;
-import jl2755.visitor.TilingVisitor;
+import jl2755.dataflow.IRExprOverrider;
 
 public class dohMyGod {
 
@@ -229,4 +220,18 @@ public class dohMyGod {
 		}
 	}
 
+	@Test
+	public void testIRExprOverriderHashSet() {
+		IRTemp temp1 = new IRTemp("Testing");
+		IRMem mem1 = new IRMem(temp1);
+		IRTemp temp2 = new IRTemp("Testing");
+		IRMem mem2 = new IRMem(temp2);
+		IRExprOverrider overrider1 = new IRExprOverrider(mem1,null);
+		IRExprOverrider overrider2 = new IRExprOverrider(mem2,null);
+		System.out.println(overrider1.equals(overrider2));
+		System.out.println(overrider1.hashCode());
+		System.out.println(overrider2.hashCode());
+	}
+	
+	
 }

@@ -1,26 +1,4 @@
 (COMPUNIT
  Program
- (FUNC
-  _Imain_paai
-  (SEQ
-   (MOVE (TEMP temp01) (CONST 120))
-   (MOVE (TEMP temp11) (CALL (NAME _I_alloc_i) (TEMP temp01)))
-   (MOVE (MEM (TEMP temp11)) (CONST 14))
-   (MOVE (MEM (ADD (CONST 8) (TEMP temp11))) (CONST 72))
-   (MOVE (MEM (ADD (CONST 16) (TEMP temp11))) (CONST 101))
-   (MOVE (MEM (ADD (CONST 24) (TEMP temp11))) (CONST 108))
-   (MOVE (MEM (ADD (CONST 32) (TEMP temp11))) (CONST 108))
-   (MOVE (MEM (ADD (CONST 40) (TEMP temp11))) (CONST 111))
-   (MOVE (MEM (ADD (CONST 48) (TEMP temp11))) (CONST 44))
-   (MOVE (MEM (ADD (CONST 56) (TEMP temp11))) (CONST 32))
-   (MOVE (MEM (ADD (CONST 64) (TEMP temp11))) (CONST 87))
-   (MOVE (MEM (ADD (CONST 72) (TEMP temp11))) (CONST 111))
-   (MOVE (MEM (ADD (CONST 80) (TEMP temp11))) (CONST 114))
-   (MOVE (MEM (ADD (CONST 88) (TEMP temp11))) (CONST 108))
-   (MOVE (MEM (ADD (CONST 96) (TEMP temp11))) (CONST 100))
-   (MOVE (MEM (ADD (CONST 104) (TEMP temp11))) (CONST 33))
-   (MOVE (MEM (ADD (CONST 112) (TEMP temp11))) (CONST 10))
-   (MOVE (TEMP t02) (ADD (TEMP temp11) (CONST 8)))
-   (EXP (CALL (NAME _Iprint_pai) (TEMP t02)))
-   (MOVE (TEMP c3po1) (CONST 167))
-   (RETURN))))
+ (FUNC _Imain_paai
+  (SEQ (MOVE (TEMP y1) (CONST 6)) (MOVE (TEMP x2) (TEMP y1)) (RETURN))))

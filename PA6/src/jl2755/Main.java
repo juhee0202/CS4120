@@ -546,6 +546,21 @@ public class Main {
 			
 			/* Optimize */
 //			result = optimize(result);
+			Map<String, IRFuncDecl> nameToFD = result.functions();
+			for (IRFuncDecl fd : nameToFD.values()) {				
+				ControlFlowGraph cfg = new ControlFlowGraph(fd);
+				
+				/* Optimization using SSA Form Graph*/
+				SSAFormConverter converter = new SSAFormConverter(cfg);
+				SSAFormGraph ssaGraph = converter.convertToSSAForm();
+				
+				/* Optimization using Control Flow Graph */
+				ControlFlowGraph newCfg = converter.convertBack();
+				IRFuncDecl newFD = newCfg.flattenIntoIR();
+				
+				nameToFD.put(fd.getABIName(), newFD);
+			}
+			
 			
 			// Update global map
 			fileToIR.put(filename, result);
@@ -695,8 +710,12 @@ public class Main {
 				result = lir.program;
 				
 				/* Optimize */
-				result = optimize(result);
-				
+//				IRCompUnit optimizedResult = optimize(result);
+//				result = optimize(result);
+//				System.out.println("COMPARING OPT VS OG");
+//				System.out.println("HELLOOOOIFNSJBFEUOWJKFBWEON");
+//				System.out.println(optimizedResult == result);
+//				System.out.println(result == optimizedResult);
 				// Update global map
 				fileToIR.put(filename, result);
 			}			  
@@ -842,21 +861,20 @@ public class Main {
 	 * @return	the optimized IRNode (should be IRCompUnit)
 	 */
 	// TODO: SSA optimizations here
-	// UCE, COPY
 	public static IRCompUnit optimize(IRCompUnit node) {
 		boolean changed = true;
 		boolean optimize = false;
 		List<Optimization> opts = new ArrayList<Optimization>();
 		List<Optimization> ssaOpts = new ArrayList<Optimization>();
 		if (enabled[UCE]) {
-			UnreachableCodeEliminator uce = new UnreachableCodeEliminator();
+//			UnreachableCodeEliminator uce = new UnreachableCodeEliminator();
 //			ssaOpts.add(uce);
 //			optimize = true;
 		}
 		if (enabled[COPY]) {
-			CopyPropagator copy = new CopyPropagator();
+//			CopyPropagator copy = new CopyPropagator();
 //			ssaOpts.add(copy);
-//			optimize = true;
+			optimize = true;
 		}
 		if (enabled[DCE]) {
 //			DeadCodeEliminator dce = new DeadCodeEliminator();
@@ -868,11 +886,13 @@ public class Main {
 			// TODO: CSE
 			// call constructor
 			// add to opts
-			CommonSubExpElimination cse = new CommonSubExpElimination();
+//			CommonSubExpElimination cse = new CommonSubExpElimination();
 //			opts.add(cse);
 //			optimize = true;
 		}
 		
+		// TODO: this block stmt has some error
+		// IRFuncDecl -> CFG -> SSA -> CFG -> IRFuncDecl
 		if (optimize) {
 			Map<String, IRFuncDecl> nameToFD = node.functions();
 			for (IRFuncDecl fd : nameToFD.values()) {
@@ -903,7 +923,7 @@ public class Main {
 			}
 		}
 		
-		
+//		System.out.println(node);
 		return node;
 	}
 

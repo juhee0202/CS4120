@@ -53,7 +53,10 @@ public class SSAFormConverter {
 	private Map<String, Integer> var2count;
 	private Map<String, Stack<Integer>> var2stack;
 	
+	List<CFGNode> phiNodes;
+	
 	public SSAFormConverter(ControlFlowGraph argCfg) {
+//		cfg = argCfg.copyIRCFGNodeGraph();
 		cfg = argCfg;
 		dominatorTree = new DominatorTree(cfg);
 		dominanceFrontier = new HashMap<CFGNode, Set<CFGNode>>();
@@ -122,6 +125,7 @@ public class SSAFormConverter {
 		}
 		
 		/* Split each phi-function node */
+		// TODO: this is really naive. it blows up IRTree
 		for (CFGNode phiNode : phiNodes) {			
 			IRPhiFunction phiStmt = (IRPhiFunction) ((IRCFGNode)phiNode).underlyingIRStmt;
 			String[] operands = phiStmt.getOperands();
@@ -131,6 +135,10 @@ public class SSAFormConverter {
 			for (int i = 0; i < operands.length; i++) {
 				// insert before point of i-th operand's move node
 				CFGNode insertBeforePoint = insertBeforePoints[i];
+
+				if (insertBeforePoint == null) {
+					continue;
+				}
 				
 				// i-th operand's move node
 				IRTemp expr = new IRTemp(operands[i]);
@@ -188,10 +196,14 @@ public class SSAFormConverter {
 		var2count = new HashMap<String, Integer>();
 		var2stack = new HashMap<String, Stack<Integer>>();
 		for (String var : originalVars) {
-			var2count.put(var, 0);
 			Stack<Integer> stack = new Stack<Integer>();
-			stack.push(0);
-			var2stack.put(var, stack);
+			if (var.contains("_RET") || var.contains("_ARG")) {
+				// we don't want to rename special _RET & _ARG temps
+			} else {
+				var2count.put(var, 0);
+				stack.push(0);
+				var2stack.put(var, stack);
+			}
 		}
 		
 		/* Rename */
@@ -214,29 +226,23 @@ public class SSAFormConverter {
 		if (stmt instanceof IRReturn) {
 			// Return is a leaf node
 			return;
-		} else if (stmt instanceof IRLabel) {
-			// Skip label
-			Set<CFGNode> children = ((IRCFGNode)node).children;
-			assert(children.size() <= 1);
-			if (children.size() == 1) {
-				rename(children.iterator().next());
-				return;
-			} else {
-				return;
-			}
 		}
-		
+
 		/* Rename each variable in use[node] */ 
 		if (!(stmt instanceof IRPhiFunction)) {
 			Set<String> uses = node2use.get(node);
 			Set<String> newUses = new HashSet<String>();
 			for (String s : uses) {
 				Stack<Integer> stack = var2stack.get(s);
+				if (stack == null) {
+					// if s is a special var (_ARG or _RET)
+					continue;
+				}
 				int i = stack.peek();
 				String newVar = s + i;
 				newVars.add(newVar);	// update newVars set
 				newUses.add(newVar);
-				((IRCFGNode) node).replaceUsage(s, newVar);
+				((IRCFGNode) node).replaceUsage(s, newVar);	
 			}
 			node2use.put(node, newUses);
 		}
@@ -244,7 +250,7 @@ public class SSAFormConverter {
 		/* Rename def */ 
 		// update the count and stack of def[node]
 		String def = node2def.get(node);
-		if (def != null) {
+		if (def != null && !def.contains("_RET") && !def.contains("_ARG")) {
 			int count = var2count.get(def) + 1;
 			var2count.put(def, count);
 			
@@ -252,62 +258,70 @@ public class SSAFormConverter {
 			stack.push(count);
 			var2stack.put(def,stack);
 			
-			String newVar = def + count;
+			String newVar = def;
+			if (count > 0) {
+				// count == 0 is when def is _RET
+				newVar = def + count;
+			}
 			newVars.add(newVar);	// update newVars set
 			node2def.put(node, newVar);
 			
 			// rename def to newVar
-			((IRCFGNode) node).replaceDefinition(def, newVar);
+			if (!def.equals(newVar)) {
+				((IRCFGNode) node).replaceDefinition(def, newVar);
+			}
 		}
 		
 		/* Update use of successive phi functions if applicable */
 		// renamed flag is used for IRPhiFunction only
 		IRStmt nodeStmt = ((IRCFGNode)node).underlyingIRStmt;
-		for (CFGNode succ : node.getSuccessors()) {
-			IRStmt succStmt = ((IRCFGNode)succ).underlyingIRStmt;
-			
-			// phi function nodes are always after a label
-			if (succStmt instanceof IRLabel) {
+		if (!(nodeStmt instanceof IRLabel)) {
+			// all labels are handled by its predecessors previously
+			for (CFGNode succ : node.getSuccessors()) {
+				IRStmt succStmt = ((IRCFGNode)succ).underlyingIRStmt;
 				
-				// determine insert before point (used when converting back to CFG)
-				CFGNode insertBeforePoint;
-				if (nodeStmt instanceof IRJump || nodeStmt instanceof IRCJump) {
-					// insert before the jump
-					insertBeforePoint = node;
-				} else {
-					// otherwise, insert before the label
-					insertBeforePoint = succ;
-				}
-				
-				CFGNode succsucc = succ.successor1;
-				IRStmt succsuccStmt = ((IRCFGNode)succsucc).underlyingIRStmt;
-				
-				// if label is followed by a phi function node
-				while (succsuccStmt instanceof IRPhiFunction) {
-					IRCFGNode phiNode = (IRCFGNode) succsucc;
-					IRPhiFunction phiFunction = (IRPhiFunction)succsuccStmt;
+				// phi function nodes are always after a label
+				if (succStmt instanceof IRLabel) {	
+					// determine insert before point (used when converting back to CFG)
+					CFGNode insertBeforePoint;
+					if (nodeStmt instanceof IRJump || nodeStmt instanceof IRCJump) {
+						// insert before the jump
+						insertBeforePoint = node;
+					} else {
+						// otherwise, insert before the label
+						insertBeforePoint = succ;
+					}
 					
-					int i = phiNode.realPredecessors.indexOf(node);	// operand's index
-					String var = phiFunction.getOriginalVar();
+					CFGNode succsucc = succ.successor1;
+					IRStmt succsuccStmt = ((IRCFGNode)succsucc).underlyingIRStmt;
 					
-					// set insert before point
-					phiFunction.setInsertBeforePoint(i, insertBeforePoint);
-					
-					// set the i-th operand to the right variable name
-					int varCount = var2stack.get(var).peek();
-					String newVar = var + varCount;
-					phiFunction.setOperand(i, newVar);
-					newVars.add(newVar);	// update newVars set
-					
-					// update node2use map
-					Set<String> use = node2use.get(phiNode);
-					use.remove(var);
-					use.add(newVar);
-					node2use.put(phiNode, use);
-					
-					// look for the next phi function node
-					succsucc = succsucc.successor1;
-					succsuccStmt = ((IRCFGNode)succsucc).underlyingIRStmt;
+					// if label is followed by a phi function node
+					while (succsuccStmt instanceof IRPhiFunction) {
+						IRCFGNode phiNode = (IRCFGNode) succsucc;
+						IRPhiFunction phiFunction = (IRPhiFunction)succsuccStmt;
+						
+						int i = phiNode.realPredecessors.indexOf(node);	// operand's index
+						String var = phiFunction.getOriginalVar();
+						
+						// set insert before point
+						phiFunction.setInsertBeforePoint(i, insertBeforePoint);
+						
+						// set the i-th operand to the right variable name
+						int varCount = var2stack.get(var).peek();
+						String newVar = var + varCount;
+						phiFunction.setOperand(i, newVar);
+						newVars.add(newVar);	// update newVars set
+						
+						// update node2use map
+						Set<String> use = node2use.get(phiNode);
+						use.remove(var);
+						use.add(newVar);
+						node2use.put(phiNode, use);
+						
+						// look for the next phi function node
+						succsucc = succsucc.successor1;
+						succsuccStmt = ((IRCFGNode)succsucc).underlyingIRStmt;
+					}
 				}
 			}
 		}
@@ -317,9 +331,11 @@ public class SSAFormConverter {
 			rename(child);
 		}
 		
-		if (def != null) {
+		if (def != null && !def.contains("_RET") && !def.contains("_ARG")) {
 			Stack<Integer> stack = var2stack.get(def);
-			stack.pop();
+			if (!stack.isEmpty()) {
+				stack.pop();
+			}
 			var2stack.put(def, stack);
 		}
 	}
@@ -328,13 +344,16 @@ public class SSAFormConverter {
 	 * Inserts phi-function by following the Dominance Frontier criterion
 	 */
 	private void insertPhiFunctions() {
+		// TODO: delete
+		phiNodes = new ArrayList<CFGNode>();
+		
 		/* Initialize */	
 		defsites = new HashMap<String, Set<CFGNode>>();
 		
 		// initialize defsites map
 		for (CFGNode node : cfg.getAllNodes()) {
 			String def = node2def.get(node);
-			if (def != null) {
+			if (def != null && !def.contains("_RET") && !def.contains("_ARG")) {
 				Set<CFGNode> sites;
 				if (defsites.containsKey(def)) {
 					sites = defsites.get(def);
@@ -346,22 +365,34 @@ public class SSAFormConverter {
 			}
 		}
 		
+		// nomralVars := set of vars except _RET & _ARG vars
+		Set<String> normalVars = new HashSet<String>();
+		for (String var : originalVars) {
+			if (!var.contains("_RET") && !var.contains("_ARG")) {
+				normalVars.add(var);
+			}
+		}
+		
 		// phisites[var] = set of nodes that must have phi-functions for var 
 		Map<String, Set<CFGNode>> phisites = new HashMap<String, Set<CFGNode>>();
-		for (String var : originalVars) {
+		for (String var : normalVars) {
 			phisites.put(var, new HashSet<CFGNode>());
 		}
 		
 		/* Insert */
-		for (String var : originalVars) {
+		for (String var : normalVars) {
 			Stack<CFGNode> W = new Stack<CFGNode>();
 			Set<CFGNode> sites = defsites.get(var);
 			if (sites != null) {
 				W.addAll(sites);
 			}
-			
+				
 			while (!W.isEmpty()) {
 				CFGNode node = W.pop();
+				Set<CFGNode> df = dominanceFrontier.get(node);
+				if (df == null) {
+					continue;
+				}
 				for (CFGNode y : dominanceFrontier.get(node)) {
 					sites = phisites.get(var);
 					if (!sites.contains(y)) {						
@@ -375,6 +406,8 @@ public class SSAFormConverter {
 						newNode.realPredecessors = predecessors;
 						// insert it right after y (IRLabel)
 						cfg.insert(y, newNode);
+						// TODO: delete
+						phiNodes.add(newNode);
 						
 						// update tree information
 						newNode.children.addAll(y.children);
@@ -396,7 +429,7 @@ public class SSAFormConverter {
 						sites.add(y);
 						phisites.put(var, sites);
 						
-						if (node2def.get(y) != null && !node2def.get(y).equals(var)) {
+						if (node2def.get(y) == null || !node2def.get(y).equals(var)) {
 							W.push(y);
 						}
 					}
@@ -461,6 +494,10 @@ public class SSAFormConverter {
 				uses.addAll(computeUse(((IRJump)stmt).target()));
 			} else if (stmt instanceof IRMove) {
 				uses.addAll(computeUse(((IRMove)stmt).expr()));
+				IRExpr target = ((IRMove)stmt).target();
+				if (target instanceof IRMem) {
+					uses.addAll(computeUse(target));
+				}
 			}
 			
 		} else if (node instanceof AACFGNode) {

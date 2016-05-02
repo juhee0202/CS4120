@@ -47,8 +47,8 @@ public class CommonSubExpElimination extends Optimization{
 	 */
 	private int currentInt = 0;
 	
-	public CommonSubExpElimination() {
-	}
+//	public CommonSubExpElimination() {
+//	}
 	
 	@Override
 	public boolean run(OptimizationGraph argGraph) {

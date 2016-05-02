@@ -183,7 +183,9 @@ public class ControlFlowGraph implements OptimizationGraph{
 				IRJump jump = (IRJump) stmt;
 				String label = ((IRName) jump.target()).name();
 				node2label.put(curr,label);
-				prev.addSuccessor(curr);
+				if (prev != null) {
+					prev.addSuccessor(curr);
+				}
 				prev = null;
 				continue;
 			} else if (stmt instanceof IRCJump) {
@@ -238,12 +240,17 @@ public class ControlFlowGraph implements OptimizationGraph{
 	 */
 	public void insertBefore(CFGNode node, CFGNode newNode) {
 		// link newNode with node's predecessors
-		for (CFGNode pred : node.predecessors) {
-			if (pred.successor1 == node) {
-				pred.successor1 = newNode;
-			} else {
-				pred.successor2 = newNode;
+		try {
+			for (CFGNode pred : node.predecessors) {
+				if (pred.successor1 == node) {
+					pred.successor1 = newNode;
+				} else {
+					pred.successor2 = newNode;
+				}
 			}
+		} catch (NullPointerException e) {
+			System.out.println(node);
+			System.out.println(newNode);
 		}
 		newNode.predecessors.addAll(node.predecessors);
 		
@@ -331,6 +338,43 @@ public class ControlFlowGraph implements OptimizationGraph{
 
 	public void setHead(CFGNode head) {
 		this.head = head;
+	}
+	
+	/**
+	 * @return a copy of the ControlFlowGraph
+	 */
+	public ControlFlowGraph copyIRCFGNodeGraph() {
+		Set<CFGNode> nodes = new HashSet<CFGNode>();
+		Map<CFGNode,CFGNode> og2copy = new HashMap<CFGNode,CFGNode>();
+		
+		/* Create copy nodes */
+		for (CFGNode n : allNodes) {
+			IRCFGNode copy = ((IRCFGNode)n).copy(); 
+			nodes.add(copy);
+			og2copy.put(n, copy);
+		}
+		
+		/* Update pred/succ information */
+		for (CFGNode n : allNodes) {
+			CFGNode copy = og2copy.get(n);
+			List<CFGNode> predecessors = n.predecessors;
+			CFGNode successor1 = n.successor1;
+			CFGNode successor2 = n.successor2;
+			
+			List<CFGNode> copyPredecessors = new ArrayList<CFGNode>();
+			for (int i = 0; i < predecessors.size(); i ++) {
+				copyPredecessors.add(og2copy.get(copyPredecessors.get(i)));
+			}
+			copy.predecessors = copyPredecessors;
+			
+			CFGNode copySuccessor1 = og2copy.get(successor1);
+			copy.successor1 = copySuccessor1;
+			CFGNode copySuccessor2 = og2copy.get(successor2);
+			copy.successor2 = copySuccessor2;
+		}
+		
+		ControlFlowGraph copyCfg = new ControlFlowGraph(nodes, og2copy.get(head));
+		return copyCfg;
 	}
 	
 	public String dotOutput() {

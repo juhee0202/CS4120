@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import edu.cornell.cs.cs4120.util.Copy;
 import edu.cornell.cs.cs4120.xic.ir.IRBinOp;
 import edu.cornell.cs.cs4120.xic.ir.IRCJump;
 import edu.cornell.cs.cs4120.xic.ir.IRCall;
@@ -18,7 +19,7 @@ import edu.cornell.cs.cs4120.xic.ir.IRPhiFunction;
 import edu.cornell.cs.cs4120.xic.ir.IRStmt;
 import edu.cornell.cs.cs4120.xic.ir.IRTemp;
 
-public class IRCFGNode extends CFGNode {
+public class IRCFGNode extends CFGNode implements Copy<IRCFGNode> {
 	/** The IRStmt that this IRCFGNode represents. */
 	public IRStmt underlyingIRStmt;
 	/** The name of the function that this IRCFGNode is contained in. */
@@ -32,11 +33,7 @@ public class IRCFGNode extends CFGNode {
 	private IRExpr use2;
 	/** The one and only (if applicable) def of this AACFGNode. */
 	private IRExpr def;
-	/** 
-	 * True if its use is already renamed
-	 * Should only be used for IRPhiFunction Node
-	 *  */
-	protected boolean renamed;
+
 	/** List of real predecessors for IRPhiFunction node */
 	protected List<CFGNode> realPredecessors;
 	/** Real predecessor in the path to this node */
@@ -110,6 +107,10 @@ public class IRCFGNode extends CFGNode {
 			replaceUsage(((IRJump)underlyingIRStmt).target(), var, newVar);
 		} else if (underlyingIRStmt instanceof IRMove) {
 			replaceUsage(((IRMove)underlyingIRStmt).expr(), var, newVar);
+			IRExpr target = ((IRMove)underlyingIRStmt).target();
+			if (target instanceof IRMem) {
+				replaceUsage(target, var, newVar);
+			}
 		} else if (underlyingIRStmt instanceof IRPhiFunction) {
 			String[] operands = ((IRPhiFunction)underlyingIRStmt).getOperands();
 			for (int i = 0; i < operands.length; i ++) {
@@ -200,10 +201,10 @@ public class IRCFGNode extends CFGNode {
 		this.realPredecessors = realPredecessors;
 	}
 
-//	@Override
-//	public String toString() {
-//		return underlyingIRStmt.toString();
-//	}
+	@Override
+	public String toString() {
+		return underlyingIRStmt.toString();
+	}
 
 	@Override
 	public String dotOutput(Set<CFGNode> visited) {
@@ -228,6 +229,25 @@ public class IRCFGNode extends CFGNode {
 			}
 		}
 		return s;
+	}
+
+	/**
+	 * Creates a copy of the node
+	 * Does not preserve predecessor/successor information
+	 */
+	@Override
+	public IRCFGNode copy() {
+		IRStmt copyStmt = (IRStmt) underlyingIRStmt.copy();
+		IRCFGNode copyNode = new IRCFGNode(copyStmt);
+		copyNode.name = name;
+		copyNode.ABIName = ABIName;
+		copyNode.use1 = (IRExpr) use1.copy();
+		copyNode.use2 = (IRExpr) use2.copy();
+		copyNode.def = (IRExpr) def.copy();
+		copyNode.realPredecessors = realPredecessors;
+		copyNode.realPredecessor = realPredecessor;
+		
+		return copyNode;
 	}	
 
 }

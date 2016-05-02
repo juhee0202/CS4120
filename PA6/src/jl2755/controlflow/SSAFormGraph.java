@@ -14,6 +14,8 @@ public class SSAFormGraph implements OptimizationGraph {
 	/** Start node */
 	private CFGNode head;
 	
+	private Set<String> allVars;
+	
 	/** Maps CFGNode to its set of used variable names */
 	private Map<CFGNode, Set<String>> node2use;
 	
@@ -26,11 +28,12 @@ public class SSAFormGraph implements OptimizationGraph {
 	/** Maps variable to its def site */
 	private Map<String, CFGNode> var2def;
 	
-	public SSAFormGraph(ControlFlowGraph cfg, 
+	public SSAFormGraph(ControlFlowGraph cfg, Set<String> allVars,
 			Map<CFGNode, Set<String>> node2use, Map<CFGNode, String> node2def,
 			Map<String, Set<CFGNode>> var2use, Map<String, CFGNode> var2def) {
 		this.cfg = cfg;
 		this.head = cfg.getHead();
+		this.allVars = allVars;
 		this.node2use = node2use;
 		this.node2def = node2def;
 		this.var2use = var2use;
@@ -46,10 +49,6 @@ public class SSAFormGraph implements OptimizationGraph {
 	}
 
 	public Set<String> getAllVariables() {
-		Set<String >allVars = new HashSet<String>();
-		allVars.addAll(var2use.keySet());
-		allVars.addAll(var2def.keySet());
-		allVars.remove(null);
 		return allVars;
 	}
 	
@@ -134,9 +133,11 @@ public class SSAFormGraph implements OptimizationGraph {
 		for (String var : use) {
 			Set<CFGNode> usesites = var2use.get(var);
 			usesites.remove(node);
+			allVars.remove(var);
 			var2use.put(var, usesites);
 		}
 		if (def != null) {
+			allVars.remove(def);
 			var2def.put(def, null);
 		}
 	}

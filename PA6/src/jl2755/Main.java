@@ -847,7 +847,6 @@ public class Main {
 	 * @return	the optimized IRNode (should be IRCompUnit)
 	 */
 	// TODO: SSA optimizations here
-	// UCE, COPY
 	public static IRCompUnit optimize(IRCompUnit node) {
 		boolean changed = true;
 		boolean optimize = false;
@@ -855,18 +854,18 @@ public class Main {
 		List<Optimization> ssaOpts = new ArrayList<Optimization>();
 		if (enabled[UCE]) {
 			UnreachableCodeEliminator uce = new UnreachableCodeEliminator();
-//			ssaOpts.add(uce);
-//			optimize = true;
+			ssaOpts.add(uce);
+			optimize = true;
 		}
 		if (enabled[COPY]) {
 			CopyPropagator copy = new CopyPropagator();
-//			ssaOpts.add(copy);
-//			optimize = true;
+			ssaOpts.add(copy);
+			optimize = true;
 		}
 		if (enabled[DCE]) {
-//			DeadCodeEliminator dce = new DeadCodeEliminator();
-////			opts.add(dce);
-//			optimize = true;
+			DeadCodeEliminator dce = new DeadCodeEliminator();
+			ssaOpts.add(dce);
+			optimize = true;
 		}
 		
 		if (enabled[CSE]) {
@@ -874,33 +873,35 @@ public class Main {
 			// call constructor
 			// add to opts
 			CommonSubExpElimination cse = new CommonSubExpElimination();
-//			opts.add(cse);
-//			optimize = true;
+			opts.add(cse);
+			optimize = true;
 		}
 		
+		// IRFuncDecl -> CFG -> SSA -> CFG -> IRFuncDecl
 		if (optimize) {
 			Map<String, IRFuncDecl> nameToFD = node.functions();
 			for (IRFuncDecl fd : nameToFD.values()) {
 				ControlFlowGraph cfg = new ControlFlowGraph(fd);
 				
 				/* Optimization using SSA Form Graph*/
-//				SSAFormConverter converter = new SSAFormConverter(cfg);
-//				SSAFormGraph ssaGraph = converter.convertToSSAForm();
-//				while (changed) {
-//					changed = false;
-//					for (Optimization o : ssaOpts) {
-//						changed |= o.run(ssaGraph);
-//					}
-//				}
-//				
-//				changed = true;
+				SSAFormConverter converter = new SSAFormConverter(cfg);
+				SSAFormGraph ssaGraph = converter.convertToSSAForm();
+				while (changed) {
+					changed = false;
+					for (Optimization o : ssaOpts) {
+						changed |= o.run(ssaGraph);
+					}
+				}
+				
+				changed = true;
 				
 				/* Optimization using Control Flow Graph */
-//				ControlFlowGraph newCfg = converter.convertBack();
+				System.out.println("Optimizing cfg");
+				ControlFlowGraph newCfg = converter.convertBack();
 				while (changed) {
 					changed = false;
 					for (Optimization o : opts) {
-						changed |= o.run(cfg);
+						changed |= o.run(newCfg);
 					}
 				}
 				IRFuncDecl newFD = cfg.flattenIntoIR();
@@ -908,7 +909,7 @@ public class Main {
 			}
 		}
 		
-		
+//		System.out.println(node);
 		return node;
 	}
 

@@ -14,11 +14,13 @@ public class AssignmentStmt implements NakedStmt {
 	private Identifier identifier;
 	private IndexedBrackets indexedBrackets;
 	private FunctionCall functionCall;
+	private ArrayLiteral arrayLiteral;
 	private Expr expr;
 	/**
 	 * 0 if the left side is just an identifier: foo = 3;,
 	 * 1 if the left side is an index of an identifier: foo[2] = 3;,
 	 * 2 if the left side is an index of a function call foo(x,y)[2] = 3;.
+	 * 3 if the left side is an index of an array literal: {0}[0] = 0
 	 */
 	private int index;
 	
@@ -41,6 +43,13 @@ public class AssignmentStmt implements NakedStmt {
 		indexedBrackets = ib;
 		expr = e;
 		index = 2;
+	}
+	
+	public AssignmentStmt(ArrayLiteral al, IndexedBrackets ib, Expr e) {
+		arrayLiteral = al;
+		indexedBrackets = ib;
+		expr = e;
+		index = 3;
 	}
 	
 	public void prettyPrintNode() {
@@ -76,6 +85,19 @@ public class AssignmentStmt implements NakedStmt {
 				tempPrinter.endList();
 			}
 			expr.prettyPrintNode();
+		} else if (index == 3){
+			int numbBrackets = indexedBrackets.getNumBrackets();
+			List<Expr> bracketContents = indexedBrackets.getContent();
+			for (int i = 0; i < numbBrackets; i ++){
+				tempPrinter.startList();
+				tempPrinter.printAtom("[]");
+			}
+			arrayLiteral.prettyPrintNode();
+			for (int i = 0; i < numbBrackets; i++){
+				bracketContents.get(i).prettyPrintNode();
+				tempPrinter.endList();
+			}
+			expr.prettyPrintNode();
 		}
 		tempPrinter.endList();
 	}
@@ -102,6 +124,10 @@ public class AssignmentStmt implements NakedStmt {
 
 	public void setFunctionCall(FunctionCall functionCall) {
 		this.functionCall = functionCall;
+	}
+	
+	public ArrayLiteral getArrayLiteral() {
+		return arrayLiteral;
 	}
 
 	public Expr getExpr() {

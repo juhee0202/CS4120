@@ -2,6 +2,7 @@ package jl2755.type;
 
 import jl2755.Main;
 import jl2755.SemanticErrorObject;
+import jl2755.ast.ArrayLiteral;
 import jl2755.ast.EmptyArrayType;
 import jl2755.ast.FunctionCall;
 import jl2755.ast.Identifier;
@@ -79,6 +80,21 @@ public class VarType implements VType {
 			SemanticErrorObject seo = new SemanticErrorObject(
 					fc.getLineNumber(), 
 					fc.getColumnNumber(),
+					s
+					);
+			Main.handleSemanticError(seo);
+		}
+		isBool = idType.getIsBool();
+		numBrackets = idType.getNumBrackets() - indexedBrackets.getNumBrackets();
+	}
+	
+	public VarType(VarType idType, IndexedBrackets indexedBrackets, ArrayLiteral al) {
+		if (idType.getNumBrackets() < indexedBrackets.getNumBrackets()){
+			String s = "Return type of function " + al.toString() + 
+					" does not have that many dimensions.";
+			SemanticErrorObject seo = new SemanticErrorObject(
+					al.getLineNumber(), 
+					al.getColumnNumber(),
 					s
 					);
 			Main.handleSemanticError(seo);

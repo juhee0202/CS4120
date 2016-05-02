@@ -40,7 +40,7 @@ public class TilingVisitor implements IRTreeVisitor {
 	/** list of caller-saved registers */
 	// TODO: temporarily added rdi and rsi here but i should refactor.
 	private static final String[] CALLER_REG_LIST = {
-			"rax", "rcx", "rdx", "r8", "r9", "r10", "r11", "rdi", "rsi", "rsp"
+			"rax", "rcx", "rdx", "r8", "r9", "r10", "r11", "rdi", "rsi"
 	};
 	// shuttle regs: rcx, rdx, r11
 	
@@ -605,9 +605,9 @@ public class TilingVisitor implements IRTreeVisitor {
 				Instruction move = new Instruction(Operation.MOVQ,dest,cons);
 				instrList.add(move);
 				cost += move.getCost();
-				compare = new Instruction(Operation.CMPQ,src,cons);
+				compare = new Instruction(Operation.CMPQ,cons,src);
 			} else {
-				compare = new Instruction(Operation.CMPQ,src,dest);
+				compare = new Instruction(Operation.CMPQ,dest,src);
 			}
 			instrList.add(compare);
 			cost++;
@@ -754,20 +754,6 @@ public class TilingVisitor implements IRTreeVisitor {
 			Register rdi = new Register(RegisterName.RDI);
 			Register rsp = new Register(RegisterName.RSP);
 			Register temp = new Register(RegisterName.R11);
-			// "movq rsp temp"
-			Instruction makeTempForRsp = new Instruction(Operation.MOVQ, rsp, temp);
-			// "subq 8 temp"
-			Instruction computeRet3MemAddr = new Instruction(Operation.SUBQ, new Constant(8), temp);
-			// "movq temp rdi"
-			Instruction moveRet3MemAddr = new Instruction(Operation.MOVQ, temp, rdi);
-			tempInstructions.add(makeTempForRsp);
-			tempInstructions.add(computeRet3MemAddr);
-			tempInstructions.add(moveRet3MemAddr);
-			
-//			Memory ret3 = new Memory(new Constant(-8), rsp); 
-//			// "movq ret3 rdi"
-//			Instruction instr = new Instruction(Operation.MOVQ, ret3, rdi);
-//			tempInstructions.add(instr);
 			
 			// create (m-2) words space 
 			Constant c = new Constant(8*(numReturns - 2));
@@ -776,6 +762,16 @@ public class TilingVisitor implements IRTreeVisitor {
 			tempInstructions.add(instr2);
 			numArgRegs--;	// because rdi is used to store ret3
 			num8ByteSpace += numReturns - 2;
+			
+			// "movq rsp rdi"
+			Instruction makeTempForRsp = new Instruction(Operation.MOVQ, rsp, rdi);
+			tempInstructions.add(makeTempForRsp);
+			// "addq 8*(m-2)-8 rdi"
+			Constant offsetFromRsp = new Constant(8*(numReturns-2) - 8);
+			if (offsetFromRsp.getValue() != 0) {
+				Instruction computeRet3MemAddr = new Instruction(Operation.ADDQ, offsetFromRsp, rdi);
+				tempInstructions.add(computeRet3MemAddr);
+			}
 		}
 		
 		/* Push argn...arg7 (or arg6 if m > 2) */
@@ -1210,12 +1206,12 @@ public class TilingVisitor implements IRTreeVisitor {
 		}		
 		
 		// Register/Stack allocation
-		if (Oreg) {
-			regAllocation(cu);
-		} else {
-			stackAllocation(cu);
-		}
-//		stackAllocation(cu);
+//		if (Oreg) {
+//			regAllocation(cu);
+//		} else {
+//			stackAllocation(cu);
+//		}
+		stackAllocation(cu);
 		
 		Tile superTile = null;
 		
@@ -2067,9 +2063,9 @@ public class TilingVisitor implements IRTreeVisitor {
 					instructions.subList(1,size),regToStack,num));
 			return added;
 		} 
-		Register rcx = new Register(RegisterName.RCX);
-		Register rdx = new Register(RegisterName.RDX);
-		Register r11 = new Register(RegisterName.R11);
+		Register r12 = new Register(RegisterName.R12);
+		Register r13 = new Register(RegisterName.R13);
+		Register r14 = new Register(RegisterName.R14);
 		Register rbp = new Register(RegisterName.RBP);
 		
 		if (src == null || src instanceof Constant) {
@@ -2089,7 +2085,7 @@ public class TilingVisitor implements IRTreeVisitor {
 					int addr = regToStack.get(reg);
 					mem = new Memory(new Constant(addr),rbp);
 					if (currentInstruction.getOp() != Operation.MOVQ) {
-						Instruction movToReg = new Instruction(Operation.MOVQ,mem,rcx);
+						Instruction movToReg = new Instruction(Operation.MOVQ,mem,r14);
 						added.add(movToReg);
 					}
 				} else {
@@ -2097,11 +2093,11 @@ public class TilingVisitor implements IRTreeVisitor {
 					mem = new Memory(new Constant(addr),rbp);
 					regToStack.put(reg,addr);
 				}
-				currentInstruction.setDest(rcx);
+				currentInstruction.setDest(r14);
 				added.add(currentInstruction);
 				
 				if (src != null) {
-					Instruction movToMem = new Instruction(Operation.MOVQ,rcx,mem);
+					Instruction movToMem = new Instruction(Operation.MOVQ,r14,mem);
 					added.add(movToMem);
 				}
 			} else if (dest instanceof Memory) {
@@ -2115,25 +2111,25 @@ public class TilingVisitor implements IRTreeVisitor {
 				if (regBase.getType() == RegisterName.TEMP) {
 					int addr1 = regToStack.get(regBase.getName());
 					Memory mem1 = new Memory(new Constant(addr1),rbp);
-					Instruction movToReg1 = new Instruction(Operation.MOVQ,mem1,rcx);
+					Instruction movToReg1 = new Instruction(Operation.MOVQ,mem1,r12);
 					added.add(movToReg1);
 					if (regOff != null && regOff.getType() == RegisterName.TEMP) {
 						// two register operands for memory
 						int addr2 = regToStack.get(regOff.getName());
 						Memory mem2 = new Memory(new Constant(addr2),rbp);
-						Instruction movToReg2 = new Instruction(Operation.MOVQ,mem2,rdx);
-						newMem = new Memory(cons,rcx,rdx,fact);
+						Instruction movToReg2 = new Instruction(Operation.MOVQ,mem2,r13);
+						newMem = new Memory(cons,r12,r13,fact);
 						added.add(movToReg2);
 					} else {
-						newMem = new Memory(cons,rcx,regOff,fact);
+						newMem = new Memory(cons,r12,regOff,fact);
 					}
 				} else {
 					if (regOff != null && regOff.getType() == RegisterName.TEMP) {
 						// two register operands for memory
 						int addr2 = regToStack.get(regOff.getName());
 						Memory mem2 = new Memory(new Constant(addr2),rbp);
-						Instruction movToReg2 = new Instruction(Operation.MOVQ,mem2,rdx);
-						newMem = new Memory(cons,rcx,rdx,memOp.getConstantFactor());
+						Instruction movToReg2 = new Instruction(Operation.MOVQ,mem2,r13);
+						newMem = new Memory(cons,r12,r13,memOp.getConstantFactor());
 						added.add(movToReg2);
 					} else {
 						// both registers are built-in
@@ -2161,8 +2157,8 @@ public class TilingVisitor implements IRTreeVisitor {
 				if (((Register) src).getType() == RegisterName.TEMP) {
 					int addr1 = regToStack.get(((Register) src).getName());
 					Memory mem1 = new Memory(new Constant(addr1),rbp);
-					Instruction movToReg1 = new Instruction(Operation.MOVQ,mem1,r11);
-					currentInstruction.setSrc(r11);
+					Instruction movToReg1 = new Instruction(Operation.MOVQ,mem1,r14);
+					currentInstruction.setSrc(r14);
 					added.add(movToReg1);
 				}
 				
@@ -2176,25 +2172,25 @@ public class TilingVisitor implements IRTreeVisitor {
 				if (regBase.getType() == RegisterName.TEMP) {
 					int addr2 = regToStack.get(regBase.getName());
 					Memory mem1 = new Memory(new Constant(addr2),rbp);
-					Instruction movToReg1 = new Instruction(Operation.MOVQ,mem1,rcx);
+					Instruction movToReg1 = new Instruction(Operation.MOVQ,mem1,r12);
 					added.add(movToReg1);
 					if (regOff != null && regOff.getType() == RegisterName.TEMP) {
 						// two register operands for memory
 						int addr3 = regToStack.get(regOff.getName());
 						Memory mem2 = new Memory(new Constant(addr3),rbp);
-						Instruction movToReg2 = new Instruction(Operation.MOVQ,mem2,rdx);
-						newMem = new Memory(cons,rcx,rdx,fact);
+						Instruction movToReg2 = new Instruction(Operation.MOVQ,mem2,r13);
+						newMem = new Memory(cons,r12,r13,fact);
 						added.add(movToReg2);
 					} else {
-						newMem = new Memory(cons,rcx,regOff,fact);
+						newMem = new Memory(cons,r12,regOff,fact);
 					}
 				} else {
 					if (regOff != null && regOff.getType() == RegisterName.TEMP) {
 						// two register operands for memory
 						int addr3 = regToStack.get(regOff.getName());
 						Memory mem2 = new Memory(new Constant(addr3),rbp);
-						Instruction movToReg2 = new Instruction(Operation.MOVQ,mem2,rdx);
-						newMem = new Memory(cons,rcx,rdx,memOp.getConstantFactor());
+						Instruction movToReg2 = new Instruction(Operation.MOVQ,mem2,r13);
+						newMem = new Memory(cons,r12,r13,memOp.getConstantFactor());
 						added.add(movToReg2);
 					} else {
 						// both registers are built-in
@@ -2214,7 +2210,7 @@ public class TilingVisitor implements IRTreeVisitor {
 						int addrD = regToStack.get(regD);
 						memD = new Memory(new Constant(addrD),rbp);
 						if (currentInstruction.getOp() != Operation.MOVQ) {
-							Instruction movToRegD = new Instruction(Operation.MOVQ,memD,rcx);
+							Instruction movToRegD = new Instruction(Operation.MOVQ,memD,r12);
 							added.add(movToRegD);
 						}
 					} else {
@@ -2223,14 +2219,14 @@ public class TilingVisitor implements IRTreeVisitor {
 						memD = new Memory(new Constant(addrD),rbp);
 						regToStack.put(regD,addrD);
 					}
-					currentInstruction.setDest(rcx);
-					movToMemD = new Instruction(Operation.MOVQ,rcx,memD);
+					currentInstruction.setDest(r12);
+					movToMemD = new Instruction(Operation.MOVQ,r12,memD);
 				}
 				if (((Register) src).getType() == RegisterName.TEMP) {
 					if (regToStack.containsKey(regS)) {
 						int addrS = regToStack.get(regS);
 						Memory memS = new Memory(new Constant(addrS),rbp);
-						Instruction movToRegS = new Instruction(Operation.MOVQ,memS,rdx);
+						Instruction movToRegS = new Instruction(Operation.MOVQ,memS,r14);
 						added.add(movToRegS);
 					} else {
 						System.out.println(currentInstruction);
@@ -2239,7 +2235,7 @@ public class TilingVisitor implements IRTreeVisitor {
 						System.out.println("Access a register that hasn't been set!");
 						assert(false);
 					}
-					currentInstruction.setSrc(rdx);
+					currentInstruction.setSrc(r14);
 				}
 				added.add(currentInstruction);
 				if (movToMemD != null) {
@@ -2255,7 +2251,7 @@ public class TilingVisitor implements IRTreeVisitor {
 						int addr1 = regToStack.get(reg);
 						mem1 = new Memory(new Constant(addr1),rbp);
 						if (currentInstruction.getOp() != Operation.MOVQ) {
-							Instruction movToReg1 = new Instruction(Operation.MOVQ,mem1,r11);
+							Instruction movToReg1 = new Instruction(Operation.MOVQ,mem1,r14);
 							added.add(movToReg1);
 						}
 					} else {
@@ -2263,8 +2259,8 @@ public class TilingVisitor implements IRTreeVisitor {
 						mem1 = new Memory(new Constant(addr1),rbp);
 						regToStack.put(reg,addr1);
 					}
-					currentInstruction.setDest(r11);
-					movToMem1 = new Instruction(Operation.MOVQ,r11,mem1);
+					currentInstruction.setDest(r14);
+					movToMem1 = new Instruction(Operation.MOVQ,r14,mem1);
 				}
 				
 				Memory memOp = (Memory) src;
@@ -2277,25 +2273,25 @@ public class TilingVisitor implements IRTreeVisitor {
 				if (regBase.getType() == RegisterName.TEMP) {
 					int addr1 = regToStack.get(regBase.getName());
 					Memory mem2 = new Memory(new Constant(addr1),rbp);
-					Instruction movToReg1 = new Instruction(Operation.MOVQ,mem2,rcx);
+					Instruction movToReg1 = new Instruction(Operation.MOVQ,mem2,r12);
 					added.add(movToReg1);
 					if (regOff != null && regOff.getType() == RegisterName.TEMP) {
 						// two register operands for memory
 						int addr2 = regToStack.get(regOff.getName());
 						Memory mem3 = new Memory(new Constant(addr2),rbp);
-						Instruction movToReg2 = new Instruction(Operation.MOVQ,mem3,rdx);
-						newMem = new Memory(cons,rcx,rdx,fact);
+						Instruction movToReg2 = new Instruction(Operation.MOVQ,mem3,r13);
+						newMem = new Memory(cons,r12,r13,fact);
 						added.add(movToReg2);
 					} else {
-						newMem = new Memory(cons,rcx,regOff,fact);
+						newMem = new Memory(cons,r12,regOff,fact);
 					}
 				} else {
 					if (regOff != null && regOff.getType() == RegisterName.TEMP) {
 						// two register operands for memory
 						int addr2 = regToStack.get(regOff.getName());
 						Memory mem2 = new Memory(new Constant(addr2),rbp);
-						Instruction movToReg2 = new Instruction(Operation.MOVQ,mem2,rdx);
-						newMem = new Memory(cons,rcx,rdx,memOp.getConstantFactor());
+						Instruction movToReg2 = new Instruction(Operation.MOVQ,mem2,r13);
+						newMem = new Memory(cons,r12,r13,memOp.getConstantFactor());
 						added.add(movToReg2);
 					} else {
 						// both registers are built-in
@@ -2319,19 +2315,19 @@ public class TilingVisitor implements IRTreeVisitor {
 					
 					int addr1 = regToStack.get(regBase.getName());
 					Memory mem1 = new Memory(new Constant(addr1),rbp);
-					movToReg1 = new Instruction(Operation.MOVQ,mem1,rcx);
+					movToReg1 = new Instruction(Operation.MOVQ,mem1,r12);
 					if (regOff != null && regOff.getType() == RegisterName.TEMP) {
 						// two register operands for memory
 						int addr2 = regToStack.get(regOff.getName());
 						Memory mem2 = new Memory(new Constant(addr2),rbp);
-						Instruction movToReg2 = new Instruction(Operation.MOVQ,mem2,rdx);
-						newMem = new Memory(cons,rcx,rdx,memOp.getConstantFactor());
+						Instruction movToReg2 = new Instruction(Operation.MOVQ,mem2,r13);
+						newMem = new Memory(cons,r12,r13,memOp.getConstantFactor());
 						added.add(movToReg2);
 					} else if (regBase.getType() == RegisterName.TEMP) {
 						if (regOff == null) {
-							newMem = new Memory(cons,rcx);
+							newMem = new Memory(cons,r12);
 						} else {
-							newMem = new Memory(cons,rcx,regOff,memOp.getConstantFactor());
+							newMem = new Memory(cons,r12,regOff,memOp.getConstantFactor());
 						}
 						added.add(movToReg1);
 					} else {
@@ -2350,8 +2346,8 @@ public class TilingVisitor implements IRTreeVisitor {
 					// src uses a temp register
 					int addr1 = regToStack.get(((Register) src).getName());
 					Memory mem1 = new Memory(new Constant(addr1),rbp);
-					movToReg1 = new Instruction(Operation.MOVQ,mem1,r11);
-					currentInstruction.setSrc(r11);
+					movToReg1 = new Instruction(Operation.MOVQ,mem1,r14);
+					currentInstruction.setSrc(r14);
 					added.add(movToReg1);
 				}
 				added.add(currentInstruction);
@@ -2372,8 +2368,12 @@ public class TilingVisitor implements IRTreeVisitor {
 		int extraSpaceOffset = call.hasExtra8ByteSpace() ? 1 : 0;
 		int retOffset = call.getNumReturns() > 2 ? 1 : 0;
 		int numCallerReg = CALLER_REG_LIST.length;
-		int totalOffset = argOffset + extraSpaceOffset + retOffset;
+//		int totalOffset = argOffset + extraSpaceOffset + retOffset;
 		Register rsp = new Register(RegisterName.RSP);
+		if (call.hasExtra8ByteSpace()) {
+			Instruction extraPop = new Instruction(Operation.ADDQ, new Constant(8), rsp);
+			instructions.add(extraPop);
+		}
 		for (int i = numCallerReg-1; i >= 0; i--) {
 //			Constant offset = new Constant(8*(numCallerReg + totalOffset - 1 - i));
 //			Memory mem = new Memory(offset, rsp);

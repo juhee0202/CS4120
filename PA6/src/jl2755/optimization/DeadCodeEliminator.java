@@ -55,6 +55,7 @@ public class DeadCodeEliminator extends Optimization{
 			if (var.equals("_RET01")) {
 				continue;
 			}
+
 			if ((var2use.get(var)).isEmpty()) {
 				//stmt = v's statement of def
 				IRCFGNode node = (IRCFGNode) var2def.get(var);
@@ -90,6 +91,8 @@ public class DeadCodeEliminator extends Optimization{
 				}
 			}
 		}
+			
+			
 		// update maps of ssaGraph
 		ssaGraph.setNode2def(node2def);
 		ssaGraph.setNode2use(node2use);

@@ -29,6 +29,8 @@ import edu.cornell.cs.cs4120.util.CodeWriterSExpPrinter;
 import edu.cornell.cs.cs4120.util.SExpPrinter;
 import edu.cornell.cs.cs4120.xic.ir.IRCompUnit;
 import edu.cornell.cs.cs4120.xic.ir.IRFuncDecl;
+import edu.cornell.cs.cs4120.xic.ir.IRSeq;
+import edu.cornell.cs.cs4120.xic.ir.IRStmt;
 import edu.cornell.cs.cs4120.xic.ir.interpret.IRSimulator;
 import java_cup.runtime.Symbol;
 import jl2755.ast.Identifier;
@@ -545,22 +547,7 @@ public class Main {
 			}
 			
 			/* Optimize */
-//			result = optimize(result);
-			Map<String, IRFuncDecl> nameToFD = result.functions();
-			for (IRFuncDecl fd : nameToFD.values()) {				
-				ControlFlowGraph cfg = new ControlFlowGraph(fd);
-				
-				/* Optimization using SSA Form Graph*/
-				SSAFormConverter converter = new SSAFormConverter(cfg);
-				SSAFormGraph ssaGraph = converter.convertToSSAForm();
-				
-				/* Optimization using Control Flow Graph */
-				ControlFlowGraph newCfg = converter.convertBack();
-				IRFuncDecl newFD = newCfg.flattenIntoIR();
-				
-				nameToFD.put(fd.getABIName(), newFD);
-			}
-			
+			result = optimize(result);
 			
 			// Update global map
 			fileToIR.put(filename, result);
@@ -710,12 +697,8 @@ public class Main {
 				result = lir.program;
 				
 				/* Optimize */
-//				IRCompUnit optimizedResult = optimize(result);
-//				result = optimize(result);
-//				System.out.println("COMPARING OPT VS OG");
-//				System.out.println("HELLOOOOIFNSJBFEUOWJKFBWEON");
-//				System.out.println(optimizedResult == result);
-//				System.out.println(result == optimizedResult);
+				result = optimize(result);
+				
 				// Update global map
 				fileToIR.put(filename, result);
 			}			  
@@ -799,8 +782,11 @@ public class Main {
 			
 			if (CFGPhases.contains("initial")) {
 				for (IRFuncDecl fd : result.functions().values()) {
+					for (IRStmt s : ((IRSeq) fd.body()).stmts()) {
+						System.out.println(s);
+					}
 					ControlFlowGraph initialCFG = new ControlFlowGraph(fd);
-					File file = new File(rmExtension + "_" + fd.getABIName() + "_" + "initial.dot");
+					File file = new File(rmExtension + "_" + fd.getName() + "_" + "initial.dot");
 					if (!file.exists()) {
 						file.createNewFile();
 					}
@@ -867,28 +853,28 @@ public class Main {
 		List<Optimization> opts = new ArrayList<Optimization>();
 		List<Optimization> ssaOpts = new ArrayList<Optimization>();
 		if (enabled[UCE]) {
-//			UnreachableCodeEliminator uce = new UnreachableCodeEliminator();
-//			ssaOpts.add(uce);
-//			optimize = true;
+			UnreachableCodeEliminator uce = new UnreachableCodeEliminator();
+			ssaOpts.add(uce);
+			optimize = true;
 		}
 		if (enabled[COPY]) {
-//			CopyPropagator copy = new CopyPropagator();
-//			ssaOpts.add(copy);
+			CopyPropagator copy = new CopyPropagator();
+			ssaOpts.add(copy);
 			optimize = true;
 		}
 		if (enabled[DCE]) {
-//			DeadCodeEliminator dce = new DeadCodeEliminator();
-////			opts.add(dce);
-//			optimize = true;
+			DeadCodeEliminator dce = new DeadCodeEliminator();
+			ssaOpts.add(dce);
+			optimize = true;
 		}
 		
 		if (enabled[CSE]) {
 			// TODO: CSE
 			// call constructor
 			// add to opts
-//			CommonSubExpElimination cse = new CommonSubExpElimination();
-//			opts.add(cse);
-//			optimize = true;
+			CommonSubExpElimination cse = new CommonSubExpElimination();
+			opts.add(cse);
+			optimize = true;
 		}
 		
 		// TODO: this block stmt has some error

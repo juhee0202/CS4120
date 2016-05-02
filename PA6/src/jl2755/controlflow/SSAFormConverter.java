@@ -99,7 +99,7 @@ public class SSAFormConverter {
 		// 4) compute var2use & var2def maps
 		computeVarMaps();
 		// 5) construct SSAFormGraph
-		ssaGraph = new SSAFormGraph(cfg, node2use, node2def, var2use, var2def);
+		ssaGraph = new SSAFormGraph(cfg, newVars, node2use, node2def, var2use, var2def);
 		
 		return ssaGraph;
 	}

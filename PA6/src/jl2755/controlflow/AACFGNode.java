@@ -56,7 +56,11 @@ public class AACFGNode extends CFGNode {
 	}
 	
 	@Override
-	public String dotOutput() {
+	public String dotOutput(Set<CFGNode> visited) {
+		if (visited.contains(this)) {
+			return "";
+		}
+		visited.add(this);
 		String s = "\t" + "\"" + underlyingInstruction + "\n" + this + "\"";
 		s += " -> {";
 		if (successor1 != null) {
@@ -67,9 +71,9 @@ public class AACFGNode extends CFGNode {
 		}
 		s += "}\n";
 		if (successor1 != null) {
-			s += successor1.dotOutput();
+			s += successor1.dotOutput(visited);
 			if (successor2 != null) {
-				s += successor2.dotOutput();
+				s += successor2.dotOutput(visited);
 			}
 		}
 		return s;

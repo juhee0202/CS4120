@@ -69,6 +69,8 @@ public class CommonSubExpElimination extends Optimization{
 		
 		Set<CFGNode> nodesToAddToAllList = new HashSet<CFGNode>();
 		
+//		System.out.println("This is the map of out: " + analyzerObject.outMap);
+		
 		outer:
 		for (CFGNode node: cfg.getAllNodes()) {
 			Set<IRExprOverrider> setOfIn = analyzerObject.inMap.get(node);
@@ -85,7 +87,8 @@ public class CommonSubExpElimination extends Optimization{
 				}
 			}
 			
-//			System.out.println("This is the node: " + node);
+//			System.out.println("\n\nThis is the node: " + node);
+//			System.out.println("These are the predecessor nodes: " + node.getPredecessors());
 //			System.out.println("This is the set of in: " + setOfIn);
 //			System.out.println("This is the set of use: " + listOfUseExprs);
 //			System.out.println("This is the list of use and in: " + listOfUseAndIn);
@@ -125,6 +128,7 @@ public class CommonSubExpElimination extends Optimization{
 				}
 				if (!allGood) {
 					listOfUseAndIn.remove(indexOfCurrentHighest);
+					theBest = null;
 				}
 			}
 			
@@ -143,6 +147,8 @@ public class CommonSubExpElimination extends Optimization{
 			// hasn't hoisted anything at all. Loop until you find an expression that can be
 			// hoisted from all its parents. If one is found, do work on hoisting it from parents
 			// and using the temp variable in the current node too.
+			System.out.println("The best: " + theBest);
+			System.out.println("The nodes of origin: " + theBest.nodesOfOrigin + "\n\n");
 			for (int i = 0; i < theBest.nodesOfOrigin.size(); i++) {
 				IRExprOverrider parentsHoisted = nodeHoistedMap.get(theBest.nodesOfOrigin.get(i));
 				// If parentsHoisted is null, that means that no one else has ever hoisted
@@ -169,7 +175,13 @@ public class CommonSubExpElimination extends Optimization{
 		
 		cfg.addTheseNodes(nodesToAddToAllList);
 		
-		return hasChanged;
+		
+		// Not sure if it's okay to only do one round of CSE. However, it currently
+		// causes errors by making 1 pointless move for each node that uses an
+		// available expression. I think this happens if multiple rounds are done
+		// on the same CFG.
+//		return hasChanged;
+		return false;
 	}
 	
 }

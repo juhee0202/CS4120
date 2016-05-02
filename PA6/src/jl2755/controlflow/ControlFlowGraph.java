@@ -205,6 +205,9 @@ public class ControlFlowGraph implements OptimizationGraph{
 			String label = entry.getValue();
 			IRCFGNode node2 = label2node.get(label);
 			node1.addSuccessor(node2);
+			System.out.println("HEELO");
+			System.out.println(node1.underlyingIRStmt);
+			System.out.println(node2.underlyingIRStmt);
 		}
 	}
 	
@@ -336,7 +339,8 @@ public class ControlFlowGraph implements OptimizationGraph{
 	public String dotOutput() {
 		String s = "digraph {\n";
 		s += "{\t" + "rankdir=LR\n\t" + "node[shape=box]\n" + "}";
-		s += head.dotOutput();
+		Set<CFGNode> visited = new HashSet<CFGNode>();
+		s += head.dotOutput(visited);
 		s += "}";
 		return s;
 	}

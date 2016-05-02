@@ -547,7 +547,7 @@ public class Main {
 			}
 			
 			/* Optimize */
-			result = optimize(result);
+//			result = optimize(result);
 			
 			// Update global map
 			fileToIR.put(filename, result);
@@ -874,8 +874,8 @@ public class Main {
 			// call constructor
 			// add to opts
 			CommonSubExpElimination cse = new CommonSubExpElimination();
-			opts.add(cse);
-			optimize = true;
+//			opts.add(cse);
+//			optimize = true;
 		}
 		
 		if (optimize) {

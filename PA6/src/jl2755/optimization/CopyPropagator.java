@@ -35,13 +35,20 @@ public class CopyPropagator extends Optimization {
 			// probably don't need this
 			// ControlFlowGraph ssaGraph = (ControlFlowGraph)cfg;
 		} else {
-			boolean result = propagateCopies((SSAFormGraph)cfg);
-			if (result) {
-				modified = true;
+			outer:
+			while (true) {
+				boolean result = propagateCopies((SSAFormGraph)cfg);
+				if (!false) {
+					break outer;
+				}
 			}
-			while (result) {
-				result = propagateCopies((SSAFormGraph)cfg);
-			}
+//			boolean result = propagateCopies((SSAFormGraph)cfg);
+//			if (result) {
+//				modified = true;
+//			}
+//			while (result) {
+//				result = propagateCopies((SSAFormGraph)cfg);
+//			}
 		}
 		
 		return modified;
@@ -68,7 +75,13 @@ public class CopyPropagator extends Optimization {
 				IRExpr expr = moveStmt.expr();
 				if (target instanceof IRTemp && expr instanceof IRTemp) {
 					var = ((IRTemp)target).name();
+					if (var.contains("_RET")) {
+						continue;
+					}
 					replaceVar = ((IRTemp)expr).name();
+					if (replaceVar.contains("_ARG")) {
+						continue;
+					}
 				}
 				}
 			
@@ -79,9 +92,11 @@ public class CopyPropagator extends Optimization {
 				// remove & substitute
 				ssaGraph.remove(node);
 				ssaGraph.substitute(var, replaceVar);
-				modified = true;
+				return true;
+//				modified = true;
 			}
 		}
-		return modified;
+//		return modified;
+		return false;
 	}
 }

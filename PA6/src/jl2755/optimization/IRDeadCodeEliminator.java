@@ -1,8 +1,9 @@
 package jl2755.optimization;
 
-import java.util.List;
 import java.util.Set;
 
+import edu.cornell.cs.cs4120.xic.ir.IRMove;
+import edu.cornell.cs.cs4120.xic.ir.IRTemp;
 import jl2755.controlflow.CFGNode;
 import jl2755.controlflow.ControlFlowGraph;
 import jl2755.controlflow.IRCFGNode;
@@ -20,9 +21,7 @@ public class IRDeadCodeEliminator extends Optimization {
 		
 		ControlFlowGraph cfgView = (ControlFlowGraph) cfg;
 		
-		SSALiveAnalyzer analyzer = new SSALiveAnalyzer((ControlFlowGraph) cfg);
-		
-		analyzer.analyze();
+
 		
 		boolean hasChanged = false;
 		
@@ -30,6 +29,9 @@ public class IRDeadCodeEliminator extends Optimization {
 		// their defs in their outs
 		outer:
 		while (true) {
+			SSALiveAnalyzer analyzer = new SSALiveAnalyzer((ControlFlowGraph) cfg);
+			
+			analyzer.analyze();
 			inner:
 			for (CFGNode node : cfgView.getAllNodes()) {
 				Set<IRExprOverrider> outSet = analyzer.outMap.get(node);
@@ -37,6 +39,24 @@ public class IRDeadCodeEliminator extends Optimization {
 				if (def == null) {
 					continue inner;
 				}
+				
+				IRCFGNode irView = (IRCFGNode) node;
+				if (irView.underlyingIRStmt instanceof IRMove) {
+					IRMove moveView = (IRMove) irView.underlyingIRStmt;
+					if (moveView.target() instanceof IRTemp) {
+						IRTemp tempView = (IRTemp) moveView.target();
+						if (tempView.name().contains("_RET")) {
+							continue inner;
+						}
+					}
+					if (moveView.expr() instanceof IRTemp) {
+						IRTemp tempView = (IRTemp) moveView.expr();
+						if (tempView.name().contains("_ARG")) {
+							continue inner;
+						}
+					}
+				}
+				
 				if (!outSet.contains(def)) {
 					// Delete this node
 					cfgView.remove(node);

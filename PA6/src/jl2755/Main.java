@@ -859,7 +859,7 @@ public class Main {
 		}
 		if (enabled[COPY]) {
 			CopyPropagator copy = new CopyPropagator();
-//			ssaOpts.add(copy);
+			ssaOpts.add(copy);
 			optimize = true;
 		}
 		if (enabled[DCE]) {

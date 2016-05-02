@@ -39,29 +39,7 @@ public class IRDeadCodeEliminator extends Optimization {
 				}
 				if (!outSet.contains(def)) {
 					// Delete this node
-					List<CFGNode> parentNodes = node.getPredecessors();
-					if (node.getSuccessor1() != null) {
-						node.getPredecessors().remove(node);
-						node.getPredecessors().addAll(parentNodes);
-					}
-					// Ignoring the case of second successor
-					// because CJump's will never be removed
-					// and they are the only ones who have
-					// 2 successors
-//					if (node.getSuccessor2() != null) {
-//						node.getPredecessors().remove(node);
-//						node.getPredecessors().addAll(parentNodes);
-//					}
-					
-					for (int i = 0; i < parentNodes.size(); i ++) {
-						CFGNode current = parentNodes.get(i);
-						if (current.getSuccessor1() == node) {
-							current.setSuccessor1(node.getSuccessor1());
-						}
-						else if (current.getSuccessor2() == node) {
-							current.setSuccessor2(node.getSuccessor1());
-						}
-					}
+					cfgView.remove(node);
 					hasChanged = true;
 					continue outer;
 					

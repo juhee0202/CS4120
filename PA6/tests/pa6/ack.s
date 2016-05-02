@@ -624,34 +624,34 @@ _IAck_iii:
 	popq	%rax
 	movq	-128(%rbp), %r14
 	movq	%r14, %rax
+	movq	-88(%rbp), %r14
 	movq	%r14, %r12
 	movq	%r12, -136(%rbp)
-	movq	-56(%rbp), %r14
 	movq	%r14, %r12
 	movq	%r12, -144(%rbp)
-	movq	-112(%rbp), %r14
+	movq	-64(%rbp), %r14
 	movq	%r14, %r12
 	movq	%r12, -152(%rbp)
-	movq	-80(%rbp), %r14
+	movq	-120(%rbp), %r14
 	movq	%r14, %r12
 	movq	%r12, -160(%rbp)
 	movq	%r14, %r12
 	movq	%r12, -168(%rbp)
-	movq	-104(%rbp), %r14
-	movq	%r14, %r12
-	movq	%r12, -176(%rbp)
-	movq	-64(%rbp), %r14
-	movq	%r14, %r12
-	movq	%r12, -184(%rbp)
 	movq	-128(%rbp), %r14
 	movq	%r14, %r12
+	movq	%r12, -176(%rbp)
+	movq	-56(%rbp), %r14
+	movq	%r14, %r12
+	movq	%r12, -184(%rbp)
+	movq	%r14, %r12
 	movq	%r12, -192(%rbp)
-	movq	-88(%rbp), %r14
+	movq	-112(%rbp), %r14
 	movq	%r14, %r12
 	movq	%r12, -200(%rbp)
-	movq	-120(%rbp), %r14
+	movq	-104(%rbp), %r14
 	movq	%r14, %r12
 	movq	%r12, -208(%rbp)
+	movq	-80(%rbp), %r14
 	movq	%r14, %r12
 	movq	%r12, -216(%rbp)
 label4:
@@ -674,9 +674,9 @@ l0:
 	movq	%r14, %rax
 	movq	%r14, %r12
 	movq	%r12, -136(%rbp)
-	movq	-56(%rbp), %r14
 	movq	%r14, %r12
 	movq	%r12, -144(%rbp)
+	movq	-64(%rbp), %r14
 	movq	%r14, %r12
 	movq	%r12, -152(%rbp)
 	movq	%r14, %r12
@@ -685,7 +685,7 @@ l0:
 	movq	%r12, -168(%rbp)
 	movq	%r14, %r12
 	movq	%r12, -176(%rbp)
-	movq	-64(%rbp), %r14
+	movq	-56(%rbp), %r14
 	movq	%r14, %r12
 	movq	%r12, -184(%rbp)
 	movq	%r14, %r12
@@ -738,31 +738,31 @@ l3:
 	popq	%rax
 	movq	-256(%rbp), %r14
 	movq	%r14, %rax
-	movq	-256(%rbp), %r14
 	movq	%r14, %r12
 	movq	%r12, -136(%rbp)
-	movq	-56(%rbp), %r14
+	movq	-240(%rbp), %r14
 	movq	%r14, %r12
 	movq	%r12, -144(%rbp)
+	movq	-64(%rbp), %r14
 	movq	%r14, %r12
 	movq	%r12, -152(%rbp)
 	movq	%r14, %r12
 	movq	%r12, -160(%rbp)
-	movq	-240(%rbp), %r14
+	movq	-248(%rbp), %r14
 	movq	%r14, %r12
 	movq	%r12, -168(%rbp)
 	movq	%r14, %r12
 	movq	%r12, -176(%rbp)
-	movq	-64(%rbp), %r14
+	movq	-56(%rbp), %r14
 	movq	%r14, %r12
 	movq	%r12, -184(%rbp)
+	movq	-256(%rbp), %r14
 	movq	%r14, %r12
 	movq	%r12, -192(%rbp)
 	movq	%r14, %r12
 	movq	%r12, -200(%rbp)
 	movq	%r14, %r12
 	movq	%r12, -208(%rbp)
-	movq	-248(%rbp), %r14
 	movq	%r14, %r12
 	movq	%r12, -216(%rbp)
 	jmp	label4

@@ -3,9 +3,13 @@ main(args:int[][]) {
     i: int = 0;
     a: int;
     c: int;
-    y: int = x*x*x*x*x*x;
-    while (i < 10000) {
+    if (x < 10) {
         a = x*x*x*x*x*x;
+    }
+    if (x < 9) {
+        a = x*x*x*x*x*x;
+    }
+    else {
         c = x*x*x*x*x*x;
     }
     z: int = x*x*x*x*x*x;

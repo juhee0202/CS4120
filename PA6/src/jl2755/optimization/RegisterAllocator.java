@@ -188,8 +188,8 @@ public class RegisterAllocator {
 		
 		// If there is a register in the def of a node that is not live coming out, remove it
 		boolean result = false;
-		Set<CFGNode> nodes = new HashSet<CFGNode>();
-		nodes.addAll(cfg.getAllNodes());
+//		Set<CFGNode> nodes = new HashSet<CFGNode>();
+//		nodes.addAll(cfg.getAllNodes());
 //		for (CFGNode n : nodes) {
 //			Set<Register> union = new HashSet<Register>();
 //			for (CFGNode succ : n.getSuccessors()) {
@@ -747,12 +747,12 @@ public class RegisterAllocator {
 		for (Register neighbor : neighbors) {
 			colors.remove(neighbor);
 		}
-		// Check colors of ???
-//		for (CFGNode n : cfg.getAllNodes()) {
-//			if (nodeToLiveRegs.get(n).contains(reg)) {
-//				colors.remove(defs.get(n));
-//			}
-//		}
+		// Check colors of possible dead code
+		for (CFGNode n : cfg.getAllNodes()) {
+			if (nodeToLiveRegs.get(n).contains(reg)) {
+				colors.remove(defs.get(n));
+			}
+		}
 		if (colors.size() > 0) {
 			return colors.iterator().next();
 		}

@@ -207,9 +207,6 @@ public class ControlFlowGraph implements OptimizationGraph{
 			String label = entry.getValue();
 			IRCFGNode node2 = label2node.get(label);
 			node1.addSuccessor(node2);
-			System.out.println("HEELO");
-			System.out.println(node1.underlyingIRStmt);
-			System.out.println(node2.underlyingIRStmt);
 		}
 	}
 	

@@ -6,17 +6,30 @@
    (MOVE (TEMP args) (TEMP _ARG0))
    (MOVE (TEMP x) (CONST 5))
    (MOVE (TEMP i) (CONST 0))
+   (CJUMP (LT (TEMP x) (CONST 10)) l0)
+   (LABEL l1)
+   (CJUMP (LT (TEMP x) (CONST 9)) l2)
    (MOVE
     (TEMP csetemp0)
     (MUL
      (MUL (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x)) (TEMP x))
      (TEMP x)))
-   (MOVE (TEMP y) (TEMP csetemp0))
-   (LABEL l0)
-   (CJUMP (LT (TEMP i) (CONST 10000)) l1)
+   (MOVE (TEMP c) (TEMP csetemp0))
+   (LABEL l4)
    (MOVE (TEMP z) (TEMP csetemp0))
    (RETURN)
-   (LABEL l1)
+   (LABEL l0)
+   (MOVE
+    (TEMP a)
+    (MUL
+     (MUL (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x)) (TEMP x))
+     (TEMP x)))
+   (JUMP (NAME l1))
+   (LABEL l2)
+   (MOVE
+    (TEMP csetemp0)
+    (MUL
+     (MUL (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x)) (TEMP x))
+     (TEMP x)))
    (MOVE (TEMP a) (TEMP csetemp0))
-   (MOVE (TEMP c) (TEMP csetemp0))
-   (JUMP (NAME l0)))))
+   (JUMP (NAME l4)))))

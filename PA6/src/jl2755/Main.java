@@ -877,7 +877,6 @@ public class Main {
 			optimize = true;
 		}
 		
-		// TODO: this block stmt has some error
 		// IRFuncDecl -> CFG -> SSA -> CFG -> IRFuncDecl
 		if (optimize) {
 			Map<String, IRFuncDecl> nameToFD = node.functions();
@@ -897,6 +896,7 @@ public class Main {
 				changed = true;
 				
 				/* Optimization using Control Flow Graph */
+				System.out.println("Optimizing cfg");
 				ControlFlowGraph newCfg = converter.convertBack();
 				while (changed) {
 					changed = false;

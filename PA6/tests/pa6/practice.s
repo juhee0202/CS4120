@@ -2,17 +2,15 @@
 	.globl	_Imain_paai
 	.align	4
 _Imain_paai:
-	enter	$80, $0
+	enter	$96, $0
 	movq	%rbx, -8(%rbp)
 	movq	%rbp, -16(%rbp)
 	movq	%r12, -24(%rbp)
 	movq	%r13, -32(%rbp)
 	movq	%r14, -40(%rbp)
 	movq	%r15, -48(%rbp)
-	pushq	%r11
-	movq	-56(%rbp), %r11
-	popq	%r11
-	movq	$120, %rbx
+	movq	$120, %r14
+	movq	%r14, -56(%rbp)
 	pushq	%rax
 	pushq	%rcx
 	pushq	%rdx
@@ -22,11 +20,13 @@ _Imain_paai:
 	pushq	%r11
 	pushq	%rdi
 	pushq	%rsi
-	pushq	%rsp
-	movq	%rbx, %rdi
+	movq	-56(%rbp), %r14
+	movq	%r14, %rdi
+	subq	$8, %rsp
 	callq	_I_alloc_i
-	movq	%rax, %rbx
-	popq	%rsp
+	movq	%rax, %r12
+	movq	%r12, -64(%rbp)
+	addq	$8, %rsp
 	popq	%rsi
 	popq	%rdi
 	popq	%r11
@@ -36,54 +36,45 @@ _Imain_paai:
 	popq	%rdx
 	popq	%rcx
 	popq	%rax
-	pushq	%r11
-	movq	-64(%rbp), %r11
-	pushq	%r11
-	movq	-64(%rbp), %r11
-	movq	%r11, -64(%rbp)
-	popq	%r11
-	movq	%r11, -64(%rbp)
-	popq	%r11
-	movq	$14, (%rbx)
-	movq	$72, 8(%rbx)
-	movq	$101, 16(%rbx)
-	movq	$108, 24(%rbx)
-	movq	$108, 32(%rbx)
-	movq	$111, 40(%rbx)
-	movq	$44, 48(%rbx)
-	movq	$32, 56(%rbx)
-	movq	$87, 64(%rbx)
-	movq	$111, 72(%rbx)
-	movq	$114, 80(%rbx)
-	movq	$108, 88(%rbx)
-	movq	$100, 96(%rbx)
-	movq	$33, 104(%rbx)
-	movq	$10, 112(%rbx)
-	pushq	%r11
-	movq	-64(%rbp), %r11
-	pushq	%r11
-	movq	-64(%rbp), %r11
-	movq	%r11, -64(%rbp)
-	popq	%r11
-	movq	%r11, -64(%rbp)
-	popq	%r11
-	addq	$8, %rbx
-	pushq	%r11
-	movq	-64(%rbp), %r11
-	pushq	%r11
-	movq	-64(%rbp), %r11
-	movq	%r11, -64(%rbp)
-	popq	%r11
-	movq	%r11, -64(%rbp)
-	popq	%r11
-	pushq	%r11
-	movq	-64(%rbp), %r11
-	pushq	%r11
-	movq	-64(%rbp), %r11
-	movq	%r11, -64(%rbp)
-	popq	%r11
-	movq	%r11, -64(%rbp)
-	popq	%r11
+	movq	-64(%rbp), %r12
+	movq	$14, (%r12)
+	movq	-64(%rbp), %r12
+	movq	$72, 8(%r12)
+	movq	-64(%rbp), %r12
+	movq	$101, 16(%r12)
+	movq	-64(%rbp), %r12
+	movq	$108, 24(%r12)
+	movq	-64(%rbp), %r12
+	movq	$108, 32(%r12)
+	movq	-64(%rbp), %r12
+	movq	$111, 40(%r12)
+	movq	-64(%rbp), %r12
+	movq	$44, 48(%r12)
+	movq	-64(%rbp), %r12
+	movq	$32, 56(%r12)
+	movq	-64(%rbp), %r12
+	movq	$87, 64(%r12)
+	movq	-64(%rbp), %r12
+	movq	$111, 72(%r12)
+	movq	-64(%rbp), %r12
+	movq	$114, 80(%r12)
+	movq	-64(%rbp), %r12
+	movq	$108, 88(%r12)
+	movq	-64(%rbp), %r12
+	movq	$100, 96(%r12)
+	movq	-64(%rbp), %r12
+	movq	$33, 104(%r12)
+	movq	-64(%rbp), %r12
+	movq	$10, 112(%r12)
+	movq	-64(%rbp), %r14
+	movq	%r14, %r12
+	movq	%r12, -72(%rbp)
+	movq	-72(%rbp), %r14
+	addq	$8, %r14
+	movq	%r14, -72(%rbp)
+	movq	-72(%rbp), %r14
+	movq	%r14, %r12
+	movq	%r12, -80(%rbp)
 	pushq	%rax
 	pushq	%rcx
 	pushq	%rdx
@@ -93,10 +84,11 @@ _Imain_paai:
 	pushq	%r11
 	pushq	%rdi
 	pushq	%rsi
-	pushq	%rsp
-	movq	%rbx, %rdi
+	movq	-80(%rbp), %r14
+	movq	%r14, %rdi
+	subq	$8, %rsp
 	callq	_Iprint_pai
-	popq	%rsp
+	addq	$8, %rsp
 	popq	%rsi
 	popq	%rdi
 	popq	%r11
@@ -106,7 +98,8 @@ _Imain_paai:
 	popq	%rdx
 	popq	%rcx
 	popq	%rax
-	movq	$167, %r11
+	movq	$167, %r14
+	movq	%r14, -88(%rbp)
 	movq	-8(%rbp), %rbx
 	movq	-16(%rbp), %rbp
 	movq	-24(%rbp), %r12

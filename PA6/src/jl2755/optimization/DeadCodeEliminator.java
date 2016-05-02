@@ -52,7 +52,7 @@ public class DeadCodeEliminator extends Optimization{
 			
 			// if var is _RET01, then even if no one uses _RET01, we don't want to
 			// eliminate the stmt because we must return the return value
-			if (var.equals("_RET01")) {
+			if (var.contains("_RET")) {
 				continue;
 			}
 
@@ -74,20 +74,20 @@ public class DeadCodeEliminator extends Optimization{
 				if (!hasSideEffect(stmt)) {
 					optimized = true;
 					
-					ssaGraph.removeDefNode(node);
+					ssaGraph.remove(node);
 					
 					// for each var x_i used by node
-					for (String v: node2use.get(node)) {
-						//remove node from list of uses of each v
-						Set<CFGNode> useSet = var2use.get(v);
-						useSet.remove(node);
-						var2use.put(v, useSet);
-						variables.add(v);
-					}
-					node2use.remove(node);
-					node2def.remove(node);
-					var2def.remove(var);
-					var2use.remove(var);
+//					for (String v: node2use.get(node)) {
+//						//remove node from list of uses of each v
+//						Set<CFGNode> useSet = var2use.get(v);
+//						useSet.remove(node);
+//						var2use.put(v, useSet);
+//						variables.add(v);
+//					}
+//					node2use.remove(node);
+//					node2def.remove(node);
+//					var2def.remove(var);
+//					var2use.remove(var);
 				}
 			}
 		}

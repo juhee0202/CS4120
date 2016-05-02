@@ -205,13 +205,14 @@ public class SSAFormGraph implements OptimizationGraph {
 		assert(children.size() <= 1);
 		CFGNode idom = node.idom;
 		
-		// link idom to children
 		if (idom != null) {
 			idom.children = children;
 		}
 		for (CFGNode child : children) {
 			child.idom = idom;
-		}	
+		}
+		
+		// update maps
 	}
 	
 	/**

@@ -35,42 +35,53 @@ public class CopyPropagator extends Optimization {
 			// probably don't need this
 			// ControlFlowGraph ssaGraph = (ControlFlowGraph)cfg;
 		} else {
-			SSAFormGraph ssaGraph = (SSAFormGraph)cfg;
-			Set<CFGNode> allNodes = new HashSet<CFGNode>();
-			allNodes.addAll(ssaGraph.getAllNodes());
-			for (CFGNode node : allNodes) {
-				IRStmt stmt = ((IRCFGNode)node).underlyingIRStmt;
-				String var = null;
-				String replaceVar = null;
-				if (stmt instanceof IRPhiFunction) {
-					IRPhiFunction phiStmt = (IRPhiFunction)stmt;
-					String[] operands = phiStmt.getOperands();
-					if (operands.length == 1) {
-						var = phiStmt.getVar();
-						replaceVar = operands[0];
-					}
-				} else if (stmt instanceof IRMove) {
-					IRMove moveStmt = (IRMove)stmt;
-					IRExpr target = moveStmt.target();
-					IRExpr expr = moveStmt.expr();
-					if (target instanceof IRTemp && expr instanceof IRTemp) {
-						var = ((IRTemp)target).name();
-						replaceVar = ((IRTemp)expr).name();
-					}
- 				}
-				
-				// either 
-				// 1) var = replaceVar
-				// 2) var = phi(replaceVar)
-				if (var != null && replaceVar != null) {
-					// remove & substitute
-					ssaGraph.remove(node);
-					ssaGraph.substitute(var, replaceVar);
-					modified = true;
-				}
+			boolean result = propagateCopies((SSAFormGraph)cfg);
+			if (result) {
+				modified = true;
+			}
+			while (result) {
+				result = propagateCopies((SSAFormGraph)cfg);
 			}
 		}
 		
+		return modified;
+	}
+	
+	public boolean propagateCopies(SSAFormGraph ssaGraph) {
+		boolean modified = false;
+		Set<CFGNode> allNodes = new HashSet<CFGNode>();
+		allNodes.addAll(ssaGraph.getAllNodes());
+		for (CFGNode node : allNodes) {
+			IRStmt stmt = ((IRCFGNode)node).underlyingIRStmt;
+			String var = null;
+			String replaceVar = null;
+			if (stmt instanceof IRPhiFunction) {
+				IRPhiFunction phiStmt = (IRPhiFunction)stmt;
+				String[] operands = phiStmt.getOperands();
+				if (operands.length == 1) {
+					var = phiStmt.getVar();
+					replaceVar = operands[0];
+				}
+			} else if (stmt instanceof IRMove) {
+				IRMove moveStmt = (IRMove)stmt;
+				IRExpr target = moveStmt.target();
+				IRExpr expr = moveStmt.expr();
+				if (target instanceof IRTemp && expr instanceof IRTemp) {
+					var = ((IRTemp)target).name();
+					replaceVar = ((IRTemp)expr).name();
+				}
+				}
+			
+			// either 
+			// 1) var = replaceVar
+			// 2) var = phi(replaceVar)
+			if (var != null && replaceVar != null) {
+				// remove & substitute
+				ssaGraph.remove(node);
+				ssaGraph.substitute(var, replaceVar);
+				modified = true;
+			}
+		}
 		return modified;
 	}
 }

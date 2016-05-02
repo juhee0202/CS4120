@@ -3,20 +3,9 @@
  (FUNC
   _Imain_paai
   (SEQ
-   (MOVE (TEMP args) (TEMP _ARG0))
-   (MOVE (TEMP x) (CONST 5))
-   (MOVE (TEMP i) (CONST 0))
-   (MOVE
-    (TEMP csetemp0)
-    (MUL
-     (MUL (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x)) (TEMP x))
-     (TEMP x)))
-   (MOVE (TEMP y) (TEMP csetemp0))
-   (LABEL l0)
-   (CJUMP (LT (TEMP i) (CONST 10000)) l1)
-   (MOVE (TEMP z) (TEMP csetemp0))
-   (RETURN)
-   (LABEL l1)
-   (MOVE (TEMP a) (TEMP csetemp0))
-   (MOVE (TEMP c) (TEMP csetemp0))
-   (JUMP (NAME l0)))))
+   (MOVE (TEMP args1) (TEMP _ARG0))
+   (MOVE (TEMP x1) (CONST 5))
+   (MOVE (TEMP y1) (CONST 6))
+   (MOVE (TEMP x2) (TEMP y1))
+   (MOVE (TEMP y2) (ADD (TEMP x2) (TEMP y1)))
+   (RETURN))))

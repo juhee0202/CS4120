@@ -1,41 +1,43 @@
 Testpath "/home/vagrant/xth/tests/pa5/" specified.
 Test script: xthScript
-  xic-build: Buildfile: /home/vagrant/shared/cs4120/pa5/build.xml
-
-build-subprojects:
-
-init:
-
-build-project:
-     [echo] PA1: /home/vagrant/shared/cs4120/pa5/build.xml
-
-build:
-
-BUILD SUCCESSFUL
-Total time: 1 second
-OK
+  xic-build: OK
   Test collection: xic (Test --help)
     []: OK
     [Compiler's standard output:
     usage: xic [options] <source files>
- -h,--help                       Print a synopsis of options.
- -l,--lex <source files>         Generate output from lexical analysis.
- -p,--parse <source files>       Generate output from syntactic analysis.
- -t,--typecheck <source files>   Generate output from semantic analysis.
- -irgen <source files>           Generate intermediate code.
- -irrun <source files>           Generate and interpret intermediate code.
- -sourcepath <path>              Specify where to find input source files.
- -libpath <path>                 Specify where to find library interface
-                                 files. The default is the current
-                                 directory in which xic is run.
- -D <path>                       Specify where to place generated
-                                 diagnostic files.
- -d <path>                       Specify where to place generated assembly
-                                 output files.
- -O                              If specified, optimizations such as
-                                 constant folding will not be performed.
- -target <OS>                    Specify the operating system for which to
-                                 generate code. The default is linux.
+ -h,--help            Print a synopsis of options.
+ -r,--report-opts     Output a list of optimizations supported by this compiler.
+ -l,--lex             Generate output from lexical analysis.
+ -p,--parse           Generate output from syntactic analysis.
+ -t,--typecheck       Generate output from semantic analysis.
+    --irgen           Generate intermediate code.
+    --irrun           Generate and interpret intermediate code.
+    --optir <phase>   Report the intermediate code at the specified phase of
+                      optimization
+    --optcfg <arg>    Report the control-flow graph at the specified phase of
+                      optimization
+ -sourcepath <path>   Specify where to find input source files.
+ -libpath <path>      Specify where to find library interface files. The default
+                      is the current directory in which xic is run.
+ -D <path>            Specify where to place generated diagnostic files.
+ -d <path>            Specify where to place generated assembly output files.
+ -O                   Disable all optimizations
+    --Ocf             Enable only optimization <cf>.
+    --O-no-cf         Disable only optimization <cf>.
+    --Oreg            Enable only optimization <reg>.
+    --O-no-reg        Disable only optimization <reg>.
+    --O-no-mc         Disable only optimization <mc>.
+    --Omc             Enable only optimization <mc>.
+    --O-no-uce        Disable only optimization <uce>.
+    --Ouce            Enable only optimization <uce>.
+    --Ocse            Enable only optimization <cse>.
+    --O-no-cse        Disable only optimization <cse>.
+    --O-no-copy       Disable only optimization <copy>.
+    --Ocopy           Enable only optimization <copy>.
+    --Odce            Enable only optimization <dce>.
+    --O-no-dce        Disable only optimization <dce>.
+ -target <OS>         Specify the operating system for which to generate code.
+                      The default is linux.
 ]
   xic (Test --help): 1 out of 1 tests succeeded.
   Test collection: xic (Test --lex)
@@ -233,8 +235,6 @@ OK
     ex08.xi: OK
     [Compiler's standard output:
     [xic] Typechecking
-*here*
-Expected bool, but found unit
 	Semantic error at ex08.xi:1:1: Expected bool, but found unit
 [xic] Typechecking failed
 ]
@@ -343,75 +343,15 @@ Expected bool, but found unit
     ex01.xi: OK
     [Compiler's standard output:
     [xic] Generating intermediate code
+Optimizing cfg
 [xic] Generating intermediate code completed
 ]
     ack.xi: OK
     [Compiler's standard output:
     [xic] Generating intermediate code
+Optimizing cfg
+Optimizing cfg
+Optimizing cfg
 [xic] Generating intermediate code completed
 ]
-    primes.xi: OK
-    [Compiler's standard output:
-    [xic] Generating intermediate code
-[xic] Generating intermediate code completed
-]
-  xic (Test --irgen): 3 out of 3 tests succeeded.
-Number of IRs: 3
-Number of canonical IRs: 3
-Number of constant-folded IRs: 3
-Number of correct IRs: 3
-  Test collection: xic (Test --irgen -O)
-    ex01.xi: OK
-    [Compiler's standard output:
-    [xic] Generating intermediate code
-[xic] Generating intermediate code completed
-]
-    ack.xi: OK
-    [Compiler's standard output:
-    [xic] Generating intermediate code
-[xic] Generating intermediate code completed
-]
-    primes.xi: OK
-    [Compiler's standard output:
-    [xic] Generating intermediate code
-[xic] Generating intermediate code completed
-]
-  xic (Test --irgen -O): 3 out of 3 tests succeeded.
-Number of IRs: 3
-Number of canonical IRs: 3
-Number of correct IRs: 3
-  Test collection: xic (Test -target linux)
-    ex01.xi: OK
-    [Compiler's standard output:
-    [xic] Generating assembly code
-[xic] Generating assembly code completed
-]
-    ack.xi: OK
-    [Compiler's standard output:
-    [xic] Generating assembly code
-[xic] Generating assembly code completed
-]
-    primes.xi: OK
-    [Compiler's standard output:
-    [xic] Generating assembly code
-[xic] Generating assembly code completed
-]
-  xic (Test -target linux): 3 out of 3 tests succeeded.
-  Test collection: xic (Test -target linux -O)
-    ex01.xi: OK
-    [Compiler's standard output:
-    [xic] Generating assembly code
-[xic] Generating assembly code completed
-]
-    ack.xi: OK
-    [Compiler's standard output:
-    [xic] Generating assembly code
-[xic] Generating assembly code completed
-]
-    primes.xi: OK
-    [Compiler's standard output:
-    [xic] Generating assembly code
-[xic] Generating assembly code completed
-]
-  xic (Test -target linux -O): 3 out of 3 tests succeeded.
-xthScript: 69 out of 69 tests succeeded.
+    primes.xi: 

@@ -1,22 +1,4 @@
 (COMPUNIT
  Program
- (FUNC
-  _Imain_paai
-  (SEQ
-   (MOVE (TEMP x1) (CONST 5))
-   (MOVE (TEMP y1) (CONST 4))
-   (CJUMP (GT (TEMP x1) (CONST 5)) l0)
-   (MOVE (TEMP y3) (ADD (TEMP x1) (CONST 5)))
-   (MOVE (TEMP y4) (TEMP y3))
-   (LABEL l2)
-   (MOVE (TEMP z1) (ADD (TEMP y4) (CONST 3)))
-   (MOVE (TEMP temp11) (CALL (NAME _IunparseInt_aii) (TEMP x1)))
-   (EXP (CALL (NAME _Iprintln_pai) (TEMP temp11)))
-   (MOVE (TEMP temp51) (CALL (NAME _IunparseInt_aii) (TEMP y4)))
-   (EXP (CALL (NAME _Iprintln_pai) (TEMP temp51)))
-   (MOVE (TEMP temp91) (CALL (NAME _IunparseInt_aii) (TEMP z1)))
-   (EXP (CALL (NAME _Iprintln_pai) (TEMP temp91)))
-   (RETURN)
-   (LABEL l0)
-   (MOVE (TEMP y4) (TEMP x1))
-   (JUMP (NAME l2)))))
+ (FUNC _Imain_paai
+  (SEQ (MOVE (TEMP y1) (CONST 6)) (MOVE (TEMP x2) (TEMP y1)) (RETURN))))

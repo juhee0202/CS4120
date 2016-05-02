@@ -60,18 +60,17 @@ public class CFGTester {
 		IRCompUnit cu = file2IR.get(fileName);
 		for (IRFuncDecl fd : cu.functions().values()) {
 			System.out.println("************" + fd.getABIName() + "************");
-			System.out.println("********************");
-			System.out.println("*** Original CFG ***");
-			System.out.println("********************");
+			System.out.println("*******************");
+			System.out.println("*** Original IR ***");
+			System.out.println("*******************");
 			ControlFlowGraph cfg = new ControlFlowGraph(fd);
-			cfg.print();
 			
 			System.out.println("*****************");
 			System.out.println("*** SSA Form ***");
 			System.out.println("*****************");
 			SSAFormConverter converter = new SSAFormConverter(cfg);
 			SSAFormGraph ssaCfg = converter.convertToSSAForm();
-			ssaCfg.print();
+//			System.out.println(converter.convertBack().flattenIntoIR());
 			
 //			System.out.println("********************");
 //			System.out.println("*** DominanceMap ***");
@@ -89,8 +88,8 @@ public class CFGTester {
 
 			List<Optimization> opts = new ArrayList<Optimization>();
 			CopyPropagator copy = new CopyPropagator();
-//			UnreachableCodeEliminator uce = new UnreachableCodeEliminator();
-			opts.add(copy);
+			UnreachableCodeEliminator uce = new UnreachableCodeEliminator();
+//			opts.add(copy);
 			
 			System.out.println("*********************");
 			System.out.println("*** Optimized CFG ***");
@@ -103,13 +102,11 @@ public class CFGTester {
 				}
 			}
 			ControlFlowGraph newCfg = converter.convertBack();
-			newCfg.print();	
 			
 			System.out.println("********************");
 			System.out.println("*** Flattened IR ***");
 			System.out.println("********************");
 			IRFuncDecl newFd = newCfg.flattenIntoIR();
-			System.out.println(newFd);
 		}
 	}
 }

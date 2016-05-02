@@ -108,7 +108,7 @@ public class IRCFGNode extends CFGNode implements Copy<IRCFGNode> {
 		} else if (underlyingIRStmt instanceof IRMove) {
 			replaceUsage(((IRMove)underlyingIRStmt).expr(), var, newVar);
 			IRExpr target = ((IRMove)underlyingIRStmt).target();
-			if (target instanceof IRMem) {
+			if (!(target instanceof IRTemp)) {
 				replaceUsage(target, var, newVar);
 			}
 		} else if (underlyingIRStmt instanceof IRPhiFunction) {

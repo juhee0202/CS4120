@@ -88,4 +88,10 @@ public class ArrayLiteral implements Constant {
 	public boolean isSurroundedParentheses() {
 		return isSurroundedByParentheses;
 	}
+	
+	@Override
+	public String toString() {
+		// TODO: pretty printing array literal
+		return "array literal";
+	}
 }

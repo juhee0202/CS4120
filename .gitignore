@@ -7,6 +7,7 @@ PA3/bin/
 PA4/bin/
 PA5/bin/
 PA6/bin/
+PA6/tests/
 tmp/
 *.tmp
 *.bak

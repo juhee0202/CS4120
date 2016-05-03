@@ -147,8 +147,8 @@ public class CommonSubExpElimination extends Optimization{
 			// hasn't hoisted anything at all. Loop until you find an expression that can be
 			// hoisted from all its parents. If one is found, do work on hoisting it from parents
 			// and using the temp variable in the current node too.
-			System.out.println("The best: " + theBest);
-			System.out.println("The nodes of origin: " + theBest.nodesOfOrigin + "\n\n");
+//			System.out.println("The best: " + theBest);
+//			System.out.println("The nodes of origin: " + theBest.nodesOfOrigin + "\n\n");
 			for (int i = 0; i < theBest.nodesOfOrigin.size(); i++) {
 				IRExprOverrider parentsHoisted = nodeHoistedMap.get(theBest.nodesOfOrigin.get(i));
 				// If parentsHoisted is null, that means that no one else has ever hoisted

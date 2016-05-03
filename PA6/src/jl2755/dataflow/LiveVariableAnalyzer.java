@@ -29,6 +29,8 @@ public class LiveVariableAnalyzer extends Dataflow<Register> {
 	 */
 	private HashMap<AACFGNode, Set<Register>> inMap;
 	
+	private HashMap<AACFGNode, Set<Register>> outMap;
+	
 	/**
 	 * A mapping to keep track of the uses for each AACFGNode.
 	 */
@@ -50,6 +52,7 @@ public class LiveVariableAnalyzer extends Dataflow<Register> {
 		inMap = new HashMap<AACFGNode, Set<Register>>();
 		uses = new HashMap<Instruction, Set<Register>>();
 		defs = new HashMap<Instruction, Register>();
+		outMap = new HashMap<AACFGNode, Set<Register>>();
 		cfg = argCFG;
 		for (CFGNode cfgNode : argCFG.getAllNodes()) {
 			uses.put(((AACFGNode) cfgNode).underlyingInstruction, new HashSet<Register>());
@@ -106,6 +109,9 @@ public class LiveVariableAnalyzer extends Dataflow<Register> {
 		if (defs.get(AAView.underlyingInstruction) != null) {
 			tempSet.remove(defs.get(AAView.underlyingInstruction));
 		}
+		Set<Register> outSet = new HashSet<Register>(tempSet);
+		Set<Register> originalOutSet = outMap.get(AAView);
+		outMap.put(AAView,outSet);
 		
 		tempSet.addAll(uses.get(AAView.underlyingInstruction));
 		
@@ -113,7 +119,7 @@ public class LiveVariableAnalyzer extends Dataflow<Register> {
 		
 		inMap.put(AAView, tempSet);
 
-		return !originalInSet.equals(tempSet);
+		return !originalInSet.equals(tempSet) || !originalOutSet.equals(outSet);
 	}
 
 	/**
@@ -130,6 +136,7 @@ public class LiveVariableAnalyzer extends Dataflow<Register> {
 		while (iteratorVersion.hasNext()) {
 			CFGNode temp = iteratorVersion.next();
 			inMap.put((AACFGNode) temp, new HashSet<Register>());
+			outMap.put((AACFGNode) temp, new HashSet<Register>());
 		}
 		WorklistQueue<CFGNode> ourQueue = new WorklistQueue<CFGNode>();
 		ourQueue.addAll(allNodes);

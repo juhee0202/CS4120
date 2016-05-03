@@ -27,7 +27,8 @@ terminal Boolean TRUE, FALSE;
 terminal IF, ELSE, WHILE, RETURN, USE, PLUS, MINUS, UMINUS, TIMES, HIGH_MULT, INT, BOOL,
   DIVIDE, MODULO, NOT, LT, LEQ, GT, GEQ, AND, OR, EQUAL, NOT_EQUAL, GETS,
   OPEN_BRACKET, CLOSE_BRACKET, OPEN_PAREN, CLOSE_PAREN, OPEN_BRACE, CLOSE_BRACE,
-  COLON, COMMA, SEMICOLON, UNDERSCORE, LENGTH;
+  COLON, COMMA, SEMICOLON, UNDERSCORE, LENGTH,
+  CLASS, EXTENDS, NEW, THIS, BREAK, NULL, DOT;
 
 
 /* Nonterminals */
@@ -37,7 +38,10 @@ non terminal ArrayLiteral array_literal;
 non terminal AssignmentStmt assignment_stmt;
 non terminal BlockStmt block_stmt;
 non terminal Brackets brackets;
+non terminal ClassBody class_body;
+non terminal ClassDecl class_decl;
 non terminal Constant constant;
+non terminal DotableExpr dotable_expr;
 non terminal EmptyArrayType empty_array_type;
 non terminal Expr expr;
 non terminal Expr op_expr;
@@ -46,18 +50,22 @@ non terminal FunctionCall function_call;
 non terminal FunctionDecl function_decl;
 non terminal FunctionDeclList function_decl_list;
 non terminal FunctionParam function_param;
+non terminal GlobalDecl global_decl;
 non terminal Identifier identifier;
+non terminal Identifier identifier_list;
 non terminal IfStmt if_stmt;
 non terminal IndexedBrackets indexed_brackets;
 non terminal Literal literal;
 non terminal MixedArrayType mixed_array_type;
 non terminal MixedBrackets mixed_brackets;
+non terminal ModuleList module_list;
 non terminal NakedStmt naked_stmt;
 non terminal PrimitiveType primitive_type;
 non terminal Program program;
 non terminal ReturnList return_list;
 non terminal ReturnStmt return_stmt;
 non terminal ReturnType return_type;
+non terminal ShortTupleDecl short_tuple_decl;
 non terminal Stmt stmt;
 non terminal StmtList stmt_list;
 non terminal TupleDeclList tuple_decl_list;
@@ -126,14 +134,46 @@ brackets ::= OPEN_BRACKET CLOSE_BRACKET                             {: RESULT = 
              OPEN_BRACKET CLOSE_BRACKET brackets:b                  {: RESULT = new Brackets(b); :}
              ;
 
+//*********************************************************************MODIF**********************************************************
+// Can this be empty?
+class_body ::= global_decl:gd class_body:cb
+               |
+               function_decl:fd class_body:cb
+               |
+               global_decl:gd
+               |
+               function_decl:fd
+               ;
+
+class_decl ::= CLASS identifier OPEN_BRACKET 
+               class_body CLOSE_BRACKET
+               |
+               CLASS identifier EXTENDS identifier OPEN_BRACKET
+               class_body CLOSE_BRACKET
+               ;
+
 constant ::= literal:l                                              {: RESULT = l; :}
              | 
              array_literal:al                                       {: RESULT = al; :}
              ;
 
+dotable_expr ::= identifier:id
+                 |
+                 array_element:ae
+                 |
+                 function_call:fc
+                 |
+                 NEW identifier:id
+                 |
+                 THIS
+                 |
+                 OPEN_PAREN dotable_expr:de CLOSE_PAREN
+                 ;
+
 empty_array_type ::= primitive_type:pt brackets:b                   {: RESULT = new EmptyArrayType(pt, b); :}
                      ;
 
+//*********************************************************************MODIF**********************************************************
 expr ::= constant:c                                                 {: RESULT = c; :}
          |
          op_expr:oe                                                 {: RESULT = oe; :}
@@ -144,7 +184,15 @@ expr ::= constant:c                                                 {: RESULT = 
          |
          function_call:fc                                           {: RESULT = fc; :}
          |
+         NEW identifier:id
+         |
+         THIS
+         |
          OPEN_PAREN expr:expression CLOSE_PAREN                     {: expression.setSurroundedParentheses(); RESULT = expression; :}
+         |
+         dotable_expr:de DOT identifier:id
+         |
+         NULL
          ;
 
 function_arg ::= expr:expression                                    {: RESULT = new FunctionArg(expression); :}
@@ -152,10 +200,17 @@ function_arg ::= expr:expression                                    {: RESULT = 
                  expr:expression COMMA function_arg:fa              {: RESULT = new FunctionArg(expression, fa); :}
                  ;
 
+//*********************************************************************MODIF**********************************************************
 function_call ::= identifier:id OPEN_PAREN 
                   function_arg:fa CLOSE_PAREN                       {: RESULT = new FunctionCall(id, fa); :}
                   |
                   identifier:id OPEN_PAREN CLOSE_PAREN              {: RESULT = new FunctionCall(id); :}
+                  |
+                  dotable_expr:de DOT identifier:id 
+                  OPEN_PAREN CLOSE_PAREN
+                  |
+                  dotable_expr:de DOT identifier:id
+                  OPEN_PAREN function_arg:fa CLOSE_PAREN
                   |
                   LENGTH:l OPEN_PAREN expr:e CLOSE_PAREN            {: RESULT = new FunctionCall(e, lleft, lright); :}
                   ;
@@ -178,8 +233,24 @@ function_param ::= identifier:id COLON type:t                       {: RESULT = 
                    function_param:fp                                {: RESULT = new FunctionParam(id, t, fp); :}
                    ;
 
+//*********************************************************************MODIF**********************************************************
+// Refer to piazza post on initializing fields
+global_decl ::= var_decl:vd SEMICOLON
+             |
+             var_decl:vd
+             |
+             short_tuple_decl:std SEMICOLON
+             |
+             short_tuple_decl:std
+             ;
+
 identifier ::= IDENTIFIER:id                                        {: RESULT = new Identifier(id, idleft, idright); :}
                ; 
+
+identifier_list ::= identifier:id COMMA identifier_list
+                    |
+                    IDENTIFIER:id
+                    ;
 
 if_stmt ::= IF OPEN_PAREN expr:e CLOSE_PAREN stmt:s                 {: RESULT = new IfStmt(e, s); :}
             | 
@@ -216,6 +287,22 @@ mixed_brackets ::= OPEN_BRACKET expr:e CLOSE_BRACKET                {: RESULT = 
                    OPEN_BRACKET expr:e CLOSE_BRACKET brackets:b     {: RESULT = new MixedBrackets(e, b); :}
                    ;
 
+//*********************************************************************MODIF**********************************************************
+module_list ::= class_decl:cb module_list:ml
+                |
+                function_decl:fd module_list:ml
+                |
+                global_decl:gd module_list:ml
+                |
+                class_decl:cb
+                |
+                function_decl:fd
+                |
+                global_decl:gd module_list:ml
+                ;
+
+
+//*********************************************************************MODIF**********************************************************
 naked_stmt ::= assignment_stmt:ass                                  {: RESULT = ass; :}
                |
                if_stmt:is                                           {: RESULT = is; :}
@@ -226,11 +313,15 @@ naked_stmt ::= assignment_stmt:ass                                  {: RESULT = 
                |
                block_stmt:bs                                        {: RESULT = bs; :}
                |
+               short_tuple_decl:std
+               |
                var_decl:vd                                          {: RESULT = vd; :}
                | 
                var_init:vi                                          {: RESULT = vi; :}
                | 
                tuple_init:ti                                        {: RESULT = ti; :}
+               |
+               BREAK
                ;
 
 op_expr ::= MINUS:m expr:e                                          {: RESULT = new UnaryExpr(e, UnaryOp.INT_NEG, mleft, mright); :} %prec UMINUS
@@ -271,9 +362,10 @@ primitive_type ::= INT:i                                            {: RESULT = 
                    BOOL:b                                           {: RESULT = new PrimitiveType(1); :}
                    ;
 
-program ::= function_decl_list:fdl                                  {: RESULT = new Program(fdl); :}
+//*********************************************************************MODIF**********************************************************
+program ::= module_list:ml                                  
             |
-            use_id:useidc function_decl_list:fdl                    {: RESULT = new Program(useidc, fdl); :}
+            use_id:useidc module_list:ml                            {: RESULT = new Program(useidc, fdl); :}
             ;
 
 return_list ::= expr:e                                              {: RESULT = new ReturnList(e); :}
@@ -294,6 +386,10 @@ return_type ::= COLON type_list:tl                                  {: RESULT = 
                 |                       
                                                                     {: RESULT = new ReturnType(); :}
                 ;
+
+//*********************************************************************MODIF**********************************************************
+short_tuple_decl ::= identifier_list:idl COLON type
+                     ;
 
 stmt ::= naked_stmt:ns SEMICOLON                                    {: RESULT = new Stmt(ns, true, nsleft, nsright); :}
          |
@@ -322,9 +418,12 @@ tuple_init ::= UNDERSCORE tuple_decl_list:tdl GETS function_call:fc {: RESULT = 
                UNDERSCORE GETS function_call:fc                     {: RESULT = new TupleInit(fc); :}
                ;
 
+//*********************************************************************MODIF**********************************************************
 type ::= primitive_type:pt                                          {: RESULT = pt; :}
          | 
          empty_array_type:at                                        {: RESULT = at; :}
+         |
+         identifier:id
          ;
 
 type_list ::= type:t                                                {: RESULT = new TypeList(t); :}

@@ -55,6 +55,9 @@ public class DeadCodeEliminator extends Optimization{
 			if (var.contains("_RET")) {
 				continue;
 			}
+			if (var.contains("_ARG")) {
+				continue;
+			}
 
 			if ((var2use.get(var)).isEmpty()) {
 				//stmt = v's statement of def

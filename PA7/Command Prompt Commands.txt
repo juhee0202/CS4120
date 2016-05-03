@@ -1,6 +1,6 @@
 xth /home/vagrant/xth/tests/pa5/xthScript -compilerpath /home/vagrant/shared/cs4120/pa5 -testpath /home/vagrant/xth/tests/pa5 > /home/vagrant/shared/cs4120/pa5/testOutput.txt
 
-java -cp java_cup.jar java_cup.Main -interface /home/vagrant/shared/cs4120/pa4/cup/xi.cup> /home/vagrant/shared/cs4120/pa4/cupOutput.txt
+java -cp java_cup.jar java_cup.Main -interface C:/Users/Jonathan/Desktop/Files/CS4120/vmstuff/shared/CS4120/PA7/cup/xi.cup
 
 ./linkxi.sh /home/vagrant/shared/cs4120/pa5/tests/givenTests/primes.s -o /home/vagrant/shared/cs4120/pa5/tests/givenTests/primes
 

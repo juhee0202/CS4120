@@ -46,6 +46,12 @@ public class SSALiveAnalyzer extends Dataflow<IRTemp>{
 		uses = new HashMap<IRCFGNode, Set<IRExprOverrider>>();
 		defs = new HashMap<IRCFGNode, IRExprOverrider>();
 		outMap = new HashMap<IRCFGNode, Set<IRExprOverrider>>();
+		for (CFGNode node : argCfg.getAllNodes()) {
+			inMap.put((IRCFGNode) node, new HashSet<IRExprOverrider>());
+			uses.put((IRCFGNode) node, new HashSet<IRExprOverrider>());
+			outMap.put((IRCFGNode) node, new HashSet<IRExprOverrider>());
+		}
+		
 		cfg = argCfg;
 		for (CFGNode node : argCfg.getAllNodes()) {
 			IRCFGNode irView = (IRCFGNode) node;
@@ -62,6 +68,9 @@ public class SSALiveAnalyzer extends Dataflow<IRTemp>{
 
 	@Override
 	public boolean transferFunction(CFGNode arg) {
+//		System.out.println("This is the node: " + arg);
+//		System.out.println("This is the successors: " + arg.getSuccessors());
+		
 		CFGNode firstSuccessor = arg.getSuccessor1();
 		CFGNode secondSuccessor = arg.getSuccessor2();
 		
@@ -77,7 +86,9 @@ public class SSALiveAnalyzer extends Dataflow<IRTemp>{
 		// tempSet at this point should be the union
 		// of the ins of the children.
 		Set<IRExprOverrider> outSet = new HashSet<IRExprOverrider>(tempSet);
-		outMap.put(irView, tempSet);
+		Set<IRExprOverrider> originalOutMap = outMap.get(irView);
+		outMap.put(irView, outSet);
+		
 		
 		if (defs.get(arg) != null) {
 			tempSet.remove(defs.get(arg));
@@ -89,7 +100,7 @@ public class SSALiveAnalyzer extends Dataflow<IRTemp>{
 		
 		inMap.put(irView, tempSet);
 		
-		return !originalInSet.equals(tempSet);
+		return !originalInSet.equals(tempSet) || !originalOutMap.equals(outSet);
 	}
 
 	/**
@@ -115,31 +126,35 @@ public class SSALiveAnalyzer extends Dataflow<IRTemp>{
 				ourQueue.addAll(currentNode.getPredecessors());
 			}
 		}
+//		System.out.println("This is inMap: " + inMap);
+//		System.out.println("This is usesMap: " + uses);
+//		System.out.println("This is outMap: " + outMap);
+//		System.out.println("This is defsMap: " + defs);
 	}
 	
 	private void computeUses(IRCFGNode argNode) {
 		IRStmt underlyingStmt = argNode.underlyingIRStmt;
 		if (underlyingStmt instanceof IRCJump) {
 			IRCJump cjumpView = (IRCJump) underlyingStmt;
-			uses.put(argNode, extractUses(cjumpView.expr()));
+			addUse(argNode,extractUses(cjumpView.expr()));
 			return;
 		}
 		if (underlyingStmt instanceof IRExp) {
 			IRExp expView = (IRExp) underlyingStmt;
 			// Sanity check
 			assert(expView.expr() instanceof IRCall);
-			uses.put(argNode, extractUses(expView.expr()));
+			addUse(argNode, extractUses(expView.expr()));
 			return;
 		}
 		if (underlyingStmt instanceof IRMove) {
 			IRMove moveView = (IRMove) underlyingStmt;
 			if (!(moveView.target() instanceof IRTemp)) {
-				uses.put(argNode, extractUses(moveView.target()));
+				addUse(argNode, extractUses(moveView.target()));
 			}
-			uses.put(argNode, extractUses(moveView.expr()));
+			addUse(argNode, extractUses(moveView.expr()));
 			return;
 		}
-		uses.put(argNode, new HashSet<IRExprOverrider>());
+		addUse(argNode, new HashSet<IRExprOverrider>());
 	}
 	
 	private Set<IRExprOverrider> extractUses(IRExpr argExpr) {
@@ -177,7 +192,7 @@ public class SSALiveAnalyzer extends Dataflow<IRTemp>{
 			IRMove moveView = (IRMove) underlyingStmt;
 			if (moveView.target() instanceof IRTemp) {
 				IRExprOverrider overrider = new IRExprOverrider(moveView.target(),null);
-				defs.put(argNode, overrider);
+				addDef(argNode,overrider);
 				return;
 			}
 		}

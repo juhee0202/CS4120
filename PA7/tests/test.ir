@@ -1,0 +1,253 @@
+(COMPUNIT
+ Program
+ (FUNC
+  _Imain_paai
+  (SEQ
+   (MOVE (TEMP args) (TEMP _ARG0))
+   (MOVE
+    (TEMP a)
+    (ESEQ
+     (SEQ
+      (MOVE (TEMP t0) (CALL (NAME _I_alloc_i) (CONST 32)))
+      (MOVE (MEM (TEMP t0)) (CONST 3))
+      (MOVE (MEM (ADD (CONST 8) (TEMP t0))) (CONST 1))
+      (MOVE (MEM (ADD (CONST 16) (TEMP t0))) (CONST 2))
+      (MOVE (MEM (ADD (CONST 24) (TEMP t0))) (CONST 3))
+      (MOVE (TEMP t0) (ADD (TEMP t0) (CONST 8))))
+     (TEMP t0)))
+   (SEQ
+    (MOVE (TEMP t1) (CALL (NAME _If_iaii) (TEMP a) (CONST 0)))
+    (MOVE (TEMP t2) (CALL (NAME _If_iaii) (TEMP a) (CONST 0)))
+    (MOVE (TEMP t3) (CALL (NAME _If_iaii) (TEMP a) (CONST 0)))
+    (MOVE (TEMP t4)
+     (CALL (NAME _I_alloc_i) (MUL (ADD (TEMP t1) (CONST 1)) (CONST 8))))
+    (MOVE (MEM (TEMP t4)) (TEMP t1))
+    (MOVE (TEMP t4) (ADD (TEMP t4) (CONST 8)))
+    (MOVE (TEMP t5) (CONST 0))
+    (LABEL l0)
+    (CJUMP (LT (TEMP t5) (TEMP t1)) l1 l2)
+    (LABEL l1)
+    (MOVE
+     (MEM (ADD (TEMP t4) (MUL (TEMP t5) (CONST 8))))
+     (ESEQ
+      (SEQ
+       (MOVE (TEMP t6)
+        (CALL (NAME _I_alloc_i) (MUL (ADD (TEMP t2) (CONST 1)) (CONST 8))))
+       (MOVE (MEM (TEMP t6)) (TEMP t2))
+       (MOVE (TEMP t6) (ADD (TEMP t6) (CONST 8)))
+       (MOVE (TEMP t7) (CONST 0))
+       (LABEL l3)
+       (CJUMP (LT (TEMP t7) (TEMP t2)) l4 l5)
+       (LABEL l4)
+       (MOVE
+        (MEM (ADD (TEMP t6) (MUL (TEMP t7) (CONST 8))))
+        (ESEQ
+         (SEQ
+          (MOVE (TEMP t8)
+           (CALL (NAME _I_alloc_i) (MUL (ADD (TEMP t3) (CONST 1)) (CONST 8))))
+          (MOVE (MEM (TEMP t8)) (TEMP t3))
+          (MOVE (TEMP t8) (ADD (TEMP t8) (CONST 8)))
+          (MOVE (TEMP t9) (CONST 0))
+          (LABEL l6)
+          (CJUMP (LT (TEMP t9) (TEMP t3)) l7 l8)
+          (LABEL l7)
+          (MOVE (MEM (ADD (TEMP t8) (MUL (TEMP t9) (CONST 8)))) (CONST 97))
+          (MOVE (TEMP t9) (ADD (TEMP t9) (CONST 1)))
+          (JUMP (NAME l6))
+          (LABEL l8))
+         (TEMP t8)))
+       (MOVE (TEMP t7) (ADD (TEMP t7) (CONST 1)))
+       (JUMP (NAME l3))
+       (LABEL l5))
+      (TEMP t6)))
+    (MOVE (TEMP t5) (ADD (TEMP t5) (CONST 1)))
+    (JUMP (NAME l0))
+    (LABEL l2)
+    (MOVE (TEMP x) (TEMP t4)))
+   (EXP
+    (CALL (NAME _Iprintln_pai)
+     (CALL (NAME _IunparseInt_aii) (MEM (SUB (TEMP x) (CONST 8))))))
+   (EXP
+    (CALL
+     (NAME _Iprintln_pai)
+     (CALL (NAME _IunparseInt_aii)
+      (MEM (SUB (MEM (ADD (TEMP x) (MUL (CONST 8) (CONST 0)))) (CONST 8))))))
+   (EXP
+    (CALL
+     (NAME _Iprintln_pai)
+     (CALL
+      (NAME _IunparseInt_aii)
+      (MEM
+       (SUB
+        (MEM
+         (ADD (MEM (ADD (TEMP x) (MUL (CONST 8) (CONST 0))))
+          (MUL (CONST 8) (CONST 0))))
+        (CONST 8))))))
+   (EXP
+    (CALL
+     (NAME _Iprintln_pai)
+     (CALL (NAME _IunparseInt_aii)
+      (MEM (ADD (TEMP a) (MUL (CONST 8) (CONST 0)))))))
+   (EXP
+    (CALL
+     (NAME _Iprintln_pai)
+     (CALL (NAME _IunparseInt_aii)
+      (MEM (ADD (TEMP a) (MUL (CONST 8) (CONST 1)))))))
+   (EXP
+    (CALL
+     (NAME _Iprintln_pai)
+     (CALL (NAME _IunparseInt_aii)
+      (MEM (ADD (TEMP a) (MUL (CONST 8) (CONST 2)))))))))
+ (FUNC
+  _If_iaii
+  (SEQ
+   (MOVE (TEMP a) (TEMP _ARG0))
+   (MOVE (TEMP i) (TEMP _ARG1))
+   (EXP
+    (CALL
+     (NAME _Iprint_pai)
+     (ESEQ
+      (SEQ
+       (MOVE (TEMP t10) (CALL (NAME _I_alloc_i) (CONST 64)))
+       (MOVE (MEM (TEMP t10)) (CONST 7))
+       (MOVE (MEM (ADD (CONST 8) (TEMP t10))) (CONST 73))
+       (MOVE (MEM (ADD (CONST 16) (TEMP t10))) (CONST 110))
+       (MOVE (MEM (ADD (CONST 24) (TEMP t10))) (CONST 100))
+       (MOVE (MEM (ADD (CONST 32) (TEMP t10))) (CONST 101))
+       (MOVE (MEM (ADD (CONST 40) (TEMP t10))) (CONST 120))
+       (MOVE (MEM (ADD (CONST 48) (TEMP t10))) (CONST 58))
+       (MOVE (MEM (ADD (CONST 56) (TEMP t10))) (CONST 32))
+       (MOVE (TEMP t10) (ADD (TEMP t10) (CONST 8))))
+      (TEMP t10))))
+   (EXP (CALL (NAME _Iprintln_pai) (CALL (NAME _IunparseInt_aii) (TEMP i))))
+   (MOVE (MEM (ADD (TEMP a) (MUL (CONST 8) (TEMP i))))
+    (ADD (MEM (ADD (TEMP a) (MUL (CONST 8) (TEMP i)))) (CONST 1)))
+   (MOVE (TEMP _RET0) (MEM (ADD (TEMP a) (MUL (CONST 8) (TEMP i)))))
+   (RETURN))))
+(COMPUNIT
+ Program
+ (FUNC
+  _Imain_paai
+  (SEQ
+   (MOVE (TEMP args) (TEMP _ARG0))
+   (MOVE (TEMP temp0) (CONST 32))
+   (MOVE (TEMP temp1) (CALL (NAME _I_alloc_i) (TEMP temp0)))
+   (MOVE (TEMP t0) (TEMP temp1))
+   (MOVE (MEM (TEMP t0)) (CONST 3))
+   (MOVE (MEM (ADD (CONST 8) (TEMP t0))) (CONST 1))
+   (MOVE (MEM (ADD (CONST 16) (TEMP t0))) (CONST 2))
+   (MOVE (MEM (ADD (CONST 24) (TEMP t0))) (CONST 3))
+   (MOVE (TEMP t0) (ADD (TEMP t0) (CONST 8)))
+   (MOVE (TEMP a) (TEMP t0))
+   (MOVE (TEMP temp2) (TEMP a))
+   (MOVE (TEMP temp3) (CONST 0))
+   (MOVE (TEMP temp4) (CALL (NAME _If_iaii) (TEMP temp2) (TEMP temp3)))
+   (MOVE (TEMP t1) (TEMP temp4))
+   (MOVE (TEMP temp5) (TEMP a))
+   (MOVE (TEMP temp6) (CONST 0))
+   (MOVE (TEMP temp7) (CALL (NAME _If_iaii) (TEMP temp5) (TEMP temp6)))
+   (MOVE (TEMP t2) (TEMP temp7))
+   (MOVE (TEMP temp8) (TEMP a))
+   (MOVE (TEMP temp9) (CONST 0))
+   (MOVE (TEMP temp10) (CALL (NAME _If_iaii) (TEMP temp8) (TEMP temp9)))
+   (MOVE (TEMP t3) (TEMP temp10))
+   (MOVE (TEMP temp11) (MUL (ADD (TEMP t1) (CONST 1)) (CONST 8)))
+   (MOVE (TEMP temp12) (CALL (NAME _I_alloc_i) (TEMP temp11)))
+   (MOVE (TEMP t4) (TEMP temp12))
+   (MOVE (MEM (TEMP t4)) (TEMP t1))
+   (MOVE (TEMP t4) (ADD (TEMP t4) (CONST 8)))
+   (MOVE (TEMP t5) (CONST 0))
+   (LABEL l0)
+   (CJUMP (LT (TEMP t5) (TEMP t1)) l1)
+   (LABEL l2)
+   (MOVE (TEMP x) (TEMP t4))
+   (MOVE (TEMP temp17) (MEM (SUB (TEMP x) (CONST 8))))
+   (MOVE (TEMP temp18) (CALL (NAME _IunparseInt_aii) (TEMP temp17)))
+   (MOVE (TEMP temp19) (TEMP temp18))
+   (EXP (CALL (NAME _Iprintln_pai) (TEMP temp19)))
+   (MOVE (TEMP temp21)
+    (MEM (SUB (MEM (ADD (TEMP x) (MUL (CONST 8) (CONST 0)))) (CONST 8))))
+   (MOVE (TEMP temp22) (CALL (NAME _IunparseInt_aii) (TEMP temp21)))
+   (MOVE (TEMP temp23) (TEMP temp22))
+   (EXP (CALL (NAME _Iprintln_pai) (TEMP temp23)))
+   (MOVE
+    (TEMP temp25)
+    (MEM
+     (SUB
+      (MEM
+       (ADD (MEM (ADD (TEMP x) (MUL (CONST 8) (CONST 0))))
+        (MUL (CONST 8) (CONST 0))))
+      (CONST 8))))
+   (MOVE (TEMP temp26) (CALL (NAME _IunparseInt_aii) (TEMP temp25)))
+   (MOVE (TEMP temp27) (TEMP temp26))
+   (EXP (CALL (NAME _Iprintln_pai) (TEMP temp27)))
+   (MOVE (TEMP temp29) (MEM (ADD (TEMP a) (MUL (CONST 8) (CONST 0)))))
+   (MOVE (TEMP temp30) (CALL (NAME _IunparseInt_aii) (TEMP temp29)))
+   (MOVE (TEMP temp31) (TEMP temp30))
+   (EXP (CALL (NAME _Iprintln_pai) (TEMP temp31)))
+   (MOVE (TEMP temp33) (MEM (ADD (TEMP a) (MUL (CONST 8) (CONST 1)))))
+   (MOVE (TEMP temp34) (CALL (NAME _IunparseInt_aii) (TEMP temp33)))
+   (MOVE (TEMP temp35) (TEMP temp34))
+   (EXP (CALL (NAME _Iprintln_pai) (TEMP temp35)))
+   (MOVE (TEMP temp37) (MEM (ADD (TEMP a) (MUL (CONST 8) (CONST 2)))))
+   (MOVE (TEMP temp38) (CALL (NAME _IunparseInt_aii) (TEMP temp37)))
+   (MOVE (TEMP temp39) (TEMP temp38))
+   (EXP (CALL (NAME _Iprintln_pai) (TEMP temp39)))
+   (RETURN)
+   (LABEL l1)
+   (MOVE (TEMP temp13) (MUL (ADD (TEMP t2) (CONST 1)) (CONST 8)))
+   (MOVE (TEMP temp14) (CALL (NAME _I_alloc_i) (TEMP temp13)))
+   (MOVE (TEMP t6) (TEMP temp14))
+   (MOVE (MEM (TEMP t6)) (TEMP t2))
+   (MOVE (TEMP t6) (ADD (TEMP t6) (CONST 8)))
+   (MOVE (TEMP t7) (CONST 0))
+   (LABEL l3)
+   (CJUMP (LT (TEMP t7) (TEMP t2)) l4)
+   (LABEL l5)
+   (MOVE (MEM (ADD (TEMP t4) (MUL (TEMP t5) (CONST 8)))) (TEMP t6))
+   (MOVE (TEMP t5) (ADD (TEMP t5) (CONST 1)))
+   (JUMP (NAME l0))
+   (LABEL l4)
+   (MOVE (TEMP temp15) (MUL (ADD (TEMP t3) (CONST 1)) (CONST 8)))
+   (MOVE (TEMP temp16) (CALL (NAME _I_alloc_i) (TEMP temp15)))
+   (MOVE (TEMP t8) (TEMP temp16))
+   (MOVE (MEM (TEMP t8)) (TEMP t3))
+   (MOVE (TEMP t8) (ADD (TEMP t8) (CONST 8)))
+   (MOVE (TEMP t9) (CONST 0))
+   (LABEL l6)
+   (CJUMP (LT (TEMP t9) (TEMP t3)) l7)
+   (LABEL l8)
+   (MOVE (MEM (ADD (TEMP t6) (MUL (TEMP t7) (CONST 8)))) (TEMP t8))
+   (MOVE (TEMP t7) (ADD (TEMP t7) (CONST 1)))
+   (JUMP (NAME l3))
+   (LABEL l7)
+   (MOVE (MEM (ADD (TEMP t8) (MUL (TEMP t9) (CONST 8)))) (CONST 97))
+   (MOVE (TEMP t9) (ADD (TEMP t9) (CONST 1)))
+   (JUMP (NAME l6))))
+ (FUNC
+  _If_iaii
+  (SEQ
+   (MOVE (TEMP a) (TEMP _ARG0))
+   (MOVE (TEMP i) (TEMP _ARG1))
+   (MOVE (TEMP temp41) (CONST 64))
+   (MOVE (TEMP temp42) (CALL (NAME _I_alloc_i) (TEMP temp41)))
+   (MOVE (TEMP t10) (TEMP temp42))
+   (MOVE (MEM (TEMP t10)) (CONST 7))
+   (MOVE (MEM (ADD (CONST 8) (TEMP t10))) (CONST 73))
+   (MOVE (MEM (ADD (CONST 16) (TEMP t10))) (CONST 110))
+   (MOVE (MEM (ADD (CONST 24) (TEMP t10))) (CONST 100))
+   (MOVE (MEM (ADD (CONST 32) (TEMP t10))) (CONST 101))
+   (MOVE (MEM (ADD (CONST 40) (TEMP t10))) (CONST 120))
+   (MOVE (MEM (ADD (CONST 48) (TEMP t10))) (CONST 58))
+   (MOVE (MEM (ADD (CONST 56) (TEMP t10))) (CONST 32))
+   (MOVE (TEMP t10) (ADD (TEMP t10) (CONST 8)))
+   (MOVE (TEMP temp43) (TEMP t10))
+   (EXP (CALL (NAME _Iprint_pai) (TEMP temp43)))
+   (MOVE (TEMP temp45) (TEMP i))
+   (MOVE (TEMP temp46) (CALL (NAME _IunparseInt_aii) (TEMP temp45)))
+   (MOVE (TEMP temp47) (TEMP temp46))
+   (EXP (CALL (NAME _Iprintln_pai) (TEMP temp47)))
+   (MOVE (MEM (ADD (TEMP a) (MUL (CONST 8) (TEMP i))))
+    (ADD (MEM (ADD (TEMP a) (MUL (CONST 8) (TEMP i)))) (CONST 1)))
+   (MOVE (TEMP _RET0) (MEM (ADD (TEMP a) (MUL (CONST 8) (TEMP i)))))
+   (RETURN))))

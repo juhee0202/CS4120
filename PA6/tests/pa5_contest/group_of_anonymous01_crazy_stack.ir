@@ -1,0 +1,556 @@
+(COMPUNIT
+ Program
+ (FUNC
+  _Imain_paai
+  (SEQ
+   (MOVE (TEMP Z) (TEMP _ARG0))
+   (EXP (CALL (NAME _Ibn_t39iiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii)))
+   (MOVE (TEMP a) (TEMP _RET0))
+   (MOVE (TEMP b) (TEMP _RET1))
+   (MOVE (TEMP c) (TEMP _RET2))
+   (MOVE (TEMP d) (TEMP _RET3))
+   (MOVE (TEMP e) (TEMP _RET4))
+   (MOVE (TEMP f) (TEMP _RET5))
+   (MOVE (TEMP g) (TEMP _RET6))
+   (MOVE (TEMP h) (TEMP _RET7))
+   (MOVE (TEMP i) (TEMP _RET8))
+   (MOVE (TEMP j) (TEMP _RET9))
+   (MOVE (TEMP k) (TEMP _RET10))
+   (MOVE (TEMP l) (TEMP _RET11))
+   (MOVE (TEMP m) (TEMP _RET12))
+   (MOVE (TEMP n) (TEMP _RET13))
+   (MOVE (TEMP o) (TEMP _RET14))
+   (MOVE (TEMP p) (TEMP _RET15))
+   (MOVE (TEMP q) (TEMP _RET16))
+   (MOVE (TEMP r) (TEMP _RET17))
+   (MOVE (TEMP s) (TEMP _RET18))
+   (MOVE (TEMP t) (TEMP _RET19))
+   (MOVE (TEMP u) (TEMP _RET20))
+   (MOVE (TEMP v) (TEMP _RET21))
+   (MOVE (TEMP w) (TEMP _RET22))
+   (MOVE (TEMP x) (TEMP _RET23))
+   (MOVE (TEMP y) (TEMP _RET24))
+   (MOVE (TEMP z) (TEMP _RET25))
+   (MOVE (TEMP A) (TEMP _RET26))
+   (MOVE (TEMP B) (TEMP _RET27))
+   (MOVE (TEMP C) (TEMP _RET28))
+   (MOVE (TEMP D) (TEMP _RET29))
+   (MOVE (TEMP E) (TEMP _RET30))
+   (MOVE (TEMP F) (TEMP _RET31))
+   (MOVE (TEMP G) (TEMP _RET32))
+   (MOVE (TEMP H) (TEMP _RET33))
+   (MOVE (TEMP I) (TEMP _RET34))
+   (MOVE (TEMP J) (TEMP _RET35))
+   (MOVE (TEMP K) (TEMP _RET36))
+   (MOVE (TEMP L) (TEMP _RET37))
+   (MOVE (TEMP M) (TEMP _RET38))
+   (MOVE (TEMP temp1) (CONST 16))
+   (MOVE (TEMP temp2) (CALL (NAME _I_alloc_i) (TEMP temp1)))
+   (MOVE (TEMP t1) (TEMP temp2))
+   (MOVE (MEM (TEMP t1)) (CONST 1))
+   (MOVE (MEM (ADD (CONST 8) (TEMP t1))) (CONST 0))
+   (MOVE (TEMP t1) (ADD (TEMP t1) (CONST 8)))
+   (MOVE (TEMP array) (TEMP t1))
+   (MOVE
+    (TEMP t2)
+    (ADD
+     (ADD
+      (ADD
+       (ADD
+        (ADD
+         (ADD
+          (ADD
+           (ADD
+            (ADD
+             (ADD
+              (ADD
+               (ADD
+                (ADD
+                 (ADD
+                  (ADD
+                   (ADD
+                    (ADD
+                     (ADD
+                      (ADD
+                       (ADD
+                        (ADD
+                         (ADD
+                          (ADD
+                           (ADD
+                            (ADD
+                             (ADD
+                              (ADD
+                               (ADD
+                                (ADD
+                                 (ADD
+                                  (ADD
+                                   (ADD
+                                    (ADD
+                                     (ADD
+                                      (ADD
+                                       (ADD
+                                        (ADD
+                                         (ADD (ADD (TEMP a) (TEMP b)) (TEMP c))
+                                         (TEMP d))
+                                        (TEMP e))
+                                       (TEMP f))
+                                      (TEMP g))
+                                     (TEMP h))
+                                    (TEMP i))
+                                   (TEMP j))
+                                  (TEMP k))
+                                 (TEMP l))
+                                (TEMP m))
+                               (TEMP n))
+                              (TEMP o))
+                             (TEMP p))
+                            (TEMP q))
+                           (TEMP r))
+                          (TEMP s))
+                         (TEMP t))
+                        (TEMP u))
+                       (TEMP v))
+                      (TEMP w))
+                     (TEMP x))
+                    (TEMP y))
+                   (TEMP z))
+                  (TEMP A))
+                 (TEMP B))
+                (TEMP C))
+               (TEMP D))
+              (TEMP E))
+             (TEMP F))
+            (TEMP G))
+           (TEMP H))
+          (TEMP I))
+         (TEMP J))
+        (TEMP K))
+       (TEMP L))
+      (TEMP M))
+     (CONST -171)))
+   (MOVE (TEMP t3) (MEM (SUB (TEMP array) (CONST 8))))
+   (CJUMP (LT (TEMP t2) (CONST 0)) l1)
+   (CJUMP (LT (TEMP t2) (TEMP t3)) l2)
+   (LABEL l1)
+   (EXP (CALL (NAME _I_outOfBounds_p)))
+   (LABEL label0)
+   (RETURN)
+   (LABEL l2)
+   (MOVE (MEM (ADD (TEMP array) (MUL (CONST 8) (TEMP t2)))) (CONST 0))
+   (MOVE (TEMP temp4) (CONST 0))
+   (MOVE (TEMP temp5) (CONST 1))
+   (MOVE (TEMP temp6) (CONST 2))
+   (MOVE (TEMP temp7) (CONST 3))
+   (MOVE (TEMP temp8) (CONST 4))
+   (MOVE (TEMP temp9) (CONST 5))
+   (MOVE (TEMP temp10) (CONST 6))
+   (MOVE (TEMP temp11) (CONST 7))
+   (MOVE (TEMP temp12) (CONST 8))
+   (MOVE (TEMP temp13) (CONST 9))
+   (MOVE (TEMP temp14) (CONST 0))
+   (MOVE (TEMP temp15) (CONST 1))
+   (MOVE (TEMP temp16) (CONST 2))
+   (MOVE (TEMP temp17) (CONST 3))
+   (MOVE (TEMP temp18) (CONST 4))
+   (MOVE (TEMP temp19) (CONST 5))
+   (MOVE (TEMP temp20) (CONST 6))
+   (MOVE (TEMP temp21) (CONST 7))
+   (MOVE (TEMP temp22) (CONST 8))
+   (MOVE (TEMP temp23) (CONST 9))
+   (MOVE (TEMP temp24) (CONST 0))
+   (MOVE (TEMP temp25) (CONST 1))
+   (MOVE (TEMP temp26) (CONST 2))
+   (MOVE (TEMP temp27) (CONST 3))
+   (MOVE (TEMP temp28) (CONST 4))
+   (MOVE (TEMP temp29) (CONST 5))
+   (MOVE (TEMP temp30) (CONST 6))
+   (MOVE (TEMP temp31) (CONST 7))
+   (MOVE (TEMP temp32) (CONST 8))
+   (MOVE (TEMP temp33) (CONST 9))
+   (MOVE (TEMP temp34) (CONST 0))
+   (MOVE (TEMP temp35) (CONST 1))
+   (MOVE (TEMP temp36) (CONST 2))
+   (MOVE (TEMP temp37) (CONST 3))
+   (MOVE (TEMP temp38) (CONST 4))
+   (MOVE (TEMP temp39) (CONST 5))
+   (MOVE (TEMP temp40) (CONST 6))
+   (MOVE (TEMP temp41) (CONST 7))
+   (MOVE (TEMP temp42) (CONST 8))
+   (MOVE (TEMP temp43) (CONST 9))
+   (MOVE (TEMP temp44) (CONST 0))
+   (MOVE (TEMP temp45) (CONST 1))
+   (MOVE (TEMP temp46) (CONST 2))
+   (MOVE (TEMP temp47) (CONST 3))
+   (MOVE (TEMP temp48) (CONST 4))
+   (MOVE (TEMP temp49) (CONST 5))
+   (MOVE (TEMP temp50) (CONST 6))
+   (MOVE (TEMP temp51) (CONST 7))
+   (MOVE (TEMP temp52) (CONST 8))
+   (MOVE (TEMP temp53) (CONST 9))
+   (MOVE (TEMP temp54) (CONST 0))
+   (MOVE (TEMP temp55) (CONST 1))
+   (MOVE (TEMP temp56) (CONST 2))
+   (MOVE (TEMP temp57) (CONST 3))
+   (MOVE (TEMP temp58) (CONST 4))
+   (MOVE (TEMP temp59) (CONST 5))
+   (MOVE (TEMP temp60) (CONST 6))
+   (MOVE (TEMP temp61) (CONST 7))
+   (MOVE (TEMP temp62) (CONST 8))
+   (MOVE (TEMP temp63) (CONST 9))
+   (MOVE (TEMP temp64) (CONST 0))
+   (MOVE (TEMP temp65) (CONST 1))
+   (MOVE (TEMP temp66) (CONST 2))
+   (MOVE (TEMP temp67) (CONST 3))
+   (MOVE (TEMP temp68) (CONST 4))
+   (MOVE (TEMP temp69) (CONST 5))
+   (MOVE (TEMP temp70) (CONST 6))
+   (MOVE (TEMP temp71) (CONST 7))
+   (MOVE (TEMP temp72) (CONST 8))
+   (EXP
+    (CALL
+     (NAME
+      _Ifn_t2iaiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii)
+     (TEMP temp4)
+     (TEMP temp5)
+     (TEMP temp6)
+     (TEMP temp7)
+     (TEMP temp8)
+     (TEMP temp9)
+     (TEMP temp10)
+     (TEMP temp11)
+     (TEMP temp12)
+     (TEMP temp13)
+     (TEMP temp14)
+     (TEMP temp15)
+     (TEMP temp16)
+     (TEMP temp17)
+     (TEMP temp18)
+     (TEMP temp19)
+     (TEMP temp20)
+     (TEMP temp21)
+     (TEMP temp22)
+     (TEMP temp23)
+     (TEMP temp24)
+     (TEMP temp25)
+     (TEMP temp26)
+     (TEMP temp27)
+     (TEMP temp28)
+     (TEMP temp29)
+     (TEMP temp30)
+     (TEMP temp31)
+     (TEMP temp32)
+     (TEMP temp33)
+     (TEMP temp34)
+     (TEMP temp35)
+     (TEMP temp36)
+     (TEMP temp37)
+     (TEMP temp38)
+     (TEMP temp39)
+     (TEMP temp40)
+     (TEMP temp41)
+     (TEMP temp42)
+     (TEMP temp43)
+     (TEMP temp44)
+     (TEMP temp45)
+     (TEMP temp46)
+     (TEMP temp47)
+     (TEMP temp48)
+     (TEMP temp49)
+     (TEMP temp50)
+     (TEMP temp51)
+     (TEMP temp52)
+     (TEMP temp53)
+     (TEMP temp54)
+     (TEMP temp55)
+     (TEMP temp56)
+     (TEMP temp57)
+     (TEMP temp58)
+     (TEMP temp59)
+     (TEMP temp60)
+     (TEMP temp61)
+     (TEMP temp62)
+     (TEMP temp63)
+     (TEMP temp64)
+     (TEMP temp65)
+     (TEMP temp66)
+     (TEMP temp67)
+     (TEMP temp68)
+     (TEMP temp69)
+     (TEMP temp70)
+     (TEMP temp71)
+     (TEMP temp72)))
+   (MOVE (TEMP a2) (TEMP _RET0))
+   (MOVE (TEMP arr) (TEMP _RET1))
+   (MOVE (TEMP t4) (ADD (TEMP a2) (CONST -306)))
+   (MOVE (TEMP t5) (MEM (SUB (TEMP arr) (CONST 8))))
+   (CJUMP (LT (TEMP t4) (CONST 0)) l4)
+   (CJUMP (LT (TEMP t4) (TEMP t5)) l5)
+   (LABEL l4)
+   (EXP (CALL (NAME _I_outOfBounds_p)))
+   (JUMP (NAME label0))
+   (LABEL l5)
+   (MOVE (MEM (ADD (TEMP arr) (MUL (CONST 8) (TEMP t4)))) (TEMP a2))
+   (JUMP (NAME label0))))
+ (FUNC
+  _Ibn_t39iiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii
+  (SEQ
+   (MOVE (TEMP _RET0) (CONST 0))
+   (MOVE (TEMP _RET1) (CONST 1))
+   (MOVE (TEMP _RET2) (CONST 2))
+   (MOVE (TEMP _RET3) (CONST 3))
+   (MOVE (TEMP _RET4) (CONST 4))
+   (MOVE (TEMP _RET5) (CONST 5))
+   (MOVE (TEMP _RET6) (CONST 6))
+   (MOVE (TEMP _RET7) (CONST 7))
+   (MOVE (TEMP _RET8) (CONST 8))
+   (MOVE (TEMP _RET9) (CONST 9))
+   (MOVE (TEMP _RET10) (CONST 0))
+   (MOVE (TEMP _RET11) (CONST 1))
+   (MOVE (TEMP _RET12) (CONST 2))
+   (MOVE (TEMP _RET13) (CONST 3))
+   (MOVE (TEMP _RET14) (CONST 4))
+   (MOVE (TEMP _RET15) (CONST 5))
+   (MOVE (TEMP _RET16) (CONST 6))
+   (MOVE (TEMP _RET17) (CONST 7))
+   (MOVE (TEMP _RET18) (CONST 8))
+   (MOVE (TEMP _RET19) (CONST 9))
+   (MOVE (TEMP _RET20) (CONST 0))
+   (MOVE (TEMP _RET21) (CONST 1))
+   (MOVE (TEMP _RET22) (CONST 2))
+   (MOVE (TEMP _RET23) (CONST 3))
+   (MOVE (TEMP _RET24) (CONST 4))
+   (MOVE (TEMP _RET25) (CONST 5))
+   (MOVE (TEMP _RET26) (CONST 6))
+   (MOVE (TEMP _RET27) (CONST 7))
+   (MOVE (TEMP _RET28) (CONST 8))
+   (MOVE (TEMP _RET29) (CONST 9))
+   (MOVE (TEMP _RET30) (CONST 0))
+   (MOVE (TEMP _RET31) (CONST 1))
+   (MOVE (TEMP _RET32) (CONST 2))
+   (MOVE (TEMP _RET33) (CONST 3))
+   (MOVE (TEMP _RET34) (CONST 4))
+   (MOVE (TEMP _RET35) (CONST 5))
+   (MOVE (TEMP _RET36) (CONST 6))
+   (MOVE (TEMP _RET37) (CONST 7))
+   (MOVE (TEMP _RET38) (CONST 8))
+   (RETURN)))
+ (FUNC
+  _Ifn_t2iaiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii
+  (SEQ
+   (MOVE (TEMP a) (TEMP _ARG0))
+   (MOVE (TEMP b) (TEMP _ARG1))
+   (MOVE (TEMP c) (TEMP _ARG2))
+   (MOVE (TEMP d) (TEMP _ARG3))
+   (MOVE (TEMP e) (TEMP _ARG4))
+   (MOVE (TEMP f) (TEMP _ARG5))
+   (MOVE (TEMP g) (TEMP _ARG6))
+   (MOVE (TEMP h) (TEMP _ARG7))
+   (MOVE (TEMP i) (TEMP _ARG8))
+   (MOVE (TEMP j) (TEMP _ARG9))
+   (MOVE (TEMP k) (TEMP _ARG10))
+   (MOVE (TEMP l) (TEMP _ARG11))
+   (MOVE (TEMP m) (TEMP _ARG12))
+   (MOVE (TEMP n) (TEMP _ARG13))
+   (MOVE (TEMP o) (TEMP _ARG14))
+   (MOVE (TEMP p) (TEMP _ARG15))
+   (MOVE (TEMP q) (TEMP _ARG16))
+   (MOVE (TEMP r) (TEMP _ARG17))
+   (MOVE (TEMP s) (TEMP _ARG18))
+   (MOVE (TEMP t) (TEMP _ARG19))
+   (MOVE (TEMP u) (TEMP _ARG20))
+   (MOVE (TEMP v) (TEMP _ARG21))
+   (MOVE (TEMP w) (TEMP _ARG22))
+   (MOVE (TEMP x) (TEMP _ARG23))
+   (MOVE (TEMP y) (TEMP _ARG24))
+   (MOVE (TEMP z) (TEMP _ARG25))
+   (MOVE (TEMP A) (TEMP _ARG26))
+   (MOVE (TEMP B) (TEMP _ARG27))
+   (MOVE (TEMP C) (TEMP _ARG28))
+   (MOVE (TEMP D) (TEMP _ARG29))
+   (MOVE (TEMP E) (TEMP _ARG30))
+   (MOVE (TEMP F) (TEMP _ARG31))
+   (MOVE (TEMP G) (TEMP _ARG32))
+   (MOVE (TEMP H) (TEMP _ARG33))
+   (MOVE (TEMP I) (TEMP _ARG34))
+   (MOVE (TEMP J) (TEMP _ARG35))
+   (MOVE (TEMP K) (TEMP _ARG36))
+   (MOVE (TEMP L) (TEMP _ARG37))
+   (MOVE (TEMP M) (TEMP _ARG38))
+   (MOVE (TEMP N) (TEMP _ARG39))
+   (MOVE (TEMP O) (TEMP _ARG40))
+   (MOVE (TEMP P) (TEMP _ARG41))
+   (MOVE (TEMP Q) (TEMP _ARG42))
+   (MOVE (TEMP R) (TEMP _ARG43))
+   (MOVE (TEMP S) (TEMP _ARG44))
+   (MOVE (TEMP T) (TEMP _ARG45))
+   (MOVE (TEMP U) (TEMP _ARG46))
+   (MOVE (TEMP V) (TEMP _ARG47))
+   (MOVE (TEMP W) (TEMP _ARG48))
+   (MOVE (TEMP X) (TEMP _ARG49))
+   (MOVE (TEMP Y) (TEMP _ARG50))
+   (MOVE (TEMP Z) (TEMP _ARG51))
+   (MOVE (TEMP a0) (TEMP _ARG52))
+   (MOVE (TEMP b0) (TEMP _ARG53))
+   (MOVE (TEMP c0) (TEMP _ARG54))
+   (MOVE (TEMP d0) (TEMP _ARG55))
+   (MOVE (TEMP e0) (TEMP _ARG56))
+   (MOVE (TEMP f0) (TEMP _ARG57))
+   (MOVE (TEMP g0) (TEMP _ARG58))
+   (MOVE (TEMP h0) (TEMP _ARG59))
+   (MOVE (TEMP i0) (TEMP _ARG60))
+   (MOVE (TEMP j0) (TEMP _ARG61))
+   (MOVE (TEMP k0) (TEMP _ARG62))
+   (MOVE (TEMP l0) (TEMP _ARG63))
+   (MOVE (TEMP m0) (TEMP _ARG64))
+   (MOVE (TEMP n0) (TEMP _ARG65))
+   (MOVE (TEMP o0) (TEMP _ARG66))
+   (MOVE (TEMP p0) (TEMP _ARG67))
+   (MOVE (TEMP q0) (TEMP _ARG68))
+   (MOVE
+    (TEMP _RET0)
+    (ADD
+     (ADD
+      (ADD
+       (ADD
+        (ADD
+         (ADD
+          (ADD
+           (ADD
+            (ADD
+             (ADD
+              (ADD
+               (ADD
+                (ADD
+                 (ADD
+                  (ADD
+                   (ADD
+                    (ADD
+                     (ADD
+                      (ADD
+                       (ADD
+                        (ADD
+                         (ADD
+                          (ADD
+                           (ADD
+                            (ADD
+                             (ADD
+                              (ADD
+                               (ADD
+                                (ADD
+                                 (ADD
+                                  (ADD
+                                   (ADD
+                                    (ADD
+                                     (ADD
+                                      (ADD
+                                       (ADD
+                                        (ADD
+                                         (ADD
+                                          (ADD
+                                           (ADD
+                                            (ADD
+                                             (ADD
+                                              (ADD
+                                               (ADD
+                                                (ADD
+                                                 (ADD
+                                                  (ADD
+                                                   (ADD
+                                                    (ADD
+                                                     (ADD
+                                                      (ADD
+                                                       (ADD
+                                                        (ADD
+                                                         (ADD
+                                                          (ADD
+                                                           (ADD
+                                                            (ADD
+                                                             (ADD
+                                                              (ADD
+                                                               (ADD
+                                                                (ADD
+                                                                 (ADD
+                                                                  (ADD
+                                                                   (ADD
+                                                                    (ADD
+                                                                     (ADD
+                                                                      (ADD
+                                                                       (ADD
+                                                                        (TEMP a)
+                                                                        (TEMP
+                                                                         b))
+                                                                       (TEMP c))
+                                                                      (TEMP d))
+                                                                     (TEMP e))
+                                                                    (TEMP f))
+                                                                   (TEMP g))
+                                                                  (TEMP h))
+                                                                 (TEMP i))
+                                                                (TEMP j))
+                                                               (TEMP k))
+                                                              (TEMP l))
+                                                             (TEMP m))
+                                                            (TEMP n))
+                                                           (TEMP o))
+                                                          (TEMP p))
+                                                         (TEMP q))
+                                                        (TEMP r))
+                                                       (TEMP s))
+                                                      (TEMP t))
+                                                     (TEMP u))
+                                                    (TEMP v))
+                                                   (TEMP w))
+                                                  (TEMP x))
+                                                 (TEMP y))
+                                                (TEMP z))
+                                               (TEMP A))
+                                              (TEMP B))
+                                             (TEMP C))
+                                            (TEMP D))
+                                           (TEMP E))
+                                          (TEMP F))
+                                         (TEMP G))
+                                        (TEMP H))
+                                       (TEMP I))
+                                      (TEMP J))
+                                     (TEMP K))
+                                    (TEMP L))
+                                   (TEMP M))
+                                  (TEMP N))
+                                 (TEMP O))
+                                (TEMP P))
+                               (TEMP Q))
+                              (TEMP R))
+                             (TEMP S))
+                            (TEMP T))
+                           (TEMP U))
+                          (TEMP V))
+                         (TEMP W))
+                        (TEMP X))
+                       (TEMP Y))
+                      (TEMP Z))
+                     (TEMP a0))
+                    (TEMP b0))
+                   (TEMP c0))
+                  (TEMP d0))
+                 (TEMP e0))
+                (TEMP f0))
+               (TEMP g0))
+              (TEMP h0))
+             (TEMP i0))
+            (TEMP j0))
+           (TEMP k0))
+          (TEMP l0))
+         (TEMP m0))
+        (TEMP n0))
+       (TEMP o0))
+      (TEMP p0))
+     (TEMP q0)))
+   (MOVE (TEMP temp75) (CONST 16))
+   (MOVE (TEMP temp76) (CALL (NAME _I_alloc_i) (TEMP temp75)))
+   (MOVE (TEMP t0) (TEMP temp76))
+   (MOVE (MEM (TEMP t0)) (CONST 1))
+   (MOVE (MEM (ADD (CONST 8) (TEMP t0))) (CONST 0))
+   (MOVE (TEMP t0) (ADD (TEMP t0) (CONST 8)))
+   (MOVE (TEMP _RET1) (TEMP t0))
+   (RETURN))))

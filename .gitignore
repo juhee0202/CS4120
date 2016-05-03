@@ -7,7 +7,7 @@ PA3/bin/
 PA4/bin/
 PA5/bin/
 PA6/bin/
-PA6/tests/
+PA7/bin/
 tmp/
 *.tmp
 *.bak
@@ -24,6 +24,7 @@ PA3/.project
 PA4/.project
 PA5/.project
 PA6/.project
+PA7/.project
 
 # External tool builders
 .externalToolBuilders/
@@ -38,6 +39,7 @@ PA3/.classpath
 PA4/.classpath
 PA5/.classpath
 PA6/.classpath
+PA7/.classpath
 
 # Java annotation processor (APT)
 .factorypath

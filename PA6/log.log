@@ -1,0 +1,1619 @@
+* 6a2759a : lir visitor binop fixed
+*   871c207 : merged
+|\  
+| * 4ff9c45 : not sure why im ahead on commits
+| *   cf79f65 : Merge branch 'master' of https://github.com/juhee0202/CS4120
+| |\  
+| | * e9f296e : yo
+| | * 4357d70 : quick fix
+| * |   fd66067 : Merge branch 'master' of https://github.com/juhee0202/CS4120
+| |\ \  
+| | |/  
+| | *   3d89892 : almost done
+| | |\  
+| | |/  
+| |/|   
+| * |   026f3ff : Merge branch 'master' of https://github.com/juhee0202/CS4120
+| |\ \  
+| | * | 88f8773 : hello
+| | * |   38cf9c0 : Merge branch 'master' of https://github.com/juhee0202/CS4120
+| | |\ \  
+| | * | | c69cd73 : benchmark tests
+| * | | | 6df7aff : did dead code on ir tree
+| | | | *   7767573 : small fixed
+| | | | |\  
+| | | | |/  
+| | | |/|   
+| | | | * c9e0fe6 : SSA DONE
+* | | | | 43668fa : merge
+* | | | | 2554d07 : more than 6 arg into function call fixed
+| |_|/ /  
+|/| | |   
+* | | | e1372ab : multiple returns fixed
+* | | |   51e78a6 : merge?
+|\ \ \ \  
+| |/ / /  
+| * | | 5e51e0f : changed cse to not need copy propagation
+| * | |   0074f98 : Merge branch 'master' of https://github.com/juhee0202/CS4120
+| |\ \ \  
+| | |/ /  
+| | * | 800df75 : more test cases for dce
+| | * |   6d3aea2 : Merge branch 'master' of https://github.com/juhee0202/CS4120
+| | |\ \  
+| | * | | 855dd71 : juhee pushing with benchmarka nd stuff
+| * | | | 91c4270 : fixed cse but it needs copy propagation now
+* | | | | 127cbb0 : FIXED MULTIPLE RETURN: we should not have been pushing rsp onto the stack
+| |_|/ /  
+|/| | |   
+* | | | 22067e2 : copy()
+* | | | a8c18e3 : multiple arguments shuttling fixed!
+| |/ /  
+|/| |   
+* | | aee459a : fixed binop for cmp
+* | |   0d0cdd3 : Merge branch 'master' of https://github.com/juhee0202/CS4120
+|\ \ \  
+| * | | f2c7ae7 : fails this test case
+* | | | 9545b75 : cfg debuggin
+* | | |   848b964 : Merge branch 'master' of https://github.com/juhee0202/CS4120
+|\ \ \ \  
+| |/ / /  
+| * | |   39951d7 : merged
+| |\ \ \  
+| | | |/  
+| | |/|   
+| | * |   ba31854 : merge
+| | |\ \  
+| | * \ \   9c8b1b6 : merge
+| | |\ \ \  
+| | * | | | d4ceeb2 : commit before pull
+| * | | | | afe4c4b : merge
+* | | | | | a0027fe : comment optimization
+| |_|_|/ /  
+|/| | | |   
+* | | | |   ca96d45 : Merge branch 'master' of https://github.com/juhee0202/CS4120
+|\ \ \ \ \  
+| | |_|/ /  
+| |/| | |   
+| * | | |   6f94194 : Merge branch 'master' of https://github.com/juhee0202/CS4120
+| |\ \ \ \  
+| | | |/ /  
+| | |/| |   
+| | * | | f7725e4 : full pipeline works but haven't tested fully
+| | * | |   8d1a20e : UCE fix
+| | |\ \ \  
+| | | | |/  
+| | | |/|   
+| | | * | 616a43d : real quick commented some prints
+| | | * |   a69cccd : Merge branch 'master' of https://github.com/juhee0202/CS4120
+| | | |\ \  
+| | | * | | a701228 :  i think flattening is fixed
+| | * | | | a02abab : working on SSA -> CFG
+| | | |/ /  
+| | |/| |   
+| | * | |   119189e : merge
+| | |\ \ \  
+| | | |/ /  
+| | | * |   8f35cf9 : Merge branch 'master' of https://github.com/juhee0202/CS4120
+| | | |\ \  
+| | | * | | 6a753a2 : added changed logic for CSE
+| | * | | | c7f3b56 : infinite loop error in DominatorTree fixed
+| | | |/ /  
+| | |/| |   
+| | * | |   632bda7 : merge
+| | |\ \ \  
+| | | | |/  
+| | | |/|   
+| | * | | 5c4f635 : COPY testing
+* | | | | e3bc93e : stack alloc fix
+|/ / / /  
+* | | | 7683d83 : reg alloc done
+| |/ /  
+|/| |   
+* | | 6999092 : blah
+* | | 76fcea4 : cjump fixed
+* | | 794febf : push
+* | |   a29a950 : Merge branch 'master' of https://github.com/juhee0202/CS4120
+|\ \ \  
+| * | | ef6e6f3 : fixed ret01 problem
+| * | |   1169d48 : main fixed witht he move arg arg00 stuff
+| |\ \ \  
+| | | |/  
+| | |/|   
+| | * |   886c6ce : Merge branch 'master' of https://github.com/juhee0202/CS4120
+| | |\ \  
+| | | |/  
+| | | *   5dcd36a : merge
+| | | |\  
+| | | * \   47d0149 : optimize change
+| | | |\ \  
+| | | * | | 959b696 : push before merege
+| | * | | | ae05023 : flattened IR i think
+| | * | | | 15afe05 : reverted IRCFGNode constructor
+| * | | | |   de6e2d3 : access reg that hasnt breeen set
+| |\ \ \ \ \  
+| | | |_|/ /  
+| | |/| | |   
+| * | | | | 23b8e13 : merge
+* | | | | | fd2f487 : cjump fixes
+| |_|_|_|/  
+|/| | | |   
+* | | | | 9d1ae53 : reg alloc tested
+| |/ / /  
+|/| | |   
+* | | |   c7b3971 : merge
+|\ \ \ \  
+| | |_|/  
+| |/| |   
+| * | | d22b861 : started testing COPY
+| * | | b1ddb51 : SSA -> CFG
+| * | | aef27c5 : SSFormGraph error fixed. Juhee's test runs
+| * | |   43f840f : pull
+| |\ \ \  
+| | |/ /  
+| | * |   a30b540 : merge
+| | |\ \  
+| | | |/  
+| | | *   64c8868 : pulld and merged
+| | | |\  
+| | | * | 9b092aa : ACTUALY FINISHED CSE
+| | * | |   4424929 : FIRST TEST CASE OF DEAD CODE FINALLY WORKS!!!
+| | |\ \ \  
+| | * | | | 5c0a6aa : wat
+| | * | | |   9b795cc : merge witht ho
+| | |\ \ \ \  
+| | * \ \ \ \   b0f44e3 : huh
+| | |\ \ \ \ \  
+| | * \ \ \ \ \   4966f38 : merge
+| | |\ \ \ \ \ \  
+| | * | | | | | | 2680557 : merge with thomas mistake fixed
+| | * | | | | | |   d9343a1 : wat
+| | |\ \ \ \ \ \ \  
+| | * \ \ \ \ \ \ \   27ec6d9 : huh
+| | |\ \ \ \ \ \ \ \  
+| | * | | | | | | | | e965a8e : merge
+| | * | | | | | | | | 8d5664e : merge with jeff
+| * | | | | | | | | | 3cf5bbe : commit before merge
+| | |_|_|_|_|_|_|_|/  
+| |/| | | | | | | |   
+* | | | | | | | | | daea732 : reg alloc done and tested
+* | | | | | | | | |   ef9e11c : Merge branch 'master' of https://github.com/juhee0202/CS4120
+|\ \ \ \ \ \ \ \ \ \  
+| |/ / / / / / / / /  
+| * | | | | | | | | 97b93bc : fix
+| | |_|_|_|_|_|/ /  
+| |/| | | | | | |   
+| * | | | | | | | 5e2fcad : remove head
+| * | | | | | | | 71a6651 : r11 -> tileRegister
+| | |_|_|_|_|/ /  
+| |/| | | | | |   
+| * | | | | | | b173d7c : idom fix
+| | |_|_|_|/ /  
+| |/| | | | |   
+| * | | | | | 3604719 : var2use fix
+| * | | | | | d41583f : small fix
+| | |_|_|/ /  
+| |/| | | |   
+| * | | | | 96da8f1 : small fix
+| | |_|/ /  
+| |/| | |   
+| * | | |   8c75a7c : merge
+| |\ \ \ \  
+| | | |/ /  
+| | |/| |   
+| * | | | 114ab8b : SSAFormConverter error fixed. Tested on if/while
+* | | | | 07730b3 : last bug
+| |/ / /  
+|/| | |   
+* | | |   bdffcda : Merge branch 'master' of https://github.com/juhee0202/CS4120
+|\ \ \ \  
+| | |/ /  
+| |/| |   
+| * | |   eafa5ba : merged
+| |\ \ \  
+| | | |/  
+| | |/|   
+| | * |   fec3d8b : Merge branch 'FinishingCSE' of https://github.com/juhee0202/CS4120
+| | |\ \  
+| | | * \   10791e7 : fixed merge errors
+| | | |\ \  
+| | | * | | 3f4df45 : pulling from master
+| | | * | | 9c95139 : finished cse i think
+| | | * | | 9cd5ef5 : swapping branches
+| | | * | |   0f4a485 : Merge branch 'master' of https://github.com/juhee0202/CS4120 into FinishingCSE
+| | | |\ \ \  
+| | * | \ \ \   69b1591 : Merge branch 'master' of https://github.com/juhee0202/CS4120
+| | |\ \ \ \ \  
+| | | |_|/ / /  
+| | |/| | / /   
+| | | | |/ /    
+| | | |/| |     
+| * | | | | 863788b : trying to merge static final IRConst true merge
+| * | | | | 4021918 : got rid of static final IRConst TRUE because it causes duplicate node error
+| | |/ / /  
+| |/| | |   
+| * | | |   7b15a0a : merged to push tilingvisitor
+| |\ \ \ \  
+| | | |_|/  
+| | |/| |   
+| | * | |   78aea9c : merge
+| | |\ \ \  
+| | * | | | 17bca2b : removeDefNode
+| * | | | | 477cee5 : fixed cmove stuff
+| | |/ / /  
+| |/| | |   
+| * | | |   34c2fb1 : merged with copy prop and untested deadcode eliminator
+| |\ \ \ \  
+| | |/ / /  
+| | * | | 923fbdc : UCE, COPY
+| | * | |   a431236 : unimplemented function completed in SSAFormGraph
+| | |\ \ \  
+| | * | | | 561557b : quick fix in SSAFormConverter
+| | * | | | 50e2ace : SSA conversion tested
+| * | | | | e7ae053 : deadcode but waiting for thomas to impl remove node func
+| | |/ / /  
+| |/| | |   
+| * | | | a96a233 : setters and getters
+| * | | | b7246df : small change to function name and type
+| * | | | dc1b098 : thomas implment please and thank you
+| * | | | 5708f88 : createed optimizationGraph interface that is implemented by CFG and SSA graph classes
+| | |/ /  
+| |/| |   
+* | | | bdeef98 : reg alloc bugs
+* | | | f2546f1 : reg alloc testing
+* | | |   63b5d1c : Merge branch 'master' of https://github.com/juhee0202/CS4120
+|\ \ \ \  
+| |/ / /  
+| * | |   f5108ba : Merge branch 'master' of https://github.com/juhee0202/CS4120
+| |\ \ \  
+| | |/ /  
+| | * | f5e15a6 : quick fix for CFG constructoin
+| * | |   e0bd498 : Merge branch 'FinishingCSE' of https://github.com/juhee0202/CS4120
+| |\ \ \  
+| | | |/  
+| | |/|   
+| | * | 1efdb5a : saving before switching to master
+| |/ /  
+* | | 48a4638 : debugging regalloc
+* | |   e1ce98e : Merge branch 'master' of https://github.com/juhee0202/CS4120
+|\ \ \  
+| | |/  
+| |/|   
+| * |   a85de6b : merge
+| |\ \  
+| | |/  
+| | * 4310a9e : modified cse to have pointers to owner IRCFGNodes
+| * |   f123c58 : epilogue without intense testing
+| |\ \  
+| | |/  
+| | *   5b2e1a2 : Merge branch 'ImplementingCSE' of https://github.com/juhee0202/CS4120
+| | |\  
+| | | * 0da1cf1 : pulled out dataflow stuff from nodes and finished cse analysis
+| | | *   cf780bd : merged from master
+| | | |\  
+| | | * | 58041f8 : merging from main
+| | | * |   5c2c1eb : Merge branch 'master' of https://github.com/juhee0202/CS4120 into ImplementingCSE
+| | | |\ \  
+| | | * | | 20a3cde : refactored name of cse to availableexpressionanalysis
+| | | * | | de1174a : finished available expressions analysis
+| * | | | | 6f42b60 : commit before pull
+* | | | | | 899d3bc : mem tiling halfway
+* | | | | |   930313c : Merge branch 'master' of https://github.com/juhee0202/CS4120
+|\ \ \ \ \ \  
+| | |/ / / /  
+| |/| | | |   
+| * | | | |   da90adb : Merge branch 'master' of https://github.com/juhee0202/CS4120
+| |\ \ \ \ \  
+| | |_|/ / /  
+| |/| | | /   
+| | | |_|/    
+| | |/| |     
+* | | | | c034e57 : mem tiling
+| |/ / /  
+|/| | |   
+* | | | 0641d27 : compile error
+* | | |   303bfa5 : merge conflict fix
+|\ \ \ \  
+| | |/ /  
+| |/| |   
+| * | | e6ac307 : quick fix
+| * | | c31826f : SSAConversion implemented
+| | |/  
+| |/|   
+* | | 5be3b00 : finished cfg testing
+* | |   da99799 : merge
+|\ \ \  
+| |/ /  
+| * | 5c41682 : Optimization abstract class
+| * |   815d5f4 : merge'
+| |\ \  
+| * | | d4b419b : commit before pull
+| * | | 7153210 : SSAFormConverter started
+* | | | 16cc795 : main fixes
+| |/ /  
+|/| |   
+* | |   95ba80f : merged
+|\ \ \  
+| * | | c72c47c : main
+| * | |   6096178 : Merge branch 'master' of https://github.com/juhee0202/CS4120
+| |\ \ \  
+| | |/ /  
+| | * |   b03d57e : merge
+| | |\ \  
+| | * | | 084a54e : DominatorTree
+| * | | | c2c296e : mem tiling
+| | |/ /  
+| |/| |   
+| * | |   ee0a44b : ALL TESTS PASS
+| |\ \ \  
+| | |/ /  
+| | * |   677c030 : merge
+| | |\ \  
+| | | |/  
+| | * | 51ab5a9 : Epilogue done
+| * | | 6c9befe : refactor
+| * | |   6cdc4b6 : Merge branch 'master' of https://github.com/juhee0202/CS4120
+| |\ \ \  
+| | | |/  
+| | |/|   
+| | * | 61482a4 : going to make a new branch implementing cse from this
+| | * | cf1e735 : finished live variable analysis
+| * | | 114125f : main
+| |/ /  
+| * |   e3597e9 : merged from master with current work
+| |\ \  
+| | * \   1674203 : Merge branch 'master' of https://github.com/juhee0202/CS4120
+| | |\ \  
+| | * | | cf0f745 : graph output and options init for main
+| * | | | f0c6664 : pulling from master
+* | | | | 32753e2 : merge iwth jeff
+| |_|/ /  
+|/| | |   
+* | | | 4ebaeb9 : JUHEE: FINISHED MEM TILING. if there seems to be bugs, revert to commit BEFORE THIS ONE
+| |_|/  
+|/| |   
+* | |   42c90ad : merge
+|\ \ \  
+| | |/  
+| |/|   
+| * | 56d48bd : spill
+| * |   a570287 : Merge branch 'master' of https://github.com/juhee0202/CS4120
+| |\ \  
+| * | | ab09d8c : freeze
+* | | | d1fc9ba : commit before merge
+| |/ /  
+|/| |   
+* | | 8a5e2a0 : constructCFG
+* | |   9108a32 : constructCFG
+|\ \ \  
+| |/ /  
+| * |   6d26699 : Merge branch 'master' of https://github.com/juhee0202/CS4120
+| |\ \  
+| | * \   3e2e9f1 : BEFORE IMPLEMTING LEA. revert to this if all fails
+| | |\ \  
+| | * | | 27ea169 : BEFORE IMPLEMENTING IRLEA revert to this if all fails later on
+| * | | | 1b3d551 : framework
+| | |/ /  
+| |/| |   
+* | | | 75c7abb : commit before pull
+|/ / /  
+* | |   712a66e : Merge branch 'master' of https://github.com/juhee0202/CS4120
+|\ \ \  
+| |/ /  
+| * | 7e0b35d : got rid of print staetements in LIRVisitor
+| * | a42cbda : fixed doesnt commute case in lowering IRMove
+| |/  
+* | 682fddd : new registerallocator class
+* |   5e0245e : Merge branch 'master' of https://github.com/juhee0202/CS4120
+|\ \  
+| |/  
+| *   0ceb984 : Merge branch 'master' of https://github.com/juhee0202/CS4120
+| |\  
+| | * 0a07517 : main fixed with dpath stuff
+| * | 01607b0 : last night's work
+* | | 05b661a : framework
+* | |   a664f57 : Merge branch 'master' of https://github.com/juhee0202/CS4120
+|\ \ \  
+| | |/  
+| |/|   
+| * | 10d51e7 : temporary fix
+| * | 38b0055 : quick fix
+| * |   baf0400 : merge
+| |\ \  
+| | |/  
+| * | 2b63089 : unreachable code
+* | |   3b9f0fb : Merge branch 'master' of https://github.com/juhee0202/CS4120
+|\ \ \  
+| | |/  
+| |/|   
+| * |   e6c92d8 : Merge branch 'master' of https://github.com/juhee0202/CS4120
+| |\ \  
+| * | | b04e07d : ast nights work
+* | | | 316c4a1 : graph coloring started
+| |/ /  
+|/| |   
+* | | b0f6aa8 : tests
+* | | 35b24d7 : fixed localdecl9 & 10
+| |/  
+|/|   
+* |   cc28379 : Merge branch 'master' of https://github.com/juhee0202/CS4120
+|\ \  
+| |/  
+| * 09ccef8 : pa6 mirvisitor
+| *   236c114 : Merge branch 'master' of https://github.com/juhee0202/CS4120
+| |\  
+| | * 6dc0684 : added last line in binop
+| * |   8c2cd61 : Merge branch 'master' of https://github.com/juhee0202/CS4120
+| |\ \  
+| | |/  
+| | * 6ff5fd7 : quick fix
+| * |   21ce2a1 : Merge branch 'master' of https://github.com/juhee0202/CS4120
+| |\ \  
+| | |/  
+* | |   f0fede3 : Merge branch 'master' of https://github.com/juhee0202/CS4120
+|\ \ \  
+| | |/  
+| |/|   
+| * |   e775116 : merge
+| |\ \  
+| * | | b9acdf4 : saving call to temp
+* | | | 8d12f4b : refactor
+| |/ /  
+|/| |   
+* | |   8e892d0 : short circuit fixed
+|\ \ \  
+| * | | 8c496d3 : added return
+| * | |   8e3a378 : Merge branch 'master' of https://github.com/juhee0202/CS4120
+| |\ \ \  
+| | |/ /  
+| | * | ab1602d : quick fix
+| * | | 850008d : lol u lose thomas
+* | | | a3cb78b : merge with jeff
+| |/ /  
+|/| |   
+* | |   3d698d1 : merge
+|\ \ \  
+| |/ /  
+| * | 8261112 : erased unnecessary files
+* | | 784ab0b : quick fix
+|/ /  
+* |   641a6a5 : merge
+|\ \  
+| |/  
+| *   2d4e74d : Merge branch 'master' of https://github.com/juhee0202/CS4120
+| |\  
+| * \   6834531 : added pa6
+| |\ \  
+| * \ \   2e4b40c : Merge branch 'master' of https://github.com/juhee0202/CS4120
+| |\ \ \  
+| * \ \ \   a1412c6 : Merge branch 'master' of https://github.com/juhee0202/CS4120
+| |\ \ \ \  
+| * | | | | 97ef1c6 : reset tests
+* | | | | | e761178 : quick fix
+| |_|_|_|/  
+|/| | | |   
+* | | | | 68d419a : quick fix
+| |_|_|/  
+|/| | |   
+* | | |   0729dbf : merg
+|\ \ \ \  
+| * | | | d10c736 : fixed array concat bug
+| * | | |   5faf7a0 : Merge branch 'master' of https://github.com/juhee0202/CS4120
+| |\ \ \ \  
+| * | | | | 06c656b : no imp changes
+| | |_|_|/  
+| |/| | |   
+* | | | | d0399c6 : array index out of bounds bug fix
+| |/ / /  
+|/| | |   
+* | | |   d366afe : merge
+|\ \ \ \  
+| * | | | adc9584 : checkCommute(s2,e1) changed to checkCommute(s1,e2) in IRMove
+| * | | |   bad1c4f : merge
+| |\ \ \ \  
+| | |/ / /  
+| | * | | c8b6b91 : casting to IRBinOp error
+| | * | |   ed8af55 : Merge branch 'master' of https://github.com/juhee0202/CS4120
+| | |\ \ \  
+| | | | |/  
+| | | |/|   
+| | * | | 18d47fe : erased copy redundancy
+| | | |/  
+| | |/|   
+| * | | 70cf102 : changed casting from binop to irexpr for createbracketsomething
+* | | | 5e1a61d : array index out of bounds check disabled
+| |_|/  
+|/| |   
+* | |   8e59135 : merge
+|\ \ \  
+| |/ /  
+| * | 51ba9d8 : thomas mir
+| * | 2dc204c : ignore pa5 classpath
+| * | 050b1e8 : merge lir and mir visitors
+| |/  
+* | 4941995 : array index out of bounds error fix
+|/  
+*   de5bae5 : merge
+|\  
+| * 6812180 : array index out of bounds error
+| *   1791dcf : array concat duplicate node issue fixed
+| |\  
+| | * 2344807 : last minute committing
+| | *   75613aa : Merge branch 'master' of https://github.com/juhee0202/CS4120
+| | |\  
+| * | \   c4f4c62 : unreachable code
+| |\ \ \  
+| | | |/  
+| | |/|   
+| * | | 8aafd91 : unreachable code fix
+| * | | 2ac37b4 : copy interface added to IRNodes
+| * | | e80866d : what
+| * | |   35098e2 : mergeeeee
+| |\ \ \  
+| | * \ \   41295ab : Merge branch 'master' of https://github.com/juhee0202/CS4120
+| | |\ \ \  
+| | | * \ \   41b06e6 : merge
+| | | |\ \ \  
+| | * | | | | 3a7546c : my changes
+| * | | | | |   84ea533 : pull
+| |\ \ \ \ \ \  
+| | | |_|/ / /  
+| | |/| | | |   
+| * | | | | | 31560ff : hello
+| * | | | | |   03efbe2 : Merge branch 'master' of https://github.com/juhee0202/CS4120
+| |\ \ \ \ \ \  
+| | | |/ / / /  
+| | |/| | | |   
+| * | | | | |   7fcd563 : merge
+| |\ \ \ \ \ \  
+| * | | | | | | ce60d53 : unreachable stmt fix
+* | | | | | | | 0d0e3a2 : hello
+| |_|_|_|_|/ /  
+|/| | | | | |   
+* | | | | | |   2b37f28 : Merge remote-tracking branch 'origin/master'
+|\ \ \ \ \ \ \  
+| | |_|_|_|_|/  
+| |/| | | | |   
+| * | | | | |   01c2052 : Merge branch 'master' of https://github.com/juhee0202/CS4120
+| |\ \ \ \ \ \  
+| | * \ \ \ \ \   3288dee : merge
+| | |\ \ \ \ \ \  
+| | | |_|_|_|/ /  
+| | |/| | | | |   
+| | * | | | | |   989ff6f : kk
+| | |\ \ \ \ \ \  
+| | | * | | | | | 2df0c3a : asldjakgng
+| | | | |_|_|/ /  
+| | | |/| | | |   
+| | * | | | | | e655446 : chaned mir and lir visitor
+| * | | | | | | 1c5e518 : fixed duplicate name node
+| | |_|/ / / /  
+| |/| | | | |   
+| * | | | | | 7e9fd8e : simple2 is right
+| * | | | | |   a69acb1 : Merge branch 'master' of https://github.com/juhee0202/CS4120
+| |\ \ \ \ \ \  
+| | |_|_|_|_|/  
+| |/| | | | |   
+* | | | | | | c411b83 : added fixes to createArray
+| |/ / / / /  
+|/| | | | |   
+* | | | | | 7444394 : lol
+|/ / / / /  
+* | | | | 31826de : unreachable code
+| |/ / /  
+|/| | |   
+* | | | 9083380 : asdlaksndaslk
+| |_|/  
+|/| |   
+* | | 18a84a8 : tweaked to make sure cjump doesnt have dest as memory for binop stuff
+* | | ed3d9ce : fixed cjump binop children not showing up
+* | |   c0f3b45 : Merge branch 'master' of https://github.com/juhee0202/CS4120
+|\ \ \  
+| |/ /  
+| * |   1764bfe : merged
+| |\ \  
+| * \ \   3462fdf : merged dohmygod
+| |\ \ \  
+| | | |/  
+| | |/|   
+| * | | 2262a7a : doh
+* | | | 113aeba : reverted memory
+| |_|/  
+|/| |   
+* | | 2623b84 : last night's work
+| |/  
+|/|   
+* |   8bf7daa : Merge branch 'master' of https://github.com/juhee0202/CS4120
+|\ \  
+| |/  
+| *   d61422d : merged main
+| |\  
+| | * 784ee7f : test
+| | *   7be1032 : merge
+| | |\  
+| | * | 2bf46ba : tests
+| | * | 3d31510 : tests
+| * | | 2b28088 : changed returnstmt to not allow void type
+| | |/  
+| |/|   
+| * | 5a80af4 : error handling
+| * | 3fdac8c : fixed ixi.cup
+| * |   f652aef : merge
+| |\ \  
+| * | | 2efb68a : main fix
+* | | | 1cfdb3e : ok
+| |/ /  
+|/| |   
+* | |   d710ad9 : merged
+|\ \ \  
+| |/ /  
+| * |   664e0d5 : merge
+| |\ \  
+| | * | 6d5ee4f : pa3
+| | * | 2bc7f6b : got rid of trailing commas in arg
+| | * | 9e4af58 : updated functiondecl and function param cup file
+| | * | 0f7692d : pushing to new branch
+| | |/  
+| | * 0457a63 : main
+| | *   0a1ce62 : Merge branch 'master' of https://github.com/juhee0202/CS4120
+| | |\  
+| | | * 3c30152 : fixed varinit visit
+| | * |   69fa421 : Merge branch 'master' of https://github.com/juhee0202/CS4120
+| | |\ \  
+| | | |/  
+| | | *   37c5b8f : ds store
+| | | |\  
+| | | * | 629326e : ds store..
+| | | * | 7bc35c9 : modified functionparam
+| | * | |   41113b4 : Merge branch 'master' of https://github.com/juhee0202/CS4120
+| | |\ \ \  
+| | | | |/  
+| | | |/|   
+| | * | | 7ef32f0 : io test
+| * | | | 9ce7163 : commit
+| | |/ /  
+| |/| |   
+| * | | bbe2ff3 : ignore runtime/
+| * | |   fc8f31e : deleted
+| |\ \ \  
+| | |/ /  
+| | * |   a8d8574 : merge
+| | |\ \  
+| | | |/  
+| | | *   a6ece15 : merged
+| | | |\  
+| | | * | 2e08174 : error handling cleaned up
+| | * | | a18bf76 : runtime
+| | * | |   01f03e5 : Merge branch 'master' of https://github.com/juhee0202/CS4120
+| | |\ \ \  
+| | * \ \ \   f8bd530 : dbug
+| | |\ \ \ \  
+| | * | | | | e8cb19c : lol
+| * | | | | | b998725 : commit before merge
+| | |_|_|_|/  
+| |/| | | |   
+| * | | | | 24c0093 : directives added (not complete)
+| * | | | |   79781bf : merge
+| |\ \ \ \ \  
+| | | |_|_|/  
+| | |/| | |   
+| | * | | | fc05ece : disallow function calls with return value to be statements
+| | | |_|/  
+| | |/| |   
+| | * | |   0bc027a : merged
+| | |\ \ \  
+| | * | | | fe27dad : split xi and ixi cup file
+| * | | | | 5da8a00 : tupleinit functioncall related error fixed
+| | |/ / /  
+| |/| | |   
+| * | | |   b923592 : merge
+| |\ \ \ \  
+| | |/ / /  
+| | * | | f297ce9 : pushing merges and fixed binop tilevisitor
+| | | |/  
+| | |/|   
+| | * |   1b4b1ce : merged main
+| | |\ \  
+| | * | | 643a8e2 : main
+| * | | | 6d7f064 : commit before merge
+| | |/ /  
+| |/| |   
+| * | |   3707bf1 : merge
+| |\ \ \  
+| * | | | aad9e1c : 16byte alignment
+| * | | |   e8eed83 : merge
+| |\ \ \ \  
+| * \ \ \ \   20dd78c : commit before merge
+| |\ \ \ \ \  
+| | | |_|_|/  
+| | |/| | |   
+| * | | | | 3f14b1f : function pro/epilogue
+* | | | | | a74f398 : HUGE COMMIT OMFGGGG
+| |_|_|/ /  
+|/| | | |   
+* | | | | 07b9566 : YES
+| |_|/ /  
+|/| | |   
+* | | | a795cfb : fixed a bit of constant folding
+| |/ /  
+|/| |   
+* | | 92b9699 : wtf is this doing
+* | | dc49750 : woops
+* | |   734e690 : kk
+|\ \ \  
+| * \ \   163f83a : Merge branch 'master' of https://github.com/juhee0202/CS4120
+| |\ \ \  
+| | | |/  
+| | |/|   
+| | * | 669a69e : updated cup files
+| | * | ec17696 : merged
+| | * |   8c77d65 : merged
+| | |\ \  
+| | * | | d0c7590 : finishe dbinop
+| * | | | 886d664 : bug fixes
+| | |/ /  
+| |/| |   
+| * | |   6c47bc8 : Merge branch 'master' of https://github.com/juhee0202/CS4120
+| |\ \ \  
+| * | | | bc3ab0a : bug
+* | | | | 20fdba1 : yes
+| |/ / /  
+|/| | |   
+* | | |   b282bf6 : Merge branch 'master' of https://github.com/juhee0202/CS4120
+|\ \ \ \  
+| |/ / /  
+| * | |   6a5e4bd : Merge branch 'registerEnum'
+| |\ \ \  
+| | * \ \   9b4fefb : lol
+| | |\ \ \  
+| | | | |/  
+| | | |/|   
+| | * | |   1a781aa : Merge branch 'master' of https://github.com/juhee0202/CS4120 into registerEnum
+| | |\ \ \  
+| * | \ \ \   52ba538 : lol
+| |\ \ \ \ \  
+| | |/ / / /  
+| |/| | / /   
+| | | |/ /    
+| | |/| |     
+| * | | | 3e556f7 : register enum
+* | | | |   112743d : asdasd
+|\ \ \ \ \  
+| | |/ / /  
+| |/| | |   
+| * | | |   eec2b31 : merge'
+| |\ \ \ \  
+| | | |_|/  
+| | |/| |   
+| | * | | 4af43d0 : hmul
+| | * | |   ff09814 : huh
+| | |\ \ \  
+| | * | | | 78a6f20 : merge
+| * | | | | adca848 : sup
+| * | | | |   3eefeb4 : merge
+| |\ \ \ \ \  
+| | | |/ / /  
+| | |/| | |   
+| * | | | | ba734a9 : commit before merge
+| * | | | | 54cddaa : commit before merge
+* | | | | | 1fe1f5c : tree equals visitor
+| |/ / / /  
+|/| | | |   
+* | | | |   53a6fc5 : Merge branch 'master' of https://github.com/juhee0202/CS4120
+|\ \ \ \ \  
+| | |/ / /  
+| |/| | |   
+| * | | |   9564e61 : merged
+| |\ \ \ \  
+| | |/ / /  
+| | * | | c4f14fd : commit
+| * | | | a8f036b : main
+| * | | | e80ff47 : binop add
+| * | | | b0da48c : binop add
+| | |/ /  
+| |/| |   
+* | | | 7dafb37 : removed redundant mov instructions hopefully
+| |/ /  
+|/| |   
+* | |   84536c1 : push
+|\ \ \  
+| * | | 5231ed3 : some fix
+| | |/  
+| |/|   
+| * |   d11243b : merge
+| |\ \  
+| | |/  
+| | *   55d6463 : merged herrrroo
+| | |\  
+| | * | a7138a0 : hello
+| * | | 5c076fc : fix in IRFuncDecl
+| | |/  
+| |/|   
+* | | e5ac298 : idk what this stuff is/?????????? whiskey tango fxtrot huh
+|/ /  
+* | 7d75ff5 : minor fix
+* | 5ebf484 : HEHUEH
+* |   78b61cb : Merge branch 'master' of https://github.com/juhee0202/CS4120
+|\ \  
+| * | 7614341 : filling in src for enter instructions of IRFuncDecl
+* | | 514a231 : our work
+|/ /  
+* |   44b17d3 : merge
+|\ \  
+| * \   acbcc67 : Merge branch 'master' of https://github.com/juhee0202/CS4120
+| |\ \  
+| | * | f749a01 : pushing half of call move stuff
+| * | |   e6929ba : fixed bugs
+| |\ \ \  
+| | |/ /  
+| | * |   6ccb122 : Merge branch 'master' of https://github.com/juhee0202/CS4120
+| | |\ \  
+| | | |/  
+| | * | bb7a215 : puhing current stuff
+| * | |   e7a8192 : Merge branch 'master' of https://github.com/juhee0202/CS4120
+| |\ \ \  
+| | | |/  
+| | |/|   
+| | * | 2cd41f6 : fixed main abs path first char removal
+| * | | 981936c : cjump fixes
+| | |/  
+| |/|   
+* | | 8de4deb : call
+| |/  
+|/|   
+* | 91db232 : one operand fixed error
+* |   5bb037a : merged
+|\ \  
+| |/  
+| * aa02298 : merge
+* | c6e6dab : changed juhees cmpq
+|/  
+*   4f7130c : merged
+|\  
+| * a98f7ed : if guards added
+| *   471d91c : merge
+| |\  
+| | *   a6dadae : Merge branch 'master' of https://github.com/juhee0202/CS4120
+| | |\  
+| | | *   6ba7e01 : merge
+| | | |\  
+| | | * | 9a8ea06 : recursive
+| | * | | 88b84ca : operation stuff
+| | | |/  
+| | |/|   
+| * | |   5bd3ac8 : merge
+| |\ \ \  
+| | |/ /  
+| * | |   5358057 : CALL and FUNCDECL almost done
+| |\ \ \  
+| * | | | 556d694 : commit before merge
+* | | | | 4a49922 : merged juhee
+* | | | |   803f94f : merge
+|\ \ \ \ \  
+| | |_|/ /  
+| |/| | |   
+| * | | |   e4d955e : merged
+| |\ \ \ \  
+| * | | | | 2dbe402 : finished mem visit
+* | | | | | 12ac812 : hi
+| |/ / / /  
+|/| | | |   
+* | | | | 387b030 : update
+* | | | | 96c79e8 : binop
+* | | | |   5d1910b : merge
+|\ \ \ \ \  
+| |/ / / /  
+| * | | |   0b3aa4b : added static tile merger
+| |\ \ \ \  
+| | | |_|/  
+| | |/| |   
+| | * | | 1d3aa2b : mem fixes
+| | | |/  
+| | |/|   
+| * | | ed01d7d : added static tile merger
+| |/ /  
+| * | 60a1a6c : YUS
+* | | ad423a0 : merge
+|/ /  
+* |   4d834d3 : zz
+|\ \  
+| |/  
+| *   207ccd8 : merge
+| |\  
+| | * 96e585c : kill me pls
+| | *   24de711 : merged
+| | |\  
+| | | * dc62db3 : compile error fixes JONATHAN
+| | | *   2357a5c : jumps done
+| | | |\  
+| | | * | f9b60bc : label
+| | | * | bade986 : merge
+| | | * |   86fa878 : Merge branch 'master' of https://github.com/juhee0202/CS4120
+| | | |\ \  
+| | | * \ \   f976783 : merge
+| | | |\ \ \  
+| | | * | | | 11f7afc : visitor
+| | * | | | | 132e548 : finished visit binop tile
+| | | |_|_|/  
+| | |/| | |   
+| | * | | |   6dad583 : merge tilingvisitor
+| | |\ \ \ \  
+| | * \ \ \ \   3083228 : merge..
+| | |\ \ \ \ \  
+| | * \ \ \ \ \   4ce3a83 : merge again
+| | |\ \ \ \ \ \  
+| | * | | | | | | 7652c2a : pulling jonas
+| * | | | | | | | 1f2602b : push
+| * | | | | | | | bb5ed02 : TilingVisitor:EXP
+| * | | | | | | | 17145ca : TilingVisitor:IRCall
+| | |_|_|_|_|/ /  
+| |/| | | | | |   
+* | | | | | | | 8ed361a : pulling
+| |_|_|_|/ / /  
+|/| | | | | |   
+* | | | | | | da400a6 : Made label operand type
+| |_|_|_|_|/  
+|/| | | | |   
+* | | | | |   de37054 : merged
+|\ \ \ \ \ \  
+| |/ / / / /  
+| * | | | |   81954f4 : merge
+| |\ \ \ \ \  
+| * \ \ \ \ \   1966b3a : some changes made
+| |\ \ \ \ \ \  
+| | | |_|/ / /  
+| | |/| | | |   
+| * | | | | |   249f9fd : merge
+| |\ \ \ \ \ \  
+| | | |_|/ / /  
+| | |/| | | |   
+| * | | | | | 78cab52 : push
+* | | | | | | bb3ec30 : changed instruction
+| |_|_|/ / /  
+|/| | | | |   
+* | | | | | ec05906 : deleted globaltile
+| |_|_|/ /  
+|/| | | |   
+* | | | | bbe2034 : changed tilemap to list of tiles
+| |_|/ /  
+|/| | |   
+* | | |   7124d66 : Merge branch 'master' of https://github.com/juhee0202/CS4120
+|\ \ \ \  
+| | |/ /  
+| |/| |   
+| * | |   54ddce5 : merged
+| |\ \ \  
+| | |/ /  
+| * | | 0bac92a : merge
+* | | | f5a34f3 : kkkk
+* | | | 6a6f2ee : yeysy
+| |/ /  
+|/| |   
+* | | 7829109 : YUS'
+| |/  
+|/|   
+* | f354266 : changed pattern to tile
+* |   27d0c95 : 'merged'
+|\ \  
+| |/  
+| * ebb78f9 : Instruction class
+| * 4840203 : wat
+| * 8078a5f : strings
+* | 1097c9b : 'jona'
+|/  
+* 315449a : ?
+*   50c6ed8 : Merge branch 'master' of https://github.com/juhee0202/CS4120
+|\  
+| *   3449a86 : as
+| |\  
+| | * 02f16e1 : strings
+| * | 4ac9569 : as
+| |/  
+| *   d2e7a63 : Merge branch 'master' of https://github.com/juhee0202/CS4120
+| |\  
+| * | 86ea099 : strings
+* | | 165ae85 : ?
+| |/  
+|/|   
+* | cd6c049 : tile class
+* |   a435ea5 : merged
+|\ \  
+| |/  
+| * 9854d2e : blah
+* | 5bd5446 : tile class
+|/  
+* f704a75 : Chin, I am plat 5
+*   ec51854 : wat
+|\  
+| *   d390217 : Merge branch 'master' of https://github.com/juhee0202/CS4120
+| |\  
+| * | ae38f03 : AYY
+* | |   ea00dc2 : wtf
+|\ \ \  
+| | |/  
+| |/|   
+| * |   6cc8c1f : Merge branch 'master' of https://github.com/juhee0202/CS4120
+| |\ \  
+| | * | 9e58e70 : ma part
+| | |/  
+| * | 4b31249 : blah
+| |/  
+* | a26eda9 : exp
+|/  
+* 95dbcfd : 4/8 shit
+*   0f2b227 : Merge branch 'master' of https://github.com/juhee0202/CS4120
+|\  
+| *   6ca2a79 : Merge branch 'master' of https://github.com/juhee0202/CS4120
+| |\  
+| * | ed2aaca : changed project file to be named pa5
+* | | b186d31 : start
+| |/  
+|/|   
+* | e0b7fdd : main
+|/  
+* 0e138a8 : pa5
+*   249c4ce : merge
+|\  
+| * 5c9a15c : organize tests
+| * f2f1508 : rah
+| *   b2e4b7d : Merge branch 'master' of https://github.com/juhee0202/CS4120
+| |\  
+| * | 7c800a0 : FINAL
+* | | 531c4f4 : juhee test
+| |/  
+|/|   
+* |   337faa1 : test caes added
+|\ \  
+| * \   3c4ec98 : merge
+| |\ \  
+| * | | b0908e0 : tests and fixes
+| | |/  
+| |/|   
+* | | f8a76f0 : fixed bug in array literal
+| |/  
+|/|   
+* |   569f144 : um wat
+|\ \  
+| * \   04ae398 : Merge branch 'master' of https://github.com/juhee0202/CS4120
+| |\ \  
+| | |/  
+| * | 8d4e765 : undo change to IRCompUnit
+| * | 416e47b : changed program to IRCompUnit
+* | | 2b86152 : comments
+| |/  
+|/|   
+* | a05fc62 : IRExp
+* |   6e2692d : merge
+|\ \  
+| * \   d30427e : merge
+| |\ \  
+| * | | 1b879f2 : erro rhandling
+* | | | fc800c1 : basicblock error squashed
+| |/ /  
+|/| |   
+* | | 3c47675 : kk
+|/ /  
+* |   35df8fe : Merge branch 'master' of https://github.com/juhee0202/CS4120
+|\ \  
+| * \   2bdae85 : merge
+| |\ \  
+| * | | 82897e5 : array stuff
+* | | | 8c83fab : asldkasdlk
+| |/ /  
+|/| |   
+* | | da06a54 : typecheck yis
+| |/  
+|/|   
+* |   72d58c7 : try again
+|\ \  
+| |/  
+| * e645b0b : almost
+* | 364e73d : fixed some mistakes from pa2
+|/  
+* 9dc4063 : array concat
+* 23bf82c : createArray
+* 9192a6e : lex error handling fixed
+* cd91f05 : added pa1tests
+* e823b02 : almost done
+* bac37c3 : small bug
+* 707388b : added opt
+* 1889ef4 : notes
+*   3ec91e4 : Merge branch 'master' of https://github.com/juhee0202/CS4120
+|\  
+| * 74290b5 : tempCount in MIR
+| * 872a28c : clean up
+* | 227eac7 : CFG
+|/  
+*   94596d2 : :)
+|\  
+| *   b957ef1 : Merge branch 'master' of https://github.com/juhee0202/CS4120
+| |\  
+| | *   371e49e : merge
+| | |\  
+| | * | 8c77dd6 : decorating AST classes
+| * | | 7d6e8a6 : main
+| | |/  
+| |/|   
+| * | 07a7b19 : revert
+| |/  
+* | 10ac45f : i trust myself fuck u
+|/  
+* e368113 : work done
+*   c6a993a : Merge branch 'master' of https://github.com/juhee0202/CS4120
+|\  
+| * 69cb5a5 : added EXP
+* | 9a76d92 : LIRVisitor
+|/  
+*   b548f58 : merge
+|\  
+| * 4b5d790 : added IRReturn
+* | 314d421 : IRFuncDecl IRCompUnit
+|/  
+* ab0d47e : johaanananananan
+*   6fa35d1 : Merge branch 'master' of https://github.com/juhee0202/CS4120
+|\  
+| *   d4e7e45 : merge
+| |\  
+| | *   c6f82de : merge fixes
+| | |\  
+| | * | c62c61e : call me the exterminator
+| * | | a770459 : length(e)
+| | |/  
+| |/|   
+| * | c616e1d : code review
+| |/  
+* | 1d08498 : ??
+|/  
+*   5c7836c : Merge branch 'master' of https://github.com/juhee0202/CS4120
+|\  
+| * 852344b : assignment stmt
+| *   f8e4afc : Merge branch 'master' of https://github.com/juhee0202/CS4120
+| |\  
+| * | bca2c21 : config
+* | | 536f683 : freeeeeeeeee meeeeeeeeeee
+| |/  
+|/|   
+* | 6c6e500 : ?
+|/  
+* 55bf55c : .classpath
+*   5a0cc9b : meeergeee
+|\  
+| *   ac40c5f : merge fixes
+| |\  
+| * | 0b526b2 : cleaned visitor
+* | |   dc35927 : merge pls
+|\ \ \  
+| | |/  
+| |/|   
+| * |   a0b10b3 : merge
+| |\ \  
+| | |/  
+| | * df88937 : cleaned up visitors
+| * | 22b1486 : fdl in MIRVisitor Program
+| * | d4b608d : MIRVisitor ReturnStmt
+| * | 0fb3bf1 : MIR visit BlockStmt
+| |/  
+| *   f3784e1 : merge
+| |\  
+| | * 7f8e7d8 : added control flow grammar
+| * | caea38e : translating function name to ABI name
+| |/  
+| * bafeacc : translating function name to its ABI name
+| * f594075 : finished constant folding
+| *   4862876 : merge
+| |\  
+| | * d7bc5a0 : compile fixes
+| | * a3aaef5 : updated release files
+| | * bc5f223 : jeff's MIR
+| | *   d963af7 : Merge branch 'master' of https://github.com/juhee0202/CS4120
+| | |\  
+| | | * 06ff8e6 : pls
+| | * | dec6957 : commit before pull
+| | * |   5d325da : Merge branch 'master' of https://github.com/juhee0202/CS4120
+| | |\ \  
+| | * | | 3ec7b4c : vars
+| * | | | df4665b : commit before pull
+| | |/ /  
+| |/| |   
+* | | | 03026bb : retry
+* | | | 09bc2c4 : juhee
+| |_|/  
+|/| |   
+* | |   e5fe9b2 : ???
+|\ \ \  
+| |/ /  
+| * | a497cb2 : visit(FunctionDecl fd) partially done
+| * | 40a2faf : visit(FunctionCall fc)
+| |/  
+| *   cbe7688 : merge
+| |\  
+| * | 8bb1141 : error handling
+| * | a5ff18e : error handling
+* | | 9e2c26c : 3/14 meeting
+| |/  
+|/|   
+* | 563d47f : our 3/10 meeting
+* | 9e96955 : JEFF DO IT
+* | b3f11b9 : added some javadoc
+* | b98b6af : fixed up main
+* | 770c079 : trying to delete and stuff
+* | 52ded3f : updated provided pa4 code
+|/  
+*   4c2d2b4 : Merge branch 'master' of https://github.com/juhee0202/CS4120
+|\  
+| * 07203c7 : heY
+| *   249ad72 : merge
+| |\  
+| | * 2bb9651 : yo
+| | * ca1fe9e : lexical error
+| * | 3addeeb : fixed command line
+| |/  
+* | 5e5127a : created PA4
+|/  
+*   e91e37b : yo
+|\  
+| *   42cc27b : tests added
+| |\  
+| * | 0d7a892 : juhee test
+* | | 92d239d : yo
+* | | ffb395d : yo
+| |/  
+|/|   
+* |   f3bfbde : he
+|\ \  
+| |/  
+| *   8db600d : merged
+| |\  
+| | * ebefd58 : my stuff
+| * | c1ebea4 : juhee tests hehehehe eehehehe
+| |/  
+* | 640c033 : heh
+* | e1f4904 : hey
+|/  
+*   13cf24b : Merge branch 'master' of https://github.com/juhee0202/CS4120
+|\  
+| *   fadaebc : yo
+| |\  
+| | *   6eb4b46 : typecheker
+| | |\  
+| | * | f238113 : typechecker
+| * | | 54c7701 : tests
+| | |/  
+| |/|   
+| * | a47326d : yo
+| * |   57f13b5 : merge
+| |\ \  
+| | |/  
+| | *   3112c69 : flex filed changed
+| | |\  
+| | * | 10e8366 : new scanner jeffy fixed
+| | * |   d54a0af : indexing mistake fixed
+| | |\ \  
+| | * | | 7d488d9 : commit before merge
+| * | | | 557f8e9 : quick commit
+| * | | | b534d48 : quick commit
+* | | | | 274e6b3 : test files
+| |_|_|/  
+|/| | |   
+* | | | bffdeea : slight error check for empty array literal
+* | | | e3cd8b3 : error checking in vartype
+|/ / /  
+* | | 15d3e2a : comments for brackets related classes in ast
+| |/  
+|/|   
+* |   e0584d5 : merge
+|\ \  
+| |/  
+| *   980cb94 : binary expr
+| |\  
+| * | a55e44e : binaryexpres visitor fixed
+* | | b8f6680 : quick nullpointer error fix
+| |/  
+|/|   
+* | 95e7c42 : tupleinit bug fix
+|/  
+* 8b19dc6 : quick fix
+* 46e002e : col line number fix
+* 5c593aa : YES MUDDERFUCK BITCHES
+*   f68a278 : Merge branch 'master' of https://github.com/juhee0202/CS4120
+|\  
+| *   143cd36 : huh
+| |\  
+| | * 0779c9f : added print method in the environment
+| | *   a9775d6 : merge
+| | |\  
+| | * | ed040aa : error handling for function related visit methods and program
+| * | | 0fcbb50 : try merge
+| | |/  
+| |/|   
+| * |   7fc381a : changed line col
+| |\ \  
+| | * | 5d93efa : added my error handling
+| | |/  
+| * | 60045ca : juhee errors
+| |/  
+* | 325f425 : stmt errors
+|/  
+* bde3b6e : current best
+*   0dab639 : merge fixes
+|\  
+| * 2ef3b1b : updated parser
+| *   342046b : merge
+| |\  
+| | * 2497501 : idk what i did anymore
+| * | 09b5cfa : small fix
+| |/  
+| * 2b4ceba : error handling in xi.cup
+| *   24f851f : merge
+| |\  
+| | * 31644e4 : added toStrings
+| * | 7537c1c : added preTypeCheck sweep logic in visit(Program p) & modified visit(FunctionDecl fd) appropriately
+| |/  
+* | a5a69c7 : main fixes
+|/  
+* 8124c68 : didnt save typechecker
+* adc9ce3 : our changes in 3/3 meeting
+* 47dd937 : unit type
+*   03ce6f2 : merged!
+|\  
+| *   004aed9 : merge
+| |\  
+| | * 71c6021 : new parser
+| | * 1054886 : cup file merge fixes
+| | *   65ac9e4 : Merge branch 'master' of https://github.com/juhee0202/CS4120
+| | |\  
+| | * \   a145bc8 : merge fixes
+| | |\ \  
+| | * | | 201338a : added interface parsing
+| * | | | f47af97 : added error handling for function related visit methods
+| | |_|/  
+| |/| |   
+| * | | 5a36ecb : quick cleanup
+| | |/  
+| |/|   
+| * |   135ac9e : merge
+| |\ \  
+| | * | 59be854 : changed isbool stuff
+| * | |   16a6c21 : merge
+| |\ \ \  
+| | |/ /  
+| | * | 86ca870 : array + vartype
+| * | | bf9932d : visit(TupleInit ti)
+| |/ /  
+* | | 28a1230 : merge
+|/ /  
+* | 9835a2a : removed visit(FunctionParam fp) method
+* |   b87a162 : modified xi.cup & implemented visit methods for FunctionCall, FunctionArg, FunctionDecl, FunctionDeclList
+|\ \  
+| |/  
+| * 3e10170 : did some visit
+| *   4bff244 : merge
+| |\  
+| | *   906e3f8 : Merge branch 'master' of https://github.com/juhee0202/CS4120
+| | |\  
+| | * | f4eea5b : trying again
+| * | |   2edb3c3 : merging
+| |\ \ \  
+| | | |/  
+| | |/|   
+| | * | 76d8e83 : added stack scopes for stmts
+| | |/  
+| | *   045d8c3 : merge fixes
+| | |\  
+| | | * ad9d736 : deleted visits to interfaces
+| | | *   abc76bb : Merge branch 'master' of https://github.com/juhee0202/CS4120
+| | | |\  
+| | | * | 7294b0b : added accept
+| | * | | 8799ded : finished stmts
+| | |/ /  
+| * | | 42b817d : type
+| | |/  
+| |/|   
+| * | 66f0d60 : binaryexpr
+| * |   56de46f : wat
+| |\ \  
+| | |/  
+| | *   1c42fb5 : Merge branch 'master' of https://github.com/juhee0202/CS4120
+| | |\  
+| | * \   e4571d1 : pre commit
+| | |\ \  
+| | * | | 63ac2ba : commit before pull
+| * | | | f2664d1 : merge
+| |/ / /  
+* | | | 9a74ccc : commit before pull
+| |_|/  
+|/| |   
+* | | 6f828df : modified FunType to handle various cases (ex. 0 parameter, 1 parameter, 1< parameters etc)
+| |/  
+|/|   
+* | e1e7450 : added new types
+* |   6b36dc3 : Merge branch 'master' of https://github.com/juhee0202/CS4120
+|\ \  
+| |/  
+| * a83bdf4 : alphabetized nonterminal list
+| *   475063d : Merge branch 'master' of https://github.com/juhee0202/CS4120
+| |\  
+| * | e05754e : pa1mainfixes
+* | | 3205b88 : 3/1 changes
+| |/  
+|/|   
+* |   3a3a298 : Merge branch 'master' of https://github.com/juhee0202/CS4120
+|\ \  
+| |/  
+| * 18e0246 : fixed flex
+* | 237fe05 : mastermind
+|/  
+* db626c6 : alphabetized cup file
+*   1ad14d9 : Merge branch 'master' of https://github.com/juhee0202/CS4120
+|\  
+| * b4979a3 : again
+* |   774dc58 : Merge branch 'master' of https://github.com/juhee0202/CS4120
+|\ \  
+| |/  
+| * 67de76f : no
+| *   577795e : rekt that pa2
+| |\  
+| | * 76a703a : from saturday meeting
+| * | fa2ccf3 : changed xi.cup
+* | | a5f7e66 : fixed flex
+| |/  
+|/|   
+* | cad38e6 : PA3 start
+* | 4704c2a : hey
+* |   e52d98c : Merge branch 'master' of https://github.com/juhee0202/CS4120
+|\ \  
+| * | 47c9963 : yo
+| |/  
+* | 61ac9e7 : added values to terminals
+|/  
+* 4837c9d : yo
+* 69ff35e : almostt
+*   28b5afd : almost
+|\  
+| * 36b56ad : xic script
+* | 5ed068c : yo
+|/  
+* b9e09dd : minor fix
+* a96396f : commandline
+* c58a6f7 : yo
+* f06ea3a : commit
+*   c3baf1c : almost
+|\  
+| * 96bfa6b : strings
+* |   b3bd752 : commit before merge
+|\ \  
+| |/  
+| * 3975e2e : woops
+* | 5165ff5 : .gitignore
+|/  
+* 6108f26 : FIXED THIS GARBAGE
+* 5a5ac8c : fixes
+* 8a094ac : fixes
+* e1a6424 : fixes
+* 1941b3f : got actions
+* 7f473df : actions cup
+* 3d73ea8 : removed wrong ast dir
+* 47cde98 : commit
+* b1d087a : ast
+* 1c09185 : project file system rework
+*   6f2bbb7 : merge
+|\  
+| * d0c9d71 : parse added
+* | 0ec9dfd : commit before merge
+* | 23059e3 : xi.cup
+|/  
+* 1176d56 : xi.cup compiles without error but its prolly wrong haha
+* 819ddb4 : fixed minor cup errors
+*   b1f8f5a : small edits
+|\  
+| * 12360e8 : aaa
+* | 137bb35 : small edits
+|/  
+*   c7edb0c : merge
+|\  
+| * a9d725c : juhee commit
+| *   8c0cd87 : Merge branch 'master' of https://github.com/juhee0202/CS4120
+| |\  
+| | * 982e189 : astree
+| * | 4399101 : added function stuff
+| |/  
+* | df8fd24 : commit before merge
+|/  
+* 7aa6d71 : stmt started & editted prev grammar
+* fc9cec6 : array_element added ex. a[3]
+* 2c315b6 : added array literal
+* 6cd5202 : xi_thomas.cup
+* a7ea66f : changes to flex and symbols
+* 9684dc0 : first try
+* ade7666 : variable decl
+* 28cb6cc : release file updated
+* 91f5357 : PA2 = PA1 + starterCode
+* 7c0d64c : random files
+* 10fd69b : new zip
+* 65347f7 : new zip
+* 648d278 : hopefully
+*   a428cc0 : Merge branch 'master' of https://github.com/juhee0202/CS4120
+|\  
+| * f8217f7 : zip folder added
+| *   c54c2c7 : xic modified
+| |\  
+| * | 8d4f8bc : commit before merge
+| * |   ce9a586 : zip folder created
+| |\ \  
+| * | | c16a36f : xic script
+* | | | 4ca0199 : fixed row/col num
+| |_|/  
+|/| |   
+* | | 131da63 : safe submission
+* | | 98e0dd1 : fixed some errors
+* | | eed2490 : fixed string lengths
+* | | 396fe99 : added underscore and fixed string lengths
+* | | ff6dc20 : column number fix
+* | |   5bde718 : Merge branch 'master' of https://github.com/juhee0202/CS4120
+|\ \ \  
+| * | | 7b54601 : git sucks
+* | | | 32df87d : fixes
+|/ / /  
+* | | 4a6981a : fixes: length and identifiers
+| |/  
+|/|   
+* |   a09dd0e : merge pls
+|\ \  
+| * | 40f33e8 : debug: fixed integer bounds, hex chars
+* | | 7d5c27e : prints to output file for only lex
+|/ /  
+* | 4a5b168 : used long instead of int
+|/  
+*   88e4d4f : Merge branch 'master' of https://github.com/juhee0202/CS4120
+|\  
+| * d53271b : build script modified
+* | 943243f : fixed character issue
+* | 22bd541 : deleted a comment
+|/  
+*   cdbb8b0 : finished error prints
+|\  
+| * 32d1023 : added specs
+| * cff1bfb : getters for column and line
+| * fc69a47 : updted newline characters
+* | 1560148 : pa1 changed to while loop
+|/  
+* 812af9c : pushed pa1
+* e50714d : fixed backslash backslash
+*   3ae570c : Merge branch 'master' of https://github.com/juhee0202/CS4120
+|\  
+| *   7939465 : merge
+| |\  
+| * | af02ce4 : xic script
+* | | e700678 : fixes
+| |/  
+|/|   
+* | 3d7ccb3 : escape char fix
+* | 1f44130 : fixed escape chars
+* |   3183b0d : Merge branch 'master' of https://github.com/juhee0202/CS4120
+|\ \  
+| |/  
+| * c9cfaec : jar issue resolved
+* | 2a7114f : added use
+|/  
+*   625ae99 : merge conflict resolved
+|\  
+| * ae20153 : parseHex fix
+* | 4f48f42 : commit before pull
+|/  
+*   1948ea7 : wat merge
+|\  
+| * 5a4c5f6 : fixes
+| * af9596f : final xi.flex
+| * 70c8a1d : merge fixes
+* | bf28b5d : try building thomas pls
+|/  
+*   e5f22fe : Merge branch 'master' of https://github.com/juhee0202/CS4120
+|\  
+| *   25e15cd : merge conflict resolved
+| |\  
+| * | 8bcdec0 : modify .flex and build.xml
+* | | d20d3d3 : added int to YYINITIAL
+| |/  
+|/|   
+* | a29ebdd : added hex conversion to ascii
+|/  
+* 4c152ad : first commit

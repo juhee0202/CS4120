@@ -1,0 +1,31 @@
+(COMPUNIT
+ Program
+ (FUNC
+  _Imain_paai
+  (SEQ
+   (MOVE (TEMP args) (TEMP _ARG0))
+   (MOVE (TEMP temp0) (CONST 14))
+   (MOVE (TEMP temp1) (CONST 21))
+   (MOVE (TEMP temp2) (CALL (NAME _Igcd_iii) (TEMP temp0) (TEMP temp1)))
+   (MOVE (TEMP temp3) (TEMP temp2))
+   (MOVE (TEMP temp4) (CALL (NAME _IunparseInt_aii) (TEMP temp3)))
+   (MOVE (TEMP temp5) (TEMP temp4))
+   (EXP (CALL (NAME _Iprint_pai) (TEMP temp5)))
+   (RETURN)))
+ (FUNC
+  _Igcd_iii
+  (SEQ
+   (MOVE (TEMP a) (TEMP _ARG0))
+   (MOVE (TEMP b) (TEMP _ARG1))
+   (LABEL l0)
+   (CJUMP (NEQ (TEMP a) (CONST 0)) l1)
+   (MOVE (TEMP _RET0) (TEMP b))
+   (RETURN)
+   (LABEL l1)
+   (CJUMP (LT (TEMP a) (TEMP b)) l3)
+   (MOVE (TEMP a) (SUB (TEMP a) (TEMP b)))
+   (LABEL l5)
+   (JUMP (NAME l0))
+   (LABEL l3)
+   (MOVE (TEMP b) (SUB (TEMP b) (TEMP a)))
+   (JUMP (NAME l5)))))

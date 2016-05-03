@@ -1,0 +1,5 @@
+f() called
+lt() called: 0 < 7
+g() called
+0
+f() called

@@ -1,0 +1,18 @@
+f() called: {1, 2, 3}
+f() called: {1, 2, 3}
+1
+f() called: {1, 2, 3}
+f() called: {1, 2, 3}
+0
+f() called: {1, 2, 3}
+f() called: {1, 2, 3}
+0
+f() called: {1, 2, 3}
+f() called: {1, 2, 3}
+1
+f() called: {1, 2, 3}
+f() called: {1, 2, 3}
+0
+f() called: {1, 2, 3}
+f() called: {1, 2, 3}
+1

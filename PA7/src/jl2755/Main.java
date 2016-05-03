@@ -1129,7 +1129,7 @@ public class Main {
 		// print
 		boolean print = false;
 		String[] leftoverArgs = cmd.getArgs();
-		if (cmd.hasOption("h")) {
+		if (cmd.hasOption("h") || cmd.getOptions().length == 0) {
 			print = true;
 		}
 		if (cmd.hasOption("l") && leftoverArgs.length == 0) {

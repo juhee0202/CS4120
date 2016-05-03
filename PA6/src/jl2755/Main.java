@@ -548,7 +548,7 @@ public class Main {
 			}
 			
 			/* Optimize */
-//			result = optimize(result);
+			result = optimize(result);
 			
 			// Update global map
 			fileToIR.put(filename, result);
@@ -874,8 +874,8 @@ public class Main {
 			// call constructor
 			// add to opts
 			CommonSubExpElimination cse = new CommonSubExpElimination();
-//			opts.add(cse);
-//			optimize = true;
+			opts.add(cse);
+			optimize = true;
 		}
 		
 		// IRFuncDecl -> CFG -> SSA -> CFG -> IRFuncDecl
@@ -900,7 +900,7 @@ public class Main {
 //				System.out.println("Optimizing cfg");
 				ControlFlowGraph newCfg = converter.convertBack();
 				IRDeadCodeEliminator irdead = new IRDeadCodeEliminator();
-				irdead.run(newCfg);
+//				irdead.run(newCfg);
 				while (changed) {
 					changed = false;
 					for (Optimization o : opts) {

@@ -5,12 +5,13 @@ import jl2755.GlobalPrettyPrinter;
 import jl2755.type.VType;
 import jl2755.visitor.ASTVisitor;
 
-public class Identifier implements Expr{
+public class Identifier implements Expr, Type {
 	private String theValue;
 	private int theValue_col;
 	private int theValue_line;
 	private VType type;
 	private boolean isSurroundedByParentheses = false;
+	private boolean isClassName = false;
 	
 	public Identifier(String argValue, int idleft, int idright){
 		theValue = argValue;
@@ -83,5 +84,13 @@ public class Identifier implements Expr{
 	@Override
 	public boolean isSurroundedParentheses() {
 		return isSurroundedByParentheses;
+	}
+	
+	public void setIsClassName() {
+		isClassName = true;
+	}
+	
+	public boolean isClassName() {
+		return isClassName;
 	}
 }

@@ -1,6 +1,5 @@
 package jl2755.ast;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import edu.cornell.cs.cs4120.util.CodeWriterSExpPrinter;
@@ -9,21 +8,21 @@ import jl2755.visitor.ASTVisitor;
 
 public class Program extends XiFile {
 	private UseId useId;
-	private FunctionDeclList functionDeclList;
+	private ModuleList moduleList;
 	/**
 	 * 0 if there are no use statements,
 	 * 1 if there are use statements.
 	 */
 	private int index;
 	
-	public Program(FunctionDeclList fdl) {
-		functionDeclList = fdl;
+	public Program(ModuleList ml) {
+		moduleList = ml;
 		index = 0;
 	}
 	
-	public Program(UseId ui, FunctionDeclList fdl) {
+	public Program(UseId ui, ModuleList ml) {
 		useId = ui;
-		functionDeclList = fdl;
+		moduleList = ml;
 		index = 1;
 	}
 	
@@ -34,21 +33,21 @@ public class Program extends XiFile {
 			tempPrinter.startList();
 			tempPrinter.endList();
 			tempPrinter.startList();
-			functionDeclList.prettyPrintNode();
+			moduleList.prettyPrintNode();
 			tempPrinter.endList();
 		} else {
 			tempPrinter.startList();
 			useId.prettyPrintNode();
 			tempPrinter.endList();
 			tempPrinter.startList();
-			functionDeclList.prettyPrintNode();
+			moduleList.prettyPrintNode();
 			tempPrinter.endList();
 		}
 		tempPrinter.endList();
 	}
 	
-	public List<FunctionDecl> getFunctionDecls() {
-		return functionDeclList.getFunctionDecls();
+	public List<Decl> getAllDecls() {
+		return moduleList.getAllDecls();
 	}
 	
 	@Override
@@ -64,12 +63,12 @@ public class Program extends XiFile {
 		this.useId = useId;
 	}
 
-	public FunctionDeclList getFunctionDeclList() {
-		return functionDeclList;
+	public ModuleList getModuleList() {
+		return moduleList;
 	}
 
-	public void setFunctionDeclList(FunctionDeclList functionDeclList) {
-		this.functionDeclList = functionDeclList;
+	public void setModuleList(ModuleList ml) {
+		moduleList = ml;
 	}
 
 	public int getIndex() {

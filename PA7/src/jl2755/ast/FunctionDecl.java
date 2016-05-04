@@ -16,7 +16,7 @@ import jl2755.visitor.ASTVisitor;
  *	Represents function declaration which has the following grammar:
  *	identifier(functionParam)returnType blockStmt
  */
-public class FunctionDecl {
+public class FunctionDecl implements Decl {
 	private Identifier identifier;
 	private int identifier_col;
 	private int identifier_line;
@@ -72,6 +72,7 @@ public class FunctionDecl {
 		return returnType.getReturnTypes().size();
 	}
 	
+	@Override
 	public void prettyPrintNode() {
 		CodeWriterSExpPrinter tempPrinter = GlobalPrettyPrinter.getInstance();
 		tempPrinter.printAtom(identifier.toString());
@@ -140,6 +141,7 @@ public class FunctionDecl {
 		ABIName = aBIName;
 	}
 
+	@Override
 	public void accept(ASTVisitor v){
 		v.visit(this);
 	}

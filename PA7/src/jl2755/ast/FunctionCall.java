@@ -16,22 +16,33 @@ import jl2755.visitor.ASTVisitor;
  *	- 2: length(e)
  */
 public class FunctionCall implements Expr,NakedStmt {
-	private Identifier identifier;
 	private String ABIName;
+	private Identifier identifier;
 	private int identifier_col;
 	private int identifier_line;
 	private FunctionArg functionArg;
+	private DotableExpr dotableExpr;
+	private int dotableExpr_col;
+	private int dotableExpr_line;
 	private Expr expr;
 	private int expr_col;
 	private int expr_line;
 	private int length_col;
 	private int length_line;
+	
+	/**
+	 * 0: id()
+	 * 1: id(...)
+	 * 2: length(e)
+	 * 3: dotableExpr()
+	 * 4: dotableExpr(...)
+	 */
     private int index;
     private VType type;
     private boolean isSurroundedByParentheses = false;
     private int numReturns;
 
-    public FunctionCall(Identifier id){
+    public FunctionCall(Identifier id) {
         identifier = id;
         identifier_col = id.getColumnNumber();
         identifier_line = id.getLineNumber();
@@ -44,6 +55,23 @@ public class FunctionCall implements Expr,NakedStmt {
         identifier_line = id.getLineNumber();
 		functionArg = fArg; 
         index = 1;
+	}
+	
+	public FunctionCall(DotableExpr de, Identifier id) {
+		dotableExpr = de;
+		identifier = id;
+		index = 3;
+		dotableExpr_line = de.getLineNumber();
+		dotableExpr_col = de.getColumnNumber();
+	}
+	
+	public FunctionCall(DotableExpr de, Identifier id, FunctionArg fArg) {
+		dotableExpr = de;
+		identifier = id;
+		functionArg = fArg;
+		index = 4;
+		dotableExpr_line = de.getLineNumber();
+		dotableExpr_col = de.getColumnNumber();
 	}
 	
 	public FunctionCall(Expr e, int lleft, int lright) {
@@ -182,6 +210,8 @@ public class FunctionCall implements Expr,NakedStmt {
 	public int getColumnNumber() {
 		if (index < 2) {
 			return identifier_col;
+		} else if (index > 2) {
+			return dotableExpr_col;
 		}
 		return length_col;
 	}
@@ -190,6 +220,8 @@ public class FunctionCall implements Expr,NakedStmt {
 	public int getLineNumber() {
 		if (index < 2) {
 			return identifier_line;
+		} else if (index > 2) {
+			return dotableExpr_line;
 		}
 		return length_line;
 	}

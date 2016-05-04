@@ -48,11 +48,11 @@ non terminal Expr op_expr;
 non terminal FunctionArg function_arg;
 non terminal FunctionCall function_call;
 non terminal FunctionDecl function_decl;
-non terminal FunctionDeclList function_decl_list;
+// non terminal FunctionDeclList function_decl_list;
 non terminal FunctionParam function_param;
 non terminal GlobalDecl global_decl;
 non terminal Identifier identifier;
-non terminal Identifier identifier_list;
+non terminal IdentifierList identifier_list;
 non terminal IfStmt if_stmt;
 non terminal IndexedBrackets indexed_brackets;
 non terminal Literal literal;
@@ -60,6 +60,7 @@ non terminal MixedArrayType mixed_array_type;
 non terminal MixedBrackets mixed_brackets;
 non terminal ModuleList module_list;
 non terminal NakedStmt naked_stmt;
+non terminal Expr normal_expr;
 non terminal PrimitiveType primitive_type;
 non terminal Program program;
 non terminal ReturnList return_list;
@@ -136,20 +137,20 @@ brackets ::= OPEN_BRACKET CLOSE_BRACKET                             {: RESULT = 
 
 //*********************************************************************MODIF**********************************************************
 // Can this be empty?
-class_body ::= global_decl:gd class_body:cb
+class_body ::= global_decl:gd class_body:cb                         {: RESULT = new ClassBody(gd,cb); :}
                |
-               function_decl:fd class_body:cb
+               function_decl:fd class_body:cb                       {: RESULT = new ClassBody(fd,cb); :}
                |
-               global_decl:gd
+               global_decl:gd                                       {: RESULT = new ClassBody(gd); :}
                |
-               function_decl:fd
+               function_decl:fd                                     {: RESULT = new ClassBody(fd); :}
                ;
 
-class_decl ::= CLASS identifier OPEN_BRACKET 
-               class_body CLOSE_BRACKET
+class_decl ::= CLASS identifier:id OPEN_BRACKET      
+               class_body:cb CLOSE_BRACKET                          {: RESULT = new ClassDecl(id,cb); :}
                |
-               CLASS identifier EXTENDS identifier OPEN_BRACKET
-               class_body CLOSE_BRACKET
+               CLASS identifier:id1 EXTENDS identifier:id2 OPEN_BRACKET
+               class_body:cb CLOSE_BRACKET                          {: RESULT = new ClassDecl(id1,id2,cb); :}
                ;
 
 constant ::= literal:l                                              {: RESULT = l; :}
@@ -157,43 +158,38 @@ constant ::= literal:l                                              {: RESULT = 
              array_literal:al                                       {: RESULT = al; :}
              ;
 
-dotable_expr ::= identifier:id
+dotable_expr ::= identifier:id                                      {: RESULT = new DotableExpr(id,false); :}
                  |
-                 array_element:ae
+                 function_call:fc                                   {: RESULT = new DotableExpr(fc); :}
                  |
-                 function_call:fc
+                 dotable_expr:de DOT identifier:id                  {: RESULT = new DotableExpr(de,id); :}
                  |
-                 NEW identifier:id
+                 NEW identifier:id                                  {: RESULT = new DotableExpr(id,true); :}
                  |
-                 THIS
+                 THIS:t                                             {: RESULT = new DotableExpr(tleft, tright); :}
                  |
-                 OPEN_PAREN dotable_expr:de CLOSE_PAREN
+                 OPEN_PAREN dotable_expr:de CLOSE_PAREN             {: RESULT = new DotableExpr(de); :}
                  ;
 
 empty_array_type ::= primitive_type:pt brackets:b                   {: RESULT = new EmptyArrayType(pt, b); :}
                      ;
 
 //*********************************************************************MODIF**********************************************************
-expr ::= constant:c                                                 {: RESULT = c; :}
+expr ::= dotable_expr:de                                            {: RESULT = de; :}
          |
-         op_expr:oe                                                 {: RESULT = oe; :}
-         |
-         identifier:id                                              {: RESULT = id; :}
-         |
-         array_element:ae                                           {: RESULT = ae; :}
-         |
-         function_call:fc                                           {: RESULT = fc; :}
-         |
-         NEW identifier:id
-         |
-         THIS
-         |
-         OPEN_PAREN expr:expression CLOSE_PAREN                     {: expression.setSurroundedParentheses(); RESULT = expression; :}
-         |
-         dotable_expr:de DOT identifier:id
-         |
-         NULL
+         normal_expr:ne                                             {: RESULT = ne; :}
          ;
+
+normal_expr ::= constant:c                                          {: RESULT = c; :}
+                |
+                op_expr:oe                                          {: RESULT = oe; :}
+                |
+                array_element:ae                                    {: RESULT = ae; :}
+                |
+                NULL                                                {: RESULT = null; :}
+                |
+                OPEN_PAREN normal_expr:ne CLOSE_PAREN               {: ne.setSurroundedParentheses(); RESULT = ne; :}
+                ;
 
 function_arg ::= expr:expression                                    {: RESULT = new FunctionArg(expression); :}
                  |
@@ -207,10 +203,10 @@ function_call ::= identifier:id OPEN_PAREN
                   identifier:id OPEN_PAREN CLOSE_PAREN              {: RESULT = new FunctionCall(id); :}
                   |
                   dotable_expr:de DOT identifier:id 
-                  OPEN_PAREN CLOSE_PAREN
+                  OPEN_PAREN CLOSE_PAREN                            {: RESULT = new FunctionCall(de,id); :}
                   |
                   dotable_expr:de DOT identifier:id
-                  OPEN_PAREN function_arg:fa CLOSE_PAREN
+                  OPEN_PAREN function_arg:fa CLOSE_PAREN            {: RESULT = new FunctionCall(de,id,fa); :}
                   |
                   LENGTH:l OPEN_PAREN expr:e CLOSE_PAREN            {: RESULT = new FunctionCall(e, lleft, lright); :}
                   ;
@@ -222,10 +218,10 @@ function_decl ::= identifier:id OPEN_PAREN CLOSE_PAREN
                   CLOSE_PAREN return_type:rt block_stmt:bs          {: RESULT = new FunctionDecl(id, fp, rt, bs); :}
                   ;
 
-function_decl_list ::= function_decl:fd function_decl_list:fdl      {: RESULT = new FunctionDeclList(fd, fdl); :}
-                       |                       
-                       function_decl:fd                             {: RESULT = new FunctionDeclList(fd); :}
-                       ;
+// function_decl_list ::= function_decl:fd function_decl_list:fdl      {: RESULT = new FunctionDeclList(fd, fdl); :}
+//                        |                       
+//                        function_decl:fd                             {: RESULT = new FunctionDeclList(fd); :}
+//                        ;
 
 function_param ::= identifier:id COLON type:t                       {: RESULT = new FunctionParam(id, t); :}
                    |
@@ -234,22 +230,30 @@ function_param ::= identifier:id COLON type:t                       {: RESULT = 
                    ;
 
 //*********************************************************************MODIF**********************************************************
-// Refer to piazza post on initializing fields
-global_decl ::= var_decl:vd SEMICOLON
-             |
-             var_decl:vd
-             |
-             short_tuple_decl:std SEMICOLON
-             |
-             short_tuple_decl:std
-             ;
+// Refer to piazza post on initializing fields -> YES, we can initialize fields
+global_decl ::= var_decl:vd SEMICOLON                               {: RESULT = new GlobalDecl(vd, true); :}
+                |
+                var_decl:vd                                         {: RESULT = new GlobalDecl(vd, false); :}
+                |
+                short_tuple_decl:std SEMICOLON                      {: RESULT = new GlobalDecl(std, true); :}
+                |
+                short_tuple_decl:std                                {: RESULT = new GlobalDecl(std, false); :}
+                |
+                var_init:vi SEMICOLON                               {: RESULT = new GlobalDecl(vi, true); :}
+                |
+                var_init:vi                                         {: RESULT = new GlobalDecl(vi, false); :}
+                |
+                tuple_init:ti SEMICOLON                             {: RESULT = new GlobalDecl(ti, true); :}
+                |
+                tuple_init:ti                                       {: RESULT = new GlobalDecl(ti, false); :}
+                ;
 
 identifier ::= IDENTIFIER:id                                        {: RESULT = new Identifier(id, idleft, idright); :}
                ; 
 
-identifier_list ::= identifier:id COMMA identifier_list
+identifier_list ::= identifier:id COMMA identifier_list:idl         {: RESULT = new IdentifierList(id, idl); :}
                     |
-                    IDENTIFIER:id
+                    identifier:id                                   {: RESULT = new IdentifierList(id); :}
                     ;
 
 if_stmt ::= IF OPEN_PAREN expr:e CLOSE_PAREN stmt:s                 {: RESULT = new IfStmt(e, s); :}
@@ -288,17 +292,17 @@ mixed_brackets ::= OPEN_BRACKET expr:e CLOSE_BRACKET                {: RESULT = 
                    ;
 
 //*********************************************************************MODIF**********************************************************
-module_list ::= class_decl:cb module_list:ml
+module_list ::= class_decl:cd module_list:ml                        {: RESULT = new ModuleList(cd, ml); :}
                 |
-                function_decl:fd module_list:ml
+                function_decl:fd module_list:ml                     {: RESULT = new ModuleList(fd, ml); :}
                 |
-                global_decl:gd module_list:ml
+                global_decl:gd module_list:ml                       {: RESULT = new ModuleList(gd, ml); :}
                 |
-                class_decl:cb
+                class_decl:cd                                       {: RESULT = new ModuleList(cd); :}
                 |
-                function_decl:fd
+                function_decl:fd                                    {: RESULT = new ModuleList(fd); :}
                 |
-                global_decl:gd module_list:ml
+                global_decl:gd                                      {: RESULT = new ModuleList(gd); :}
                 ;
 
 
@@ -313,7 +317,7 @@ naked_stmt ::= assignment_stmt:ass                                  {: RESULT = 
                |
                block_stmt:bs                                        {: RESULT = bs; :}
                |
-               short_tuple_decl:std
+               short_tuple_decl:std                                 {: RESULT = std; :}
                |
                var_decl:vd                                          {: RESULT = vd; :}
                | 
@@ -321,7 +325,7 @@ naked_stmt ::= assignment_stmt:ass                                  {: RESULT = 
                | 
                tuple_init:ti                                        {: RESULT = ti; :}
                |
-               BREAK
+               BREAK:b                                              {: RESULT = new Break(); :}
                ;
 
 op_expr ::= MINUS:m expr:e                                          {: RESULT = new UnaryExpr(e, UnaryOp.INT_NEG, mleft, mright); :} %prec UMINUS
@@ -363,9 +367,9 @@ primitive_type ::= INT:i                                            {: RESULT = 
                    ;
 
 //*********************************************************************MODIF**********************************************************
-program ::= module_list:ml                                  
+program ::= module_list:ml                                          {: RESULT = new Program(ml); :}
             |
-            use_id:useidc module_list:ml                            {: RESULT = new Program(useidc, fdl); :}
+            use_id:useidc module_list:ml                            {: RESULT = new Program(useidc, ml); :}
             ;
 
 return_list ::= expr:e                                              {: RESULT = new ReturnList(e); :}
@@ -388,8 +392,10 @@ return_type ::= COLON type_list:tl                                  {: RESULT = 
                 ;
 
 //*********************************************************************MODIF**********************************************************
-short_tuple_decl ::= identifier_list:idl COLON type
+short_tuple_decl ::= identifier:id COMMA identifier_list:idl        
+                     COLON type:t                                   {: RESULT = new ShortTupleDecl(id, idl, t); :}
                      ;
+
 
 stmt ::= naked_stmt:ns SEMICOLON                                    {: RESULT = new Stmt(ns, true, nsleft, nsright); :}
          |
@@ -423,7 +429,7 @@ type ::= primitive_type:pt                                          {: RESULT = 
          | 
          empty_array_type:at                                        {: RESULT = at; :}
          |
-         identifier:id
+         identifier:id                                              {: id.setIsClassName(); RESULT = id; :}
          ;
 
 type_list ::= type:t                                                {: RESULT = new TypeList(t); :}

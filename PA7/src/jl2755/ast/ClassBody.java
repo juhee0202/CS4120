@@ -3,6 +3,8 @@ package jl2755.ast;
 import java.util.ArrayList;
 import java.util.List;
 
+import edu.cornell.cs.cs4120.util.CodeWriterSExpPrinter;
+import jl2755.GlobalPrettyPrinter;
 import jl2755.visitor.ASTVisitor;
 
 /**
@@ -14,17 +16,20 @@ public class ClassBody {
 	private GlobalDecl globalDecl;
 	private ClassBody classBody;
 	private FunctionDecl functionDecl;
+	private int index;
 	
 	public ClassBody() {}
 	
 	public ClassBody(GlobalDecl gd, ClassBody cb) {
 		globalDecl = gd;
 		classBody = cb;
+		index = 1;
 	}
-	
+
 	public ClassBody(FunctionDecl fd, ClassBody cb) {
 		functionDecl = fd;
 		classBody = cb;
+		index = 3;
 	}
 	
 	/**
@@ -50,6 +55,22 @@ public class ClassBody {
 	}
 	
 	public void prettyPrintNode() {
-		// TODO
+		CodeWriterSExpPrinter tempPrinter = GlobalPrettyPrinter.getInstance();
+		
+		tempPrinter.startList();
+		switch (index) {
+		case 0:
+		case 1:
+			globalDecl.prettyPrintNode();
+			break;
+		case 2:
+		case 3:
+			functionDecl.prettyPrintNode();
+			break;
+		}
+		tempPrinter.endList();
+		if (index%2 == 1) {
+			classBody.prettyPrintNode();
+		}
 	}
 }

@@ -1,5 +1,7 @@
 package jl2755.ast;
 
+import edu.cornell.cs.cs4120.util.CodeWriterSExpPrinter;
+import jl2755.GlobalPrettyPrinter;
 import jl2755.visitor.ASTVisitor;
 
 /**
@@ -51,6 +53,15 @@ public class ClassDecl implements Decl {
 	
 	@Override
 	public void prettyPrintNode() {
-		// TODO
+		CodeWriterSExpPrinter tempPrinter = GlobalPrettyPrinter.getInstance();
+		className.prettyPrintNode();
+		if (superclassName != null) {
+			tempPrinter.printAtom(" extends ");
+			superclassName.prettyPrintNode();
+		}
+		
+		tempPrinter.startList();
+		classBody.prettyPrintNode();
+		tempPrinter.endList();
 	}
 }

@@ -3,6 +3,9 @@ package jl2755.ast;
 import java.util.ArrayList;
 import java.util.List;
 
+import edu.cornell.cs.cs4120.util.CodeWriterSExpPrinter;
+import jl2755.GlobalPrettyPrinter;
+
 public class IdentifierList {
 	private Identifier id;
 	private IdentifierList identifierList;
@@ -33,5 +36,14 @@ public class IdentifierList {
 	 */
 	public boolean isLastId() {
 		return identifierList == null;
+	}
+	
+	public void prettyPrintNode() {
+		CodeWriterSExpPrinter tempPrinter = GlobalPrettyPrinter.getInstance();
+		id.prettyPrintNode();
+		tempPrinter.printAtom(", ");
+		if (identifierList != null) {
+			identifierList.prettyPrintNode();
+		}
 	}
 }

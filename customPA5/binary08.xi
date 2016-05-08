@@ -23,9 +23,6 @@ printai(a: int[]) {
 i: int = 0
 print("{")
 while (i < length(a)) {
-(-target linux -O [basic test]): binary08.xi
-
-
 if (i > 0) print(", ")
 print(unparseInt(a[i]))
 i = i + 1

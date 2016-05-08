@@ -15,9 +15,6 @@ println(b2s(f(true) & f(false)))
 println(b2s(f(false) & f(true)))
 println(b2s(f(false) & f(false)))
 println(b2s(f(true) | f(true)))
-(-target linux -O [basic test]): binary06.xi
-
-
 println(b2s(f(true) | f(false)))
 println(b2s(f(false) | f(true)))
 println(b2s(f(false) | f(false)))

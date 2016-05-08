@@ -23,9 +23,6 @@ println(unparseInt(x[0]))
 println(unparseInt(y))
 x[0] = x[0] + 1
 return x[0]
-(-target linux -O [basic test]): binary11.xi
-
-
 }
 
 b2s(b: bool): int[] {

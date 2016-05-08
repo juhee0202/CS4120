@@ -161,9 +161,9 @@ public class DotableExpr implements Expr {
 		} else {	// Type.PAREN
 			// TODO: not sure
 			CodeWriterSExpPrinter tempPrinter = GlobalPrettyPrinter.getInstance();
-			tempPrinter.printAtom("(");
+			tempPrinter.startList();
 			dotableExpr.prettyPrintNode();
-			tempPrinter.printAtom(")");	
+			tempPrinter.endList();
 		}
 	}
 }

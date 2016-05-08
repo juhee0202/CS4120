@@ -20,6 +20,6 @@ class Point { // a mutable point
 	equals(p: Point): bool { return this == p }
  }
 
- createPoint(x: int, y: int): Point {
- return new Point.initPoint(x, y)
- }
+createPoint(x: int, y: int): Point {
+ 	return new Point.initPoint(x, y)
+}

@@ -94,6 +94,15 @@ public class FunctionCall implements Expr,NakedStmt {
 		} else if (index == 2) {
 			tempPrinter.printAtom("length");
 			expr.prettyPrintNode();		// TODO revisit. NOT TOO SURE
+		} else if (index == 3) {
+			dotableExpr.prettyPrintNode();
+			tempPrinter.printAtom(".");
+			identifier.prettyPrintNode();
+		} else if (index == 4) {
+			dotableExpr.prettyPrintNode();
+			tempPrinter.printAtom(".");
+			identifier.prettyPrintNode();
+			functionArg.prettyPrintNode();
 		}
 		tempPrinter.endList();
 	}

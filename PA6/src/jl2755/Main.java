@@ -515,12 +515,12 @@ public class Main {
 			program.accept(mir);
 
 			// Output MIR
-//			StringWriter sww = new StringWriter();
-//			try (PrintWriter pw = new PrintWriter(sww);
-//					SExpPrinter sp = new CodeWriterSExpPrinter(pw)) {
-//				mir.program.printSExp(sp);
-//			}
-//			bw.write(sww.toString());
+			StringWriter sww = new StringWriter();
+			try (PrintWriter pw = new PrintWriter(sww);
+					SExpPrinter sp = new CodeWriterSExpPrinter(pw)) {
+				mir.program.printSExp(sp);
+			}
+			bw.write(sww.toString());
 //			bw.close();
 
 			/* Lower to LIR */
@@ -548,7 +548,7 @@ public class Main {
 			}
 			
 			/* Optimize */
-			result = optimize(result);
+//			result = optimize(result);
 			
 			// Update global map
 			fileToIR.put(filename, result);
@@ -698,7 +698,7 @@ public class Main {
 				result = lir.program;
 				
 				/* Optimize */
-				result = optimize(result);
+//				result = optimize(result);
 				
 				// Update global map
 				fileToIR.put(filename, result);

@@ -10,3 +10,5 @@ lt() called: 0 < 1
 lt() called: 0 < -1
 lt() called: 0 < 1
 lt() called: 0 < 1
+true
+printed

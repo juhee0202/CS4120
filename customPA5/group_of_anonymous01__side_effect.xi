@@ -10,9 +10,6 @@ a:int[2] b:int[2][2]
 a[0] = 0 assert(a[0] != inc(a), "binop")
 a[0] = 1 assert(checkSequential(a[0], inc(a), inc(a)), "call args")
 a = {0, 2} a[a[0]] = inc(a) assert(a[0] == 1 & a[1] == 2, "assign")
-(-target linux -O [contest]): group_of_anonymous01__side_effect.xi
-
-
 a = {0, 3, 6} a[inc(a)] = inc(a)
 assert(
 a[0] == 2 & a[1] == 2 & a[2] == 6,

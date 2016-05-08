@@ -45,9 +45,6 @@ asser(count == 664579)
 //
 // i = i + 1
 // }
-(-target linux -O [contest]): group_of_anonymous02__sieve.xi
-
-
 //
 // count:int = 0
 // i = 2

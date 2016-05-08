@@ -18,14 +18,14 @@ public class ClassBody {
 	private FunctionDecl functionDecl;
 	private int index;
 	
-<<<<<<< HEAD
 	public ClassBody(GlobalDecl gd) {
 		globalDecl = gd;
 		index = 0;
 	}
-=======
-	public ClassBody() {}
->>>>>>> 2a23aa2ae2bc84384d43cd69a925529aad5d5459
+
+	public ClassBody() {
+		index = 4;
+	}
 	
 	public ClassBody(GlobalDecl gd, ClassBody cb) {
 		globalDecl = gd;
@@ -33,14 +33,11 @@ public class ClassBody {
 		index = 1;
 	}
 	
-<<<<<<< HEAD
 	public ClassBody(FunctionDecl fd) {
 		functionDecl = fd;
 		index = 2;
 	}
 	
-=======
->>>>>>> 2a23aa2ae2bc84384d43cd69a925529aad5d5459
 	public ClassBody(FunctionDecl fd, ClassBody cb) {
 		functionDecl = fd;
 		classBody = cb;

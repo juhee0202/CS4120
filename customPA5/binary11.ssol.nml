@@ -42,3 +42,19 @@ f() called: 17
 4
 f() called: 18
 2
+false
+f() called: 19
+5
+f() called: 20
+2
+false
+f() called: 21
+6
+f() called: 22
+2
+false
+f() called: 23
+7
+f() called: 24
+2
+true

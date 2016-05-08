@@ -141,9 +141,7 @@ class_body ::= global_decl:gd class_body:cb                         {: RESULT = 
                |
                function_decl:fd class_body:cb                       {: RESULT = new ClassBody(fd,cb); :}
                |
-               global_decl:gd                                       {: RESULT = new ClassBody(gd); :}
-               |
-               function_decl:fd                                     {: RESULT = new ClassBody(fd); :}
+                                                                    {: RESULT = new ClassBody(); :}
                ;
 
 class_decl ::= CLASS identifier:id OPEN_BRACKET      

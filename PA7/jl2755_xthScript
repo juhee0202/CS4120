@@ -199,7 +199,7 @@ xic ("Test -target linux") ["../customPA5"] "-libpath $(testpath) -target linux"
     while04.xi;
 }
 
-xic ("Test -target linux -O") ["../pa5"] "-libpath $(testpath) -target linux -O" {
+xic ("Test -target linux -O") ["../customPA5"] "-libpath $(testpath) -target linux -O" {
     ack.xi;
     arracc01.xi;
     arracc02.xi;
@@ -286,5 +286,3 @@ xic ("Test -target linux -O") ["../pa5"] "-libpath $(testpath) -target linux -O"
     while03.xi;
     while04.xi;
 }
-
-Type a message...

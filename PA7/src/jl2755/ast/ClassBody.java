@@ -15,17 +15,11 @@ public class ClassBody {
 	private ClassBody classBody;
 	private FunctionDecl functionDecl;
 	
-	public ClassBody(GlobalDecl gd) {
-		globalDecl = gd;
-	}
+	public ClassBody() {}
 	
 	public ClassBody(GlobalDecl gd, ClassBody cb) {
 		globalDecl = gd;
 		classBody = cb;
-	}
-	
-	public ClassBody(FunctionDecl fd) {
-		functionDecl = fd;
 	}
 	
 	public ClassBody(FunctionDecl fd, ClassBody cb) {

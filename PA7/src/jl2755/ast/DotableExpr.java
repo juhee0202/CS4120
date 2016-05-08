@@ -1,5 +1,7 @@
 package jl2755.ast;
 
+import edu.cornell.cs.cs4120.util.CodeWriterSExpPrinter;
+import jl2755.GlobalPrettyPrinter;
 import jl2755.visitor.ASTVisitor;
 
 public class DotableExpr implements Expr {
@@ -137,9 +139,31 @@ public class DotableExpr implements Expr {
 		return isSurroundedByParentheses;
 	}
 
+	// TODO: not too sure
 	@Override
 	public void prettyPrintNode() {
-		// TODO Auto-generated method stub
-		
+		if (type == Type.IDENTIFIER) {
+			id.prettyPrintNode();
+		} else if (type == Type.FUNCTION_CALL) {
+			functionCall.prettyPrintNode();
+		} else if (type == Type.NEW) {
+			CodeWriterSExpPrinter tempPrinter = GlobalPrettyPrinter.getInstance();
+			tempPrinter.printAtom("new ");
+			id.prettyPrintNode();
+		} else if (type == Type.DOT) {
+			CodeWriterSExpPrinter tempPrinter = GlobalPrettyPrinter.getInstance();
+			dotableExpr.prettyPrintNode();
+			tempPrinter.printAtom(".");
+			id.prettyPrintNode();
+		} else if (type == Type.THIS) {
+			CodeWriterSExpPrinter tempPrinter = GlobalPrettyPrinter.getInstance();
+			tempPrinter.printAtom("this");
+		} else {	// Type.PAREN
+			// TODO: not sure
+			CodeWriterSExpPrinter tempPrinter = GlobalPrettyPrinter.getInstance();
+			tempPrinter.startList();
+			dotableExpr.prettyPrintNode();
+			tempPrinter.endList();
+		}
 	}
 }

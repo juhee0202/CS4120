@@ -1,0 +1,16 @@
+lt() called: 0 < 7
+0
+lt() called: 1 < 7
+1
+lt() called: 2 < 7
+2
+lt() called: 3 < 7
+3
+lt() called: 4 < 7
+4
+lt() called: 5 < 7
+5
+lt() called: 6 < 7
+6
+lt() called: 7 < 7
+done

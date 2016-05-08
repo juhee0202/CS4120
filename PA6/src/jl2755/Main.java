@@ -515,12 +515,12 @@ public class Main {
 			program.accept(mir);
 
 			// Output MIR
-//			StringWriter sww = new StringWriter();
-//			try (PrintWriter pw = new PrintWriter(sww);
-//					SExpPrinter sp = new CodeWriterSExpPrinter(pw)) {
-//				mir.program.printSExp(sp);
-//			}
-//			bw.write(sww.toString());
+			StringWriter sww = new StringWriter();
+			try (PrintWriter pw = new PrintWriter(sww);
+					SExpPrinter sp = new CodeWriterSExpPrinter(pw)) {
+				mir.program.printSExp(sp);
+			}
+			bw.write(sww.toString());
 //			bw.close();
 
 			/* Lower to LIR */

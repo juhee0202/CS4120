@@ -1,0 +1,1407 @@
+Summary
+Test script: xthScript
+ xic-build: OK
+ Test collection: xic (Test --help)
+ []: OK
+ xic (Test --help): 1 out of 1 tests succeeded.
+ Test collection: xic (Test --typecheck)
+ ex01.xi: Mismatch detected at line 1 of file ex01.typed.nml
+ expected: Valid Xi Program
+ found : : error:
+ ex02.xi: OK
+ ex03.xi: OK
+ ex04.xi: OK
+ ex05.xi: OK
+ ex06.xi: OK
+ ex07.xi: OK
+ ex08.xi: OK
+ ex09.xi: OK
+ ex10.xi: OK
+ ex11.xi: OK
+ ex12.xi: OK
+ spec1-full.xi: OK
+ spec1.xi: OK
+ spec2.xi: OK
+ spec3.xi: OK
+ gcd.xi: OK
+ ratadd-full.xi: OK
+ ratadd.xi: OK
+ ratadduse-full.xi: OK
+ ratadduse.xi: OK
+ insertionsort.xi: OK
+ arrayinit.xi: OK
+ arrayinit2-full.xi: OK
+ arrayinit2.xi: OK
+ mdarrays.xi: OK
+ xic (Test --typecheck): 25 out of 26 tests succeeded.
+ Test collection: xic-ref (--typecheck [basic test])
+ arracc01.xi: OK
+ arracc02.xi: OK
+ arracc03.xi: OK
+ arracc04.xi: OK
+ arracc05.xi: OK
+ arracc06.xi: Mismatch detected at line 1 of file arracc06.typed.nml
+ expected: Valid Xi Program
+ found : : error:
+ assign01.xi: OK
+ assign02.xi: OK
+ assign03.xi: OK
+ assign04.xi: OK
+ block01.xi: OK
+ block02.xi: OK
+ block03.xi: OK
+ call01.xi: OK
+ call02.xi: OK
+ call03.xi: OK
+ call04.xi: OK
+ if01.xi: OK
+ if02.xi: OK
+ if03.xi: OK
+ if04.xi: OK
+Summary
+1/
+9
+ length01.xi: Mismatch detected at line 1 of file length01.typed.nml
+ expected: Valid Xi Program
+ found : : error:
+ length02.xi: Mismatch detected at line 1 of file length02.typed.nml
+ expected: Valid Xi Program
+ found : : error:
+ lit01.xi: OK
+ lit02.xi: OK
+ lit03.xi: OK
+ lit04.xi: OK
+ lit05.xi: OK
+ lit06.xi: OK
+ op01.xi: OK
+ op02.xi: OK
+ op03.xi: OK
+ op04.xi: OK
+ op05.xi: OK
+ op06.xi: OK
+ op07.xi: OK
+ op08.xi: OK
+ op09.xi: OK
+ op10.xi: OK
+ op11.xi: OK
+ op12.xi: OK
+ return01.xi: OK
+ return02.xi: OK
+ var01.xi: OK
+ var02.xi: OK
+ var03.xi: OK
+ var04.xi: OK
+ var05.xi: OK
+ var06.xi: OK
+ while01.xi: OK
+ xic-ref (--typecheck [basic test]): 47 out of 50 tests succeeded.
+ Test collection: xic-ref (--typecheck [use test])
+ use01.xi: Mismatch detected at line 1 of file use01.typed.nml
+ expected: Valid Xi Program
+ found : : error:
+ use02.xi: OK
+ use03.xi: Mismatch detected at line 1 of file use03.typed.nml
+ expected: Valid Xi Program
+ found : : error:
+ use04.xi: Mismatch detected at line 1 of file use04.typed.nml
+ expected: Valid Xi Program
+ found : : error:
+ use05.xi: OK
+ xic-ref (--typecheck [use test]): 2 out of 5 tests succeeded.
+ Test collection: xic-ref (--typecheck [basic-syntax-error test])
+ assign01.xi: OK
+ assign02.xi: OK
+ assign03.xi: Missing line in file assign03.typed.nml: : error:
+ assign04.xi: OK
+ block01.xi: OK
+ block02.xi: OK
+ call01.xi: OK
+ call02.xi: OK
+ call03.xi: OK
+ codedecl01.xi: Missing line in file codedecl01.typed.nml: : error:
+ codedecl02.xi: Missing line in file codedecl02.typed.nml: : error:
+ codedecl03.xi: Missing line in file codedecl03.typed.nml: : error:
+Summary
+2/
+9
+ codedecl04.xi: OK
+ codedecl05.xi: OK
+ codedecl06.xi: OK
+ codedecl07.xi: OK
+ codedecl08.xi: OK
+ codedecl09.xi: OK
+ codedecl10.xi: Mismatch detected at line 1 of file codedecl10.typed.nml
+ expected: : error:
+ found : Valid Xi Program
+ codedecl11.xi: OK
+ codedecl12.xi: OK
+ codedecl13.xi: OK
+ codedecl14.xi: OK
+ codedecl15.xi: OK
+ codedecl16.xi: OK
+ codedecl17.xi: OK
+ empty.xi: Mismatch detected at line 1 of file empty.typed.nml
+ expected: : error:
+ found : Valid Xi Program
+ expr01.xi: OK
+ expr02.xi: OK
+ if01.xi: OK
+ if02.xi: OK
+ if03.xi: OK
+ length01.xi: OK
+ length02.xi: OK
+ length03.xi: OK
+ paramdecl01.xi: OK
+ paramdecl02.xi: OK
+ paramdecl03.xi: OK
+ paramdecl04.xi: OK
+ use01.xi: Mismatch detected at line 1 of file use01.typed.nml
+ expected: : error:
+ found : Valid Xi Program
+ use02.xi: Mismatch detected at line 1 of file use02.typed.nml
+ expected: : error:
+ found : Valid Xi Program
+ vardecl01.xi: OK
+ vardecl02.xi: OK
+ vardecl03.xi: OK
+ vardecl04.xi: OK
+ vardecl05.xi: OK
+ vardecl06.xi: OK
+ vardecl07.xi: OK
+ vardecl08.xi: Mismatch detected at line 1 of file vardecl08.typed.nml
+ expected: : error:
+ found : Valid Xi Program
+ xic-ref (--typecheck [basic-syntax-error test]): 40 out of 49 tests succeeded.
+ Test collection: xic-ref (--typecheck [combo-syntax-error test])
+ group_of_anonymous01_01.xi: OK
+ group_of_anonymous01_02.xi: OK
+ group_of_anonymous01_03.xi: OK
+ group_of_anonymous01_04.xi: OK
+ group_of_anonymous01_05.xi: OK
+ group_of_anonymous01_06.xi: OK
+ group_of_anonymous01_07.xi: OK
+ group_of_anonymous01_08.xi: OK
+ group_of_anonymous01_09.xi: OK
+ group_of_anonymous01_10.xi: OK
+ group_of_anonymous01_11.xi: OK
+Summary
+3/
+9
+ group_of_anonymous01_12.xi: OK
+ group_of_anonymous01_13.xi: OK
+ group_of_anonymous01_14.xi: OK
+ group_of_anonymous01_15.xi: OK
+ group_of_anonymous01_16.xi: OK
+ group_of_anonymous01_17.xi: OK
+ group_of_anonymous01_18.xi: OK
+ group_of_anonymous01_19.xi: OK
+ group_of_anonymous02_01.xi: Missing line in file group_of_anonymous02_01.typed.nml: : error:
+ group_of_anonymous03_01.xi: OK
+ group_of_anonymous03_02.xi: OK
+ group_of_anonymous04_01.xi: OK
+ group_of_anonymous05_01.xi: Missing line in file group_of_anonymous05_01.typed.nml: : error:
+ group_of_anonymous06_01.xi: OK
+ group_of_anonymous06_02.xi: OK
+ group_of_anonymous06_03.xi: OK
+ group_of_anonymous06_04.xi: OK
+ group_of_anonymous06_05.xi: OK
+ group_of_anonymous06_06.xi: OK
+ group_of_anonymous06_07.xi: OK
+ group_of_anonymous07_01.xi: Mismatch detected at line 1 of file
+group_of_anonymous07_01.typed.nml
+ expected: : error:
+ found : Valid Xi Program
+ group_of_anonymous08_01.xi: OK
+ group_of_anonymous08_02.xi: OK
+ group_of_anonymous09_01.xi: Mismatch detected at line 1 of file
+group_of_anonymous09_01.typed.nml
+ expected: : error:
+ found : Valid Xi Program
+ group_of_anonymous10_01.xi: OK
+ group_of_anonymous10_02.xi: OK
+ group_of_anonymous10_03.xi: OK
+ group_of_anonymous11_01.xi: OK
+ group_of_anonymous11_02.xi: Missing line in file group_of_anonymous11_02.typed.nml: : error:
+ group_of_anonymous11_03.xi: Missing line in file group_of_anonymous11_03.typed.nml: : error:
+ group_of_anonymous11_04.xi: OK
+ xic-ref (--typecheck [combo-syntax-error test]): 36 out of 42 tests succeeded.
+ Test collection: xic-ref (--typecheck [extension-syntax-error test (might succeed)])
+ group_of_anonymous01_01.xi: OK
+ vardecl01.xi: OK
+ xic-ref (--typecheck [extension-syntax-error test (might succeed)]): 2 out of 2 tests
+succeeded.
+ Test collection: xic-ref (--typecheck [basic-expr-error test])
+ arracc01.xi: OK
+ arracc02.xi: OK
+ arracc03.xi: OK
+ arracc04.xi: OK
+ arracc05.xi: Mismatch detected at line 1 of file arracc05.typed.nml
+ expected: : error:
+ found : Valid Xi Program
+ arracc06.xi: Mismatch detected at line 1 of file arracc06.typed.nml
+ expected: : error:
+ found : Valid Xi Program
+ arracc07.xi: Mismatch detected at line 1 of file arracc07.typed.nml
+ expected: : error:
+ found : Valid Xi Program
+ call01.xi: OK
+ call02.xi: OK
+ call03.xi: OK
+Summary
+4/
+9
+ call04.xi: OK
+ call05.xi: OK
+ call06.xi: OK
+ call07.xi: OK
+ call08.xi: OK
+ call09.xi: OK
+ call10.xi: OK
+ call11.xi: OK
+ call12.xi: OK
+ length01.xi: OK
+ length02.xi: OK
+ length03.xi: OK
+ length04.xi: OK
+ length05.xi: OK
+ length06.xi: OK
+ length07.xi: OK
+ length08.xi: OK
+ length09.xi: OK
+ length10.xi: OK
+ lit01.xi: OK
+ lit02.xi: OK
+ lit03.xi: OK
+ lit04.xi: OK
+ lit05.xi: OK
+ lit06.xi: OK
+ lit07.xi: OK
+ lit08.xi: OK
+ lit09.xi: OK
+ lit10.xi: OK
+ lit11.xi: OK
+ lit12.xi: OK
+ op01.xi: OK
+ op02.xi: OK
+ op03.xi: OK
+ op04.xi: OK
+ op05.xi: OK
+ op06.xi: OK
+ op07.xi: OK
+ op08.xi: OK
+ op09.xi: OK
+ op10.xi: OK
+ op11.xi: OK
+ op12.xi: OK
+ op13.xi: OK
+ op14.xi: OK
+ op15.xi: OK
+ op16.xi: OK
+ op17.xi: OK
+ op18.xi: OK
+ op19.xi: OK
+ op20.xi: OK
+ op21.xi: OK
+ op22.xi: OK
+ op23.xi: OK
+ op24.xi: OK
+ op25.xi: OK
+ op26.xi: OK
+ op27.xi: OK
+ op28.xi: OK
+ op29.xi: OK
+Summary
+5/
+9
+ op30.xi: OK
+ op31.xi: OK
+ op32.xi: OK
+ op33.xi: OK
+ op34.xi: OK
+ op35.xi: OK
+ op36.xi: OK
+ op37.xi: OK
+ op38.xi: OK
+ op39.xi: OK
+ op40.xi: OK
+ op41.xi: OK
+ op42.xi: OK
+ op43.xi: OK
+ op44.xi: OK
+ op45.xi: OK
+ op46.xi: OK
+ op47.xi: OK
+ op48.xi: OK
+ op49.xi: OK
+ op50.xi: OK
+ op51.xi: OK
+ op52.xi: OK
+ op53.xi: OK
+ op54.xi: OK
+ op55.xi: OK
+ op56.xi: OK
+ op57.xi: OK
+ op58.xi: OK
+ op59.xi: OK
+ op60.xi: OK
+ var01.xi: OK
+ var02.xi: OK
+ var03.xi: OK
+ var04.xi: OK
+ var05.xi: OK
+ var06.xi: OK
+ var07.xi: OK
+ var08.xi: OK
+ var09.xi: OK
+ var10.xi: OK
+ xic-ref (--typecheck [basic-expr-error test]): 108 out of 111 tests succeeded.
+ Test collection: xic-ref (--typecheck [basic-stmt-error test])
+ assign01.xi: OK
+ assign02.xi: OK
+ assign03.xi: OK
+ assign04.xi: OK
+ assign05.xi: OK
+ assign06.xi: OK
+ assign07.xi: OK
+ assign08.xi: OK
+ assign09.xi: OK
+ assign10.xi: OK
+ assign11.xi: OK
+ assign12.xi: OK
+ assign13.xi: OK
+ assign14.xi: OK
+ assign15.xi: OK
+ assign16.xi: OK
+ assign17.xi: OK
+Summary
+6/
+9
+ assign18.xi: OK
+ assign19.xi: OK
+ assign20.xi: OK
+ assign21.xi: OK
+ assign22.xi: OK
+ assign23.xi: OK
+ assign24.xi: OK
+ assign25.xi: OK
+ assign26.xi: OK
+ assign27.xi: OK
+ assign28.xi: OK
+ assign29.xi: OK
+ assign30.xi: OK
+ assign31.xi: OK
+ assign32.xi: OK
+ assign33.xi: OK
+ assign34.xi: OK
+ assign35.xi: OK
+ assign36.xi: OK
+ assign37.xi: OK
+ assign38.xi: OK
+ assign39.xi: OK
+ assign40.xi: OK
+ assign41.xi: OK
+ assign42.xi: OK
+ assign43.xi: OK
+ assign44.xi: OK
+ assign45.xi: OK
+ assign46.xi: OK
+ assign47.xi: OK
+ assign48.xi: OK
+ assign49.xi: OK
+ assign50.xi: OK
+ assign51.xi: OK
+ assign52.xi: OK
+ assign53.xi: OK
+ assign54.xi: OK
+ assign55.xi: OK
+ assign56.xi: OK
+ assign57.xi: OK
+ assign58.xi: OK
+ assign59.xi: OK
+ assign60.xi: OK
+ assign61.xi: OK
+ assign62.xi: OK
+ assign63.xi: OK
+ assign64.xi: OK
+ assign65.xi: OK
+ assign66.xi: OK
+ assign67.xi: OK
+ assign68.xi: OK
+ assign69.xi: OK
+ assign70.xi: OK
+ assign71.xi: OK
+ assign72.xi: Mismatch detected at line 1 of file assign72.typed.nml
+ expected: : error:
+ found : Valid Xi Program
+ assign73.xi: OK
+ assign74.xi: OK
+ assign75.xi: OK
+Summary
+7/
+9
+ block01.xi: Mismatch detected at line 1 of file block01.typed.nml
+ expected: : error:
+ found : Valid Xi Program
+ block02.xi: OK
+ block03.xi: Mismatch detected at line 1 of file block03.typed.nml
+ expected: : error:
+ found : Valid Xi Program
+ call01.xi: OK
+ call02.xi: OK
+ call03.xi: Mismatch detected at line 1 of file call03.typed.nml
+ expected: : error:
+ found : Valid Xi Program
+ call04.xi: OK
+ call05.xi: OK
+ call06.xi: Mismatch detected at line 1 of file call06.typed.nml
+ expected: : error:
+ found : Valid Xi Program
+ call07.xi: OK
+ call08.xi: OK
+ call09.xi: OK
+ call10.xi: OK
+ call11.xi: OK
+ if01.xi: OK
+ if02.xi: OK
+ if03.xi: OK
+ if04.xi: OK
+ if05.xi: Mismatch detected at line 1 of file if05.typed.nml
+ expected: : error:
+ found : Valid Xi Program
+ return01.xi: OK
+ return02.xi: OK
+ return03.xi: OK
+ return04.xi: OK
+ return05.xi: OK
+ return06.xi: OK
+ return07.xi: OK
+ return08.xi: OK
+ return09.xi: OK
+ return10.xi: OK
+ return11.xi: OK
+ return12.xi: OK
+ return13.xi: OK
+ return14.xi: OK
+ return15.xi: OK
+ return16.xi: OK
+ return17.xi: OK
+ return18.xi: OK
+ var01.xi: OK
+ var02.xi: OK
+ var03.xi: OK
+ var04.xi: OK
+ var05.xi: OK
+ var06.xi: OK
+ var07.xi: OK
+ var08.xi: Mismatch detected at line 1 of file var08.typed.nml
+ expected: : error:
+ found : Valid Xi Program
+ var09.xi: OK
+ var10.xi: OK
+ var11.xi: OK
+Summary
+8/
+9
+ var12.xi: OK
+ var13.xi: OK
+ var14.xi: OK
+ var15.xi: OK
+ var16.xi: OK
+ var17.xi: OK
+ var18.xi: Mismatch detected at line 1 of file var18.typed.nml
+ expected: : error:
+ found : Valid Xi Program
+ while01.xi: OK
+ while02.xi: OK
+ xic-ref (--typecheck [basic-stmt-error test]): 124 out of 132 tests succeeded.
+ Test collection: xic-ref (--typecheck [use-error test])
+ decl01.xi: OK
+ decl02.xi: OK
+ decl03.xi: OK
+ decl04.xi: OK
+ decl05.xi: Mismatch detected at line 1 of file decl05.typed.nml
+ expected: : error:
+ found : Valid Xi Program
+ use01.xi: Mismatch detected at line 1 of file use01.typed.nml
+ expected: : error:
+ found : Valid Xi Program
+ use02.xi: Mismatch detected at line 1 of file use02.typed.nml
+ expected: : error:
+ found : Valid Xi Program
+ use03.xi: OK
+ use04.xi: Mismatch detected at line 1 of file use04.typed.nml
+ expected: : error:
+ found : Valid Xi Program
+ use05.xi: OK
+ use06.xi: OK
+ use07.xi: Mismatch detected at line 1 of file use07.typed.nml
+ expected: : error:
+ found : Valid Xi Program
+ xic-ref (--typecheck [use-error test]): 7 out of 12 tests succeeded.
+xthScript: 393 out of 431 tests succeeded.
+Summary
+9/
+9
+xic (Test --typecheck): ex01.xi
+Mismatch detected at line 1 of file ex01.typed.nml
+expected: Valid Xi Program
+found : : error:
+Content of test case:
+pa/pa3/grading/tests/../../../../xth/tests/pa3/ex01.xi
+1 use io
+2
+3 main(args: int[][]) {
+4 print("Hello, Worl\x64!\n")
+5 c3po: int = 'x' + 47;
+6 r2d2: int = c3po // No Han Solo
+7 }
+Compiler's standard output:
+[xic] Typechecking
+Semantic error beginning at 4:3: Name print cannot be resolved
+Generated result for --typecheck:
+shared/submissions/group_of_jl2755_jp882_sa579_ttl33/ex01.typed
+1 4:3 error:Name print cannot be resolved
+Expected result for --typecheck:
+shared/submissions/group_of_jl2755_jp882_sa579_ttl33/ex01.typedsol
+1 Valid Xi Program
+xic (Test --typecheck): ex01.xi
+1/
+1
+xic-ref (--typecheck [basic test]): arracc06.xi
+Mismatch detected at line 1 of file arracc06.typed.nml
+expected: Valid Xi Program
+found : : error:
+Content of test case:
+pa/pa3/grading/tests/base/arracc06.xi
+1 foo() {
+2 i: int
+3
+4 ai1: int[] = {0, 1, 2,}
+5 i = (ai1 + {0})[0]
+6
+7 aai1: int[][] = {{0}, ai1}
+8 i = (aai1[0] + ai1)[1]
+9 }
+Compiler's standard output:
+[xic] Typechecking
+instead expected token classes are [error, IDENTIFIER, IF, WHILE, RETURN, PLUS, MINUS, TIMES,
+HIGH_MULT, DIVIDE, MODULO, LT, LEQ, GT, GEQ, AND, OR, EQUAL, NOT_EQUAL, OPEN_BRACE, CLOSE_BRACE,
+SEMICOLON, UNDERSCORE, LENGTH]
+Syntax error beginning at 5:18 error:Invalid expression.[
+Generated result for --typecheck:
+shared/submissions/group_of_jl2755_jp882_sa579_ttl33/arracc06.typed
+1 5:18 error:Invalid expression.[
+Expected result for --typecheck:
+shared/submissions/group_of_jl2755_jp882_sa579_ttl33/arracc06.typedsol
+1 Valid Xi Program
+xic-ref (--typecheck [basic test]): arracc06.xi
+1/
+1
+xic-ref (--typecheck [basic test]): length01.xi
+Mismatch detected at line 1 of file length01.typed.nml
+expected: Valid Xi Program
+found : : error:
+Content of test case:
+pa/pa3/grading/tests/base/length01.xi
+1 f() {
+2 x: int[] = {47}
+3 x01: int = length({})
+4 x02: int = length({1})
+5 x03: int = length({true, false})
+6 x04: int = length("")
+7 x05: int = length(x)
+8 }
+Compiler's standard output:
+[xic] Typechecking
+Semantic error beginning at 5:14: Expected int, but found bool
+Generated result for --typecheck:
+shared/submissions/group_of_jl2755_jp882_sa579_ttl33/length01.typed
+1 5:14 error:Expected int, but found bool
+Expected result for --typecheck:
+shared/submissions/group_of_jl2755_jp882_sa579_ttl33/length01.typedsol
+1 Valid Xi Program
+xic-ref (--typecheck [basic test]): length01.xi
+1/
+1
+xic-ref (--typecheck [basic test]): length02.xi
+Mismatch detected at line 1 of file length02.typed.nml
+expected: Valid Xi Program
+found : : error:
+Content of test case:
+pa/pa3/grading/tests/base/length02.xi
+1 f() {
+2 x: int[] = {47}
+3 x01: int = length({{}})
+4 x02: int = length({{1}})
+5 x03: int = length({{true, false}})
+6 x04: int = length({""})
+7 x05: int = length({x})
+8 x06: int = length({{{""}}, {{{0}}}})
+9 }
+Compiler's standard output:
+[xic] Typechecking
+Semantic error beginning at 5:14: Expected int, but found bool
+Generated result for --typecheck:
+shared/submissions/group_of_jl2755_jp882_sa579_ttl33/length02.typed
+1 5:14 error:Expected int, but found bool
+Expected result for --typecheck:
+shared/submissions/group_of_jl2755_jp882_sa579_ttl33/length02.typedsol
+1 Valid Xi Program
+xic-ref (--typecheck [basic test]): length02.xi
+1/
+1
+xic-ref (--typecheck [use test]): use01.xi
+Mismatch detected at line 1 of file use01.typed.nml
+expected: Valid Xi Program
+found : : error:
+Content of test case:
+pa/pa3/grading/tests/use/use01.xi
+ 1 use i01
+ 2
+ 3 foo() {
+ 4 p1()
+ 5 p2(true)
+ 6 p3(0, {1})
+ 7 x01: int = f1()
+ 8 x02: int = f2(true)
+ 9 x03: int = f3(0, {1})
+10 x04: int, b04: bool = f4()
+11 x05: int, b05: bool = f5(true)
+12 x06: int, b06: bool = f6(0, {1})
+13 }
+Compiler's standard output:
+[xic] Typechecking
+Semantic error beginning at 4:3: Name p1 cannot be resolved
+Generated result for --typecheck:
+shared/submissions/group_of_jl2755_jp882_sa579_ttl33/use01.typed
+1 4:3 error:Name p1 cannot be resolved
+Expected result for --typecheck:
+shared/submissions/group_of_jl2755_jp882_sa579_ttl33/use01.typedsol
+1 Valid Xi Program
+xic-ref (--typecheck [use test]): use01.xi
+1/
+1
+xic-ref (--typecheck [use test]): use03.xi
+Mismatch detected at line 1 of file use03.typed.nml
+expected: Valid Xi Program
+found : : error:
+Content of test case:
+pa/pa3/grading/tests/use/use03.xi
+ 1 use i01
+ 2 use i02
+ 3
+ 4 foo() {
+ 5 p1()
+ 6 p2(true)
+ 7 p3(0, {1})
+ 8 x01: int = f1()
+ 9 x02: int = f2(true)
+10 x03: int = f3(0, {1})
+11 x04: int, b04: bool = f4()
+12 x05: int, b05: bool = f5(true)
+13 x06: int, b06: bool = f6(0, {1})
+14 x07: bool = g1()
+15 x08: bool = g2(0)
+16 }
+Compiler's standard output:
+[xic] Typechecking
+Semantic error beginning at 5:3: Name p1 cannot be resolved
+Generated result for --typecheck:
+shared/submissions/group_of_jl2755_jp882_sa579_ttl33/use03.typed
+1 5:3 error:Name p1 cannot be resolved
+Expected result for --typecheck:
+shared/submissions/group_of_jl2755_jp882_sa579_ttl33/use03.typedsol
+1 Valid Xi Program
+xic-ref (--typecheck [use test]): use03.xi
+1/
+1
+xic-ref (--typecheck [use test]): use04.xi
+Mismatch detected at line 1 of file use04.typed.nml
+expected: Valid Xi Program
+found : : error:
+Content of test case:
+pa/pa3/grading/tests/use/use04.xi
+ 1 use i01
+ 2 use i03
+ 3
+ 4 foo() {
+ 5 p1()
+ 6 p2(true)
+ 7 p3(0, {1})
+ 8 x01: int = f1()
+ 9 x02: int = f2(true)
+10 x03: int = f3(0, {1})
+11 x04: int, b04: bool = f4()
+12 x05: int, b05: bool = f5(true)
+13 x06: int, b06: bool = f6(0, {1})
+14 x07: bool = g1()
+15 x08: bool = g2(0)
+16 }
+Compiler's standard output:
+[xic] Typechecking
+Semantic error beginning at 5:3: Name p1 cannot be resolved
+Generated result for --typecheck:
+shared/submissions/group_of_jl2755_jp882_sa579_ttl33/use04.typed
+1 5:3 error:Name p1 cannot be resolved
+Expected result for --typecheck:
+shared/submissions/group_of_jl2755_jp882_sa579_ttl33/use04.typedsol
+1 Valid Xi Program
+xic-ref (--typecheck [use test]): use04.xi
+1/
+1
+xic-ref (--typecheck [basic-syntax-error test]): assign03.xi
+Missing line in file assign03.typed.nml: : error:
+Content of test case:
+pa/pa3/grading/tests/../../../pa2/grading/tests/base-error/assign03.xi
+1 f() {
+2 {1,2,3}[0] = 0
+3 }
+Compiler's standard output:
+[xic] Typechecking
+instead expected token classes are [error, IDENTIFIER, IF, WHILE, RETURN, OPEN_BRACE,
+CLOSE_BRACE, UNDERSCORE, LENGTH]
+Generated result for --typecheck:
+shared/submissions/group_of_jl2755_jp882_sa579_ttl33/assign03.typed
+Expected result for --typecheck:
+shared/submissions/group_of_jl2755_jp882_sa579_ttl33/assign03.typedsol
+1 2:4 error:Syntax error: unexpected integer 1.
+xic-ref (--typecheck [basic-syntax-error test]): assign03.xi
+1/
+1
+xic-ref (--typecheck [basic-syntax-error test]): codedecl01.xi
+Missing line in file codedecl01.typed.nml: : error:
+Content of test case:
+pa/pa3/grading/tests/../../../pa2/grading/tests/base-error/codedecl01.xi
+1 f()
+Compiler's standard output:
+[xic] Typechecking
+Generated result for --typecheck:
+shared/submissions/group_of_jl2755_jp882_sa579_ttl33/codedecl01.typed
+Expected result for --typecheck:
+shared/submissions/group_of_jl2755_jp882_sa579_ttl33/codedecl01.typedsol
+1 2:1 error:Syntax error: unexpected end of file.
+xic-ref (--typecheck [basic-syntax-error test]): codedecl01.xi
+1/
+1
+xic-ref (--typecheck [basic-syntax-error test]): codedecl02.xi
+Missing line in file codedecl02.typed.nml: : error:
+Content of test case:
+pa/pa3/grading/tests/../../../pa2/grading/tests/base-error/codedecl02.xi
+1 f(): int
+Compiler's standard output:
+[xic] Typechecking
+Generated result for --typecheck:
+shared/submissions/group_of_jl2755_jp882_sa579_ttl33/codedecl02.typed
+Expected result for --typecheck:
+shared/submissions/group_of_jl2755_jp882_sa579_ttl33/codedecl02.typedsol
+1 2:1 error:Syntax error: unexpected end of file.
+xic-ref (--typecheck [basic-syntax-error test]): codedecl02.xi
+1/
+1
+xic-ref (--typecheck [basic-syntax-error test]): codedecl03.xi
+Missing line in file codedecl03.typed.nml: : error:
+Content of test case:
+pa/pa3/grading/tests/../../../pa2/grading/tests/base-error/codedecl03.xi
+1 f1(): int
+2 f2()
+Compiler's standard output:
+[xic] Typechecking
+Generated result for --typecheck:
+shared/submissions/group_of_jl2755_jp882_sa579_ttl33/codedecl03.typed
+Expected result for --typecheck:
+shared/submissions/group_of_jl2755_jp882_sa579_ttl33/codedecl03.typedsol
+1 2:1 error:Syntax error: unexpected id f2.
+xic-ref (--typecheck [basic-syntax-error test]): codedecl03.xi
+1/
+1
+xic-ref (--typecheck [basic-syntax-error test]): codedecl10.xi
+Mismatch detected at line 1 of file codedecl10.typed.nml
+expected: : error:
+found : Valid Xi Program
+Content of test case:
+pa/pa3/grading/tests/../../../pa2/grading/tests/base-error/codedecl10.xi
+1 main(x:int,) {}
+Compiler's standard output:
+[xic] Typechecking
+[xic] Typechecking completed
+Generated result for --typecheck:
+shared/submissions/group_of_jl2755_jp882_sa579_ttl33/codedecl10.typed
+1 Valid Xi Program
+Expected result for --typecheck:
+shared/submissions/group_of_jl2755_jp882_sa579_ttl33/codedecl10.typedsol
+1 1:12 error:Syntax error: unexpected ).
+xic-ref (--typecheck [basic-syntax-error test]): codedecl10.xi
+1/
+1
+xic-ref (--typecheck [basic-syntax-error test]): empty.xi
+Mismatch detected at line 1 of file empty.typed.nml
+expected: : error:
+found : Valid Xi Program
+Content of test case:
+pa/pa3/grading/tests/../../../pa2/grading/tests/base-error/empty.xi
+Compiler's standard output:
+[xic] Typechecking
+[xic] Typechecking completed
+Generated result for --typecheck:
+shared/submissions/group_of_jl2755_jp882_sa579_ttl33/empty.typed
+1 Valid Xi Program
+Expected result for --typecheck:
+shared/submissions/group_of_jl2755_jp882_sa579_ttl33/empty.typedsol
+1 1:1 error:Syntax error: unexpected end of file.
+xic-ref (--typecheck [basic-syntax-error test]): empty.xi
+1/
+1
+xic-ref (--typecheck [basic-syntax-error test]): use01.xi
+Mismatch detected at line 1 of file use01.typed.nml
+expected: : error:
+found : Valid Xi Program
+Content of test case:
+pa/pa3/grading/tests/../../../pa2/grading/tests/base-error/use01.xi
+1 use A
+Compiler's standard output:
+[xic] Typechecking
+[xic] Typechecking completed
+Generated result for --typecheck:
+shared/submissions/group_of_jl2755_jp882_sa579_ttl33/use01.typed
+1 Valid Xi Program
+Expected result for --typecheck:
+shared/submissions/group_of_jl2755_jp882_sa579_ttl33/use01.typedsol
+1 2:1 error:Syntax error: unexpected end of file.
+xic-ref (--typecheck [basic-syntax-error test]): use01.xi
+1/
+1
+xic-ref (--typecheck [basic-syntax-error test]): use02.xi
+Mismatch detected at line 1 of file use02.typed.nml
+expected: : error:
+found : Valid Xi Program
+Content of test case:
+pa/pa3/grading/tests/../../../pa2/grading/tests/base-error/use02.xi
+1 use A;
+Compiler's standard output:
+[xic] Typechecking
+[xic] Typechecking completed
+Generated result for --typecheck:
+shared/submissions/group_of_jl2755_jp882_sa579_ttl33/use02.typed
+1 Valid Xi Program
+Expected result for --typecheck:
+shared/submissions/group_of_jl2755_jp882_sa579_ttl33/use02.typedsol
+1 2:1 error:Syntax error: unexpected end of file.
+xic-ref (--typecheck [basic-syntax-error test]): use02.xi
+1/
+1
+xic-ref (--typecheck [basic-syntax-error test]): vardecl08.xi
+Mismatch detected at line 1 of file vardecl08.typed.nml
+expected: : error:
+found : Valid Xi Program
+Content of test case:
+pa/pa3/grading/tests/../../../pa2/grading/tests/base-error/vardecl08.xi
+1 f() {
+2 x:int[1] = {1}
+3 }
+Compiler's standard output:
+[xic] Typechecking
+[xic] Typechecking completed
+Generated result for --typecheck:
+shared/submissions/group_of_jl2755_jp882_sa579_ttl33/vardecl08.typed
+1 Valid Xi Program
+Expected result for --typecheck:
+shared/submissions/group_of_jl2755_jp882_sa579_ttl33/vardecl08.typedsol
+1 2:12 error:Syntax error: unexpected =.
+xic-ref (--typecheck [basic-syntax-error test]): vardecl08.xi
+1/
+1
+xic-ref (--typecheck [combo-syntax-error test]): group_of_anonymous02_01.xi
+Missing line in file group_of_anonymous02_01.typed.nml: : error:
+Content of test case:
+pa/pa3/grading/tests/../../../pa2/grading/tests/combo-error/group_of_anonymous02_01.xi
+ 1 use io
+ 2
+ 3 validFunction(arg: bool[][][]) {
+ 4 print("This is a valid function");
+ 5 return;
+ 6 }
+ 7 main(args: int[][]) {
+ 8 printab("Hello, World\n";
+ 9 }
+10
+Compiler's standard output:
+[xic] Typechecking
+instead expected token classes are [MINUS, TIMES, HIGH_MULT, DIVIDE, MODULO, LT, LEQ, GT, GEQ,
+AND, OR, EQUAL, NOT_EQUAL, CLOSE_PAREN, COMMA]
+Generated result for --typecheck:
+shared/submissions/group_of_jl2755_jp882_sa579_ttl33/group_of_anonymous02_01.typed
+Expected result for --typecheck:
+shared/submissions/group_of_jl2755_jp882_sa579_ttl33/group_of_anonymous02_01.typedsol
+1 8:29 error:Syntax error: unexpected ;.
+xic-ref (--typecheck [combo-syntax-error test]): group_of_anonymous02_01.xi
+1/
+1
+xic-ref (--typecheck [combo-syntax-error test]): group_of_anonymous05_01.xi
+Missing line in file group_of_anonymous05_01.typed.nml: : error:
+Content of test case:
+pa/pa3/grading/tests/../../../pa2/grading/tests/combo-error/group_of_anonymous05_01.xi
+ 1 use x;
+ 2 use y;
+ 3
+ 4 foo() {}
+ 5
+ 6 bar() {}
+ 7
+ 8 main() {}
+ 9
+10 use bogus; //error
+Compiler's standard output:
+[xic] Typechecking
+instead expected token classes are [EOF]
+Generated result for --typecheck:
+shared/submissions/group_of_jl2755_jp882_sa579_ttl33/group_of_anonymous05_01.typed
+Expected result for --typecheck:
+shared/submissions/group_of_jl2755_jp882_sa579_ttl33/group_of_anonymous05_01.typedsol
+1 10:1 error:Syntax error: unexpected use.
+xic-ref (--typecheck [combo-syntax-error test]): group_of_anonymous05_01.xi
+1/
+1
+xic-ref (--typecheck [combo-syntax-error test]): group_of_anonymous07_01.xi
+Mismatch detected at line 1 of file group_of_anonymous07_01.typed.nml
+expected: : error:
+found : Valid Xi Program
+Content of test case:
+pa/pa3/grading/tests/../../../pa2/grading/tests/combo-error/group_of_anonymous07_01.xi
+1 fail_on_bad_decl() {
+2 x:int[3] = {1, 2, 3} // Will fail because can't initialize indexed array
+3 }
+Compiler's standard output:
+[xic] Typechecking
+[xic] Typechecking completed
+Generated result for --typecheck:
+shared/submissions/group_of_jl2755_jp882_sa579_ttl33/group_of_anonymous07_01.typed
+1 Valid Xi Program
+Expected result for --typecheck:
+shared/submissions/group_of_jl2755_jp882_sa579_ttl33/group_of_anonymous07_01.typedsol
+1 2:14 error:Syntax error: unexpected =.
+xic-ref (--typecheck [combo-syntax-error test]): group_of_anonymous07_01.xi
+1/
+1
+xic-ref (--typecheck [combo-syntax-error test]): group_of_anonymous09_01.xi
+Mismatch detected at line 1 of file group_of_anonymous09_01.typed.nml
+expected: : error:
+found : Valid Xi Program
+Content of test case:
+pa/pa3/grading/tests/../../../pa2/grading/tests/combo-error/group_of_anonymous09_01.xi
+1 // Sometimes I like to dig a hole in my backyard and pretend I'm a carrot
+Compiler's standard output:
+[xic] Typechecking
+[xic] Typechecking completed
+Generated result for --typecheck:
+shared/submissions/group_of_jl2755_jp882_sa579_ttl33/group_of_anonymous09_01.typed
+1 Valid Xi Program
+Expected result for --typecheck:
+shared/submissions/group_of_jl2755_jp882_sa579_ttl33/group_of_anonymous09_01.typedsol
+1 2:1 error:Syntax error: unexpected end of file.
+xic-ref (--typecheck [combo-syntax-error test]): group_of_anonymous09_01.xi
+1/
+1
+xic-ref (--typecheck [combo-syntax-error test]): group_of_anonymous11_02.xi
+Missing line in file group_of_anonymous11_02.typed.nml: : error:
+Content of test case:
+pa/pa3/grading/tests/../../../pa2/grading/tests/combo-error/group_of_anonymous11_02.xi
+1 f() {
+2 x:int[][
+3 }
+Compiler's standard output:
+[xic] Typechecking
+instead expected token classes are []
+Generated result for --typecheck:
+shared/submissions/group_of_jl2755_jp882_sa579_ttl33/group_of_anonymous11_02.typed
+Expected result for --typecheck:
+shared/submissions/group_of_jl2755_jp882_sa579_ttl33/group_of_anonymous11_02.typedsol
+1 3:1 error:Syntax error: unexpected }.
+xic-ref (--typecheck [combo-syntax-error test]): group_of_anonymous11_02.xi
+1/
+1
+xic-ref (--typecheck [combo-syntax-error test]): group_of_anonymous11_03.xi
+Missing line in file group_of_anonymous11_03.typed.nml: : error:
+Content of test case:
+pa/pa3/grading/tests/../../../pa2/grading/tests/combo-error/group_of_anonymous11_03.xi
+1 f() {
+2 {
+3 }
+Compiler's standard output:
+[xic] Typechecking
+instead expected token classes are [error, IDENTIFIER, IF, WHILE, RETURN, OPEN_BRACE,
+CLOSE_BRACE, SEMICOLON, UNDERSCORE, LENGTH]
+Generated result for --typecheck:
+shared/submissions/group_of_jl2755_jp882_sa579_ttl33/group_of_anonymous11_03.typed
+Expected result for --typecheck:
+shared/submissions/group_of_jl2755_jp882_sa579_ttl33/group_of_anonymous11_03.typedsol
+1 3:2 error:Syntax error: unexpected end of file.
+xic-ref (--typecheck [combo-syntax-error test]): group_of_anonymous11_03.xi
+1/
+1
+xic-ref (--typecheck [basic-expr-error test]): arracc05.xi
+Mismatch detected at line 1 of file arracc05.typed.nml
+expected: : error:
+found : Valid Xi Program
+Content of test case:
+pa/pa3/grading/tests/base-expr-error/arracc05.xi
+1 f() {
+2 ai1: int[] = {0,1,2}
+3 x: int = ai1[true]
+4 }
+Compiler's standard output:
+[xic] Typechecking
+[xic] Typechecking completed
+Generated result for --typecheck:
+shared/submissions/group_of_jl2755_jp882_sa579_ttl33/arracc05.typed
+1 Valid Xi Program
+Expected result for --typecheck:
+shared/submissions/group_of_jl2755_jp882_sa579_ttl33/arracc05.typedsol
+1 3:16 error:Expected int, but found bool
+xic-ref (--typecheck [basic-expr-error test]): arracc05.xi
+1/
+1
+xic-ref (--typecheck [basic-expr-error test]): arracc06.xi
+Mismatch detected at line 1 of file arracc06.typed.nml
+expected: : error:
+found : Valid Xi Program
+Content of test case:
+pa/pa3/grading/tests/base-expr-error/arracc06.xi
+1 f() {
+2 ai1: int[] = {0,1,2}
+3 x: int = ai1[""]
+4 }
+Compiler's standard output:
+[xic] Typechecking
+[xic] Typechecking completed
+Generated result for --typecheck:
+shared/submissions/group_of_jl2755_jp882_sa579_ttl33/arracc06.typed
+1 Valid Xi Program
+Expected result for --typecheck:
+shared/submissions/group_of_jl2755_jp882_sa579_ttl33/arracc06.typedsol
+1 3:16 error:Expected int, but found int[]
+xic-ref (--typecheck [basic-expr-error test]): arracc06.xi
+1/
+1
+xic-ref (--typecheck [basic-expr-error test]): arracc07.xi
+Mismatch detected at line 1 of file arracc07.typed.nml
+expected: : error:
+found : Valid Xi Program
+Content of test case:
+pa/pa3/grading/tests/base-expr-error/arracc07.xi
+1 f() {
+2 ai1: int[] = {0,1,2}
+3 x: int = ai1[{0}]
+4 }
+Compiler's standard output:
+[xic] Typechecking
+[xic] Typechecking completed
+Generated result for --typecheck:
+shared/submissions/group_of_jl2755_jp882_sa579_ttl33/arracc07.typed
+1 Valid Xi Program
+Expected result for --typecheck:
+shared/submissions/group_of_jl2755_jp882_sa579_ttl33/arracc07.typedsol
+1 3:16 error:Expected int, but found int[]
+xic-ref (--typecheck [basic-expr-error test]): arracc07.xi
+1/
+1
+xic-ref (--typecheck [basic-stmt-error test]): assign72.xi
+Mismatch detected at line 1 of file assign72.typed.nml
+expected: : error:
+found : Valid Xi Program
+Content of test case:
+pa/pa3/grading/tests/base-stmt-error/assign72.xi
+1 foo() {
+2 i: int[]
+3 i[false] = 1
+4 }
+Compiler's standard output:
+[xic] Typechecking
+[xic] Typechecking completed
+Generated result for --typecheck:
+shared/submissions/group_of_jl2755_jp882_sa579_ttl33/assign72.typed
+1 Valid Xi Program
+Expected result for --typecheck:
+shared/submissions/group_of_jl2755_jp882_sa579_ttl33/assign72.typedsol
+1 3:5 error:Expected int, but found bool
+xic-ref (--typecheck [basic-stmt-error test]): assign72.xi
+1/
+1
+xic-ref (--typecheck [basic-stmt-error test]): block01.xi
+Mismatch detected at line 1 of file block01.typed.nml
+expected: : error:
+found : Valid Xi Program
+Content of test case:
+pa/pa3/grading/tests/base-stmt-error/block01.xi
+1 foo() {
+2 foo()
+3 foo()
+4 return
+5 foo()
+6 }
+Compiler's standard output:
+[xic] Typechecking
+[xic] Typechecking completed
+Generated result for --typecheck:
+shared/submissions/group_of_jl2755_jp882_sa579_ttl33/block01.typed
+1 Valid Xi Program
+Expected result for --typecheck:
+shared/submissions/group_of_jl2755_jp882_sa579_ttl33/block01.typedsol
+1 5:3 error:foo is not a function
+xic-ref (--typecheck [basic-stmt-error test]): block01.xi
+1/
+1
+xic-ref (--typecheck [basic-stmt-error test]): block03.xi
+Mismatch detected at line 1 of file block03.typed.nml
+expected: : error:
+found : Valid Xi Program
+Content of test case:
+pa/pa3/grading/tests/base-stmt-error/block03.xi
+1 foo() {
+2 foo()
+3 {
+4 foo()
+5 return
+6 }
+7 foo()
+8 }
+Compiler's standard output:
+[xic] Typechecking
+[xic] Typechecking completed
+Generated result for --typecheck:
+shared/submissions/group_of_jl2755_jp882_sa579_ttl33/block03.typed
+1 Valid Xi Program
+Expected result for --typecheck:
+shared/submissions/group_of_jl2755_jp882_sa579_ttl33/block03.typedsol
+1 7:3 error:Unreachable statement
+xic-ref (--typecheck [basic-stmt-error test]): block03.xi
+1/
+1
+xic-ref (--typecheck [basic-stmt-error test]): call03.xi
+Mismatch detected at line 1 of file call03.typed.nml
+expected: : error:
+found : Valid Xi Program
+Content of test case:
+pa/pa3/grading/tests/base-stmt-error/call03.xi
+1 foo() {
+2 f()
+3 }
+4
+5 f(): int {
+6 return 0
+7 }
+Compiler's standard output:
+[xic] Typechecking
+[xic] Typechecking completed
+Generated result for --typecheck:
+shared/submissions/group_of_jl2755_jp882_sa579_ttl33/call03.typed
+1 Valid Xi Program
+Expected result for --typecheck:
+shared/submissions/group_of_jl2755_jp882_sa579_ttl33/call03.typedsol
+1 2:3 error:f is not a procedure
+xic-ref (--typecheck [basic-stmt-error test]): call03.xi
+1/
+1
+xic-ref (--typecheck [basic-stmt-error test]): call06.xi
+Mismatch detected at line 1 of file call06.typed.nml
+expected: : error:
+found : Valid Xi Program
+Content of test case:
+pa/pa3/grading/tests/base-stmt-error/call06.xi
+1 foo() {
+2 f(0)
+3 }
+4
+5 f(x: int): int {
+6 return 0
+7 }
+Compiler's standard output:
+[xic] Typechecking
+[xic] Typechecking completed
+Generated result for --typecheck:
+shared/submissions/group_of_jl2755_jp882_sa579_ttl33/call06.typed
+1 Valid Xi Program
+Expected result for --typecheck:
+shared/submissions/group_of_jl2755_jp882_sa579_ttl33/call06.typedsol
+1 2:3 error:f is not a procedure
+xic-ref (--typecheck [basic-stmt-error test]): call06.xi
+1/
+1
+xic-ref (--typecheck [basic-stmt-error test]): if05.xi
+Mismatch detected at line 1 of file if05.typed.nml
+expected: : error:
+found : Valid Xi Program
+Content of test case:
+pa/pa3/grading/tests/base-stmt-error/if05.xi
+1 foo(b: bool) {
+2 if (b) {
+3 return
+4 } else {
+5 return
+6 }
+7 x: int = 47
+8 }
+Compiler's standard output:
+[xic] Typechecking
+[xic] Typechecking completed
+Generated result for --typecheck:
+shared/submissions/group_of_jl2755_jp882_sa579_ttl33/if05.typed
+1 Valid Xi Program
+Expected result for --typecheck:
+shared/submissions/group_of_jl2755_jp882_sa579_ttl33/if05.typedsol
+1 7:3 error:Unreachable statement
+xic-ref (--typecheck [basic-stmt-error test]): if05.xi
+1/
+1
+xic-ref (--typecheck [basic-stmt-error test]): var08.xi
+Mismatch detected at line 1 of file var08.typed.nml
+expected: : error:
+found : Valid Xi Program
+Content of test case:
+pa/pa3/grading/tests/base-stmt-error/var08.xi
+1 foo() {
+2 x: int[true]
+3 }
+Compiler's standard output:
+[xic] Typechecking
+[xic] Typechecking completed
+Generated result for --typecheck:
+shared/submissions/group_of_jl2755_jp882_sa579_ttl33/var08.typed
+1 Valid Xi Program
+Expected result for --typecheck:
+shared/submissions/group_of_jl2755_jp882_sa579_ttl33/var08.typedsol
+1 2:10 error:Expected int, but found bool
+xic-ref (--typecheck [basic-stmt-error test]): var08.xi
+1/
+1
+xic-ref (--typecheck [basic-stmt-error test]): var18.xi
+Mismatch detected at line 1 of file var18.typed.nml
+expected: : error:
+found : Valid Xi Program
+Content of test case:
+pa/pa3/grading/tests/base-stmt-error/var18.xi
+1 foo() {
+2 x: int = x
+3 }
+Compiler's standard output:
+[xic] Typechecking
+[xic] Typechecking completed
+Generated result for --typecheck:
+shared/submissions/group_of_jl2755_jp882_sa579_ttl33/var18.typed
+1 Valid Xi Program
+Expected result for --typecheck:
+shared/submissions/group_of_jl2755_jp882_sa579_ttl33/var18.typedsol
+1 2:12 error:Name x not found
+xic-ref (--typecheck [basic-stmt-error test]): var18.xi
+1/
+1
+xic-ref (--typecheck [use-error test]): decl05.xi
+Mismatch detected at line 1 of file decl05.typed.nml
+expected: : error:
+found : Valid Xi Program
+Content of test case:
+pa/pa3/grading/tests/use-error/decl05.xi
+1 f(x: int, x: int): int {
+2 return 0
+3 }
+Compiler's standard output:
+[xic] Typechecking
+[xic] Typechecking completed
+Generated result for --typecheck:
+shared/submissions/group_of_jl2755_jp882_sa579_ttl33/decl05.typed
+1 Valid Xi Program
+Expected result for --typecheck:
+shared/submissions/group_of_jl2755_jp882_sa579_ttl33/decl05.typedsol
+1 1:11 error:x already defined
+xic-ref (--typecheck [use-error test]): decl05.xi
+1/
+1
+xic-ref (--typecheck [use-error test]): use01.xi
+Mismatch detected at line 1 of file use01.typed.nml
+expected: : error:
+found : Valid Xi Program
+Content of test case:
+pa/pa3/grading/tests/use-error/use01.xi
+1 use x01
+2
+3 foo() {
+4 }
+Compiler's standard output:
+[xic] Typechecking
+[xic] Typechecking completed
+Generated result for --typecheck:
+shared/submissions/group_of_jl2755_jp882_sa579_ttl33/use01.typed
+1 Valid Xi Program
+Expected result for --typecheck:
+shared/submissions/group_of_jl2755_jp882_sa579_ttl33/use01.typedsol
+1 1:19 error:Syntax error: unexpected end of file.
+xic-ref (--typecheck [use-error test]): use01.xi
+1/
+1
+xic-ref (--typecheck [use-error test]): use02.xi
+Mismatch detected at line 1 of file use02.typed.nml
+expected: : error:
+found : Valid Xi Program
+Content of test case:
+pa/pa3/grading/tests/use-error/use02.xi
+1 use i01
+2 use i02
+3
+4 foo() {
+5 }
+Compiler's standard output:
+[xic] Typechecking
+[xic] Typechecking completed
+Generated result for --typecheck:
+shared/submissions/group_of_jl2755_jp882_sa579_ttl33/use02.typed
+1 Valid Xi Program
+Expected result for --typecheck:
+shared/submissions/group_of_jl2755_jp882_sa579_ttl33/use02.typedsol
+1 2:1 error:Conflicting declarations on f: trying to add [bool] [int] when [] [int] already
+exists.
+xic-ref (--typecheck [use-error test]): use02.xi
+1/
+1
+xic-ref (--typecheck [use-error test]): use04.xi
+Mismatch detected at line 1 of file use04.typed.nml
+expected: : error:
+found : Valid Xi Program
+Content of test case:
+pa/pa3/grading/tests/use-error/use04.xi
+1 use i01
+2
+3 f() {
+4 }
+Compiler's standard output:
+[xic] Typechecking
+[xic] Typechecking completed
+Generated result for --typecheck:
+shared/submissions/group_of_jl2755_jp882_sa579_ttl33/use04.typed
+1 Valid Xi Program
+Expected result for --typecheck:
+shared/submissions/group_of_jl2755_jp882_sa579_ttl33/use04.typedsol
+1 1:1 error:Conflicting declarations on f: trying to add [] [] when [] [int] already exists.
+xic-ref (--typecheck [use-error test]): use04.xi
+1/
+1
+xic-ref (--typecheck [use-error test]): use07.xi
+Mismatch detected at line 1 of file use07.typed.nml
+expected: : error:
+found : Valid Xi Program
+Content of test case:
+pa/pa3/grading/tests/use-error/use07.xi
+1 use x02
+2
+3 foo() {
+4 }
+Compiler's standard output:
+[xic] Typechecking
+[xic] Typechecking completed
+Generated result for --typecheck:
+shared/submissions/group_of_jl2755_jp882_sa579_ttl33/use07.typed
+1 Valid Xi Program
+Expected result for --typecheck:
+shared/submissions/group_of_jl2755_jp882_sa579_ttl33/use07.typedsol
+1 1:1 error:Syntax error: unexpected :.
+xic-ref (--typecheck [use-error test]): use07.xi
+1/
+1

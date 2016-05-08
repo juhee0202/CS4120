@@ -548,7 +548,7 @@ public class Main {
 			}
 			
 			/* Optimize */
-			result = optimize(result);
+//			result = optimize(result);
 			
 			// Update global map
 			fileToIR.put(filename, result);
@@ -698,7 +698,7 @@ public class Main {
 				result = lir.program;
 				
 				/* Optimize */
-				result = optimize(result);
+//				result = optimize(result);
 				
 				// Update global map
 				fileToIR.put(filename, result);

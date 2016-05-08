@@ -93,13 +93,20 @@ SingleCharacter = [^\n\'\\\"]
 
   /* keywords */
   "bool"                         { return symbol(sym.BOOL,"bool"); }
+  "break"                        { return symbol(sym.BREAK,"break"); }
+  "class"                        { return symbol(sym.CLASS,"class"); }
   "else"                         { return symbol(sym.ELSE,"else"); }
+  "extends"                      { return symbol(sym.EXTENDS,"extends"); }
   "if"                           { return symbol(sym.IF,"if"); }
   "int"                          { return symbol(sym.INT,"int"); }
   "length"                       { return symbol(sym.LENGTH,"length"); }
+  "new"                          { return symbol(sym.NEW,"new"); }
+  "null"                         { return symbol(sym.NULL,"null"); }
   "return"                       { return symbol(sym.RETURN,"return"); }
+  "this"                         { return symbol(sym.THIS,"this"); }
   "use"                          { return symbol(sym.USE,"use"); }
   "while"                        { return symbol(sym.WHILE,"while"); }
+
   
   /* boolean literals */
   "true"                         { return symbol(sym.TRUE,Boolean.TRUE); }
@@ -117,6 +124,7 @@ SingleCharacter = [^\n\'\\\"]
   ","                            { return symbol(sym.COMMA,","); }
   
   /* operators */
+  "."                            { return symbol(sym.DOT,"."); }
   "="                            { return symbol(sym.GETS,"="); }
   ">"                            { return symbol(sym.GT,">"); }
   "<"                            { return symbol(sym.LT,"<"); }

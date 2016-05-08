@@ -343,15 +343,55 @@ Test script: xthScript
     ex01.xi: OK
     [Compiler's standard output:
     [xic] Generating intermediate code
-Optimizing cfg
 [xic] Generating intermediate code completed
 ]
     ack.xi: OK
     [Compiler's standard output:
     [xic] Generating intermediate code
-Optimizing cfg
-Optimizing cfg
-Optimizing cfg
 [xic] Generating intermediate code completed
 ]
-    primes.xi: 
+    primes.xi: OK
+    [Compiler's standard output:
+    [xic] Generating intermediate code
+[xic] Generating intermediate code completed
+]
+  xic (Test --irgen): 3 out of 3 tests succeeded.
+Number of IRs: 3
+Number of canonical IRs: 3
+Number of constant-folded IRs: 3
+Number of correct IRs: 3
+  Test collection: xic (Test --irgen -O)
+    ex01.xi: OK
+    [Compiler's standard output:
+    [xic] Generating intermediate code
+[xic] Generating intermediate code completed
+]
+    ack.xi: OK
+    [Compiler's standard output:
+    [xic] Generating intermediate code
+[xic] Generating intermediate code completed
+]
+    primes.xi: OK
+    [Compiler's standard output:
+    [xic] Generating intermediate code
+[xic] Generating intermediate code completed
+]
+  xic (Test --irgen -O): 3 out of 3 tests succeeded.
+Number of IRs: 3
+Number of canonical IRs: 3
+Number of correct IRs: 3
+  Test collection: xic (Test -target linux)
+    ex01.xi: OK
+    [Compiler's standard output:
+    [xic] Generating assembly code
+[xic] Generating assembly code completed
+]
+    ack.xi: Mismatch detected at line 1 of file ack.s.nml
+expected: Ack(2,11): 25
+found   : Ack(2,11): 12
+    [Compiler's standard output:
+    [xic] Generating assembly code
+[xic] Generating assembly code completed
+]
+    primes.xi: Failed to execute: primes exit code 129
+  

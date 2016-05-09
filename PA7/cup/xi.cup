@@ -144,11 +144,11 @@ class_body ::= global_decl:gd class_body:cb                         {: RESULT = 
                                                                     {: RESULT = new ClassBody(); :}
                ;
 
-class_decl ::= CLASS identifier:id OPEN_BRACKET      
-               class_body:cb CLOSE_BRACKET                          {: RESULT = new ClassDecl(id,cb); :}
+class_decl ::= CLASS identifier:id OPEN_BRACE      
+               class_body:cb CLOSE_BRACE                            {: RESULT = new ClassDecl(id,cb); :}
                |
-               CLASS identifier:id1 EXTENDS identifier:id2 OPEN_BRACKET
-               class_body:cb CLOSE_BRACKET                          {: RESULT = new ClassDecl(id1,id2,cb); :}
+               CLASS identifier:id1 EXTENDS identifier:id2 
+               OPEN_BRACE class_body:cb CLOSE_BRACE                 {: RESULT = new ClassDecl(id1,id2,cb); :}
                ;
 
 constant ::= literal:l                                              {: RESULT = l; :}
@@ -447,6 +447,8 @@ use_id ::= USE identifier:id                                        {: RESULT = 
 var_decl ::= identifier:id COLON mixed_array_type:mat               {: RESULT = new VarDecl(id, mat); :}
              |
              identifier:id COLON primitive_type:pt                  {: RESULT = new VarDecl(id, pt); :}
+             |
+             identifier:id1 COLON identifier:id2                    {: RESULT = new VarDecl(id1, id2); :}
              ;
 
 var_init ::= identifier:id COLON type:t GETS expr:e                 {: RESULT = new VarInit(id, t, e); :}

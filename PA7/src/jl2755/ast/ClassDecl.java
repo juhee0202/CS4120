@@ -54,9 +54,10 @@ public class ClassDecl implements Decl {
 	@Override
 	public void prettyPrintNode() {
 		CodeWriterSExpPrinter tempPrinter = GlobalPrettyPrinter.getInstance();
+		tempPrinter.printAtom("class");
 		className.prettyPrintNode();
 		if (superclassName != null) {
-			tempPrinter.printAtom(" extends ");
+			tempPrinter.printAtom("extends");
 			superclassName.prettyPrintNode();
 		}
 		

@@ -52,10 +52,7 @@ public class GlobalDecl implements Decl {
 	}
 	
 	@Override
-	public void prettyPrintNode() {
-		CodeWriterSExpPrinter tempPrinter = GlobalPrettyPrinter.getInstance();
-		
-		tempPrinter.startList();
+	public void prettyPrintNode() {		
 		switch (type) {
 		case SHORT_TUPLE_DECL:
 			shortTupleDecl.prettyPrintNode();

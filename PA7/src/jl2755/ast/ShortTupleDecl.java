@@ -23,6 +23,7 @@ public class ShortTupleDecl implements NakedStmt {
 	public ShortTupleDecl(Identifier id, IdentifierList idl, Type t) {
 		this.id = id;
 		identifierList = idl;
+		identifierList.setType(t);
 		type = t;
 	}
 	
@@ -52,8 +53,11 @@ public class ShortTupleDecl implements NakedStmt {
 	@Override
 	public void prettyPrintNode() {
 		CodeWriterSExpPrinter tempPrinter = GlobalPrettyPrinter.getInstance();
+		tempPrinter.startList();
 		id.prettyPrintNode();
-		identifierList.prettyPrintNode();
 		type.prettyPrintNode();
+		tempPrinter.endList();
+		
+		identifierList.prettyPrintNode();
 	}
 }

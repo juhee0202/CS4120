@@ -11,11 +11,13 @@ import jl2755.visitor.ASTVisitor;
  * index 
  * 	- 0: MixedArrayType
  * 	- 1: PrimitiveType
+ *  - 2: Identifier (ClassType)
  */
 public class VarDecl implements NakedStmt {
 	private Identifier identifier;
 	private MixedArrayType mixedArrayType;
 	private PrimitiveType primitiveType;
+	private Identifier classType;
 	private int index;
 	
 	public VarDecl(Identifier id, MixedArrayType mat) {
@@ -30,15 +32,24 @@ public class VarDecl implements NakedStmt {
 		index = 1;
 	}
 	
+	public VarDecl(Identifier id, Identifier classId) {
+		identifier = id;
+		classType = classId;
+		classType.setIsClassName();
+		index = 2;
+	}
+	
 	public void prettyPrintNode() {
 		CodeWriterSExpPrinter tempPrinter = GlobalPrettyPrinter.getInstance();
 		tempPrinter.startList();
 		tempPrinter.printAtom(identifier.toString());
-		if (index == 0){
+		if (index == 0) {
 			mixedArrayType.prettyPrintNode();
 		}
-		else{
+		else if (index == 1) {
 			primitiveType.prettyPrintNode();
+		} else {
+			classType.prettyPrintNode();
 		}
 		tempPrinter.endList();
 	}
@@ -65,6 +76,10 @@ public class VarDecl implements NakedStmt {
 
 	public void setPrimitiveType(PrimitiveType primitiveType) {
 		this.primitiveType = primitiveType;
+	}
+	
+	public Identifier getClassType() {
+		return classType;
 	}
 
 	public int getIndex() {

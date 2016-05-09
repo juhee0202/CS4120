@@ -895,6 +895,9 @@ public class TypeCheckVisitor implements ASTVisitor {
 	}
 	
 	/**
+	 * PA7 note: 
+	 * 	handle module list here (should use p.getAllDecls())
+	 * 
 	 * 1) Update if_env with function decls from interface files
 	 * 2) Update env with function decls from the file.
 	 * 
@@ -1480,5 +1483,55 @@ public class TypeCheckVisitor implements ASTVisitor {
 		String paramTypesString = translateVTypeToABIString(paramTypes);
 		
 		return ABIName + returnTypeString + paramTypesString;
+	}
+
+	@Override
+	public void visit(ClassBody cb) {
+		List<Decl> decls = cb.getAllDecls();
+		for (Decl decl : decls) {
+			decl.accept(this);
+		}
+	}
+
+	@Override
+	public void visit(ClassDecl cd) {
+		cd.getClassBody().accept(this);
+	}
+
+	@Override
+	public void visit(DotableExpr de) {
+		DotableExpr.Type type = de.getType();
+		switch(type) {
+		case DOT: // 
+			
+			break;
+		case FUNCTION_CALL:
+			break;
+		case IDENTIFIER:
+			break;
+		case NEW:
+			break;
+		case PAREN:
+			de.getDotableExpr().accept(this);
+			break;
+		case THIS:
+			break;
+		default:
+			break;
+		}
+	}
+
+	@Override
+	public void visit(GlobalDecl gd) {
+		// TODO switch case to visit different types of gd 
+		
+	}
+
+	@Override
+	public void visit(ShortTupleDecl std) {
+		// TODO 
+		// 1) make sure the variables are never declared before
+		// 2) make sure type is a valid type (primitive,array,class)
+		
 	}
 }

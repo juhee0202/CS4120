@@ -960,7 +960,7 @@ public class MIRVisitor implements ASTVisitor{
 		// Base case
 		if (index == exprList.size()) {
 			// ask jeff if this is correct base case... He says its ok
-			return new IRConst(97);
+			return new IRConst(0);
 		}
 		List<IRStmt> stmts = new ArrayList<IRStmt>();
 		

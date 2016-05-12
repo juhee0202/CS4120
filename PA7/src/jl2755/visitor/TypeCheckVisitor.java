@@ -1428,6 +1428,62 @@ public class TypeCheckVisitor implements ASTVisitor {
 		}
 
 	}
+
+	@Override
+	public void visit(ClassBody cb) {
+		List<Decl> decls = cb.getAllDecls();
+		for (Decl decl : decls) {
+			decl.accept(this);
+		}
+	}
+
+	@Override
+	public void visit(ClassDecl cd) {
+		cd.getClassBody().accept(this);
+	}
+
+	@Override
+	public void visit(DotableExpr de) {
+		DotableExpr.Type type = de.getType();
+		switch(type) {
+		case DOT: // 
+			
+			break;
+		case FUNCTION_CALL:
+			
+			break;
+		case IDENTIFIER:
+			Identifier id = de.getId();
+			id.accept(this);
+			break;
+		case NEW:
+			// make sure that the className is a valid class name
+			Identifier className = de.getId();
+			break;
+		case PAREN:
+			de.getDotableExpr().accept(this);
+			break;
+		case THIS:
+			// make sure that we are in class scope
+			break;
+		default:
+			break;
+		}
+	}
+
+	@Override
+	public void visit(GlobalDecl gd) {
+		// TODO switch case to visit different types of gd 
+		
+	}
+
+	@Override
+	public void visit(ShortTupleDecl std) {
+		// TODO 
+		// 1) make sure the variables are never declared before
+		// 2) make sure type is a valid type (primitive,array,class)
+		
+	}
 	
 	/**
 	 * Convert a VType to ABI string
@@ -1484,54 +1540,5 @@ public class TypeCheckVisitor implements ASTVisitor {
 		
 		return ABIName + returnTypeString + paramTypesString;
 	}
-
-	@Override
-	public void visit(ClassBody cb) {
-		List<Decl> decls = cb.getAllDecls();
-		for (Decl decl : decls) {
-			decl.accept(this);
-		}
-	}
-
-	@Override
-	public void visit(ClassDecl cd) {
-		cd.getClassBody().accept(this);
-	}
-
-	@Override
-	public void visit(DotableExpr de) {
-		DotableExpr.Type type = de.getType();
-		switch(type) {
-		case DOT: // 
-			
-			break;
-		case FUNCTION_CALL:
-			break;
-		case IDENTIFIER:
-			break;
-		case NEW:
-			break;
-		case PAREN:
-			de.getDotableExpr().accept(this);
-			break;
-		case THIS:
-			break;
-		default:
-			break;
-		}
-	}
-
-	@Override
-	public void visit(GlobalDecl gd) {
-		// TODO switch case to visit different types of gd 
-		
-	}
-
-	@Override
-	public void visit(ShortTupleDecl std) {
-		// TODO 
-		// 1) make sure the variables are never declared before
-		// 2) make sure type is a valid type (primitive,array,class)
-		
-	}
+	
 }

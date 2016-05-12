@@ -1,0 +1,8 @@
+(COMPUNIT
+ Program
+ (FUNC
+  _Ifoo_b
+  (SEQ
+   (MOVE (TEMP x) (CONST 2))
+   (MOVE (TEMP b) (NEQ (TEMP x) (CONST 3)))
+   (RETURN))))

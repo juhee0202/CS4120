@@ -12,8 +12,12 @@ public class InterfaceList {
 	private InterfaceFunc intFunc;
 	/** The rest of the function declarations. */
 	private InterfaceList intList;
+	/** The global const. */
+	private GlobalDecl constVar;
 	/** 0: Base case of only 1 function declaration
 	 *  1: Recursive case of multiple function declarations
+	 *  2: Base case of only 1 global constant
+	 *  3: Recursive case
 	 */
 	private int index;
 	
@@ -37,6 +41,17 @@ public class InterfaceList {
 		intFunc = intf;
 		intList = il;
 		index = 1;
+	}
+	
+	public InterfaceList(GlobalDecl gd) {
+		constVar = gd;
+		index = 2;
+	}
+	
+	public InterfaceList(GlobalDecl gd, InterfaceList il) {
+		constVar = gd;
+		intList = il;
+		index = 3;
 	}
 	
 	public List<InterfaceFunc> getInterfaceFunctions() {

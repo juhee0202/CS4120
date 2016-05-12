@@ -333,6 +333,8 @@ naked_stmt ::= assignment_stmt:ass                                  {: RESULT = 
                tuple_init:ti                                        {: RESULT = ti; :}
                |
                BREAK:b                                              {: RESULT = new Break(); :}
+               |
+               CONTINUE:c                                           {: RESULT = new Continue(); :}
                ;
 
 op_expr ::= MINUS:m expr:e                                          {: RESULT = new UnaryExpr(e, UnaryOp.INT_NEG, mleft, mright); :} %prec UMINUS

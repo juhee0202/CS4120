@@ -64,7 +64,7 @@ import jl2755.visitor.TypeCheckVisitor;
 
 @SuppressWarnings("deprecation")
 public class Main {
-
+	public static String srcFileName;	// example.xi
 	public static String destDPath;		// example/destPath/
 	public static String destAPath;     // example/destPath/
 	public static String srcPath;		// example/srcPath/
@@ -173,7 +173,8 @@ public class Main {
 		/* TYPECHECK */
 		if (cmd.hasOption("t")) {
 			for (String file: files) {
-				try { 
+				try {
+					srcFileName = file;	//set global field
 					typecheck(file);
 				} catch (FileNotFoundException e) {
 					System.out.println(srcPath + file + " is not found.");
@@ -976,7 +977,7 @@ public class Main {
 	 */
 	public static Map<String, VType> checkInterface(String interfaceName){
 		String absPath = libPath + interfaceName + ".ixi";
-		Map<String, VType> tempMap = new HashMap<String, VType>();
+		Map<String, VType> interfaceEnv = new HashMap<String, VType>();
 		try {
 			ixiParser p = new ixiParser(new Scanner(new FileReader(absPath)));
 			Symbol s = p.parse();
@@ -984,16 +985,22 @@ public class Main {
 			Interface result = (Interface) s.value;
 			List<InterfaceFunc> tempFuncs = result.getInterfaceFuncs();
 			for (int i = 0; i < tempFuncs.size(); i++){
-				if (tempMap.containsKey(tempFuncs.get(i).getIdentifier().toString())){
+				if (interfaceEnv.containsKey(tempFuncs.get(i).getIdentifier().toString())){
 					Identifier id = tempFuncs.get(i).getIdentifier();
 					String e = "Duplicate function declaration found";
 					SemanticErrorObject seo = new SemanticErrorObject(
 							id.getLineNumber(),id.getColumnNumber(),e);
 					Main.handleSemanticError(seo);
 				}
-				tempMap.put(tempFuncs.get(i).getIdentifier().toString(),
+				interfaceEnv.put(tempFuncs.get(i).getIdentifier().toString(),
 						new FunType(tempFuncs.get(i)));
-			}  
+			} 
+			
+			List<InterfaceClassDecl> classDecls = result.getInterfaceClasses();
+			for (int i = 0; i < classDecls.size(); i++) {
+				// TODO add classes to global environment
+			}
+			
 		} catch(LexicalError error) {
 			error.setFilename(absPath);
 			throw error;
@@ -1006,7 +1013,7 @@ public class Main {
 			System.out.println("\t" + absPath);
 			e.printStackTrace();
 		}
-		return tempMap;
+		return interfaceEnv;
 	}
 
 	/**
@@ -1289,6 +1296,16 @@ public class Main {
 				initialized = true;
 			}
 		}
+	}
+	
+	public static String getSrcFile() {
+		return srcFileName;
+	}
+	
+	public static boolean checkInterfaceExists(String interfaceName) {
+		String absPath = libPath + interfaceName + ".ixi";
+		File f = new File(absPath);
+		return f.exists() && !f.isDirectory();
 	}
 	
 }

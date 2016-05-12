@@ -28,7 +28,7 @@ terminal IF, ELSE, WHILE, RETURN, USE, PLUS, MINUS, UMINUS, TIMES, HIGH_MULT, IN
   DIVIDE, MODULO, NOT, LT, LEQ, GT, GEQ, AND, OR, EQUAL, NOT_EQUAL, GETS,
   OPEN_BRACKET, CLOSE_BRACKET, OPEN_PAREN, CLOSE_PAREN, OPEN_BRACE, CLOSE_BRACE,
   COLON, COMMA, SEMICOLON, UNDERSCORE, LENGTH,
-  CLASS, EXTENDS, NEW, THIS, BREAK, NULL, DOT;
+  CLASS, EXTENDS, NEW, THIS, BREAK, CONTINUE, NULL, DOT, CONST;
 
 
 /* Nonterminals */
@@ -155,6 +155,11 @@ constant ::= literal:l                                              {: RESULT = 
              | 
              array_literal:al                                       {: RESULT = al; :}
              ;
+
+const_var ::= CONST var_init:vi SEMICOLON                           {: RESULT = new GlobalDecl(vi, true, true); :}
+              |
+              CONST var_init:vi                                     {: RESULT = new GlobalDecl(vi, false, true); :}
+              ;
 
 dotable_expr ::= identifier:id                                      {: RESULT = new DotableExpr(id,false); :}
                  |
@@ -296,11 +301,15 @@ module_list ::= class_decl:cd module_list:ml                        {: RESULT = 
                 |
                 global_decl:gd module_list:ml                       {: RESULT = new ModuleList(gd, ml); :}
                 |
+                const_var:cv module_list:ml                         {: RESULT = new ModuleList(cv, ml); :}
+                |
                 class_decl:cd                                       {: RESULT = new ModuleList(cd); :}
                 |
                 function_decl:fd                                    {: RESULT = new ModuleList(fd); :}
                 |
                 global_decl:gd                                      {: RESULT = new ModuleList(gd); :}
+                |
+                const_var:cv                                        {: RESULT = new ModuleList(cv); :}
                 ;
 
 

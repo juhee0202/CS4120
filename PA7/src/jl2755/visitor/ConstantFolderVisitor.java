@@ -19,6 +19,7 @@ import jl2755.ast.Identifier;
 import jl2755.ast.IfStmt;
 import jl2755.ast.IndexedBrackets;
 import jl2755.ast.Literal;
+import jl2755.ast.Null;
 import jl2755.ast.Program;
 import jl2755.ast.ReturnList;
 import jl2755.ast.ReturnStmt;
@@ -317,6 +318,11 @@ public class ConstantFolderVisitor implements ASTVisitor{
 			tempBool = l.getBoolLit();
 			caseIndex = 1;
 		}
+	}
+	
+	@Override
+	public void visit(Null n) {
+		
 	}
 
 	@Override

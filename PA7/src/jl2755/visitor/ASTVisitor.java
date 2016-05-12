@@ -20,6 +20,7 @@ public interface ASTVisitor {
 	public void visit(IfStmt is);
 	public void visit(IndexedBrackets ib);
 	public void visit(Literal l);
+	public void visit(Null n);
 	public void visit(Program p);
 	public void visit(ReturnStmt rs);
 	public void visit(ShortTupleDecl std);

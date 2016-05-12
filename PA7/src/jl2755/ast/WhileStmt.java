@@ -12,6 +12,7 @@ import jl2755.visitor.ASTVisitor;
 public class WhileStmt implements NakedStmt {
 	private Expr expr;
 	private Stmt stmt;
+	private Label label;
 	
 	public WhileStmt(Expr e, Stmt s) {
 		expr = e;
@@ -21,6 +22,11 @@ public class WhileStmt implements NakedStmt {
 	public void prettyPrintNode() {
 		CodeWriterSExpPrinter tempPrinter = GlobalPrettyPrinter.getInstance();
 		tempPrinter.startList();
+		tempPrinter.startList();
+		if (label != null) {
+			label.prettyPrintNode();
+		}
+		tempPrinter.endList();
 		tempPrinter.printAtom("while");
 		expr.prettyPrintNode();
 		stmt.prettyPrintNode();
@@ -46,5 +52,9 @@ public class WhileStmt implements NakedStmt {
 
 	public void setStmt(Stmt stmt) {
 		this.stmt = stmt;
+	}
+	
+	public void setLabel(Label l) {
+		label = l;
 	}
 }

@@ -1,5 +1,3 @@
-// A stub for a Xi CUP specification.
-
 package jl2755;
 import jl2755.ast.*;
 import java.io.IOException;
@@ -27,12 +25,14 @@ terminal Boolean TRUE, FALSE;
 terminal IF, ELSE, WHILE, RETURN, USE, PLUS, MINUS, UMINUS, TIMES, HIGH_MULT, INT, BOOL,
   DIVIDE, MODULO, NOT, LT, LEQ, GT, GEQ, AND, OR, EQUAL, NOT_EQUAL, GETS,
   OPEN_BRACKET, CLOSE_BRACKET, OPEN_PAREN, CLOSE_PAREN, OPEN_BRACE, CLOSE_BRACE,
-  COLON, COMMA, SEMICOLON, UNDERSCORE, LENGTH, CONST;
+  COLON, COMMA, SEMICOLON, UNDERSCORE, LENGTH, CLASS, EXTENDS;
 
 
 /* Nonterminals */
 non terminal Brackets brackets;
-non terminal // TODO  const_var;
+// non terminal // TODO  const_var;
+non terminal InterfaceClassDecl class_decl;
+non terminal InterfaceClassBody class_body;
 non terminal EmptyArrayType empty_array_type;
 non terminal FunctionParam function_param;
 non terminal Identifier identifier;
@@ -67,10 +67,20 @@ brackets ::= OPEN_BRACKET CLOSE_BRACKET                             {: RESULT = 
              OPEN_BRACKET CLOSE_BRACKET brackets:b                  {: RESULT = new Brackets(b); :}
              ;
 
-const_var ::= CONST var_init:vi SEMICOLON                           {: RESULT = new GlobalDecl(vi, true, true); :}
-              |
-              CONST var_init:vi                                     {: RESULT = new GlobalDecl(vi, false, true); :}
-              ;
+// const_var ::= CONST var_init:vi                                     {: RESULT = new GlobalDecl(vi, false, true); :}
+//               ;
+
+class_body ::= interface_func:ifd class_body:cb                     {: RESULT = new InterfaceClassBody(ifd, cb); :}
+               |
+                                                                    {: RESULT = new InterfaceClassBody(); :}
+               ;
+
+class_decl ::= CLASS identifier:id OPEN_BRACE      
+               class_body:cb CLOSE_BRACE                            {: RESULT = new InterfaceClassDecl(id,cb); :}
+               |
+               CLASS identifier:id1 EXTENDS identifier:id2 
+               OPEN_BRACE class_body:cb CLOSE_BRACE                 {: RESULT = new InterfaceClassDecl(id1,id2,cb); :}
+               ;
              
 empty_array_type ::= primitive_type:pt brackets:b                   {: RESULT = new EmptyArrayType(pt, b); :}
                      ;
@@ -98,9 +108,13 @@ interface_list ::= interface_func:ifd interface_list:il             {: RESULT = 
                    |                       
                    interface_func:ifd                               {: RESULT = new InterfaceList(ifd); :}
                    |
-                   const_var:cv interface_list:il                   {: RESULT = new InterfaceList(cv, il); :}
+                   class_decl:cd interface_list:il                  {: RESULT = new InterfaceList(cd,il); :}
                    |
-                   const_var:cv                                     {: RESULT = new InterfaceList(cv); :}
+                   class_decl:cd                                    {: RESULT = new InterfaceList(cd); :}
+                   // |
+                   // const_var:cv interface_list:il                   {: RESULT = new InterfaceList(cv, il); :}
+                   // |
+                   // const_var:cv                                     {: RESULT = new InterfaceList(cv); :}
                    ;
 
 primitive_type ::= INT:i                                            {: RESULT = new PrimitiveType(0); :}         
@@ -116,11 +130,12 @@ return_type ::= COLON type_list:tl                                  {: RESULT = 
 type ::= primitive_type:pt                                          {: RESULT = pt; :}
          | 
          empty_array_type:at                                        {: RESULT = at; :}
+         |
+         identifier:id                                              {: id.setIsClassName(); RESULT = id; :}
          ;
 
 type_list ::= type:t                                                {: RESULT = new TypeList(t); :}
               | 
               type:t COMMA type_list:tl                             {: RESULT = new TypeList(t, tl); :}
               ;
-
 

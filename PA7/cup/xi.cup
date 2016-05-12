@@ -189,7 +189,7 @@ normal_expr ::= constant:c                                          {: RESULT = 
                 |
                 array_element:ae                                    {: RESULT = ae; :}
                 |
-                NULL                                                {: RESULT = null; :}
+                NULL                                                {: RESULT = new Null(); :}
                 |
                 OPEN_PAREN normal_expr:ne CLOSE_PAREN               {: ne.setSurroundedParentheses(); RESULT = ne; :}
                 ;

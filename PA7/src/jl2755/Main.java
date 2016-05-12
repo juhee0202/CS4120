@@ -54,6 +54,7 @@ import jl2755.optimization.CopyPropagator;
 import jl2755.optimization.DeadCodeEliminator;
 import jl2755.optimization.Optimization;
 import jl2755.optimization.UnreachableCodeEliminator;
+import jl2755.type.ClassType;
 import jl2755.type.FunType;
 import jl2755.type.VType;
 import jl2755.visitor.ConstantFolderVisitor;
@@ -997,8 +998,19 @@ public class Main {
 			} 
 			
 			List<InterfaceClassDecl> classDecls = result.getInterfaceClasses();
-			for (int i = 0; i < classDecls.size(); i++) {
+			for (InterfaceClassDecl classDecl: classDecls) {
 				// TODO add classes to global environment
+				
+				// check that the classes do not have same name as any of the
+				// functions or other classes in the interface environment
+				String id = classDecl.getClassName().toString();
+				if (interfaceEnv.containsKey(id) {
+					//THROW ERROR!
+				}
+				
+				//create hashmap for class method types
+				HashMap<String, VType> classEnv = new HashMap<String,VType>();
+				interfaceEnv.put(id, new ClassType(id, classEnv));
 			}
 			
 		} catch(LexicalError error) {

@@ -8,9 +8,9 @@ public class ClassType implements VType{
 	String className;
 	HashMap<String, VType> classEnv;
 
-	public ClassType(String name) {
+	public ClassType(String name, HashMap<String, VType> env) {
 		className = name;
-		classEnv = new HashMap<String, VType>();
+		classEnv = env;
 	}
 
 	public String getClassName() {

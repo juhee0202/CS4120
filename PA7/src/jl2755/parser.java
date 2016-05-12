@@ -1400,7 +1400,7 @@ class CUP$parser$actions {
         case 36: // normal_expr ::= NULL 
             {
                 Expr RESULT = null;
-                 RESULT = null; 
+                 RESULT = new Null(); 
                 CUP$parser$result = parser.getSymbolFactory().newSymbol("normal_expr",27, CUP$parser$stack.peek(), CUP$parser$stack.peek(), RESULT);
             }
             return CUP$parser$result;

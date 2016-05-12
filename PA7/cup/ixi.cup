@@ -27,51 +27,22 @@ terminal Boolean TRUE, FALSE;
 terminal IF, ELSE, WHILE, RETURN, USE, PLUS, MINUS, UMINUS, TIMES, HIGH_MULT, INT, BOOL,
   DIVIDE, MODULO, NOT, LT, LEQ, GT, GEQ, AND, OR, EQUAL, NOT_EQUAL, GETS,
   OPEN_BRACKET, CLOSE_BRACKET, OPEN_PAREN, CLOSE_PAREN, OPEN_BRACE, CLOSE_BRACE,
-  COLON, COMMA, SEMICOLON, UNDERSCORE, LENGTH;
+  COLON, COMMA, SEMICOLON, UNDERSCORE, LENGTH, CONST;
 
 
 /* Nonterminals */
-non terminal ArrayElement array_element;
-non terminal ArrayElementList array_element_list;
-non terminal ArrayLiteral array_literal;
-non terminal AssignmentStmt assignment_stmt;
-non terminal BlockStmt block_stmt;
 non terminal Brackets brackets;
-non terminal Constant constant;
+non terminal // TODO  const_var;
 non terminal EmptyArrayType empty_array_type;
-non terminal Expr expr;
-non terminal Expr op_expr;
-non terminal FunctionArg function_arg;
-non terminal FunctionCall function_call;
-non terminal FunctionDecl function_decl;
-non terminal FunctionDeclList function_decl_list;
 non terminal FunctionParam function_param;
 non terminal Identifier identifier;
-non terminal IfStmt if_stmt;
-non terminal IndexedBrackets indexed_brackets;
 non terminal Interface interface;
 non terminal InterfaceFunc interface_func;
 non terminal InterfaceList interface_list;
-non terminal Literal literal;
-non terminal MixedArrayType mixed_array_type;
-non terminal MixedBrackets mixed_brackets;
-non terminal NakedStmt naked_stmt;
 non terminal PrimitiveType primitive_type;
-non terminal Program program;
-non terminal ReturnList return_list;
-non terminal ReturnStmt return_stmt;
 non terminal ReturnType return_type;
-non terminal Stmt stmt;
-non terminal StmtList stmt_list;
-non terminal TupleDeclList tuple_decl_list;
-non terminal TupleInit tuple_init;
 non terminal Type type;
 non terminal TypeList type_list;
-non terminal UseId use_id;
-non terminal VarDecl var_decl;
-non terminal VarInit var_init;
-non terminal WhileStmt while_stmt;
-non terminal XiFile xi_file;
 
 
 /* Precedences */
@@ -95,6 +66,11 @@ brackets ::= OPEN_BRACKET CLOSE_BRACKET                             {: RESULT = 
              | 
              OPEN_BRACKET CLOSE_BRACKET brackets:b                  {: RESULT = new Brackets(b); :}
              ;
+
+const_var ::= CONST var_init:vi SEMICOLON                           {: RESULT = new GlobalDecl(vi, true, true); :}
+              |
+              CONST var_init:vi                                     {: RESULT = new GlobalDecl(vi, false, true); :}
+              ;
              
 empty_array_type ::= primitive_type:pt brackets:b                   {: RESULT = new EmptyArrayType(pt, b); :}
                      ;
@@ -121,6 +97,10 @@ interface_func ::= identifier:id OPEN_PAREN
 interface_list ::= interface_func:ifd interface_list:il             {: RESULT = new InterfaceList(ifd, il); :}
                    |                       
                    interface_func:ifd                               {: RESULT = new InterfaceList(ifd); :}
+                   |
+                   const_var:cv interface_list:il                   {: RESULT = new InterfaceList(cv, il); :}
+                   |
+                   const_var:cv                                     {: RESULT = new InterfaceList(cv); :}
                    ;
 
 primitive_type ::= INT:i                                            {: RESULT = new PrimitiveType(0); :}         

@@ -12,11 +12,20 @@ public class Identifier implements Expr, Type {
 	private VType type;
 	private boolean isSurroundedByParentheses = false;
 	private boolean isClassName = false;
+	private boolean isConst = false;
 	
 	public Identifier(String argValue, int idleft, int idright){
 		theValue = argValue;
 		theValue_line = idleft;
 		theValue_col = idright;
+		setConst(false);
+	}
+	
+	public Identifier(String argValue, int idleft, int idright, boolean cons){
+		theValue = argValue;
+		theValue_line = idleft;
+		theValue_col = idright;
+		setConst(cons);
 	}
 	
 	public void prettyPrintNode(){
@@ -92,5 +101,13 @@ public class Identifier implements Expr, Type {
 	
 	public boolean isClassName() {
 		return isClassName;
+	}
+
+	public boolean isConst() {
+		return isConst;
+	}
+
+	public void setConst(boolean isConst) {
+		this.isConst = isConst;
 	}
 }

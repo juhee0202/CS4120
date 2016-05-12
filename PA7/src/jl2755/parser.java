@@ -2176,7 +2176,7 @@ class CUP$parser$actions {
                 int cleft = CUP$parser$stack.peek().left;
                 int cright = CUP$parser$stack.peek().right;
                 Object c = CUP$parser$stack.peek().<Object> value();
-                RESULT = new Continue(); 
+                 RESULT = new Continue(); 
                 CUP$parser$result = parser.getSymbolFactory().newSymbol("naked_stmt",27, CUP$parser$stack.peek(), CUP$parser$stack.peek(), RESULT);
             }
             return CUP$parser$result;

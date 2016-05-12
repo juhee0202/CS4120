@@ -32,15 +32,17 @@ public class ixiParser
   /** Production table. */
   protected static final short _production_table[][] = 
     unpackFromStrings(new String[] {
-    "\000\033\000\002\002\004\000\002\002\004\000\002\002" +
+    "\000\040\000\002\002\004\000\002\002\004\000\002\002" +
     "\005\000\002\004\004\000\002\004\002\000\002\003\007" +
     "\000\002\003\011\000\002\005\004\000\002\006\005\000" +
     "\002\006\007\000\002\007\003\000\002\010\003\000\002" +
-    "\011\006\000\002\011\007\000\002\012\004\000\002\012" +
-    "\003\000\002\012\004\000\002\012\003\000\002\013\003" +
-    "\000\002\013\003\000\002\014\004\000\002\014\002\000" +
-    "\002\015\003\000\002\015\003\000\002\015\003\000\002" +
-    "\016\003\000\002\016\005" });
+    "\010\004\000\002\011\006\000\002\011\007\000\002\012" +
+    "\004\000\002\012\003\000\002\012\004\000\002\012\003" +
+    "\000\002\013\003\000\002\013\003\000\002\014\004\000" +
+    "\002\014\002\000\002\015\003\000\002\015\003\000\002" +
+    "\015\003\000\002\016\003\000\002\016\005\000\002\017" +
+    "\004\000\002\017\005\000\002\017\005\000\002\017\006" +
+    "" });
 
   /** Access to production table. */
   @Override
@@ -49,43 +51,48 @@ public class ixiParser
   /** Parse-action table. */
   protected static final short[][] _action_table = 
     unpackFromStrings(new String[] {
-    "\000\057\000\006\004\007\055\006\001\002\000\004\044" +
-    "\031\001\002\000\010\002\ufff0\004\007\055\006\001\002" +
-    "\000\004\004\007\001\002\000\026\002\ufff7\004\ufff7\044" +
-    "\ufff7\045\ufff7\046\ufff7\047\ufff7\050\ufff7\051\ufff7\055\ufff7" +
-    "\056\ufff7\001\002\000\004\002\014\001\002\000\004\002" +
-    "\ufff6\001\002\000\010\002\ufff2\004\007\055\006\001\002" +
-    "\000\004\002\ufff3\001\002\000\004\002\001\001\002\000" +
-    "\006\046\017\056\016\001\002\000\004\004\007\001\002" +
-    "\000\006\004\007\047\ufffd\001\002\000\004\047\023\001" +
-    "\002\000\006\004\007\047\ufffd\001\002\000\004\047\ufffe" +
-    "\001\002\000\010\002\ufffc\004\ufffc\055\ufffc\001\002\000" +
-    "\004\046\025\001\002\000\006\004\007\047\ufffd\001\002" +
-    "\000\004\047\027\001\002\000\010\002\ufffb\004\ufffb\055" +
-    "\ufffb\001\002\000\004\002\ufff1\001\002\000\006\004\007" +
-    "\045\034\001\002\000\004\050\056\001\002\000\004\045" +
-    "\054\001\002\000\014\002\uffec\004\uffec\047\uffec\050\036" +
-    "\055\uffec\001\002\000\012\002\ufff5\004\ufff5\047\ufff5\055" +
-    "\ufff5\001\002\000\010\004\007\024\045\025\042\001\002" +
-    "\000\016\002\uffe9\004\uffe9\045\uffe9\047\uffe9\051\uffe9\055" +
-    "\uffe9\001\002\000\012\002\uffed\004\uffed\047\uffed\055\uffed" +
-    "\001\002\000\016\002\uffea\004\uffea\045\uffea\047\uffea\051" +
-    "\uffea\055\uffea\001\002\000\020\002\uffee\004\uffee\042\uffee" +
-    "\045\uffee\047\uffee\051\uffee\055\uffee\001\002\000\020\002" +
-    "\uffeb\004\uffeb\042\050\045\uffeb\047\uffeb\051\uffeb\055\uffeb" +
-    "\001\002\000\014\002\uffe8\004\uffe8\047\uffe8\051\046\055" +
-    "\uffe8\001\002\000\020\002\uffef\004\uffef\042\uffef\045\uffef" +
-    "\047\uffef\051\uffef\055\uffef\001\002\000\010\004\007\024" +
-    "\045\025\042\001\002\000\012\002\uffe7\004\uffe7\047\uffe7" +
-    "\055\uffe7\001\002\000\004\043\052\001\002\000\016\002" +
-    "\ufffa\004\ufffa\045\ufffa\047\ufffa\051\ufffa\055\ufffa\001\002" +
-    "\000\020\002\000\004\000\042\050\045\000\047\000\051" +
-    "\000\055\000\001\002\000\016\002\uffff\004\uffff\045\uffff" +
-    "\047\uffff\051\uffff\055\uffff\001\002\000\014\002\uffec\004" +
-    "\uffec\047\uffec\050\036\055\uffec\001\002\000\012\002\ufff4" +
-    "\004\ufff4\047\ufff4\055\ufff4\001\002\000\010\004\007\024" +
-    "\045\025\042\001\002\000\006\045\ufff9\051\060\001\002" +
-    "\000\004\004\007\001\002\000\004\045\ufff8\001\002" });
+    "\000\066\000\010\004\011\016\005\055\010\001\002\000" +
+    "\004\044\040\001\002\000\004\004\011\001\002\000\006" +
+    "\004\011\055\010\001\002\000\010\002\uffef\004\011\055" +
+    "\010\001\002\000\004\004\011\001\002\000\032\002\ufff7" +
+    "\004\ufff7\016\ufff7\044\ufff7\045\ufff7\046\ufff7\047\ufff7\050" +
+    "\ufff7\051\ufff7\052\ufff7\055\ufff7\056\ufff7\001\002\000\004" +
+    "\002\016\001\002\000\004\002\ufff6\001\002\000\010\002" +
+    "\ufff1\004\011\055\010\001\002\000\004\002\ufff2\001\002" +
+    "\000\004\002\001\001\002\000\006\046\021\056\020\001" +
+    "\002\000\004\004\011\001\002\000\006\004\011\047\ufffd" +
+    "\001\002\000\004\047\025\001\002\000\006\004\011\047" +
+    "\ufffd\001\002\000\004\047\ufffe\001\002\000\010\002\ufffc" +
+    "\004\ufffc\055\ufffc\001\002\000\004\046\027\001\002\000" +
+    "\006\004\011\047\ufffd\001\002\000\004\047\031\001\002" +
+    "\000\010\002\ufffb\004\ufffb\055\ufffb\001\002\000\004\002" +
+    "\ufff0\001\002\000\004\002\ufff5\001\002\000\012\004\uffe5" +
+    "\016\005\052\035\055\uffe5\001\002\000\010\004\uffe4\016" +
+    "\005\055\uffe4\001\002\000\006\004\uffe3\055\uffe3\001\002" +
+    "\000\006\004\uffe2\055\uffe2\001\002\000\006\004\011\045" +
+    "\043\001\002\000\004\050\065\001\002\000\004\045\063" +
+    "\001\002\000\014\002\uffeb\004\uffeb\047\uffeb\050\045\055" +
+    "\uffeb\001\002\000\012\002\ufff4\004\ufff4\047\ufff4\055\ufff4" +
+    "\001\002\000\010\004\011\024\054\025\051\001\002\000" +
+    "\016\002\uffe8\004\uffe8\045\uffe8\047\uffe8\051\uffe8\055\uffe8" +
+    "\001\002\000\016\002\uffe9\004\uffe9\045\uffe9\047\uffe9\051" +
+    "\uffe9\055\uffe9\001\002\000\012\002\uffec\004\uffec\047\uffec" +
+    "\055\uffec\001\002\000\020\002\uffed\004\uffed\042\uffed\045" +
+    "\uffed\047\uffed\051\uffed\055\uffed\001\002\000\020\002\uffea" +
+    "\004\uffea\042\057\045\uffea\047\uffea\051\uffea\055\uffea\001" +
+    "\002\000\014\002\uffe7\004\uffe7\047\uffe7\051\055\055\uffe7" +
+    "\001\002\000\020\002\uffee\004\uffee\042\uffee\045\uffee\047" +
+    "\uffee\051\uffee\055\uffee\001\002\000\010\004\011\024\054" +
+    "\025\051\001\002\000\012\002\uffe6\004\uffe6\047\uffe6\055" +
+    "\uffe6\001\002\000\004\043\061\001\002\000\016\002\ufffa" +
+    "\004\ufffa\045\ufffa\047\ufffa\051\ufffa\055\ufffa\001\002\000" +
+    "\020\002\000\004\000\042\057\045\000\047\000\051\000" +
+    "\055\000\001\002\000\016\002\uffff\004\uffff\045\uffff\047" +
+    "\uffff\051\uffff\055\uffff\001\002\000\014\002\uffeb\004\uffeb" +
+    "\047\uffeb\050\045\055\uffeb\001\002\000\012\002\ufff3\004" +
+    "\ufff3\047\ufff3\055\ufff3\001\002\000\010\004\011\024\054" +
+    "\025\051\001\002\000\006\045\ufff9\051\067\001\002\000" +
+    "\004\004\011\001\002\000\004\045\ufff8\001\002" });
 
   /** Access to parse-action table. */
   @Override
@@ -94,28 +101,32 @@ public class ixiParser
   /** {@code reduce_goto} table. */
   protected static final short[][] _reduce_table = 
     unpackFromStrings(new String[] {
-    "\000\057\000\014\003\004\007\003\010\007\011\011\012" +
-    "\010\001\001\000\002\001\001\000\012\003\004\007\003" +
-    "\011\011\012\027\001\001\000\004\007\014\001\001\000" +
-    "\002\001\001\000\002\001\001\000\002\001\001\000\012" +
-    "\003\004\007\003\011\011\012\012\001\001\000\002\001" +
-    "\001\000\002\001\001\000\002\001\001\000\004\007\023" +
-    "\001\001\000\010\004\017\007\003\011\020\001\001\000" +
-    "\002\001\001\000\010\004\021\007\003\011\020\001\001" +
-    "\000\002\001\001\000\002\001\001\000\002\001\001\000" +
-    "\010\004\025\007\003\011\020\001\001\000\002\001\001" +
-    "\000\002\001\001\000\002\001\001\000\006\006\032\007" +
-    "\031\001\001\000\002\001\001\000\002\001\001\000\004" +
-    "\014\034\001\001\000\002\001\001\000\014\005\040\007" +
-    "\036\013\042\015\043\016\037\001\001\000\002\001\001" +
-    "\000\002\001\001\000\002\001\001\000\002\001\001\000" +
-    "\004\002\050\001\001\000\002\001\001\000\002\001\001" +
-    "\000\014\005\040\007\036\013\042\015\043\016\046\001" +
+    "\000\066\000\016\003\006\007\003\010\011\011\013\012" +
+    "\012\017\005\001\001\000\002\001\001\000\004\007\033" +
+    "\001\001\000\012\003\006\007\003\011\013\012\032\001" +
+    "\001\000\012\003\006\007\003\011\013\012\031\001\001" +
+    "\000\004\007\016\001\001\000\002\001\001\000\002\001" +
+    "\001\000\002\001\001\000\012\003\006\007\003\011\013" +
+    "\012\014\001\001\000\002\001\001\000\002\001\001\000" +
+    "\002\001\001\000\004\007\025\001\001\000\010\004\021" +
+    "\007\003\011\022\001\001\000\002\001\001\000\010\004" +
+    "\023\007\003\011\022\001\001\000\002\001\001\000\002" +
+    "\001\001\000\002\001\001\000\010\004\027\007\003\011" +
+    "\022\001\001\000\002\001\001\000\002\001\001\000\002" +
+    "\001\001\000\002\001\001\000\004\017\035\001\001\000" +
+    "\004\017\036\001\001\000\002\001\001\000\002\001\001" +
+    "\000\006\006\041\007\040\001\001\000\002\001\001\000" +
+    "\002\001\001\000\004\014\043\001\001\000\002\001\001" +
+    "\000\014\005\046\007\045\013\051\015\052\016\047\001" +
     "\001\000\002\001\001\000\002\001\001\000\002\001\001" +
-    "\000\004\002\052\001\001\000\002\001\001\000\004\014" +
-    "\054\001\001\000\002\001\001\000\012\005\040\007\036" +
-    "\013\042\015\056\001\001\000\002\001\001\000\006\006" +
-    "\060\007\031\001\001\000\002\001\001" });
+    "\000\002\001\001\000\004\002\057\001\001\000\002\001" +
+    "\001\000\002\001\001\000\014\005\046\007\045\013\051" +
+    "\015\052\016\055\001\001\000\002\001\001\000\002\001" +
+    "\001\000\002\001\001\000\004\002\061\001\001\000\002" +
+    "\001\001\000\004\014\063\001\001\000\002\001\001\000" +
+    "\012\005\046\007\045\013\051\015\065\001\001\000\002" +
+    "\001\001\000\006\006\067\007\040\001\001\000\002\001" +
+    "\001" });
 
   /** Access to {@code reduce_goto} table. */
   @Override
@@ -180,7 +191,7 @@ class CUP$ixiParser$actions {
         this.parser = parser;
     }
 
-    /** Method with the actual generated action code for actions 0 to 26. */
+    /** Method with the actual generated action code for actions 0 to 31. */
     public final java_cup.runtime.Symbol CUP$ixiParser$do_action_part00000000(
             int                        CUP$ixiParser$act_num,
             java_cup.runtime.lr_parser CUP$ixiParser$parser,
@@ -357,7 +368,22 @@ class CUP$ixiParser$actions {
             return CUP$ixiParser$result;
 
         /*. . . . . . . . . . . . . . . . . . . .*/
-        case 12: // interface_func ::= identifier OPEN_PAREN CLOSE_PAREN return_type 
+        case 12: // interface ::= use_id interface_list 
+            {
+                Interface RESULT = null;
+                int useidcleft = CUP$ixiParser$stack.elementAt(CUP$ixiParser$top-1).left;
+                int useidcright = CUP$ixiParser$stack.elementAt(CUP$ixiParser$top-1).right;
+                UseId useidc = CUP$ixiParser$stack.elementAt(CUP$ixiParser$top-1).<UseId> value();
+                int illeft = CUP$ixiParser$stack.peek().left;
+                int ilright = CUP$ixiParser$stack.peek().right;
+                InterfaceList il = CUP$ixiParser$stack.peek().<InterfaceList> value();
+                 RESULT = new Interface(il, useidc); 
+                CUP$ixiParser$result = parser.getSymbolFactory().newSymbol("interface",6, CUP$ixiParser$stack.elementAt(CUP$ixiParser$top-1), CUP$ixiParser$stack.peek(), RESULT);
+            }
+            return CUP$ixiParser$result;
+
+        /*. . . . . . . . . . . . . . . . . . . .*/
+        case 13: // interface_func ::= identifier OPEN_PAREN CLOSE_PAREN return_type 
             {
                 InterfaceFunc RESULT = null;
                 int idleft = CUP$ixiParser$stack.elementAt(CUP$ixiParser$top-3).left;
@@ -372,7 +398,7 @@ class CUP$ixiParser$actions {
             return CUP$ixiParser$result;
 
         /*. . . . . . . . . . . . . . . . . . . .*/
-        case 13: // interface_func ::= identifier OPEN_PAREN function_param CLOSE_PAREN return_type 
+        case 14: // interface_func ::= identifier OPEN_PAREN function_param CLOSE_PAREN return_type 
             {
                 InterfaceFunc RESULT = null;
                 int idleft = CUP$ixiParser$stack.elementAt(CUP$ixiParser$top-4).left;
@@ -390,7 +416,7 @@ class CUP$ixiParser$actions {
             return CUP$ixiParser$result;
 
         /*. . . . . . . . . . . . . . . . . . . .*/
-        case 14: // interface_list ::= interface_func interface_list 
+        case 15: // interface_list ::= interface_func interface_list 
             {
                 InterfaceList RESULT = null;
                 int ifdleft = CUP$ixiParser$stack.elementAt(CUP$ixiParser$top-1).left;
@@ -405,7 +431,7 @@ class CUP$ixiParser$actions {
             return CUP$ixiParser$result;
 
         /*. . . . . . . . . . . . . . . . . . . .*/
-        case 15: // interface_list ::= interface_func 
+        case 16: // interface_list ::= interface_func 
             {
                 InterfaceList RESULT = null;
                 int ifdleft = CUP$ixiParser$stack.peek().left;
@@ -417,7 +443,7 @@ class CUP$ixiParser$actions {
             return CUP$ixiParser$result;
 
         /*. . . . . . . . . . . . . . . . . . . .*/
-        case 16: // interface_list ::= class_decl interface_list 
+        case 17: // interface_list ::= class_decl interface_list 
             {
                 InterfaceList RESULT = null;
                 int cdleft = CUP$ixiParser$stack.elementAt(CUP$ixiParser$top-1).left;
@@ -432,7 +458,7 @@ class CUP$ixiParser$actions {
             return CUP$ixiParser$result;
 
         /*. . . . . . . . . . . . . . . . . . . .*/
-        case 17: // interface_list ::= class_decl 
+        case 18: // interface_list ::= class_decl 
             {
                 InterfaceList RESULT = null;
                 int cdleft = CUP$ixiParser$stack.peek().left;
@@ -444,7 +470,7 @@ class CUP$ixiParser$actions {
             return CUP$ixiParser$result;
 
         /*. . . . . . . . . . . . . . . . . . . .*/
-        case 18: // primitive_type ::= INT 
+        case 19: // primitive_type ::= INT 
             {
                 PrimitiveType RESULT = null;
                 int ileft = CUP$ixiParser$stack.peek().left;
@@ -456,7 +482,7 @@ class CUP$ixiParser$actions {
             return CUP$ixiParser$result;
 
         /*. . . . . . . . . . . . . . . . . . . .*/
-        case 19: // primitive_type ::= BOOL 
+        case 20: // primitive_type ::= BOOL 
             {
                 PrimitiveType RESULT = null;
                 int bleft = CUP$ixiParser$stack.peek().left;
@@ -468,7 +494,7 @@ class CUP$ixiParser$actions {
             return CUP$ixiParser$result;
 
         /*. . . . . . . . . . . . . . . . . . . .*/
-        case 20: // return_type ::= COLON type_list 
+        case 21: // return_type ::= COLON type_list 
             {
                 ReturnType RESULT = null;
                 int tlleft = CUP$ixiParser$stack.peek().left;
@@ -480,7 +506,7 @@ class CUP$ixiParser$actions {
             return CUP$ixiParser$result;
 
         /*. . . . . . . . . . . . . . . . . . . .*/
-        case 21: // return_type ::= 
+        case 22: // return_type ::= 
             {
                 ReturnType RESULT = null;
                  RESULT = new ReturnType(); 
@@ -489,7 +515,7 @@ class CUP$ixiParser$actions {
             return CUP$ixiParser$result;
 
         /*. . . . . . . . . . . . . . . . . . . .*/
-        case 22: // type ::= primitive_type 
+        case 23: // type ::= primitive_type 
             {
                 Type RESULT = null;
                 int ptleft = CUP$ixiParser$stack.peek().left;
@@ -501,7 +527,7 @@ class CUP$ixiParser$actions {
             return CUP$ixiParser$result;
 
         /*. . . . . . . . . . . . . . . . . . . .*/
-        case 23: // type ::= empty_array_type 
+        case 24: // type ::= empty_array_type 
             {
                 Type RESULT = null;
                 int atleft = CUP$ixiParser$stack.peek().left;
@@ -513,7 +539,7 @@ class CUP$ixiParser$actions {
             return CUP$ixiParser$result;
 
         /*. . . . . . . . . . . . . . . . . . . .*/
-        case 24: // type ::= identifier 
+        case 25: // type ::= identifier 
             {
                 Type RESULT = null;
                 int idleft = CUP$ixiParser$stack.peek().left;
@@ -525,7 +551,7 @@ class CUP$ixiParser$actions {
             return CUP$ixiParser$result;
 
         /*. . . . . . . . . . . . . . . . . . . .*/
-        case 25: // type_list ::= type 
+        case 26: // type_list ::= type 
             {
                 TypeList RESULT = null;
                 int tleft = CUP$ixiParser$stack.peek().left;
@@ -537,7 +563,7 @@ class CUP$ixiParser$actions {
             return CUP$ixiParser$result;
 
         /*. . . . . . . . . . . . . . . . . . . .*/
-        case 26: // type_list ::= type COMMA type_list 
+        case 27: // type_list ::= type COMMA type_list 
             {
                 TypeList RESULT = null;
                 int tleft = CUP$ixiParser$stack.elementAt(CUP$ixiParser$top-2).left;
@@ -548,6 +574,60 @@ class CUP$ixiParser$actions {
                 TypeList tl = CUP$ixiParser$stack.peek().<TypeList> value();
                  RESULT = new TypeList(t, tl); 
                 CUP$ixiParser$result = parser.getSymbolFactory().newSymbol("type_list",12, CUP$ixiParser$stack.elementAt(CUP$ixiParser$top-2), CUP$ixiParser$stack.peek(), RESULT);
+            }
+            return CUP$ixiParser$result;
+
+        /*. . . . . . . . . . . . . . . . . . . .*/
+        case 28: // use_id ::= USE identifier 
+            {
+                UseId RESULT = null;
+                int idleft = CUP$ixiParser$stack.peek().left;
+                int idright = CUP$ixiParser$stack.peek().right;
+                Identifier id = CUP$ixiParser$stack.peek().<Identifier> value();
+                 RESULT = new UseId(id, false); 
+                CUP$ixiParser$result = parser.getSymbolFactory().newSymbol("use_id",13, CUP$ixiParser$stack.elementAt(CUP$ixiParser$top-1), CUP$ixiParser$stack.peek(), RESULT);
+            }
+            return CUP$ixiParser$result;
+
+        /*. . . . . . . . . . . . . . . . . . . .*/
+        case 29: // use_id ::= USE identifier SEMICOLON 
+            {
+                UseId RESULT = null;
+                int idleft = CUP$ixiParser$stack.elementAt(CUP$ixiParser$top-1).left;
+                int idright = CUP$ixiParser$stack.elementAt(CUP$ixiParser$top-1).right;
+                Identifier id = CUP$ixiParser$stack.elementAt(CUP$ixiParser$top-1).<Identifier> value();
+                 RESULT = new UseId(id, true); 
+                CUP$ixiParser$result = parser.getSymbolFactory().newSymbol("use_id",13, CUP$ixiParser$stack.elementAt(CUP$ixiParser$top-2), CUP$ixiParser$stack.peek(), RESULT);
+            }
+            return CUP$ixiParser$result;
+
+        /*. . . . . . . . . . . . . . . . . . . .*/
+        case 30: // use_id ::= USE identifier use_id 
+            {
+                UseId RESULT = null;
+                int idleft = CUP$ixiParser$stack.elementAt(CUP$ixiParser$top-1).left;
+                int idright = CUP$ixiParser$stack.elementAt(CUP$ixiParser$top-1).right;
+                Identifier id = CUP$ixiParser$stack.elementAt(CUP$ixiParser$top-1).<Identifier> value();
+                int uileft = CUP$ixiParser$stack.peek().left;
+                int uiright = CUP$ixiParser$stack.peek().right;
+                UseId ui = CUP$ixiParser$stack.peek().<UseId> value();
+                 RESULT = new UseId(id, ui, false); 
+                CUP$ixiParser$result = parser.getSymbolFactory().newSymbol("use_id",13, CUP$ixiParser$stack.elementAt(CUP$ixiParser$top-2), CUP$ixiParser$stack.peek(), RESULT);
+            }
+            return CUP$ixiParser$result;
+
+        /*. . . . . . . . . . . . . . . . . . . .*/
+        case 31: // use_id ::= USE identifier SEMICOLON use_id 
+            {
+                UseId RESULT = null;
+                int idleft = CUP$ixiParser$stack.elementAt(CUP$ixiParser$top-2).left;
+                int idright = CUP$ixiParser$stack.elementAt(CUP$ixiParser$top-2).right;
+                Identifier id = CUP$ixiParser$stack.elementAt(CUP$ixiParser$top-2).<Identifier> value();
+                int uileft = CUP$ixiParser$stack.peek().left;
+                int uiright = CUP$ixiParser$stack.peek().right;
+                UseId ui = CUP$ixiParser$stack.peek().<UseId> value();
+                 RESULT = new UseId(id, ui, true); 
+                CUP$ixiParser$result = parser.getSymbolFactory().newSymbol("use_id",13, CUP$ixiParser$stack.elementAt(CUP$ixiParser$top-3), CUP$ixiParser$stack.peek(), RESULT);
             }
             return CUP$ixiParser$result;
 

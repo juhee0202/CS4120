@@ -43,6 +43,7 @@ non terminal PrimitiveType primitive_type;
 non terminal ReturnType return_type;
 non terminal Type type;
 non terminal TypeList type_list;
+non terminal UseId use_id;
 
 
 /* Precedences */
@@ -95,6 +96,8 @@ identifier ::= IDENTIFIER:id                                        {: RESULT = 
                ; 
 
 interface ::= interface_list:il                                     {: RESULT = new Interface(il); :}
+              |
+              use_id:useidc interface_list:il                       {: RESULT = new Interface(il, useidc); :}
               ;
 
 interface_func ::= identifier:id OPEN_PAREN 
@@ -139,3 +142,11 @@ type_list ::= type:t                                                {: RESULT = 
               type:t COMMA type_list:tl                             {: RESULT = new TypeList(t, tl); :}
               ;
 
+use_id ::= USE identifier:id                                        {: RESULT = new UseId(id, false); :}
+           |  
+           USE identifier:id SEMICOLON                              {: RESULT = new UseId(id, true); :}
+           |
+           USE identifier:id use_id:ui                              {: RESULT = new UseId(id, ui, false); :}
+           |
+           USE identifier:id SEMICOLON use_id:ui                    {: RESULT = new UseId(id, ui, true); :}
+           ;

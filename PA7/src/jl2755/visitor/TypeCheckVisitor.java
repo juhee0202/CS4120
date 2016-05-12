@@ -914,82 +914,88 @@ public class TypeCheckVisitor implements ASTVisitor {
 	 */
 	@Override
 	public void visit(Program p) {
+		// Visit own interface file IF IT EXISTS
+		String fileName = Main.getSrcFile();
+		if (Main.checkInterfaceExists(fileName)) {
+			visitInterfaceFile(fileName, 1, 1);
+		}
+		
 		// Interface files are used => fill global environment with
 		if (p.getIndex() == 1) {
 			p.getUseId().accept(this);
 		}
 		
-		// TODO If interface with same name exists, then use it!
-		String fileName = Main.getSrcFile();
-		if (Main.checkInterfaceExists(fileName)) {
-			Map<String, VType> headerMap = Main.checkInterface(fileName);
-			Iterator<String> mapIter = headerMap.keySet().iterator();
-
-			while (mapIter.hasNext()){
-				String moduleMemberName = mapIter.next();
-
-				// if multiple function declarations, then check that
-				// the types are the same
-				if (if_env.containsKey(moduleMemberName)) {
-					VType existingType = if_env.get(moduleMemberName);
-					VType newType = headerMap.get(moduleMemberName);
-
-					if (!(existingType.equals(newType))) {
-						String s = "Conflicting declarations on " 
-								+ moduleMemberName + ": "
-								+ "trying to add " + newType.toString() + " when "
-								+ existingType.toString() + " already exists.";
-						SemanticErrorObject seo = new SemanticErrorObject(
-								1,1, s);
-						Main.handleSemanticError(seo);
-					}
-				}
-				// no multiple declarations: add module member to global env
-				else{
-					globalEnv.put(moduleMemberName, headerMap.get(moduleMemberName));
-				}
-			}
-		}
-		
-		
-		/* Add module members in current program to the environment */
+		/* Add module members in current program to global env */
 		ModuleList ml = p.getModuleList();
 		List<Decl> decls = ml.getAllDecls();
 		for (Decl decl: decls) {
-			// (i) make sure that global variables do not conflict
+			if (decl instanceof GlobalDecl) {
+				
+			} else if (decl instanceof ClassDecl) {
+				
+			} else if (decl instanceof FunctionDecl) {
+				List<FunctionDecl> functionDecls = p.getFunctionDecls();
+				for (FunctionDecl fd : functionDecls) {
+					String id = fd.getIdentifier().toString();
+					FunType funType = new FunType(fd);
+					
+					// if the function was declared in interface files
+					// OK if same FunType
+					if (if_env.containsKey(id)) {
+						FunType ifFunType = (FunType) if_env.get(id); // safe
+						if (!funType.equals(ifFunType)) {
+							String s = "Conflicting declarations on " + id + ": " 
+									+ "trying to add " + funType.toString() + " when "
+									+ ifFunType.toString() + " already exists.";
+							SemanticErrorObject seo = new SemanticErrorObject(
+									fd.getIdentifier_line(), fd.getIdentifier_col(), s);
+							Main.handleSemanticError(seo);
+						}
+					}
+					// if the function was declared before
+					if (env.containsKey(id)) {
+						String s = "Multiple declaration found for function " + id;
+						SemanticErrorObject seo = new SemanticErrorObject(
+								fd.getIdentifier_line(), fd.getIdentifier_col(), s);
+						Main.handleSemanticError(seo);
+					}
+					env.put(id, funType);
+					stack.push(id);
+				}
+			}
 		}
 		
 		///////////////////////////////////////////////////
 		
 		/* Add the function declarations to the environment */
-		List<FunctionDecl> functionDecls = p.getFunctionDecls();
-		for (FunctionDecl fd : functionDecls) {
-			String id = fd.getIdentifier().toString();
-			FunType funType = new FunType(fd);
-			
-			// if the function was declared in interface files
-			// OK if same FunType
-			if (if_env.containsKey(id)) {
-				FunType ifFunType = (FunType) if_env.get(id); // safe
-				if (!funType.equals(ifFunType)) {
-					String s = "Conflicting declarations on " + id + ": " 
-							+ "trying to add " + funType.toString() + " when "
-							+ ifFunType.toString() + " already exists.";
-					SemanticErrorObject seo = new SemanticErrorObject(
-							fd.getIdentifier_line(), fd.getIdentifier_col(), s);
-					Main.handleSemanticError(seo);
-				}
-			}
-			// if the function was declared before
-			if (env.containsKey(id)) {
-				String s = "Multiple declaration found for function " + id;
-				SemanticErrorObject seo = new SemanticErrorObject(
-						fd.getIdentifier_line(), fd.getIdentifier_col(), s);
-				Main.handleSemanticError(seo);
-			}
-			env.put(id, funType);
-			stack.push(id);
-		}
+//		List<FunctionDecl> functionDecls = p.getFunctionDecls();
+//		for (FunctionDecl fd : functionDecls) {
+//			String id = fd.getIdentifier().toString();
+//			FunType funType = new FunType(fd);
+//			
+//			// if the function was declared in interface files
+//			// OK if same FunType
+//			if (if_env.containsKey(id)) {
+//				FunType ifFunType = (FunType) if_env.get(id); // safe
+//				if (!funType.equals(ifFunType)) {
+//					String s = "Conflicting declarations on " + id + ": " 
+//							+ "trying to add " + funType.toString() + " when "
+//							+ ifFunType.toString() + " already exists.";
+//					SemanticErrorObject seo = new SemanticErrorObject(
+//							fd.getIdentifier_line(), fd.getIdentifier_col(), s);
+//					Main.handleSemanticError(seo);
+//				}
+//			}
+//			// if the function was declared before
+//			if (env.containsKey(id)) {
+//				String s = "Multiple declaration found for function " + id;
+//				SemanticErrorObject seo = new SemanticErrorObject(
+//						fd.getIdentifier_line(), fd.getIdentifier_col(), s);
+//				Main.handleSemanticError(seo);
+//			}
+//			env.put(id, funType);
+//			stack.push(id);
+//		}
 		
 		/* Merge if_env with env */
 		env.putAll(if_env);
@@ -1328,7 +1334,41 @@ public class TypeCheckVisitor implements ASTVisitor {
 			negativeNumber = false;
 		}
 	}
+	
+	/**
+	 *  visits interface file and fills global environment
+	 */
+	private void visitInterfaceFile (String fileName, int lineNum, int colNum) {
+		Map<String, VType> interfaceEnv = Main.checkInterface(fileName);
+		Iterator<String> mapIter = interfaceEnv.keySet().iterator();
+		
+		while (mapIter.hasNext()){
+			String moduleMemberName = mapIter.next();
+			
+			// if multiple declarations, then check that
+			// the types are the same
+			if (globalEnv.containsKey(moduleMemberName)) {
+				VType existingType = globalEnv.get(moduleMemberName);
+				VType newType = interfaceEnv.get(moduleMemberName);
 
+				if (!(existingType.equals(newType))) {
+					String s = "Conflicting declarations on " 
+							+ moduleMemberName + ": "
+							+ "trying to add " + newType.toString() + " when "
+							+ existingType.toString() + " already exists.";
+					SemanticErrorObject seo = new SemanticErrorObject(
+							lineNum, 
+							colNum,
+							s);
+					Main.handleSemanticError(seo);
+				}
+			}
+			// no multiple declarations: add module member to global env
+			else{
+				globalEnv.put(moduleMemberName, interfaceEnv.get(moduleMemberName));
+			}
+		}
+	}
 	/**
 	 * Update global environment with functions, global variables, and
 	 * classes from the interface files
@@ -1340,39 +1380,15 @@ public class TypeCheckVisitor implements ASTVisitor {
 		// iterate through each of the uses
 		for (int i = 0; i < listOfUses.size(); i++){
 			String fileName = listOfUses.get(i);
-			
-			Map<String, VType> tempMap = Main.checkInterface(fileName);
-			Iterator<String> mapIter = tempMap.keySet().iterator();
-			
-			while (mapIter.hasNext()){
-				String moduleMemberName = mapIter.next();
-				
-				// if multiple function declarations, then check that
-				// the types are the same
-				if (if_env.containsKey(moduleMemberName)) {
-					VType existingType = if_env.get(moduleMemberName);
-					VType newType = tempMap.get(moduleMemberName);
-
-					if (!(existingType.equals(newType))) {
-						String s = "Conflicting declarations on " 
-								+ moduleMemberName + ": "
-								+ "trying to add " + newType.toString() + " when "
-								+ existingType.toString() + " already exists.";
-						SemanticErrorObject seo = new SemanticErrorObject(
-								ui.getIdentifier().getLineNumber(), 
-								ui.getIdentifier().getColumnNumber(),
-								s);
-						Main.handleSemanticError(seo);
-					}
-				}
-				// no multiple declarations: add module member to global env
-				else{
-					globalEnv.put(moduleMemberName, tempMap.get(moduleMemberName));
-				}
+			if (fileName.equals(Main.getSrcFile())) {
+				continue;
 			}
+			visitInterfaceFile(fileName, 
+					ui.getIdentifier().getLineNumber(),
+					ui.getIdentifier().getColumnNumber());
 		}
 	}
-	
+
 //	@Override
 //	public void visit(UseId ui) {
 //		List<String> listOfUses = ui.getUseFiles();

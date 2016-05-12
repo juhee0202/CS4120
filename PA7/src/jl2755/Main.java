@@ -41,6 +41,7 @@ import jl2755.parser;
 import jl2755.sym;
 import jl2755.ast.Identifier;
 import jl2755.ast.Interface;
+import jl2755.ast.InterfaceClassDecl;
 import jl2755.ast.InterfaceFunc;
 import jl2755.ast.Program;
 import jl2755.controlflow.ControlFlowGraph;
@@ -996,23 +997,23 @@ public class Main {
 				interfaceEnv.put(tempFuncs.get(i).getIdentifier().toString(),
 						new FunType(tempFuncs.get(i)));
 			} 
-			
+
 			List<InterfaceClassDecl> classDecls = result.getInterfaceClasses();
 			for (InterfaceClassDecl classDecl: classDecls) {
 				// TODO add classes to global environment
-				
+
 				// check that the classes do not have same name as any of the
 				// functions or other classes in the interface environment
 				String id = classDecl.getClassName().toString();
-				if (interfaceEnv.containsKey(id) {
+				if (interfaceEnv.containsKey(id)) {
 					//THROW ERROR!
 				}
-				
+
 				//create hashmap for class method types
 				HashMap<String, VType> classEnv = new HashMap<String,VType>();
 				interfaceEnv.put(id, new ClassType(id, classEnv));
 			}
-			
+
 		} catch(LexicalError error) {
 			error.setFilename(absPath);
 			throw error;

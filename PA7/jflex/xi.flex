@@ -95,6 +95,8 @@ SingleCharacter = [^\n\'\\\"]
   "bool"                         { return symbol(sym.BOOL,"bool"); }
   "break"                        { return symbol(sym.BREAK,"break"); }
   "class"                        { return symbol(sym.CLASS,"class"); }
+  "const"                        { return symbol(sym.CONST,"const"); }
+  "continue"                     { return symbol(sym.CONTINUE,"continue"); }
   "else"                         { return symbol(sym.ELSE,"else"); }
   "extends"                      { return symbol(sym.EXTENDS,"extends"); }
   "if"                           { return symbol(sym.IF,"if"); }

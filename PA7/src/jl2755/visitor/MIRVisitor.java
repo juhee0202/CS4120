@@ -612,6 +612,11 @@ public class MIRVisitor implements ASTVisitor{
 	}
 
 	@Override
+	public void visit(Null n) {
+		// TODO: Is this needed
+	}
+	
+	@Override
 	public void visit(Program p) {
 		Map<String, IRFuncDecl> functions = new HashMap<String, IRFuncDecl>();
 		List<FunctionDecl> funcs = p.getFunctionDecls();

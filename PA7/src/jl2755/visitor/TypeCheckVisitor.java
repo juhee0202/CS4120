@@ -894,6 +894,11 @@ public class TypeCheckVisitor implements ASTVisitor {
 		}
 	}
 	
+	@Override
+	public void visit(Null n) {
+		// TODO: Is this needed
+	}
+	
 	/**
 	 * PA7 note: 
 	 * 	handle module list here (should use p.getAllDecls())

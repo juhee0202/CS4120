@@ -1,0 +1,8 @@
+Inside foo a[2] = 24
+Inside goo a[2] = 34
+Inside foo a[2] = 34
+Inside goo a[2] = 44
+Inside foo a[2] = 44
+0
+0
+0

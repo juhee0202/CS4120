@@ -21,6 +21,7 @@ public class GlobalDecl implements Decl {
 	private TupleInit tupleInit;
 	private Type type;
 	private boolean hasSemicolon;
+	private boolean isConst = false;
 	
 	public GlobalDecl(VarDecl vd, boolean semicolon) {
 		varDecl = vd;
@@ -32,6 +33,13 @@ public class GlobalDecl implements Decl {
 		varInit = vi;
 		hasSemicolon = semicolon;
 		type = Type.VAR_INIT;
+	}
+	
+	public GlobalDecl(VarInit vi, boolean semicolon, boolean cons) {
+		varInit = vi;
+		hasSemicolon = semicolon;
+		type = Type.VAR_INIT;
+		setConst(cons);
 	}
 	
 	public GlobalDecl(ShortTupleDecl std, boolean semicolon) {
@@ -46,13 +54,21 @@ public class GlobalDecl implements Decl {
 		type = Type.TUPLE_INIT;
 	}
 	
+	public boolean isConst() {
+		return isConst;
+	}
+
+	public void setConst(boolean isConst) {
+		this.isConst = isConst;
+	}
+
 	@Override
 	public void accept(ASTVisitor v) {
 		v.visit(this);
 	}
 	
 	@Override
-	public void prettyPrintNode() {		
+	public void prettyPrintNode() {
 		switch (type) {
 		case SHORT_TUPLE_DECL:
 			shortTupleDecl.prettyPrintNode();
@@ -64,6 +80,10 @@ public class GlobalDecl implements Decl {
 			varDecl.prettyPrintNode();
 			break;
 		case VAR_INIT:
+			if (isConst) {
+				CodeWriterSExpPrinter tempPrinter = GlobalPrettyPrinter.getInstance();
+				tempPrinter.printAtom("const");
+			}
 			varInit.prettyPrintNode();
 			break;
 		}

@@ -1,13 +1,27 @@
 package jl2755.ast;
 
+import edu.cornell.cs.cs4120.util.CodeWriterSExpPrinter;
+import jl2755.GlobalPrettyPrinter;
 import jl2755.visitor.ASTVisitor;
 
 public class Null implements Expr {
 
+	private int line;
+	private int col;
+	private boolean surroundedParentheses;
+	
+	public Null(int thisLeft, int thisRight) {
+		line = thisLeft;
+		col = thisRight;
+		surroundedParentheses = false;
+	}
+	
 	@Override
 	public void prettyPrintNode() {
-		// TODO Auto-generated method stub
-
+		CodeWriterSExpPrinter tempPrinter = GlobalPrettyPrinter.getInstance();
+		tempPrinter.startList();
+		tempPrinter.printAtom("null");
+		tempPrinter.endList();
 	}
 
 	@Override
@@ -17,26 +31,21 @@ public class Null implements Expr {
 
 	@Override
 	public int getColumnNumber() {
-		// TODO Auto-generated method stub
-		return 0;
+		return col;
 	}
 
 	@Override
 	public int getLineNumber() {
-		// TODO Auto-generated method stub
-		return 0;
+		return line;
 	}
 
 	@Override
 	public void setSurroundedParentheses() {
-		// TODO Auto-generated method stub
-
+		surroundedParentheses = true;
 	}
 
 	@Override
 	public boolean isSurroundedParentheses() {
-		// TODO Auto-generated method stub
-		return false;
+		return surroundedParentheses;
 	}
-
 }

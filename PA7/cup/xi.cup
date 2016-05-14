@@ -261,7 +261,7 @@ indexed_brackets ::= OPEN_BRACKET expr:e CLOSE_BRACKET              {: RESULT = 
                      indexed_brackets:ib                            {: RESULT = new IndexedBrackets(e, ib); :}
                      ;
 
-label ::= identifier:labelName COLON                                {: RESULT = new Label(labelName.getTheValue()); :}
+label ::= identifier:labelName COLON                                {: RESULT = new Label(labelName.getTheValue(), labelNameleft, labelNameright); :}
           ;
 
 literal ::= INTEGER_LITERAL:il                                      {: RESULT = new Literal(il, 0, illeft, ilright); :}

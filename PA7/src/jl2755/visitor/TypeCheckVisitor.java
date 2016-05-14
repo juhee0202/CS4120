@@ -1,9 +1,7 @@
 package jl2755.visitor;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -1447,6 +1445,16 @@ public class TypeCheckVisitor implements ASTVisitor {
 	public void visit(WhileStmt ws) {
 		whileCount++;
 		if (ws.hasLabel()) {
+			String label = ws.getLabel().getName();
+			// error if the label already exists
+			if (labelSet.contains(label)) {
+				String s = "Duplicate label found";
+				SemanticErrorObject seo = new SemanticErrorObject(
+						ws.getLabel().getLine(), 
+						ws.getLabel().getCol(),
+						s);
+				Main.handleSemanticError(seo);		
+			} 
 			labelSet.add(ws.getLabel().getName());
 		}
 		

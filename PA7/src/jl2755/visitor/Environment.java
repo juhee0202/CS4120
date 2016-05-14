@@ -2,6 +2,7 @@ package jl2755.visitor;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import jl2755.type.ClassType;
 import jl2755.type.FunType;
@@ -9,36 +10,43 @@ import jl2755.type.VType;
 import jl2755.type.VarType;
 
 public class Environment {
-	private Map<String, VarType> varMap;
+	private Map<String, VType> varMap;
 	private Map<String, FunType> funMap;
 	private Map<String, ClassType> classMap;
 	
 	public Environment() {
-		varMap = new HashMap<String, VarType>();
+		varMap = new HashMap<String, VType>();
 		funMap = new HashMap<String, FunType>();
 		classMap = new HashMap<String, ClassType>();
 	}
 	
 	/**
-	 * Puts (s,type) into the environment
+	 * Puts (s,type) into the varMap/funMap
 	 * @param s
 	 * @param type
 	 */
 	public void put(String s, VType type) {
-		if (type instanceof VarType) {
-			varMap.put(s,(VarType)type);
-		} else if (type instanceof FunType) {
+		if (type instanceof FunType) {
 			funMap.put(s,(FunType)type);
-		} else if (type instanceof ClassType) {
-			classMap.put(s, (ClassType)type);
+		} else {
+			varMap.put(s,type);
 		}
+	}
+	
+	/**
+	 * Puts (className,classType) into the classMap
+	 * @param className
+	 * @param classType
+	 */
+	public void putClass(String className, ClassType classType) {
+		classMap.put(className, classType);
 	}
 	
 	/**
 	 * @param var
 	 * @return VarType of var if var is in env
 	 */
-	public VarType getVarType(String var) {
+	public VType getVarType(String var) {
 		return varMap.get(var);
 	}
 	
@@ -63,7 +71,7 @@ public class Environment {
 	 * @param var
 	 * @return VarType of var
 	 */
-	public VarType removeVar(String var) {
+	public VType removeVar(String var) {
 		return varMap.remove(var);
 	}
 	
@@ -117,5 +125,13 @@ public class Environment {
 		varMap.putAll(env.varMap);
 		funMap.putAll(env.funMap);
 		classMap.putAll(env.classMap);
+	}
+	
+	public Set<ClassType> getClassTypes() {
+		return (Set<ClassType>) classMap.values();
+	}
+	
+	public Set<FunType> getFunTypes() {
+		return (Set<FunType>) funMap.values();
 	}
 }

@@ -205,7 +205,28 @@ public class ClassType implements VType{
 		return true;
 	
 	}
+	
+	public void replaceAll(EmptyClassType ect, ClassType ct) {
+		for (FunType funType : methodEnv.values()) {
+			funType.replaceAll(ect, ct);
+		}
+	}
 
+	public void checkSuper(ClassType ct) {
+		if (superClassName != null && ct.superClassName.equals(superClassName)) {
+			HashMap<String, FunType> superMethodEnv = ct.methodEnv;
+			for (Entry<String, FunType> f1 : methodEnv.entrySet()) {
+				for (Entry<String, FunType> f2 : superMethodEnv.entrySet()) {
+					if (f1.getKey().equals(f2.getKey()) &&
+							!f1.getValue().equals(f2.getValue())) {
+						String e = "Function signature does not match super class";
+						Main.handleSemanticError(new SemanticErrorObject(1,1,e));
+					}
+				}
+			}
+		}
+	}
+	
 	@Override
 	public boolean canDot() {
 		return true;
@@ -219,6 +240,9 @@ public class ClassType implements VType{
 		
 	@Override
 	public boolean equals(Object o) {
+		if (o instanceof NullType) {
+			return true;
+		}
 		if (!(o instanceof ClassType)) {
 			return false;
 		}

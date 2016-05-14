@@ -35,9 +35,9 @@ public class TypeCheckVisitor implements ASTVisitor {
 										// -> dirtied by visit(ClassDecl)
 	private VType functionReturnType;
 	private boolean negativeNumber = false; // needed for UnaryExpr, Literal
+	private boolean isInClass = false;	// Needed for this keyword
+	private boolean isInFunctionDecl = false; // Needed for this keyword
 	private int whileCount;				// number of nested while loops we're currently in
-	private boolean isInClass = false;
-	private boolean isInFunctionDecl = false;
 	private Set<String> labelSet;
 	
 	/**
@@ -266,10 +266,10 @@ public class TypeCheckVisitor implements ASTVisitor {
 				Main.handleSemanticError(seo);
 			}
 		} else if (index == 1) {							//ex: arr[2] = 3;
-			// check if identifier is in env
+			// Check that the identifier can be resolved to a VARIABLE in the env
 			String id = as.getIdentifier().toString();
 			if (!env.containsVar(id)) {
-				String s = "Name " + id + " cannot be resolved";
+				String s = "Name " + id + " cannot be resolved to a variable";
 				SemanticErrorObject seo = new SemanticErrorObject(
 						as.getIdentifier().getLineNumber(), 
 						as.getIdentifier().getColumnNumber(),
@@ -277,8 +277,20 @@ public class TypeCheckVisitor implements ASTVisitor {
 				Main.handleSemanticError(seo);
 			}
 			
-			VarType idType = (VarType)env.getVarType(id);
+			VarType idType = (VarType) env.getVarType(id);
 			
+			// check that the identifier is of ARRAY TYPE
+			if (!idType.isArray()) {
+				String s = "The type of the expression must be an array type "
+						+ "but it resolved to " + idType.toString();
+				SemanticErrorObject seo = new SemanticErrorObject(
+						as.getIdentifier().getLineNumber(), 
+						as.getIdentifier().getColumnNumber(),
+						s);
+				Main.handleSemanticError(seo);
+			}
+			
+			// raises error in this constructor if dimensions don't match
 			VType elementType = new VarType(idType,as.getIndexedBrackets(),as.getIdentifier());
 
 			// check that all the indices inside indexedBrackets are ints
@@ -334,6 +346,18 @@ public class TypeCheckVisitor implements ASTVisitor {
 			}
 			
 			VarType funcCallType = (VarType) functionCallType;
+			
+			// check that the function call return type is of ARRAY TYPE
+			if (!funcCallType.isArray()) {
+				String s = "The type of the expression must be an array type "
+						+ "but it resolved to " + funcCallType.toString();
+				SemanticErrorObject seo = new SemanticErrorObject(
+						as.getIdentifier().getLineNumber(), 
+						as.getIdentifier().getColumnNumber(),
+						s);
+				Main.handleSemanticError(seo);
+			}
+			
 			VType elementType = new VarType (funcCallType, as.getIndexedBrackets(), as.getFunctionCall());
 			
 			as.getExpr().accept(this);
@@ -603,6 +627,9 @@ public class TypeCheckVisitor implements ASTVisitor {
 		}
 	}
 	
+	/**
+	 * DIRTIES stmtType to void type
+	 */
 	@Override
 	public void visit(Break b) {
 		System.out.println("visiting break!");
@@ -612,8 +639,12 @@ public class TypeCheckVisitor implements ASTVisitor {
 					b.getLineNumber(), b.getColumnNumber(), s);
 			Main.handleSemanticError(seo);
 		}
+		stmtType = new VoidType();	// Question: do I dirty tempType?
 	}
 	
+	/**
+	 * DIRTIES stmtType to void type
+	 */
 	@Override
 	public void visit(Continue c) {
 		System.out.println("visiting continue!");
@@ -623,6 +654,7 @@ public class TypeCheckVisitor implements ASTVisitor {
 					c.getLineNumber(), c.getColumnNumber(), s);
 			Main.handleSemanticError(seo);
 		}
+		stmtType = new VoidType();
 	}
 
 	/**

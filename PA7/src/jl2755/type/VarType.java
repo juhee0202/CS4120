@@ -142,6 +142,9 @@ public class VarType implements VType {
 	
 	@Override
 	public boolean equals(Object o) {
+		if (o instanceof NullType) {
+			return true;
+		}
 		if (!(o instanceof VarType)) {
 			return false;
 		}

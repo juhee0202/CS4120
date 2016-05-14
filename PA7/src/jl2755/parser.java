@@ -1438,7 +1438,10 @@ class CUP$parser$actions {
         case 36: // normal_expr ::= NULL 
             {
                 Expr RESULT = null;
-                 RESULT = new Null(); 
+                int nleft = CUP$parser$stack.peek().left;
+                int nright = CUP$parser$stack.peek().right;
+                Object n = CUP$parser$stack.peek().<Object> value();
+                 RESULT = new Null(nleft, nright); 
                 CUP$parser$result = parser.getSymbolFactory().newSymbol("normal_expr",28, CUP$parser$stack.peek(), CUP$parser$stack.peek(), RESULT);
             }
             return CUP$parser$result;

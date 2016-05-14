@@ -128,6 +128,11 @@ public class TupleType implements VType {
 		return false;
 	}
 
+	@Override
+	public boolean singleReturn() {
+		return false;
+	}
+		
 	/**
 	 * Replaces all usage of ect with ct
 	 * @param ect

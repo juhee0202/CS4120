@@ -45,4 +45,9 @@ public class InterfaceClassDecl {
 	public List<InterfaceFunc> getMethods() {
 		return intClassBody.getMethods();
 	}
+	
+	@Override
+	public String toString() {
+		return className.toString();
+	}
 }

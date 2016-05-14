@@ -13,6 +13,7 @@ import jl2755.SemanticErrorObject;
 import jl2755.ast.*;
 import jl2755.type.ClassType;
 import jl2755.type.FunType;
+import jl2755.type.NullType;
 import jl2755.type.TupleType;
 import jl2755.type.UnitType;
 import jl2755.type.VType;
@@ -67,7 +68,7 @@ public class TypeCheckVisitor implements ASTVisitor {
 		
 		int index = ae.getIndex();
 		if (index == 0){
-			if (!(env.containsKey(ae.getIdentifier().toString()))){
+			if (!(env.containsVar(ae.getIdentifier().toString()))){
 				String errorDesc = "Name " + ae.getIdentifier().toString() +
 						" cannot be resolved.";
 				SemanticErrorObject seo = new SemanticErrorObject(
@@ -77,7 +78,7 @@ public class TypeCheckVisitor implements ASTVisitor {
 						);
 				Main.handleSemanticError(seo);
 			}
-			VType tempScopeType = env.get(ae.getIdentifier().toString());
+			VType tempScopeType = env.getVarType(ae.getIdentifier().toString());
 			if (!(tempScopeType instanceof VarType)){
 				String errorDesc = "Name " + ae.getIdentifier().toString() +
 						" is not of variable type.";
@@ -759,28 +760,6 @@ public class TypeCheckVisitor implements ASTVisitor {
 	}
 	
 	/**
-	 * Call the accept/visit on the underlying decl/init
-	 */
-	@Override
-	public void visit(GlobalDecl gd) {
-		GlobalDecl.Type gdType = gd.getType();
-		switch(gdType) {
-		case SHORT_TUPLE_DECL:
-			gd.getShortTupleDecl().accept(this);
-			break;
-		case TUPLE_INIT:
-			gd.getTupleInit().accept(this);
-			break;
-		case VAR_DECL:
-			gd.getVarDecl().accept(this);
-			break;
-		case VAR_INIT:
-			gd.getVarInit().accept(this);
-			break;
-		}
-	}
-	
-	/**
 	 * Dirties tempType
 	 * id can be either a class type or a variable
 	 */
@@ -919,11 +898,6 @@ public class TypeCheckVisitor implements ASTVisitor {
 			case 2: tempType = new VarType(false, 0); break;		// char
 			case 3: tempType = new VarType(true, 0);  break;		// boolean
 		}
-	}
-	
-	@Override
-	public void visit(Null n) {
-		// TODO: Is this needed
 	}
 	
 	/**
@@ -1132,7 +1106,7 @@ public class TypeCheckVisitor implements ASTVisitor {
 			
 			// check if types of both sides agree
 			if (!returnType.equals(tupleType)) {
-				String s = "Mismatched types";
+				String s = "Mismatched type";
 				SemanticErrorObject seo = new SemanticErrorObject(
 						ti.getFunctionCall_line(), ti.getFunctionCall_col(), s);
 				Main.handleSemanticError(seo);	
@@ -1322,7 +1296,7 @@ public class TypeCheckVisitor implements ASTVisitor {
 			
 			// make sure the class type is in the env
 			if (!env.containsClass(className)) {
-				String s = "Type " + className + " cannot be resolved";
+				String s = "Name " + className + " cannot be resolved";
 				SemanticErrorObject seo = new SemanticErrorObject(
 						classId.getLineNumber(), classId.getColumnNumber(), s);
 				Main.handleSemanticError(seo);
@@ -1420,11 +1394,35 @@ public class TypeCheckVisitor implements ASTVisitor {
 	public void visit(DotableExpr de) {
 		DotableExpr.Type type = de.getType();
 		switch(type) {
-		case DOT: // 
+		case DOT:
+			de.getDotableExpr().accept(this);
+			VType childType = tempType;
+			ClassType classOfChild = env.getClassType(childType.toString());
+			if (!childType.singleReturn()) {
+				String s = "Cannot call a method on a function return that doesn't have exactly 1 return";
+				SemanticErrorObject seo = new SemanticErrorObject(
+											de.getLineNumber(), 
+											de.getColumnNumber(),
+											s
+											);
+				Main.handleSemanticError(seo);
+			}
 			
+			if (!env.containsClass(tempType.toString())) {
+				String s = "Cannot call a method on a non-Class variable";
+				SemanticErrorObject seo = new SemanticErrorObject(
+											de.getLineNumber(), 
+											de.getColumnNumber(),
+											s
+											);
+				Main.handleSemanticError(seo);
+			}
+			
+			ClassType classOfDotted = env.getClassType(tempType.toString());
+			tempType = env.getVarType(de.getId().toString());
 			break;
 		case FUNCTION_CALL:
-			
+			de.getFunctionCall().accept(this);
 			break;
 		case IDENTIFIER:
 			Identifier id = de.getId();
@@ -1433,6 +1431,16 @@ public class TypeCheckVisitor implements ASTVisitor {
 		case NEW:
 			// make sure that the className is a valid class name
 			Identifier className = de.getId();
+			if (!env.containsClass(className.toString())) {
+				String s = "" + className.toString() + " is an unresolved Class";
+				SemanticErrorObject seo = new SemanticErrorObject(
+											de.getLineNumber(), 
+											de.getColumnNumber(),
+											s
+											);
+				Main.handleSemanticError(seo);
+			}
+			tempType = env.getClassType(de.getId().toString());
 			break;
 		case PAREN:
 			de.getDotableExpr().accept(this);
@@ -1443,6 +1451,33 @@ public class TypeCheckVisitor implements ASTVisitor {
 		default:
 			break;
 		}
+	}
+
+	/**
+	 * Call the accept/visit on the underlying decl/init
+	 */
+	@Override
+	public void visit(GlobalDecl gd) {
+		GlobalDecl.Type gdType = gd.getType();
+		switch(gdType) {
+		case SHORT_TUPLE_DECL:
+			gd.getShortTupleDecl().accept(this);
+			break;
+		case TUPLE_INIT:
+			gd.getTupleInit().accept(this);
+			break;
+		case VAR_DECL:
+			gd.getVarDecl().accept(this);
+			break;
+		case VAR_INIT:
+			gd.getVarInit().accept(this);
+			break;
+		}
+	}
+
+	@Override
+	public void visit(Null n) {
+		tempType = new NullType();
 	}
 
 	/**

@@ -4,4 +4,5 @@ public interface VType {
 	public boolean equals(Object o);
 	public String toString();
 	public boolean canDot();
+	public boolean singleReturn();
 }

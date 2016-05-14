@@ -610,13 +610,13 @@ public class TypeCheckVisitor implements ASTVisitor {
 		// Pop out of scope
 		String id = stack.pop();
 		while (!id.equals("_")) {
-			env.remove(id);
+			env.removeVar(id);
 			id = stack.pop();
 		}
 	}
 
 	/**
-	 * DIRTIES tempType to function argument type (VarType or TupleType)
+	 * DIRTIES tempType to function argument type (VarType, ClassType, or TupleType)
 	 * @param FunctionArg fa
 	 */
 	@Override
@@ -629,7 +629,7 @@ public class TypeCheckVisitor implements ASTVisitor {
 			TupleType argType = new TupleType();
 			for (Expr e : argExprs) {
 				e.accept(this);
-				argType.addToTypes((VarType)tempType);
+				argType.addToTypes(tempType);
 			}
 			tempType = argType;
 		}
@@ -780,21 +780,51 @@ public class TypeCheckVisitor implements ASTVisitor {
 	}
 	
 	/**
+	 * Call the accept/visit on the underlying decl/init
+	 */
+	@Override
+	public void visit(GlobalDecl gd) {
+		GlobalDecl.Type gdType = gd.getType();
+		switch(gdType) {
+		case SHORT_TUPLE_DECL:
+			gd.getShortTupleDecl().accept(this);
+			break;
+		case TUPLE_INIT:
+			gd.getTupleInit().accept(this);
+			break;
+		case VAR_DECL:
+			gd.getVarDecl().accept(this);
+			break;
+		case VAR_INIT:
+			gd.getVarInit().accept(this);
+			break;
+		}
+	}
+	
+	/**
 	 * Dirties tempType
+	 * id can be either a class type or a variable
 	 */
 	@Override
 	public void visit(Identifier id) {
-		if (!(env.containsVar(id.toString()))){
-			String s = "Name " + id.toString() + " cannot be resolved.";
-			SemanticErrorObject seo = new SemanticErrorObject(
-					id.getLineNumber(), 
-					id.getColumnNumber(),
-					s
-					);
-			Main.handleSemanticError(seo);
+		if (id.isClassName()) { // class type
+			if (!env.containsClass(id.getTheValue())) {
+				String s = "Name " + id.toString() + " cannot be resolved.";
+				SemanticErrorObject seo = new SemanticErrorObject(
+						id.getLineNumber(), id.getColumnNumber(), s);
+				Main.handleSemanticError(seo);
+			}
+			tempType = env.getClassType(id.getTheValue());
+		} else {	// variable
+			if (!(env.containsVar(id.toString()))){
+				String s = "Name " + id.toString() + " cannot be resolved.";
+				SemanticErrorObject seo = new SemanticErrorObject(
+						id.getLineNumber(), id.getColumnNumber(), s);
+				Main.handleSemanticError(seo);
+			}
+			tempType = env.getVarType(id.toString());
+			id.setType(tempType);
 		}
-		tempType = env.getVarType(id.toString());
-		id.setType(tempType);
 	}
 	
 	/**
@@ -1053,9 +1083,9 @@ public class TypeCheckVisitor implements ASTVisitor {
 	
 	/**
 	 * TupleInit has the following form:
-	 *  id,(id|_)* = functionCall
-	 *  ex) x,y = f()
-	 *  ex) x,_,z = g()
+	 *  id:t,(id:t|_)* = functionCall
+	 *  ex) x:int,y:int = f()
+	 *  ex) x:Person,_,z:bool = g()
 	 * @param TupleInit ti
 	 */
 	@Override
@@ -1108,10 +1138,10 @@ public class TypeCheckVisitor implements ASTVisitor {
 					types.add(new VarType(varDecl));
 				}
 				
-				// make sure that id is declared
+				// make sure that id is not in the env
 				Identifier id = varDecl.getIdentifier();
-				if (!env.containsVar(id.getTheValue())) {
-					String s = id + " cannot be resolved";
+				if (env.containsVar(id.getTheValue())) {
+					String s = id + " is already declared";
 					SemanticErrorObject seo = new SemanticErrorObject(
 							id.getLineNumber(), id.getColumnNumber(), s);
 					Main.handleSemanticError(seo);	
@@ -1300,10 +1330,7 @@ public class TypeCheckVisitor implements ASTVisitor {
 		if (env.containsVar(id.getTheValue())){
 			String s = vi.getId().toString() + " is already declared";
 			SemanticErrorObject seo = new SemanticErrorObject(
-										vi.getId().getLineNumber(), 
-										vi.getId().getColumnNumber(),
-										s
-										);
+					vi.getId().getLineNumber(),vi.getId().getColumnNumber(),s);
 			Main.handleSemanticError(seo);
 		}
 		
@@ -1394,10 +1421,11 @@ public class TypeCheckVisitor implements ASTVisitor {
 		}
 
 	}
-
+	
 	@Override
 	public void visit(ClassBody cb) {
 		List<Decl> decls = cb.getAllDecls();
+		// decl can be either 1) GlobalDecl 2) FunctionDecl
 		for (Decl decl : decls) {
 			decl.accept(this);
 		}
@@ -1438,28 +1466,6 @@ public class TypeCheckVisitor implements ASTVisitor {
 	}
 
 	/**
-	 * Call the accept/visit on the underlying decl/init
-	 */
-	@Override
-	public void visit(GlobalDecl gd) {
-		GlobalDecl.Type gdType = gd.getType();
-		switch(gdType) {
-		case SHORT_TUPLE_DECL:
-			gd.getShortTupleDecl().accept(this);
-			break;
-		case TUPLE_INIT:
-			gd.getTupleInit().accept(this);
-			break;
-		case VAR_DECL:
-			gd.getVarDecl().accept(this);
-			break;
-		case VAR_INIT:
-			gd.getVarInit().accept(this);
-			break;
-		}
-	}
-
-	/**
 	 * ShortTupleDecl has the following form:
 	 * 	id,id,id*:type (at least two ids)
 	 *  ex) x,y:int
@@ -1467,6 +1473,23 @@ public class TypeCheckVisitor implements ASTVisitor {
 	 */
 	@Override
 	public void visit(ShortTupleDecl std) {
+		/* Typecheck the type */
+		Type t = std.getType();
+		VType type;
+		if (t instanceof Identifier) {
+			Identifier classId = (Identifier)t;
+			String className = classId.getTheValue();
+			if (!env.containsClass(className)) {
+				String s = "Type " + classId.toString() + " cannot be resolved";
+				SemanticErrorObject seo = new SemanticErrorObject(
+						classId.getLineNumber(), classId.getColumnNumber(), s);
+				Main.handleSemanticError(seo);
+			}
+			type = env.getClassType(className);
+		} else {
+			type = new VarType(t);
+		}
+		
 		/* Typecheck the identifiers */
 		List<Identifier> ids = std.getAllIdentifiers();
 		for (Identifier id : ids) {
@@ -1477,19 +1500,10 @@ public class TypeCheckVisitor implements ASTVisitor {
 						id.getLineNumber(), id.getColumnNumber(), s);
 				Main.handleSemanticError(seo);
 			}
-		}
-		
-		/* Typecheck the type */
-		Type t = std.getType();
-		if (t instanceof Identifier) {
-			Identifier classId = (Identifier)t;
-			String className = classId.getTheValue();
-			if (!env.containsClass(className)) {
-				String s = "Type " + classId.toString() + " cannot be resolved";
-				SemanticErrorObject seo = new SemanticErrorObject(
-						classId.getLineNumber(), classId.getColumnNumber(), s);
-				Main.handleSemanticError(seo);
-			}
+			
+			// put it in the env
+			env.put(id.getTheValue(), type);
+			stack.push(id.getTheValue());
 		}
 	}
 	

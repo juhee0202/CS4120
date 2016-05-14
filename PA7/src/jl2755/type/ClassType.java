@@ -37,10 +37,10 @@ public class ClassType implements VType{
 		fieldEnv = new HashMap<String, VType>();
 		methodEnv = new HashMap<String, FunType>();
 		
-		List<GlobalDecl> fields = classDecl.getFields();
+		List<FieldDecl> fields = classDecl.getFields();
 		List<FunctionDecl> methods = classDecl.getMethods();
 		
-		for (GlobalDecl field: fields) {
+		for (FieldDecl field: fields) {
 			String fieldName;
 			VType fieldType;
 			
@@ -51,13 +51,6 @@ public class ClassType implements VType{
 				fieldType = new VarType(varDecl);
 				fieldEnv.put(fieldName, fieldType);
 				break;
-			case VAR_INIT:
-				// this should actually just be a duplicate add.. could get rid of it
-				VarInit varInit = field.getVarInit();
-				fieldName = varInit.getId().toString();
-				fieldType = new VarType(varInit.getVarDecl());
-				fieldEnv.put(fieldName, fieldType);
-				break;
 			case SHORT_TUPLE_DECL:
 				ShortTupleDecl tupleDecl = field.getShortTupleDecl();
 				for (Identifier id: tupleDecl.getAllIdentifiers()) {
@@ -65,9 +58,6 @@ public class ClassType implements VType{
 					fieldType = new VarType(tupleDecl.getType());
 					fieldEnv.put(fieldName, fieldType);
 				}
-				break;
-			case TUPLE_INIT:
-				TupleInit tupleInit = field.getTupleInit();
 				break;
 			default:
 				break;

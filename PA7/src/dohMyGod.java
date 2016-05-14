@@ -273,7 +273,5 @@ public class dohMyGod {
 		
 //		assertEquals(ct1, ct2);
 		int[] test = {1,2,3};
-		test[10000] = 0;
-		
-	
+	}
 }

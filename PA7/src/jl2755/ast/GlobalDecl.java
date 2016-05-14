@@ -12,13 +12,12 @@ import jl2755.visitor.ASTVisitor;
 public class GlobalDecl implements Decl {
 	
 	public enum Type {
-		VAR_DECL, VAR_INIT, SHORT_TUPLE_DECL, TUPLE_INIT
+		VAR_DECL, SIMPLE_VAR_INIT, SHORT_TUPLE_DECL
 	}
 	
 	private VarDecl varDecl;
-	private VarInit varInit;
 	private ShortTupleDecl shortTupleDecl;
-	private TupleInit tupleInit;
+	private SimpleVarInit simpleVarInit;
 	private Type type;
 	private boolean hasSemicolon;
 	private boolean isConst = false;
@@ -29,29 +28,16 @@ public class GlobalDecl implements Decl {
 		type = Type.VAR_DECL;
 	}
 	
-	public GlobalDecl(VarInit vi, boolean semicolon) {
-		varInit = vi;
+	public GlobalDecl(SimpleVarInit svi, boolean semicolon) {
+		simpleVarInit = svi;
 		hasSemicolon = semicolon;
-		type = Type.VAR_INIT;
-	}
-	
-	public GlobalDecl(VarInit vi, boolean semicolon, boolean cons) {
-		varInit = vi;
-		hasSemicolon = semicolon;
-		type = Type.VAR_INIT;
-		setConst(cons);
+		type = Type.SIMPLE_VAR_INIT;
 	}
 	
 	public GlobalDecl(ShortTupleDecl std, boolean semicolon) {
 		shortTupleDecl = std;
 		hasSemicolon = semicolon;
 		type = Type.SHORT_TUPLE_DECL;
-	}
-	
-	public GlobalDecl(TupleInit ti, boolean semicolon) {
-		tupleInit = ti;
-		hasSemicolon = semicolon;
-		type = Type.TUPLE_INIT;
 	}
 	
 	public boolean isConst() {
@@ -70,16 +56,12 @@ public class GlobalDecl implements Decl {
 		return varDecl;
 	}
 
-	public VarInit getVarInit() {
-		return varInit;
+	public SimpleVarInit getSimpleVarInit() {
+		return simpleVarInit;
 	}
 
 	public ShortTupleDecl getShortTupleDecl() {
 		return shortTupleDecl;
-	}
-
-	public TupleInit getTupleInit() {
-		return tupleInit;
 	}
 
 	@Override
@@ -93,18 +75,11 @@ public class GlobalDecl implements Decl {
 		case SHORT_TUPLE_DECL:
 			shortTupleDecl.prettyPrintNode();
 			break;
-		case TUPLE_INIT:
-			tupleInit.prettyPrintNode();
+		case SIMPLE_VAR_INIT:
+			simpleVarInit.prettyPrintNode();
 			break;
 		case VAR_DECL:
 			varDecl.prettyPrintNode();
-			break;
-		case VAR_INIT:
-			if (isConst) {
-				CodeWriterSExpPrinter tempPrinter = GlobalPrettyPrinter.getInstance();
-				tempPrinter.printAtom("const");
-			}
-			varInit.prettyPrintNode();
 			break;
 		}
 	}

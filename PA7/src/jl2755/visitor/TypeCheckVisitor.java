@@ -1,11 +1,11 @@
 package jl2755.visitor;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.Stack;
 
 import jl2755.Main;
@@ -36,6 +36,7 @@ public class TypeCheckVisitor implements ASTVisitor {
 	private boolean isInClass = false;	// Needed for this keyword
 	private boolean isInFunctionDecl = false; // Needed for this keyword
 	private int whileCount;				// number of nested while loops we're currently in
+	private Set<String> labelSet;
 	
 	/**
 	 * Creates a TypeCheckVisitor instance
@@ -44,6 +45,7 @@ public class TypeCheckVisitor implements ASTVisitor {
 	public TypeCheckVisitor(Environment initial_env){
 		env = initial_env;
 		stack = new Stack<String>();
+		labelSet = new HashSet<String>();
 		whileCount = 0;
 	}
 	
@@ -1392,6 +1394,19 @@ public class TypeCheckVisitor implements ASTVisitor {
 	@Override
 	public void visit(WhileStmt ws) {
 		whileCount++;
+		if (ws.hasLabel()) {
+			String label = ws.getLabel().getName();
+			// error if the label already exists
+			if (labelSet.contains(label)) {
+				String s = "Duplicate label found";
+				SemanticErrorObject seo = new SemanticErrorObject(
+						ws.getLabel().getLine(), 
+						ws.getLabel().getCol(),
+						s);
+				Main.handleSemanticError(seo);		
+			} 
+			labelSet.add(ws.getLabel().getName());
+		}
 		
 		ws.getExpr().accept(this);
 		VType exprType = tempType;
@@ -1526,14 +1541,11 @@ public class TypeCheckVisitor implements ASTVisitor {
 		case SHORT_TUPLE_DECL:
 			gd.getShortTupleDecl().accept(this);
 			break;
-		case TUPLE_INIT:
-			gd.getTupleInit().accept(this);
-			break;
 		case VAR_DECL:
 			gd.getVarDecl().accept(this);
 			break;
-		case VAR_INIT:
-			gd.getVarInit().accept(this);
+		case SIMPLE_VAR_INIT:
+			gd.getSimpleVarInit().accept(this);
 			break;
 		}
 	}
@@ -1583,6 +1595,70 @@ public class TypeCheckVisitor implements ASTVisitor {
 			env.put(id.getTheValue(), type);
 			stack.push(id.getTheValue());
 		}
+	}
+
+	@Override
+	public void visit(FieldDecl fieldDecl) {
+		switch(fieldDecl.getType()) {
+		case SHORT_TUPLE_DECL:
+			fieldDecl.getShortTupleDecl().accept(this);
+			break;
+		case VAR_DECL:
+			fieldDecl.getVarDecl().accept(this);
+			break;
+		}
+	}
+
+	@Override
+	public void visit(SimpleVarInit simpleVarInit) {
+		// make sure that id is not in env
+		Identifier id = simpleVarInit.getIdentifier();
+		if (env.containsVar(id.getTheValue())) {
+			String s = id.toString() + " is already declared";
+			SemanticErrorObject seo = new SemanticErrorObject(
+					id.getLineNumber(),id.getColumnNumber(),s);
+			Main.handleSemanticError(seo);
+		}
+		
+		// make sure that type is valid
+		VType leftType;
+		Type type = simpleVarInit.getType();
+		String className = ((Identifier)type).getTheValue();
+		if (type instanceof Identifier) {
+			if (!env.containsClass(className)) {
+				String s = "Name " + className + " cannot be resolved";
+				SemanticErrorObject seo = new SemanticErrorObject(
+						((Identifier)type).getLineNumber(), 
+						((Identifier)type).getColumnNumber(), 
+						s);
+				Main.handleSemanticError(seo);
+			}
+			leftType = env.getClassType(className);
+		} else {
+			leftType = new VarType(type);
+		}
+		
+		// typecheck the statement
+		simpleVarInit.getConstant().accept(this);
+		VType rightType = tempType;
+		
+		if (!leftType.equals(rightType)) {
+			String s = "Expected " + leftType.toString() + ", but found " + rightType.toString();
+			SemanticErrorObject seo = new SemanticErrorObject(
+					simpleVarInit.getIdentifier().getLineNumber(), 
+					simpleVarInit.getIdentifier().getColumnNumber(),
+					s);
+			Main.handleSemanticError(seo);
+		}
+		
+		/* Update env & stack */
+		String idString = simpleVarInit.getIdentifier().toString();
+		env.put(idString, leftType);
+		stack.push(idString);
+		
+		/* Update global variables */
+		stmtType = new UnitType();
+		tempType = new UnitType();
 	}
 	
 	private int checkValidDimensions(VarType idType, IndexedBrackets indexedBrackets, Object o) {
@@ -1690,5 +1766,4 @@ public class TypeCheckVisitor implements ASTVisitor {
 		}
 		return superclasses;
 	}
-	
 }

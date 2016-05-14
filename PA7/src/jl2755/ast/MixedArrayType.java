@@ -14,6 +14,7 @@ import jl2755.visitor.ASTVisitor;
 public class MixedArrayType implements Type {
 	
 	private PrimitiveType p_type;
+	private Identifier o_type;
 	private MixedBrackets mixedBrackets;
 	private Brackets brackets;
 	private MixedArrayType arrayType;
@@ -30,6 +31,18 @@ public class MixedArrayType implements Type {
 		this.p_type = p_type;
 		this.mixedBrackets = mb;
 		index = 1;
+	}
+	
+	public MixedArrayType(Identifier id, Brackets b) {
+		o_type = id;
+		brackets = b;
+		index = 2;
+	}
+	
+	public MixedArrayType(Identifier id, MixedBrackets mb) {
+		o_type = id;
+		mixedBrackets = mb;
+		index = 3;
 	}
 	
 	public void prettyPrintNode() {
@@ -61,11 +74,39 @@ public class MixedArrayType implements Type {
 				list.get(i).prettyPrintNode();
 				tempPrinter.endList();
 			}
+		} else if (index == 2) {
+			n = brackets.getNumBrackets();
+			for (int i = 0; i < n; i++) {
+				tempPrinter.startList();
+				tempPrinter.printAtom("[]");
+			}
+			o_type.prettyPrintNode();
+			for (int i = 0; i < n; i++) {
+				tempPrinter.endList();
+			}
+		} else if (index == 3) {
+			list = mixedBrackets.getContent();
+			for (int i = 0; i < mixedBrackets.getNumBrackets(); i++){
+				tempPrinter.startList();
+				tempPrinter.printAtom("[]");
+			}
+			o_type.prettyPrintNode();
+			for (int i = 0; i < mixedBrackets.getNumBrackets() - list.size(); i++) {
+				tempPrinter.endList();
+			}
+			for (int i = list.size()-1; i >= 0; i--){
+				list.get(i).prettyPrintNode();
+				tempPrinter.endList();
+			}
 		}
 	}
 
 	public PrimitiveType getP_type() {
 		return p_type;
+	}
+	
+	public Identifier getO_type() {
+		return o_type;
 	}
 
 	public void setP_type(PrimitiveType p_type) {

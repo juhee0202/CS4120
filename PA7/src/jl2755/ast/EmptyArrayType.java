@@ -11,9 +11,11 @@ import jl2755.visitor.ASTVisitor;
 public class EmptyArrayType implements Type{
 	
 	private PrimitiveType primitiveType;
+	private Identifier identifier;
 	private Brackets brackets;
 	/**
 	 * 0 if it's a primitive type followed by empty brackets: int[][].
+	 * 1 if it's an object type followed by empty brackets: Animal[][][].
 	 */
 	private int index;
 	
@@ -21,6 +23,12 @@ public class EmptyArrayType implements Type{
 		primitiveType = pt;
 		brackets = b;
 		index = 0;
+	}
+	
+	public EmptyArrayType(Identifier id, Brackets b) {
+		identifier = id;
+		brackets = b;
+		index = 1;
 	}
 
 	@Override
@@ -31,7 +39,13 @@ public class EmptyArrayType implements Type{
 			tempPrinter.startList();
 			tempPrinter.printAtom("[]");
 		}
-		primitiveType.prettyPrintNode();
+		
+		if (index == 0) {
+			primitiveType.prettyPrintNode();
+		} else {
+			identifier.prettyPrintNode();
+		}
+		
 		for (int i = 0; i < numbBrackets; i++){
 			tempPrinter.endList();
 		}
@@ -41,8 +55,8 @@ public class EmptyArrayType implements Type{
 		return primitiveType;
 	}
 
-	public void setPrimitiveType(PrimitiveType primitiveType) {
-		this.primitiveType = primitiveType;
+	public Identifier getClassType() {
+		return identifier;
 	}
 
 	public Brackets getBrackets() {

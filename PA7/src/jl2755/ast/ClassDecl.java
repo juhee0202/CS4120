@@ -59,7 +59,7 @@ public class ClassDecl implements Decl {
 	/**
 	 * @return a list of all fields in the class
 	 */
-	public List<GlobalDecl> getFields() {
+	public List<FieldDecl> getFields() {
 		return classBody.getFields();
 	}
 	

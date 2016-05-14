@@ -10,12 +10,12 @@ import jl2755.type.VType;
 import jl2755.type.VarType;
 
 public class Environment {
-	private Map<String, VType> varMap;
+	private Map<String, VarType> varMap;
 	private Map<String, FunType> funMap;
 	private Map<String, ClassType> classMap;
 	
 	public Environment() {
-		varMap = new HashMap<String, VType>();
+		varMap = new HashMap<String, VarType>();
 		funMap = new HashMap<String, FunType>();
 		classMap = new HashMap<String, ClassType>();
 	}
@@ -28,8 +28,8 @@ public class Environment {
 	public void put(String s, VType type) {
 		if (type instanceof FunType) {
 			funMap.put(s,(FunType)type);
-		} else {
-			varMap.put(s,type);
+		} else if (type instanceof VarType) {
+			varMap.put(s,(VarType) type);
 		}
 	}
 	
@@ -46,7 +46,7 @@ public class Environment {
 	 * @param var
 	 * @return VarType of var if var is in env
 	 */
-	public VType getVarType(String var) {
+	public VarType getVarType(String var) {
 		return varMap.get(var);
 	}
 	

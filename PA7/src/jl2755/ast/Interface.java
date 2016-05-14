@@ -3,6 +3,9 @@ package jl2755.ast;
 import java.util.ArrayList;
 import java.util.List;
 
+import jl2755.type.ClassType;
+import jl2755.type.EmptyClassType;
+
 /**
  * The class to represent Xi interface files denoted by .ixi
  *
@@ -43,5 +46,16 @@ public class Interface extends XiFile {
 			tempList.addAll(useId.getUseFiles());
 		}
 		return tempList;
+	}
+
+	public void replaceAll(EmptyClassType ect, ClassType classType) {
+		List<InterfaceFunc> funcs = intList.getInterfaceFunctions();
+		for (InterfaceClassDecl icd : intList.getInterfaceClasses()) {
+			funcs.addAll(icd.getMethods());
+		}
+		for (InterfaceFunc func : funcs) {
+			
+		}
+		
 	}
 }

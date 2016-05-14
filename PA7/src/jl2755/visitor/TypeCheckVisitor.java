@@ -599,6 +599,9 @@ public class TypeCheckVisitor implements ASTVisitor {
 		}
 	}
 	
+	/**
+	 * DIRTIES stmtType to void type
+	 */
 	@Override
 	public void visit(Break b) {
 		System.out.println("visiting break!");
@@ -608,8 +611,12 @@ public class TypeCheckVisitor implements ASTVisitor {
 					b.getLineNumber(), b.getColumnNumber(), s);
 			Main.handleSemanticError(seo);
 		}
+		stmtType = new VoidType();	// Question: do I dirty tempType?
 	}
 	
+	/**
+	 * DIRTIES stmtType to void type
+	 */
 	@Override
 	public void visit(Continue c) {
 		System.out.println("visiting continue!");
@@ -619,6 +626,7 @@ public class TypeCheckVisitor implements ASTVisitor {
 					c.getLineNumber(), c.getColumnNumber(), s);
 			Main.handleSemanticError(seo);
 		}
+		stmtType = new VoidType();
 	}
 
 	/**

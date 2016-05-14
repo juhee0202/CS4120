@@ -29,7 +29,7 @@ public class TypeCheckVisitor implements ASTVisitor {
 	private Stack<String> stack;		// "_": special marker
 	private VType tempType;
 	private VType stmtType;				// either UnitType or VoidType
-	private ClassType classType; 		// current class's type that we're typechecking 
+	private ClassType classEnv; 		// current class's type that we're typechecking 
 										// -> dirtied by visit(ClassDecl)
 	private VType functionReturnType;
 	private boolean negativeNumber = false; // needed for UnaryExpr, Literal
@@ -643,10 +643,15 @@ public class TypeCheckVisitor implements ASTVisitor {
 			}
 			tempType = new VarType(false, 0);
 			fc.setType(tempType);
+			stmtType = new UnitType();
+			return;
 		}
 		
+		VType paramType;
+		FunType funType = null;
+		
 		/* id() or id(args) */
-		else if (index < 2) {
+		if (index < 2) {
 			String id = fc.getIdentifier().toString();
 			// check if the function is declared
 			if (!env.containsFun(id)) {
@@ -656,36 +661,10 @@ public class TypeCheckVisitor implements ASTVisitor {
 				Main.handleSemanticError(seo);
 			}
 			
-			FunType funType = env.getFunType(id);
+			funType = env.getFunType(id);
 			String ABIName = functionToABIName(id, funType);
 			fc.setABIName(ABIName);
-			VType paramType = funType.getParamTypes();
-			VType args;
-			
-			// Case: id()
-			if (index == 0) {
-				args = new UnitType();
-				if (!args.equals(paramType)) {
-					String s = "Expected " + paramType.toString() + ", but found unit";
-					SemanticErrorObject seo = new SemanticErrorObject(
-							fc.getIdentifier_line(), fc.getIdentifier_col(), s);
-					Main.handleSemanticError(seo);
-				}
-			}
-			// Case: id(funtionArg)
-			else if (index == 1) {
-				fc.getFunctionArg().accept(this);
-				args = tempType;
-				if (!args.equals(paramType)) {
-					String s = "Expected " + paramType.toString() + ", but found " + args.toString();
-					SemanticErrorObject seo = new SemanticErrorObject(
-							fc.getIdentifier_line(), fc.getIdentifier_col(), s);
-					Main.handleSemanticError(seo);
-				}
-			}
-			
-			tempType = funType.getReturnTypes();
-			fc.setType(tempType);
+			paramType = funType.getParamTypes();
 		}
 		
 		/* dotableExpr.id() or dotableExpr.id(args) */
@@ -704,17 +683,52 @@ public class TypeCheckVisitor implements ASTVisitor {
 			String methodName = fc.getIdentifier().getTheValue();
 			
 			// check if methodName is valid
-			
+			List<String> superclasses = getSuperClasses(dotableExprType.getClassName());
+			for (String superclass : superclasses) {
+				ClassType superclassType = env.getClassType(superclass);
+				if (superclassType.containsMethod(methodName)) {
+					funType = superclassType.getMethodType(methodName);
+					break;
+				}
+			}
+			if (funType == null) {
+				String s = "Method " + methodName + " is not defined";
+				SemanticErrorObject seo = new SemanticErrorObject(
+						fc.getIdentifier_line(), fc.getIdentifier_col(), s);
+				Main.handleSemanticError(seo);
+			}
+
+			String ABIName = functionToABIName(methodName, funType);
+			fc.setABIName(ABIName);
+			paramType = funType.getParamTypes();
 		}
 		
+		VType args;
+		// no args
+		if (index == 0 || index == 3) {
+			args = new UnitType();
+			if (!args.equals(paramType)) {
+				String s = "Expected " + paramType.toString() + ", but found unit";
+				SemanticErrorObject seo = new SemanticErrorObject(
+						fc.getIdentifier_line(), fc.getIdentifier_col(), s);
+				Main.handleSemanticError(seo);
+			}
+		}
+		// args
+		else if (index == 1 || index == 4) {
+			fc.getFunctionArg().accept(this);
+			args = tempType;
+			if (!args.equals(paramType)) {
+				String s = "Expected " + paramType.toString() + ", but found " + args.toString();
+				SemanticErrorObject seo = new SemanticErrorObject(
+						fc.getIdentifier_line(), fc.getIdentifier_col(), s);
+				Main.handleSemanticError(seo);
+			}
+		}
 		
-		
-		
-
-		
-		
-		
-		stmtType = new UnitType();
+		tempType = funType.getReturnTypes();
+		fc.setType(tempType);
+		stmtType = new UnitType();		
 	}
 
 	/**
@@ -845,7 +859,7 @@ public class TypeCheckVisitor implements ASTVisitor {
 		if (!(is.getStmt1().getNakedStmt() instanceof BlockStmt)) {
 			String id = stack.pop();
 			while (!id.equals("_")) {
-				env.remove(id);
+				env.removeVar(id);	// precondition: stack only contains Variables
 				id = stack.pop();
 			}
 		}
@@ -866,7 +880,7 @@ public class TypeCheckVisitor implements ASTVisitor {
 				// Pop out of scope
 				String id = stack.pop();
 				while (!id.equals("_")) {
-					env.remove(id);
+					env.removeVar(id);
 					id = stack.pop();
 				}
 			}
@@ -1413,7 +1427,7 @@ public class TypeCheckVisitor implements ASTVisitor {
 
 	@Override
 	public void visit(ClassDecl cd) {
-		classEnv = env.get(cd.getClassName().toString());
+		classEnv = env.getClassType(cd.getClassName().toString());
 		cd.getClassBody().accept(this);
 	}
 
@@ -1575,6 +1589,10 @@ public class TypeCheckVisitor implements ASTVisitor {
 				assert(!(tt instanceof UnitType));
 				ABIString += translateVTypeToABIString(tt);
 			}
+		} else if (t instanceof ClassType) {
+			String className = ((ClassType) t).getClassName();
+			int len = className.length();
+			ABIString += "o" + len + className; 
 		}
 		
 		return ABIString;
@@ -1604,6 +1622,11 @@ public class TypeCheckVisitor implements ASTVisitor {
 		
 		return ABIName + returnTypeString + paramTypesString;
 	}
+	
+	private List<String> getSuperClasses(String currClassName) {
+		List<String> superclasses = new ArrayList<String>();
+		return getSuperClasses(currClassName, superclasses);
+	}
 
 	/**
 	 * 
@@ -1611,10 +1634,14 @@ public class TypeCheckVisitor implements ASTVisitor {
 	 * @return list of superclasses in order of most immediate superclass to
 	 * highest superclass
 	 */
-	private List<String> getSuperClasses(String currentClass) {
-		// TODO
-//		List<String> superclasses = new ArrayList<String>();
-//		return superclasses;
+	private List<String> getSuperClasses(String currClassName, List<String> superclasses) {
+		ClassType ct = env.getClassType(currClassName);
+		String superName = ct.getSuperClassName();
+		if (superName != null) {
+			superclasses.add(superName);
+			getSuperClasses(superName, superclasses);
+		}
+		return superclasses;
 	}
 	
 }

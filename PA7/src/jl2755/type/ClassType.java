@@ -161,6 +161,14 @@ public class ClassType implements VType{
 	}
 	
 	/**
+	 * @param methodName
+	 * @return true if methodName is in methodEnv
+	 */
+	public boolean containsMethod(String methodName) {
+		return methodEnv.containsKey(methodName);
+	}
+	
+	/**
 	 * 
 	 * @param argClassType
 	 * @return returns true if 

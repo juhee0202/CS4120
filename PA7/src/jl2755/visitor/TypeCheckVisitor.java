@@ -33,6 +33,7 @@ public class TypeCheckVisitor implements ASTVisitor {
 										// -> dirtied by visit(ClassDecl)
 	private VType functionReturnType;
 	private boolean negativeNumber = false; // needed for UnaryExpr, Literal
+	private int whileCount;				// number of nested while loops we're currently in
 	
 	/**
 	 * Creates a TypeCheckVisitor instance
@@ -41,6 +42,7 @@ public class TypeCheckVisitor implements ASTVisitor {
 	public TypeCheckVisitor(Environment initial_env){
 		env = initial_env;
 		stack = new Stack<String>();
+		whileCount = 0;
 	}
 	
 	/**
@@ -592,6 +594,28 @@ public class TypeCheckVisitor implements ASTVisitor {
 		while (!id.equals("_")) {
 			env.removeVar(id);
 			id = stack.pop();
+		}
+	}
+	
+	@Override
+	public void visit(Break b) {
+		System.out.println("visiting break!");
+		if (whileCount == 0) {
+			String s = "break cannot be used outside of a loop";
+			SemanticErrorObject seo = new SemanticErrorObject(
+					b.getLineNumber(), b.getColumnNumber(), s);
+			Main.handleSemanticError(seo);
+		}
+	}
+	
+	@Override
+	public void visit(Continue c) {
+		System.out.println("visiting continue!");
+		if (whileCount == 0) {
+			String s = "continue cannot be used outside of a loop";
+			SemanticErrorObject seo = new SemanticErrorObject(
+					c.getLineNumber(), c.getColumnNumber(), s);
+			Main.handleSemanticError(seo);
 		}
 	}
 
@@ -1340,6 +1364,8 @@ public class TypeCheckVisitor implements ASTVisitor {
 	 */
 	@Override
 	public void visit(WhileStmt ws) {
+		whileCount++;
+		
 		ws.getExpr().accept(this);
 		VType exprType = tempType;
 		Type b = new PrimitiveType(1);
@@ -1368,11 +1394,12 @@ public class TypeCheckVisitor implements ASTVisitor {
 		if (!(ws.getStmt().getNakedStmt() instanceof BlockStmt)) {
 			String id = stack.pop();
 			while (!id.equals("_")) {
-				env.remove(id);
+				env.removeVar(id);
 				id = stack.pop();
 			}
 		}
-
+		
+		whileCount--;
 	}
 	
 	@Override

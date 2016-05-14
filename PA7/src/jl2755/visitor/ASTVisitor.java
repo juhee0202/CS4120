@@ -9,8 +9,10 @@ public interface ASTVisitor {
 	public void visit(AssignmentStmt as);
 	public void visit(BinaryExpr be);
 	public void visit(BlockStmt bs);
+	public void visit(Break br);
 	public void visit(ClassBody cb);
 	public void visit(ClassDecl cd);
+	public void visit(Continue cn);
 	public void visit(DotableExpr de);
 	public void visit(FunctionArg fa);
 	public void visit(FunctionCall fc);

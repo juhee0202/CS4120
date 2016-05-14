@@ -1503,6 +1503,7 @@ public class TypeCheckVisitor implements ASTVisitor {
 			
 			// put it in the env
 			env.put(id.getTheValue(), type);
+			stack.push(id.getTheValue());
 		}
 	}
 	

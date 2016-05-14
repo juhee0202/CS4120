@@ -111,6 +111,29 @@ public class FunType implements VType {
 		this.returnTypes = returnTypes;
 	}
 	
+	/**
+	 * Replaces all usage of ect with ct
+	 * @param ect
+	 * @param ct
+	 */
+	public void replaceAll(EmptyClassType ect, ClassType ct) {
+		// replace usage in param
+		if (paramTypes instanceof EmptyClassType && paramTypes.equals(ect)) {
+			paramTypes = ct;
+		} else if (paramTypes instanceof TupleType) {
+			TupleType tt = (TupleType)paramTypes;
+			tt.replaceAll(ect, ct);
+		}
+		
+		// replace usage in return
+		if (returnTypes instanceof EmptyClassType && returnTypes.equals(ect)) {
+			returnTypes = ct;
+		} else if (returnTypes instanceof TupleType) {
+			TupleType tt = (TupleType)returnTypes;
+			tt.replaceAll(ect, ct);
+		}
+	}
+	
 	@Override
 	public boolean equals(Object o) {
 		if (!(o instanceof FunType)) {

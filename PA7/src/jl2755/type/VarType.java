@@ -169,4 +169,9 @@ public class VarType implements VType {
 	public boolean canDot() {
 		return false;
 	}
+
+	@Override
+	public boolean singleReturn() {
+		return true;
+	}
 }

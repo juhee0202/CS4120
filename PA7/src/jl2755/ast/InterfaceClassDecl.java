@@ -1,5 +1,8 @@
 package jl2755.ast;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class InterfaceClassDecl {
 	private Identifier className;
 	private Identifier superclassName;
@@ -36,8 +39,11 @@ public class InterfaceClassDecl {
 		return intClassBody;
 	}
 
-	public void setIntClassBody(InterfaceClassBody intClassBody) {
-		this.intClassBody = intClassBody;
+	/**
+	 * @return a list of InterfaceFuncs in the class
+	 */
+	public List<InterfaceFunc> getMethods() {
+		return intClassBody.getMethods();
 	}
 	
 	@Override

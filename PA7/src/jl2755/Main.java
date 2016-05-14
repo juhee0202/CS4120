@@ -59,6 +59,7 @@ import jl2755.optimization.Optimization;
 import jl2755.optimization.UnreachableCodeEliminator;
 import jl2755.type.ClassType;
 import jl2755.type.FunType;
+import jl2755.type.TupleType;
 import jl2755.type.VType;
 import jl2755.visitor.ConstantFolderVisitor;
 import jl2755.visitor.Environment;
@@ -512,8 +513,9 @@ public class Main {
 					fileToSymbol.put(filename, s);
 				}
 				program = (Program) s.value;
-				TypeCheckVisitor typeCheck = new TypeCheckVisitor();
-				program.accept(typeCheck);
+				Environment env = checkInterfaces(program, filename);
+				TypeCheckVisitor visitor = new TypeCheckVisitor(env);
+				program.accept(visitor);
 				
 				/* Constant Folding */
 				if (enabled[CF]) {
@@ -694,8 +696,9 @@ public class Main {
 						fileToSymbol.put(filename, s);
 					}
 					program = (Program) s.value;
-					TypeCheckVisitor typeCheck = new TypeCheckVisitor();
-					program.accept(typeCheck);
+					Environment env = checkInterfaces(program, filename);
+					TypeCheckVisitor visitor = new TypeCheckVisitor(env);
+					program.accept(visitor);
 					
 					/* Constant Folding */
 					if (enabled[CF]) {
@@ -777,8 +780,9 @@ public class Main {
 					fileToSymbol.put(filename, s);
 				}
 				program = (Program) s.value;
-				TypeCheckVisitor typeCheck = new TypeCheckVisitor();
-				program.accept(typeCheck);
+				Environment env = checkInterfaces(program, filename);
+				TypeCheckVisitor visitor = new TypeCheckVisitor(env);
+				program.accept(visitor);
 				
 				/* Constant Folding */
 				if (enabled[CF]) {
@@ -989,7 +993,7 @@ public class Main {
 		Queue<String> toCheck = new LinkedList<String>();
 		Map<String, Interface> stringToInterface = new HashMap<String, Interface>();
 		Map<String, Environment> interfaceToPublic = new HashMap<String, Environment>();
-		Map<String, Set<String>> interfaceToUnresolved = new HashMap<String, Set<String>>();
+		Map<String, Set<EmptyClassType>> interfaceToUnresolved = new HashMap<String, Set<EmptyClassType>>();
 		
 		// Add all uses to toCheck
 		toCheck.addAll(program.getUseFiles());
@@ -1001,7 +1005,7 @@ public class Main {
 		while (!toCheck.isEmpty()) {
 			String nextFile = toCheck.poll();
 			if (checked.contains(nextFile)) continue;
-			Set<String> unresolved = new HashSet<String>();
+			Set<EmptyClassType> unresolved = new HashSet<String>();
 			Environment env = checkInterface(nextFile, checked, toCheck, unresolved, stringToInterface);
 			interfaceToPublic.put(nextFile, env);
 			interfaceToUnresolved.put(nextFile, unresolved);
@@ -1011,7 +1015,7 @@ public class Main {
 		Environment initialEnv = new Environment();
 		for (String s : checked) {
 			if (interfaceToUnresolved.containsKey(s)) {
-				for (String unresolved : interfaceToUnresolved.get(s)) {
+				for (EmptyClassType unresolved : interfaceToUnresolved.get(s)) {
 					resolveTypes(stringToInterface.get(s),unresolved,interfaceToPublic);
 				}
 			}
@@ -1027,9 +1031,15 @@ public class Main {
 	 * @param s						the unresolved type
 	 * @param interfaceToPublic		the map of interface name to its module
 	 */
-	public static void resolveTypes(Interface i, String s, Map<String, Environment> interfaceToPublic) {
+	public static void resolveTypes(Interface i, EmptyClassType ect, Map<String, Environment> interfaceToPublic) {
+		String name = ect.getName();
+		if (interfaceToPublic.get(i.toString()).containsClass(name)) {
+			return;
+		}
 		for (String use : i.getUseFiles()) {
-			if (interfaceToPublic.get(use).containsClass(s)) {
+			if (interfaceToPublic.get(use).containsClass(ect)) {
+				// TODO: replace emptyclasstype with classtype in the funtype
+				i.replaceAll(ect, interfaceToPublic.get(use).getClassType(name));
 				return;
 			}
 		}
@@ -1045,7 +1055,7 @@ public class Main {
 	 */
 	public static Environment checkInterface(String interfaceName,
 								Set<String> checked, Queue<String> toCheck,
-								Set<String> unresolved, Map<String, Interface> sTI){
+								Set<EmptyClassType> unresolved, Map<String, Interface> sTI){
 		String absPath = libPath + interfaceName + ".ixi";
 		Environment env = new Environment();
 		try {
@@ -1077,6 +1087,7 @@ public class Main {
 						handleSemanticError(seo);
 					}
 				}
+				unresolved.addAll(checkUnresolved(tempType));
 				env.put(name, tempType);
 			} 
 			
@@ -1095,6 +1106,7 @@ public class Main {
 						handleSemanticError(seo);
 					}
 				}
+				unresolved.addAll(checkUnresolved(tempType));
 				env.put(name, tempType);
 			}
 			
@@ -1115,6 +1127,53 @@ public class Main {
 			e.printStackTrace();
 		}
 		return env;
+	}
+	
+	/**
+	 * Checks for any unresolved types in the given function declaration
+	 * 
+	 * @param funType	the given FunType to check for unresolved types
+	 * @return			a set of unresolved types as strings
+	 */
+	public static Set<EmptyClassType> checkUnresolved(FunType funType) {
+		VType params = funType.getParamTypes();
+		VType returns = funType.getReturnTypes();
+		Set<EmptyClassType> result = new HashSet<EmptyClassType>();
+		
+		if (params instanceof EmptyClassType) {
+			result.add(params);
+		} else if (params instanceof TupleType) {
+			for (VType type : ((TupleType) params).getTypes()) {
+				if (type instanceof EmptyClassType) {
+					result.add(type);
+				}
+			}
+		}
+		
+		if (returns instanceof EmptyClassType) {
+			result.add(returns);
+		} else if (returns instanceof TupleType) {
+			for (VType type : ((TupleType) returns).getTypes()) {
+				if (type instanceof EmptyClassType) {
+					result.add(type);
+				}
+			}
+		}
+		return result;
+	}
+	
+	/**
+	 * Checks for any unresolved types in the given class declaration
+	 * 
+	 * @param classType	the given ClassType to check for unresolved types
+	 * @return			a set of unresolved types as strings
+	 */
+	public static Set<EmptyClassType> checkUnresolved(ClassType classType) {
+		Set<EmptyClassType> result = new HashSet<EmptyClassType>();
+		for (FunType funType : classType.getMethodEnv().values()) {
+			result.addAll(checkUnresolved(funType));
+		}
+		return result;
 	}
 
 	/**

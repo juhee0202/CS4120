@@ -16,13 +16,68 @@ import jl2755.ast.*;
 public class ClassType implements VType{
 
 	String className;
+	String superClassName;
 	HashMap<String, VType> fieldEnv;
 	HashMap<String, FunType> methodEnv; 
 
-	public ClassType(String name, HashMap<String, VType> fe, HashMap<String, FunType> me) {
-		className = name;
-		fieldEnv = fe;
-		methodEnv = me;
+	public ClassType(InterfaceClassDecl intClassDecl) {
+		className = intClassDecl.getClassName().getTheValue();
+		superClassName = intClassDecl.getSuperclassName().getTheValue();
+		fieldEnv = null;
+		methodEnv = new HashMap<String, FunType>();
+		List<InterfaceFunc> methods = intClassDecl.getMethods();
+		for (InterfaceFunc method: methods) {
+			methodEnv.put(method.getIdentifier().toString(), new FunType(method));
+		}
+	}
+	
+	public ClassType(ClassDecl classDecl) {
+		className = classDecl.getClassName().getTheValue();
+		superClassName = classDecl.getSuperclassName().getTheValue();
+		fieldEnv = new HashMap<String, VType>();
+		methodEnv = new HashMap<String, FunType>();
+		
+		List<GlobalDecl> fields = classDecl.getFields();
+		List<FunctionDecl> methods = classDecl.getMethods();
+		
+		for (GlobalDecl field: fields) {
+			String fieldName;
+			VType fieldType;
+			
+			switch (field.getType()) {
+			case VAR_DECL:
+				VarDecl varDecl = field.getVarDecl();
+				fieldName = varDecl.getIdentifier().toString();
+				fieldType = new VarType(varDecl);
+				fieldEnv.put(fieldName, fieldType);
+				break;
+			case VAR_INIT:
+				// this should actually just be a duplicate add.. could get rid of it
+				VarInit varInit = field.getVarInit();
+				fieldName = varInit.getId().toString();
+				fieldType = new VarType(varInit.getVarDecl());
+				fieldEnv.put(fieldName, fieldType);
+				break;
+			case SHORT_TUPLE_DECL:
+				ShortTupleDecl tupleDecl = field.getShortTupleDecl();
+				for (Identifier id: tupleDecl.getAllIdentifiers()) {
+					fieldName = id.getTheValue();
+					fieldType = new VarType(tupleDecl.getType());
+					fieldEnv.put(fieldName, fieldType);
+				}
+				break;
+			case TUPLE_INIT:
+				TupleInit tupleInit = field.getTupleInit();
+				break;
+			default:
+				break;
+			}
+			
+		}
+		
+		for (FunctionDecl method: methods) {
+			methodEnv.put(method.getIdentifier().toString(), new FunType(method));
+		}
 	}
 
 	public String getClassName() {
@@ -33,6 +88,14 @@ public class ClassType implements VType{
 		this.className = className;
 	}
 
+	public String getSuperClassName() {
+		return superClassName;
+	}
+	
+	public void setSuperClassName(String superName) {
+		superClassName = superName;
+	}
+	
 	public HashMap<String, VType> getFieldEnv() {
 		return fieldEnv;
 	}
@@ -50,51 +113,72 @@ public class ClassType implements VType{
 	}
 	
 	/**
-	 * @param name: name of class member (including field & method)
-	 * @return the VType of the member. 
-	 * Returns null if the member does not exist in the class environment
+	 * @param name: name of class field
+	 * @return the VType of the field. 
+	 * Returns null if the field does not exist in the class environment
 	 */
-	public VType getType(String name) {
+	public VType getFieldType(String name) {
+		// TODO
 		VType fieldType = fieldEnv.get(name);
-		if (fieldType != null) {
-			return fieldType;
+		return fieldType;
+	}
+	
+	/**
+	 * 
+	 * @param name: name of the field
+	 * @param type: type of the field that you're trying to add to class env
+	 * @return: returns 1 if successfully added, otherwise 0
+	 */
+	public int addFieldType(String name, VType type) {
+		if (type instanceof VarType || type instanceof ClassType) {
+			fieldEnv.put(name,  (FunType) type);
+			return 0;
 		}
-		
-		VType methodType = methodEnv.get(name);
+		else {
+			return 1;
+		}
+	}
+	
+	/**
+	 * @param name: name of class field
+	 * @return the VType of the field. 
+	 * Returns null if the field does not exist in the class environment
+	 */
+	public FunType getMethodType(String name) {
+		FunType methodType = methodEnv.get(name);
 		return methodType;
 	}
 	
 	/**
 	 * 
-	 * @param name: name of the member
-	 * @param type: type of the member that you're trying to add to class env
+	 * @param name: name of the method
+	 * @param type: type of the method that you're trying to add to class env
 	 * @return: returns 1 if successfully added, otherwise 0
 	 */
-	public int addType(String name, VType type) {
-		// add method
-		if (type instanceof FunType) {
-			methodEnv.put(name, (FunType) type);
-		} 
-		// add class field
-		else if (type instanceof VarType || type instanceof ClassType) {
-			fieldEnv.put(name, type);
-		}
-		else {
-			// should raise error wherever this function was
-			// called because incorrect type to add to class env
-			return 0;
-		}
-		return 1;
+	public int addMethodType(String name, FunType type) {
+		methodEnv.put(name,  type);
+		return 0;
 	}
 	
-	@Override
-	public boolean equals(Object o) {
-		if (!(o instanceof ClassType)) {
+	/**
+	 * 
+	 * @param argClassType
+	 * @return returns true if 
+	 * 		1) class names are the same 
+	 * 		2) same superclass
+	 * 		3) all method signatures match exactly
+	 * 		4) number of methods are equal
+	 */
+	public boolean compareClassSignatures(ClassType argClassType) {
+		
+		// if class names are different, return false
+		if (!argClassType.getClassName().equals(className)) {
 			return false;
 		}
 		
-		ClassType argClassType = (ClassType) o;
-		if (!argClassType.getClassName().equals(className)) {
+		// if they extend different superclasses, return false
+		String argSuperClassName = argClassType.getSuperClassName();
+		if (!argSuperClassName.equals(superClassName)) {
 			return false;
 		}
 		
@@ -124,4 +208,8 @@ public class ClassType implements VType{
 	
 	}
 
+	@Override
+	public boolean canDot() {
+		return true;
+	}
 }

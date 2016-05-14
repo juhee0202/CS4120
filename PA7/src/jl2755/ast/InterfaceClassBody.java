@@ -1,5 +1,8 @@
 package jl2755.ast;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class InterfaceClassBody {
 	private InterfaceFunc intFunc;
 	private InterfaceClassBody intClassBody;
@@ -23,7 +26,12 @@ public class InterfaceClassBody {
 		return intClassBody;
 	}
 
-	public void setIntClassBody(InterfaceClassBody intClassBody) {
-		this.intClassBody = intClassBody;
+	public List<InterfaceFunc> getMethods() {
+		List<InterfaceFunc> methods = new ArrayList<InterfaceFunc>();
+		methods.add(intFunc);
+		if (intClassBody != null) {
+			methods.addAll(intClassBody.getMethods());
+		}
+		return methods;
 	}
 }

@@ -1042,7 +1042,6 @@ public class Main {
 		}
 		for (String use : i.getUseFiles()) {
 			if (interfaceToPublic.get(use).containsClass(name)) {
-				// TODO: replace emptyclasstype with classtype in the funtype
 				replaceAll(ect, interfaceToPublic.get(use).getClassType(name),
 							file, interfaceToPublic);
 				return;
@@ -1198,6 +1197,10 @@ public class Main {
 		Set<EmptyClassType> result = new HashSet<EmptyClassType>();
 		for (FunType funType : classType.getMethodEnv().values()) {
 			result.addAll(checkUnresolved(funType));
+		}
+		if (classType.getSuperClassName() != null) {
+			EmptyClassType superClass = new EmptyClassType(classType.getSuperClassName());
+			result.add(superClass);
 		}
 		return result;
 	}

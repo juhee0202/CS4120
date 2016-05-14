@@ -341,10 +341,10 @@ public class TypeCheckVisitor implements ASTVisitor {
 				Main.handleSemanticError(seo);
 			}
 			
-			// get the VType of left hand side
+			// get the VarType of left hand side
 			VarType idType = env.getVarType(id);
 			
-			// get the VType of right hand side
+			// get the VarType of right hand side
 			as.getExpr().accept(this);
 			VType exprType = tempType;
 			

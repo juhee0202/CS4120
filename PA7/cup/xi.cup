@@ -335,9 +335,9 @@ naked_stmt ::= assignment_stmt:ass                                  {: RESULT = 
                | 
                tuple_init:ti                                        {: RESULT = ti; :}
                |
-               BREAK:b                                              {: RESULT = new Break(); :}
+               BREAK:b                                              {: RESULT = new Break(bleft, bright); :}
                |
-               CONTINUE:c                                           {: RESULT = new Continue(); :}
+               CONTINUE:c                                           {: RESULT = new Continue(cleft, cright); :}
                ;
 
 op_expr ::= MINUS:m expr:e                                          {: RESULT = new UnaryExpr(e, UnaryOp.INT_NEG, mleft, mright); :} %prec UMINUS

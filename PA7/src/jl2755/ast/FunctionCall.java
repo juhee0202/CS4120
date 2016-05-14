@@ -10,10 +10,6 @@ import jl2755.visitor.ASTVisitor;
 
 /**
  *	Represents the function call
- *	index
- *	- 0: identifier()
- *	- 1: identifier(functionArg)
- *	- 2: length(e)
  */
 public class FunctionCall implements Expr,NakedStmt {
 	private String ABIName;
@@ -34,8 +30,8 @@ public class FunctionCall implements Expr,NakedStmt {
 	 * 0: id()
 	 * 1: id(...)
 	 * 2: length(e)
-	 * 3: dotableExpr()
-	 * 4: dotableExpr(...)
+	 * 3: dotableExpr.id()
+	 * 4: dotableExpr.id(...)
 	 */
     private int index;
     private VType type;
@@ -251,5 +247,29 @@ public class FunctionCall implements Expr,NakedStmt {
 
 	public void setNumReturns(int numReturns) {
 		this.numReturns = numReturns;
+	}
+
+	public DotableExpr getDotableExpr() {
+		return dotableExpr;
+	}
+
+	public void setDotableExpr(DotableExpr dotableExpr) {
+		this.dotableExpr = dotableExpr;
+	}
+
+	public int getDotableExpr_col() {
+		return dotableExpr_col;
+	}
+
+	public void setDotableExpr_col(int dotableExpr_col) {
+		this.dotableExpr_col = dotableExpr_col;
+	}
+
+	public int getDotableExpr_line() {
+		return dotableExpr_line;
+	}
+
+	public void setDotableExpr_line(int dotableExpr_line) {
+		this.dotableExpr_line = dotableExpr_line;
 	}
 }

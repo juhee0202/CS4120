@@ -1798,7 +1798,7 @@ class CUP$parser$actions {
                 int labelNameleft = CUP$parser$stack.elementAt(CUP$parser$top-1).left;
                 int labelNameright = CUP$parser$stack.elementAt(CUP$parser$top-1).right;
                 Identifier labelName = CUP$parser$stack.elementAt(CUP$parser$top-1).<Identifier> value();
-                 RESULT = new Label(labelName.getTheValue()); 
+                 RESULT = new Label(labelName.getTheValue(), labelNameleft, labelNameright); 
                 CUP$parser$result = parser.getSymbolFactory().newSymbol("label",23, CUP$parser$stack.elementAt(CUP$parser$top-1), CUP$parser$stack.peek(), RESULT);
             }
             return CUP$parser$result;

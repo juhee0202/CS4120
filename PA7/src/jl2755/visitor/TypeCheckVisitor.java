@@ -145,7 +145,7 @@ public class TypeCheckVisitor implements ASTVisitor {
 						);
 				Main.handleSemanticError(seo);
 			}
-			tempType = new VarType(varTypeView.getIsBool(), varTypeView.getNumBrackets() - numberOfBrackets);
+			tempType = new VarType(varTypeView.getElementType(), varTypeView.getNumBrackets() - numberOfBrackets);
 		}
 		else if (index == 1){
 			ae.getFunctionCall().accept(this);
@@ -170,9 +170,8 @@ public class TypeCheckVisitor implements ASTVisitor {
 						);
 				Main.handleSemanticError(seo);
 			}
-			boolean oldIsBool = arrayTypeAfterVisit.getIsBool();
 			int oldNumBrackets = arrayTypeAfterVisit.getNumBrackets();
-			tempType = new VarType(oldIsBool, oldNumBrackets - numberOfBrackets);
+			tempType = new VarType(arrayTypeAfterVisit.getElementType(), oldNumBrackets - numberOfBrackets);
 		}
 		else if (index == 2){
 			ae.getArrayLiteral().accept(this);
@@ -197,9 +196,8 @@ public class TypeCheckVisitor implements ASTVisitor {
 						);
 				Main.handleSemanticError(seo);
 			}
-			boolean oldIsBool = arrayTypeAfterVisit.getIsBool();
 			int oldNumBrackets = arrayTypeAfterVisit.getNumBrackets();
-			tempType = new VarType(oldIsBool, oldNumBrackets - numberOfBrackets);
+			tempType = new VarType(arrayTypeAfterVisit.getElementType(), oldNumBrackets - numberOfBrackets);
 		}
 	}
 
@@ -210,7 +208,7 @@ public class TypeCheckVisitor implements ASTVisitor {
 	public void visit(ArrayElementList ael) {
 		List<Expr> tempExprs = ael.getAllExprInArray();
 		if (tempExprs.size() == 0) {
-			tempType = new VarType(false,0);
+			tempType = new VarType("int",0);
 			return;
 		}
 		tempExprs.get(0).accept(this);
@@ -243,7 +241,7 @@ public class TypeCheckVisitor implements ASTVisitor {
 					Main.handleSemanticError(seo);
 				}
 			}
-			tempType = new VarType(tempTypesOfExprs.get(0).getIsBool(), tempTypesOfExprs.get(0).getNumBrackets());
+			tempType = new VarType(tempTypesOfExprs.get(0).getElementType(), tempTypesOfExprs.get(0).getNumBrackets());
 		}
 		else {
 			ClassType classViewOfBase = env.getClassType(vartypeView.getElementType());
@@ -532,6 +530,14 @@ public class TypeCheckVisitor implements ASTVisitor {
 		}
 		VarType rightType = (VarType) tempType;
 		
+		if (!leftType.isPrimitive() || !rightType.isPrimitive()) {
+			String s = "Expected a primitive, but found an object " + 
+					tempType.toString();
+			SemanticErrorObject seo = new SemanticErrorObject(
+					be.getLineNumber(), be.getColumnNumber(), s);
+			Main.handleSemanticError(seo);
+		}
+		
 		BinaryOp op = be.getBinaryOp();
 		
 		// check that left & right expr have the same type
@@ -551,9 +557,9 @@ public class TypeCheckVisitor implements ASTVisitor {
 		 */
 		if (op.toString().equals("+")) {
 			if (leftType.isInt()) {
-				tempType = new VarType(false, 0);
+				tempType = new VarType("int", 0);
 			} else if (leftType.isArray()) {
-				tempType = new VarType(leftType.getIsBool(), 
+				tempType = new VarType(leftType.getElementType(), 
 						leftType.getNumBrackets());
 			} else {
 				String s = "Invalid expression types for + operation.";
@@ -571,7 +577,7 @@ public class TypeCheckVisitor implements ASTVisitor {
 		 */
 		else if (op.toString().equals("!=") || op.toString().equals("==")) {
 			if (leftType.isBool() ||leftType.isInt() || leftType.isArray()) {	
-				tempType = new VarType(true, 0);
+				tempType = new VarType("bool", 0);
 			} else {
 				String s = "Invalid types for " + op.toString() + " operation.";
 				SemanticErrorObject seo = new SemanticErrorObject(
@@ -592,7 +598,7 @@ public class TypeCheckVisitor implements ASTVisitor {
 				 op.toString().equals(">") ||
 				 op.toString().equals(">=")) 
 		{
-			if (!leftType.equals(new VarType(false,0))) {
+			if (!leftType.equals(new VarType("int",0))) {
 				String s = "Expected int for " + op.toString() + " operation, " +
 						"but found " + leftType.toString();
 				SemanticErrorObject seo = new SemanticErrorObject(
@@ -602,7 +608,7 @@ public class TypeCheckVisitor implements ASTVisitor {
 						);
 				Main.handleSemanticError(seo);
 			}
-			tempType = new VarType(true,0);
+			tempType = new VarType("bool",0);
 		}
 		/*
 		 * &, | operator
@@ -612,7 +618,7 @@ public class TypeCheckVisitor implements ASTVisitor {
 		else if (op.toString().equals("&") ||
 				 op.toString().equals("|")) {
 			
-			if (!leftType.equals(new VarType(true,0))) {
+			if (!leftType.equals(new VarType("bool",0))) {
 				String s = "Expected bool for " + op.toString() + " operation, " +
 						"but found " + leftType.toString();
 				SemanticErrorObject seo = new SemanticErrorObject(
@@ -622,7 +628,7 @@ public class TypeCheckVisitor implements ASTVisitor {
 						);
 				Main.handleSemanticError(seo);
 			}
-			tempType = new VarType(true,0);
+			tempType = new VarType("bool",0);
 		}
 		/*
 		 * -, *, *<<, /, %
@@ -630,7 +636,7 @@ public class TypeCheckVisitor implements ASTVisitor {
 		 * 		entire BinaryExpr evaluates to int
 		 */
 		else {
-			if (!leftType.equals(new VarType(false,0))) {
+			if (!leftType.equals(new VarType("int",0))) {
 				String s = "Expected int for " + op.toString() + " operation, " +
 						"but found " + leftType.toString();
 				SemanticErrorObject seo = new SemanticErrorObject(
@@ -640,7 +646,7 @@ public class TypeCheckVisitor implements ASTVisitor {
 						);
 				Main.handleSemanticError(seo);
 			}
-			tempType = new VarType(false,0);
+			tempType = new VarType("int",0);
 		}
 		be.setType(tempType);
 	}
@@ -760,7 +766,7 @@ public class TypeCheckVisitor implements ASTVisitor {
 						fc.getExpr_line(), fc.getExpr_col(), s);
 				Main.handleSemanticError(seo);
 			}
-			tempType = new VarType(false, 0);
+			tempType = new VarType("int", 0);
 			fc.setType(tempType);
 			stmtType = new UnitType();
 			return;
@@ -955,7 +961,7 @@ public class TypeCheckVisitor implements ASTVisitor {
 	public void visit(IfStmt is) {
 		is.getExpr().accept(this);
 		VType exprType = tempType;
-		VType bType = new VarType(true,0);
+		VType bType = new VarType("bool",0);
 		
 		// Check type of conditional
 		if (!exprType.equals(bType)) {
@@ -1054,11 +1060,11 @@ public class TypeCheckVisitor implements ASTVisitor {
 							l.getLineNumber(), l.getColumnNumber(), s);
 					Main.handleSemanticError(seo);
 				}
-				tempType = new VarType(false, 0); 
+				tempType = new VarType("int", 0); 
 				break;		
-			case 1: tempType = new VarType(false, 1); break;		// string
-			case 2: tempType = new VarType(false, 0); break;		// char
-			case 3: tempType = new VarType(true, 0);  break;		// boolean
+			case 1: tempType = new VarType("int", 1); break;		// string
+			case 2: tempType = new VarType("int", 0); break;		// char
+			case 3: tempType = new VarType("bool", 0);  break;		// boolean
 		}
 	}
 	
@@ -1327,7 +1333,7 @@ public class TypeCheckVisitor implements ASTVisitor {
 						);
 				Main.handleSemanticError(seo);
 			}
-			tempType = new VarType(true, 0);
+			tempType = new VarType("bool", 0);
 			ue.setType(tempType);
 		}
 		else if (op.toString().equals("-")) {
@@ -1341,7 +1347,7 @@ public class TypeCheckVisitor implements ASTVisitor {
 						);
 				Main.handleSemanticError(seo);
 			}
-			tempType = new VarType(false, 0);
+			tempType = new VarType("int", 0);
 			ue.setType(tempType);
 		}
 		

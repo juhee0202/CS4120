@@ -113,44 +113,62 @@ public class ClassType implements VType{
 	}
 	
 	/**
-	 * @param name: name of class member (including field & method)
-	 * @return the VType of the member. 
-	 * Returns null if the member does not exist in the class environment
+	 * @param name: name of class field
+	 * @return the VType of the field. 
+	 * Returns null if the field does not exist in the class environment
 	 */
 	public VType getFieldType(String name) {
 		// TODO
 		VType fieldType = fieldEnv.get(name);
-		if (fieldType != null) {
-			return fieldType;
+		return fieldType;
+	}
+	
+	/**
+	 * 
+	 * @param name: name of the field
+	 * @param type: type of the field that you're trying to add to class env
+	 * @return: returns 1 if successfully added, otherwise 0
+	 */
+	public int addFieldType(String name, VType type) {
+		if (type instanceof VarType || type instanceof ClassType) {
+			fieldEnv.put(name,  (FunType) type);
+			return 0;
 		}
-		
-		VType methodType = methodEnv.get(name);
+		else {
+			return 1;
+		}
+	}
+	
+	/**
+	 * @param name: name of class field
+	 * @return the VType of the field. 
+	 * Returns null if the field does not exist in the class environment
+	 */
+	public FunType getMethodType(String name) {
+		FunType methodType = methodEnv.get(name);
 		return methodType;
 	}
 	
 	/**
 	 * 
-	 * @param name: name of the member
-	 * @param type: type of the member that you're trying to add to class env
+	 * @param name: name of the method
+	 * @param type: type of the method that you're trying to add to class env
 	 * @return: returns 1 if successfully added, otherwise 0
 	 */
-	public int addType(String name, VType type) {
-		// add method
-		if (type instanceof FunType) {
-			methodEnv.put(name, (FunType) type);
-		} 
-		// add class field
-		else if (type instanceof VarType || type instanceof ClassType) {
-			fieldEnv.put(name, type);
-		}
-		else {
-			// should raise error wherever this function was
-			// called because incorrect type to add to class env
-			return 0;
-		}
-		return 1;
+	public int addMethodType(String name, FunType type) {
+		methodEnv.put(name,  type);
+		return 0;
 	}
 	
+	/**
+	 * 
+	 * @param argClassType
+	 * @return returns true if 
+	 * 		1) class names are the same 
+	 * 		2) same superclass
+	 * 		3) all method signatures match exactly
+	 * 		4) number of methods are equal
+	 */
 	public boolean compareClassSignatures(ClassType argClassType) {
 		
 		// if class names are different, return false

@@ -13,8 +13,15 @@ public class Break implements NakedStmt {
 	
 	private int lineNumber;
 	private int colNumber;
+	private String labelName;
 	
 	public Break(int bleft, int bright) {
+		lineNumber = bleft;
+		colNumber = bright;
+	}
+	
+	public Break(String label, int bleft, int bright) {
+		labelName = label;
 		lineNumber = bleft;
 		colNumber = bright;
 	}
@@ -34,6 +41,14 @@ public class Break implements NakedStmt {
 	public void setColumnNumber(int colNumber) {
 		this.colNumber = colNumber;
 	}
+	
+	public String getLabel() {
+		return labelName;
+	}
+	
+	public boolean hasLabel() {
+		return labelName != null;
+	}
 
 	@Override
 	public void prettyPrintNode() {
@@ -43,7 +58,6 @@ public class Break implements NakedStmt {
 
 	@Override
 	public void accept(ASTVisitor v) {
-		// TODO Auto-generated method stub
 		v.visit(this);
 	}
 

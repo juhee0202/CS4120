@@ -57,4 +57,12 @@ public class WhileStmt implements NakedStmt {
 	public void setLabel(Label l) {
 		label = l;
 	}
+	
+	public Label getLabel() {
+		return label;
+	}
+	
+	public boolean hasLabel() {
+		return label != null;
+	}
 }

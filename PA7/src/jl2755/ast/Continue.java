@@ -8,10 +8,17 @@ public class Continue implements NakedStmt {
 
 	private int lineNumber;
 	private int colNumber;
+	private String labelName;
 	
 	public Continue(int cleft, int cright) {
 		lineNumber = cleft;
 		colNumber = cright;
+	}
+	
+	public Continue(String label, int cleft, int cright) {
+		lineNumber = cleft;
+		colNumber = cright;
+		labelName = label;
 	}
 	
 	
@@ -32,6 +39,14 @@ public class Continue implements NakedStmt {
 
 	public void setColumnNumber(int colNumber) {
 		this.colNumber = colNumber;
+	}
+	
+	public String getLabel() {
+		return labelName;
+	}
+	
+	public boolean hasLabel() {
+		return labelName != null;
 	}
 
 

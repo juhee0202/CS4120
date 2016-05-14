@@ -6,7 +6,7 @@ import jl2755.visitor.ASTVisitor;
 
 /**
  * Represents a variable declaration in which the type of the variable can be
- * int, bool, or t[ ] 
+ * int, bool, t[ ], or SomeClass
  * 
  * index 
  * 	- 0: MixedArrayType

@@ -33,9 +33,9 @@ public class TypeCheckVisitor implements ASTVisitor {
 										// -> dirtied by visit(ClassDecl)
 	private VType functionReturnType;
 	private boolean negativeNumber = false; // needed for UnaryExpr, Literal
+	private boolean isInClass = false;	// Needed for this keyword
+	private boolean isInFunctionDecl = false; // Needed for this keyword
 	private int whileCount;				// number of nested while loops we're currently in
-	private boolean isInClass = false;
-	private boolean isInFunctionDecl = false;
 	
 	/**
 	 * Creates a TypeCheckVisitor instance
@@ -273,7 +273,16 @@ public class TypeCheckVisitor implements ASTVisitor {
 				Main.handleSemanticError(seo);
 			}
 			
-			VarType idType = (VarType)env.getVarType(id);
+			VarType idType = (VarType) env.getVarType(id);
+			if (!idType.isArray()) {
+				String s = "The type of the expression must be an array type "
+						+ "but it resolved to " + idType.toString();
+				SemanticErrorObject seo = new SemanticErrorObject(
+						as.getIdentifier().getLineNumber(), 
+						as.getIdentifier().getColumnNumber(),
+						s);
+				Main.handleSemanticError(seo);
+			}
 			
 			VType elementType = new VarType(idType,as.getIndexedBrackets(),as.getIdentifier());
 

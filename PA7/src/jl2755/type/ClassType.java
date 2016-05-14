@@ -229,6 +229,9 @@ public class ClassType implements VType{
 		
 	@Override
 	public boolean equals(Object o) {
+		if (o instanceof NullType) {
+			return true;
+		}
 		if (!(o instanceof ClassType)) {
 			return false;
 		}

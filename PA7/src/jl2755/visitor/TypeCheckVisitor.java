@@ -28,7 +28,7 @@ public class TypeCheckVisitor implements ASTVisitor {
 	private Stack<String> stack;		// "_": special marker
 	private VType tempType;
 	private VType stmtType;				// either UnitType or VoidType
-	private ClassType classType; 		// current class's type that we're typechecking 
+	private ClassType classEnv; 		// current class's type that we're typechecking 
 										// -> dirtied by visit(ClassDecl)
 	private VType functionReturnType;
 	private boolean negativeNumber = false; // needed for UnaryExpr, Literal
@@ -839,7 +839,7 @@ public class TypeCheckVisitor implements ASTVisitor {
 		if (!(is.getStmt1().getNakedStmt() instanceof BlockStmt)) {
 			String id = stack.pop();
 			while (!id.equals("_")) {
-				env.remove(id);
+				env.removeVar(id);	// precondition: stack only contains Variables
 				id = stack.pop();
 			}
 		}
@@ -860,7 +860,7 @@ public class TypeCheckVisitor implements ASTVisitor {
 				// Pop out of scope
 				String id = stack.pop();
 				while (!id.equals("_")) {
-					env.remove(id);
+					env.removeVar(id);
 					id = stack.pop();
 				}
 			}
@@ -1412,7 +1412,7 @@ public class TypeCheckVisitor implements ASTVisitor {
 
 	@Override
 	public void visit(ClassDecl cd) {
-		classEnv = env.get(cd.getClassName().toString());
+		classEnv = env.getClassType(cd.getClassName().toString());
 		cd.getClassBody().accept(this);
 	}
 
@@ -1549,10 +1549,14 @@ public class TypeCheckVisitor implements ASTVisitor {
 	 * @return list of superclasses in order of most immediate superclass to
 	 * highest superclass
 	 */
-	private List<String> getSuperClasses(String currentClass) {
-		// TODO
-//		List<String> superclasses = new ArrayList<String>();
-//		return superclasses;
+	private List<String> getSuperClasses(String currClassName, List<String> superclasses) {
+		ClassType ct = env.getClassType(currClassName);
+		String superName = ct.getSuperClassName();
+		if (superName != null) {
+			superclasses.add(superName);
+			getSuperClasses(superName, superclasses);
+		}
+		return superclasses;
 	}
 	
 }

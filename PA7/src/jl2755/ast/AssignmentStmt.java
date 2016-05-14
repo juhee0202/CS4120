@@ -20,7 +20,6 @@ public class AssignmentStmt implements NakedStmt {
 	 * 0 if the left side is just an identifier: foo = 3;,
 	 * 1 if the left side is an index of an identifier: foo[2] = 3;,
 	 * 2 if the left side is an index of a function call foo(x,y)[2] = 3;.
-	 * 3 if the left side is an index of an array literal: {0}[0] = 0
 	 */
 	private int index;
 	
@@ -45,13 +44,13 @@ public class AssignmentStmt implements NakedStmt {
 		index = 2;
 	}
 	
-	public AssignmentStmt(ArrayLiteral al, IndexedBrackets ib, Expr e) {
-		arrayLiteral = al;
-		indexedBrackets = ib;
-		expr = e;
-		index = 3;
-	}
-	
+//	public AssignmentStmt(ArrayLiteral al, IndexedBrackets ib, Expr e) {
+//		arrayLiteral = al;
+//		indexedBrackets = ib;
+//		expr = e;
+//		index = 3;
+//	}
+//	
 	public void prettyPrintNode() {
 		CodeWriterSExpPrinter tempPrinter = GlobalPrettyPrinter.getInstance();
 		tempPrinter.startList();

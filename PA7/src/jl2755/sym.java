@@ -5,8 +5,8 @@
 
 package jl2755;
 
-/** CUP generated interface containing symbol constants. */
-public interface sym {
+/** CUP generated class containing symbol constants. */
+public class sym {
   /* terminals */
   public static final int EXTENDS = 44;
   public static final int NEW = 45;
@@ -17,7 +17,6 @@ public interface sym {
   public static final int MINUS = 14;
   public static final int OPEN_BRACE = 36;
   public static final int SEMICOLON = 40;
-  public static final int CONST = 51;
   public static final int BREAK = 47;
   public static final int ELSE = 9;
   public static final int IF = 8;
@@ -59,6 +58,7 @@ public interface sym {
   public static final int STRING_LITERAL = 3;
   public static final int FALSE = 7;
   public static final int WHILE = 10;
+  public static final int TO = 51;
   public static final int GETS = 31;
   public static final String[] terminalNames = new String[] {
   "EOF",
@@ -112,7 +112,7 @@ public interface sym {
   "CONTINUE",
   "NULL",
   "DOT",
-  "CONST"
+  "TO"
   };
 }
 

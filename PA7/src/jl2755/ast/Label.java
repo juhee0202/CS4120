@@ -6,9 +6,13 @@ import jl2755.GlobalPrettyPrinter;
 public class Label {
 	private String name;
 	private WhileStmt whileStmt;
+	private int line;
+	private int col;
 	
-	public Label(String n) {
+	public Label(String n, int l, int c) {
 		name = n;
+		line = l;
+		col = c;
 	}
 	
 	public String getName() {
@@ -21,6 +25,18 @@ public class Label {
 	
 	public void setLoop(WhileStmt ws) {
 		whileStmt = ws;
+	}
+
+	public WhileStmt getWhileStmt() {
+		return whileStmt;
+	}
+
+	public int getLine() {
+		return line;
+	}
+
+	public int getCol() {
+		return col;
 	}
 
 	public void prettyPrintNode() {

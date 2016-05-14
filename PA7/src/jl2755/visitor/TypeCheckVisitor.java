@@ -643,49 +643,76 @@ public class TypeCheckVisitor implements ASTVisitor {
 			}
 			tempType = new VarType(false, 0);
 			fc.setType(tempType);
-			return;
 		}
 		
-		String id = fc.getIdentifier().toString();
-		
-		/* Check if the function is declared */
-		if (!env.containsFun(id)) {
-			String s = "Name " + id.toString() + " cannot be resolved";
-			SemanticErrorObject seo = new SemanticErrorObject(
-					fc.getIdentifier_line(), fc.getIdentifier_col(), s);
-			Main.handleSemanticError(seo);
-		}
-		
-		FunType funType = env.getFunType(id);
-		String ABIName = functionToABIName(id, funType);
-		fc.setABIName(ABIName);
-		VType paramType = funType.getParamTypes();
-		VType args;
-		
-		/* Case: id() */
-		if (index == 0) {
-			args = new UnitType();
-			if (!args.equals(paramType)) {
-				String s = "Expected " + paramType.toString() + ", but found unit";
+		/* id() or id(args) */
+		else if (index < 2) {
+			String id = fc.getIdentifier().toString();
+			// check if the function is declared
+			if (!env.containsFun(id)) {
+				String s = "Name " + id.toString() + " cannot be resolved";
 				SemanticErrorObject seo = new SemanticErrorObject(
 						fc.getIdentifier_line(), fc.getIdentifier_col(), s);
 				Main.handleSemanticError(seo);
 			}
-		}
-		/* Case: id(funtionArg) */
-		else if (index == 1) {
-			fc.getFunctionArg().accept(this);
-			args = tempType;
-			if (!args.equals(paramType)) {
-				String s = "Expected " + paramType.toString() + ", but found " + args.toString();
-				SemanticErrorObject seo = new SemanticErrorObject(
-						fc.getIdentifier_line(), fc.getIdentifier_col(), s);
-				Main.handleSemanticError(seo);
+			
+			FunType funType = env.getFunType(id);
+			String ABIName = functionToABIName(id, funType);
+			fc.setABIName(ABIName);
+			VType paramType = funType.getParamTypes();
+			VType args;
+			
+			// Case: id()
+			if (index == 0) {
+				args = new UnitType();
+				if (!args.equals(paramType)) {
+					String s = "Expected " + paramType.toString() + ", but found unit";
+					SemanticErrorObject seo = new SemanticErrorObject(
+							fc.getIdentifier_line(), fc.getIdentifier_col(), s);
+					Main.handleSemanticError(seo);
+				}
 			}
+			// Case: id(funtionArg)
+			else if (index == 1) {
+				fc.getFunctionArg().accept(this);
+				args = tempType;
+				if (!args.equals(paramType)) {
+					String s = "Expected " + paramType.toString() + ", but found " + args.toString();
+					SemanticErrorObject seo = new SemanticErrorObject(
+							fc.getIdentifier_line(), fc.getIdentifier_col(), s);
+					Main.handleSemanticError(seo);
+				}
+			}
+			
+			tempType = funType.getReturnTypes();
+			fc.setType(tempType);
 		}
 		
-		tempType = funType.getReturnTypes();
-		fc.setType(tempType);
+		/* dotableExpr.id() or dotableExpr.id(args) */
+		else {
+			fc.getDotableExpr().accept(this);
+			
+			// check if the dotableExpr is of ClassType
+			if (!(tempType instanceof ClassType)) {
+				String s = tempType.toString() + " cannot be dereferenced";
+				SemanticErrorObject seo = new SemanticErrorObject(
+						fc.getDotableExpr_line(), fc.getDotableExpr_col(), s);
+				Main.handleSemanticError(seo);
+			}
+			
+			ClassType dotableExprType = (ClassType)tempType;
+			String methodName = fc.getIdentifier().getTheValue();
+			
+			// check if methodName is valid
+			
+		}
+		
+		
+		
+		
+
+		
+		
 		
 		stmtType = new UnitType();
 	}

@@ -13,94 +13,163 @@ import jl2755.ast.VarDecl;
 
 /**
  *	Ordinary types t expressible in the language
- *	int, bool, or t[ ]
+ *	int, bool, or t[ ] where t can either be Primitive or Object
  */
 public class VarType implements VType {
-	/** true: boolean, false: int*/
-	private boolean isBool;
-	/** The number of brackets used in the declaration
-	 * of this array, if it is one 
-	 * 0 if it is a primitive type
-	 * */
+
+	private boolean isPrimitive;
+	private boolean isArray;
+	private boolean isObject;
+	private String elementType;
 	private Integer numBrackets;
 	
+//	private boolean isBool;				// true if primitive boolean, else false
+//	private boolean isPrimitiveArray;	// true if Primitive array type, else false
+//	private Integer numBrackets;		// number of brackets used in declaration of this variable
+//										// 0 if primitive type
+//		
 	public VarType(jl2755.ast.Type t) {
+		// int or bool
 		if (t instanceof PrimitiveType) {
-			PrimitiveType temp = (PrimitiveType)t;
-			setIsBool(temp.getIndex() == 1);
+			PrimitiveType pt = (PrimitiveType) t;
+			isPrimitive = true;
+			isArray = false;
+			isObject = false;
+			elementType = (pt.getIndex() == 0)? "int" : "bool";
 			numBrackets = 0;
+			
+		// Point[][]
+		} else if (t instanceof EmptyArrayType) {
+			EmptyArrayType eat = (EmptyArrayType) t;
+			isPrimitive = false;
+			isArray = true;
+			isObject = false;
+			elementType = eat.getElementType();
+			numBrackets = eat.getBrackets().getNumBrackets();
+		
+		// object type
 		} else {
-			EmptyArrayType temp = (EmptyArrayType)t;
-			setIsBool(temp.getPrimitiveType().getIndex() == 1);
-			numBrackets = temp.getBrackets().getNumBrackets();
+			Identifier id = (Identifier) t;
+			isPrimitive = false;
+			isArray = false;
+			isObject = true;
+			elementType = id.toString();
+			numBrackets = 0;
 		}
+		
+//		if (t instanceof PrimitiveType) {
+//			PrimitiveType temp = (PrimitiveType)t;
+//			setIsBool(temp.getIndex() == 1);
+//			numBrackets = 0;
+//		} else {
+//			EmptyArrayType temp = (EmptyArrayType)t;
+//			setIsBool(temp.getPrimitiveType().getIndex() == 1);
+//			numBrackets = temp.getBrackets().getNumBrackets();
+//		}
 	}
 	
 	public VarType(MixedArrayType mat){
-		isBool = mat.getP_type().getIndex() == 1;
+		isPrimitive = false;
+		isArray = true;
+		isObject = false;
+		elementType = mat.getElementType();
 		numBrackets = mat.getTotalNumBrackets();
+				
+//		isBool = mat.getP_type().getIndex() == 1;
+//		numBrackets = mat.getTotalNumBrackets();
 	}
 	
 	public VarType(VarDecl vd){
-		if (vd.getIndex() == 0){
+		// MixedArrayType
+		if (vd.getIndex() == 0) {
+			isPrimitive = false;
+			isArray = true;
+			isObject = false;
 			MixedArrayType mat = vd.getMixedArrayType();
-			isBool = mat.getP_type().getIndex() == 1;
+			elementType = mat.getElementType();
 			numBrackets = mat.getTotalNumBrackets();
-		} else if (vd.getIndex() == 1){
+		
+		// PrimitiveType
+		} else if (vd.getIndex() == 1) {
+			isPrimitive = true;
+			isArray = false;
+			isObject = false;
 			PrimitiveType pt = vd.getPrimitiveType();
-			setIsBool(pt.getIndex() == 1);
+			elementType = (pt.getIndex() == 0)? "int" : "bool";
 			numBrackets = 0;
+			
+		// ClassType
+		} else {
+			isPrimitive = false;
+			isArray = false;
+			isObject = false;
+			elementType = vd.getClassType().toString();
+			numBrackets = 0;
+			
 		}
+		
+//		if (vd.getIndex() == 0){
+//			MixedArrayType mat = vd.getMixedArrayType();
+//			isBool = mat.getP_type().getIndex() == 1;
+//			numBrackets = mat.getTotalNumBrackets();
+//		} else if (vd.getIndex() == 1){
+//			PrimitiveType pt = vd.getPrimitiveType();
+//			setIsBool(pt.getIndex() == 1);
+//			numBrackets = 0;
+//		}
 	}
 	
+	/**
+	 * Precondition: creating either a PrimitiveType or ArrayType with only primitive elements
+	 * @param argIsBool
+	 * @param argNumBrackets
+	 */
 	public VarType(boolean argIsBool, int argNumBrackets){
-		isBool = argIsBool;
 		numBrackets = argNumBrackets;
-	}
-
-	public VarType(VarType idType, IndexedBrackets indexedBrackets, Identifier id) {
-		if (idType.getNumBrackets() < indexedBrackets.getNumBrackets()){
-			String s = "Array " + id.toString() + " does not have that many dimensions.";
-			SemanticErrorObject seo = new SemanticErrorObject(
-					id.getLineNumber(), 
-					id.getColumnNumber(),
-					s
-					);
-			Main.handleSemanticError(seo);
+		elementType = (argIsBool)? "bool" : "int";
+		if (argNumBrackets == 0) {
+			isPrimitive = true;
+			isArray = false;
+			isObject = false;
+		} else {
+			isPrimitive = false;
+			isArray = true;
+			isObject = false;
 		}
-		isBool = idType.getIsBool();
-		numBrackets = idType.getNumBrackets() - indexedBrackets.getNumBrackets();
+//		isBool = argIsBool;
+//		numBrackets = argNumBrackets;
 	}
 	
-	public VarType(VarType idType, IndexedBrackets indexedBrackets, FunctionCall fc) {
-		if (idType.getNumBrackets() < indexedBrackets.getNumBrackets()){
-			String s = "Return type of function " + fc.getIdentifier().toString() + 
-					" does not have that many dimensions.";
-			SemanticErrorObject seo = new SemanticErrorObject(
-					fc.getLineNumber(), 
-					fc.getColumnNumber(),
-					s
-					);
-			Main.handleSemanticError(seo);
+	public VarType(String elementType, int numBrackets) {
+		this.elementType = elementType;
+		this.numBrackets = numBrackets;
+		
+		if (elementType.toLowerCase().equals("int") || 
+				elementType.toLowerCase().equals("bool")) {
+			if (numBrackets == 0) {		// int
+				isPrimitive = true;
+				isArray = false;
+				isObject = false;
+			} else {					// int[][]
+				isPrimitive = false;
+				isArray = true;
+				isObject = false;
+			}
+		} 
+		// class type
+		else {
+			if (numBrackets == 0) {		// Point
+				isPrimitive = false;
+				isArray = false;
+				isObject = true;
+			} else {					// Point[][]
+				isPrimitive = false;
+				isArray = true;
+				isObject = false;
+			}
 		}
-		isBool = idType.getIsBool();
-		numBrackets = idType.getNumBrackets() - indexedBrackets.getNumBrackets();
 	}
 	
-	public VarType(VarType idType, IndexedBrackets indexedBrackets, ArrayLiteral al) {
-		if (idType.getNumBrackets() < indexedBrackets.getNumBrackets()){
-			String s = "Return type of function " + al.toString() + 
-					" does not have that many dimensions.";
-			SemanticErrorObject seo = new SemanticErrorObject(
-					al.getLineNumber(), 
-					al.getColumnNumber(),
-					s
-					);
-			Main.handleSemanticError(seo);
-		}
-		isBool = idType.getIsBool();
-		numBrackets = idType.getNumBrackets() - indexedBrackets.getNumBrackets();
-	}
 	
 	/**
 	 * @return primitive type of this type
@@ -109,11 +178,22 @@ public class VarType implements VType {
 	 * ex) int -> int
 	 */
 	public VarType getPrimitiveType() {
-		return isBool ? new VarType(true, 0) : new VarType(false, 0);
+		if (elementType.equals("bool")) {
+			return new VarType(true, 0);
+		} else if (elementType.equals("int")) {
+			return new VarType(false, 0);
+		} else {
+			System.out.println("VarType.java: getPrimitiveType()");
+			return null;
+		}
 	}
 
 	public boolean isPrimitive() {
-		return numBrackets == 0;
+		if (elementType.equals("bool") || elementType.equals("int")) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 	
 	public boolean isArray() {
@@ -121,23 +201,23 @@ public class VarType implements VType {
 	}
 	
 	public boolean isInt() {
-		return !isBool && (numBrackets == 0);
+		return elementType.equals("int") && (numBrackets == 0);
 	}
 	
 	public boolean getIsBool() {
-		return isBool;
-	}
-
-	public void setIsBool(boolean isBool) {
-		this.isBool = isBool;
+		return elementType.equals("bool");
 	}
 	
 	public boolean isBool() {
-		return isBool && (numBrackets == 0);
+		return elementType.equals("bool") && (numBrackets == 0);
 	}
 
 	public int getNumBrackets() {
 		return numBrackets;
+	}
+	
+	public String getElementType() {
+		return elementType;
 	}
 	
 	@Override
@@ -148,20 +228,15 @@ public class VarType implements VType {
 		if (!(o instanceof VarType)) {
 			return false;
 		}
-		VarType vt = (VarType)o;
-		return this.isBool == vt.isBool 
+		VarType vt = (VarType) o;
+		return elementType.equals(vt.getElementType()) 
 				&& this.getNumBrackets() == vt.getNumBrackets(); 
 	}
 	
 	@Override
 	public String toString() {
-		String returnString = "";
-		if (isBool) { 
-			returnString += "bool";
-		}
-		else {
-			returnString += "int";
-		}
+		String returnString = elementType;
+
 		for (int i = 0; i < numBrackets; i++) {
 			returnString += "[]";
 		}

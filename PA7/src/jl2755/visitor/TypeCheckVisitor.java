@@ -261,7 +261,9 @@ public class TypeCheckVisitor implements ASTVisitor {
 						s);
 				Main.handleSemanticError(seo);
 			}
-		} else if (index == 1) {							//ex: arr[2] = 3;
+			
+		//ex: arr[2] = 3;
+		} else if (index == 1) {							
 			// Check that the identifier can be resolved to a VARIABLE in the env
 			String id = as.getIdentifier().toString();
 			if (!env.containsVar(id)) {
@@ -286,8 +288,8 @@ public class TypeCheckVisitor implements ASTVisitor {
 				Main.handleSemanticError(seo);
 			}
 			
-			// raises error in this constructor if dimensions don't match
-			VType elementType = new VarType(idType,as.getIndexedBrackets(),as.getIdentifier());
+			int newDimensions = checkValidDimensions(idType, as.getIndexedBrackets(), as.getIdentifier());
+			VType leftType = new VarType(idType.getElementType(), newDimensions);
 
 			// check that all the indices inside indexedBrackets are ints
 			List<Expr> exprs = as.getIndexedBrackets().getContent();
@@ -309,8 +311,8 @@ public class TypeCheckVisitor implements ASTVisitor {
 			as.getExpr().accept(this);
 			VType exprType = tempType;
 			
-			if (!elementType.equals(exprType)) {
-				String s = "Expected " + elementType.toString() 
+			if (!leftType.equals(exprType)) {
+				String s = "Expected " + leftType.toString() 
 				+ ", but found " + exprType.toString();
 				SemanticErrorObject seo = new SemanticErrorObject(
 											as.getExpr().getLineNumber(), 
@@ -354,13 +356,14 @@ public class TypeCheckVisitor implements ASTVisitor {
 				Main.handleSemanticError(seo);
 			}
 			
-			VType elementType = new VarType (funcCallType, as.getIndexedBrackets(), as.getFunctionCall());
+			int newDimensions = checkValidDimensions(funcCallType, as.getIndexedBrackets(), as.getIdentifier());
+			VType leftType = new VarType(funcCallType.getElementType(), newDimensions);
 			
 			as.getExpr().accept(this);
 			VType exprType = tempType;
 			
-			if (!elementType.equals(exprType)) {
-				String s = "Expected " + elementType.toString() 
+			if (!leftType.equals(exprType)) {
+				String s = "Expected " + leftType.toString() 
 				+ ", but found " + exprType.toString();
 				SemanticErrorObject seo = new SemanticErrorObject(
 											as.getExpr().getLineNumber(), 
@@ -387,60 +390,7 @@ public class TypeCheckVisitor implements ASTVisitor {
 				}
 			}
 		}
-		// index = 3 array literal assignment statement
-		else {
-			ArrayLiteral al = as.getArrayLiteral();
-			al.accept(this);
-			VType arrayLiteralType = tempType;
-			
-			if (!(arrayLiteralType instanceof VarType)) {
-				String s;
-				if (arrayLiteralType instanceof TupleType) {
-					s = "Expected variable type, but found tuple type";
-				} else if (arrayLiteralType instanceof UnitType) {
-					 s = "Expected variable type, but found unit type";
-				} else {
-					 s = "Expected variable type, but found incompatible type";
-				}
-				SemanticErrorObject seo = new SemanticErrorObject(
-						as.getFunctionCall().getLineNumber(), 
-						as.getFunctionCall().getColumnNumber(),
-						s);
-				Main.handleSemanticError(seo);
-			}
-			
-			VarType arrayLitType = (VarType) arrayLiteralType;
-			VType elementType = new VarType (arrayLitType, as.getIndexedBrackets(), as.getArrayLiteral());
-			
-			as.getExpr().accept(this);
-			VType exprType = tempType;
-			
-			if (!elementType.equals(exprType)) {
-				String s = "Expected " + elementType.toString() 
-				+ ", but found " + exprType.toString();
-				SemanticErrorObject seo = new SemanticErrorObject(
-						as.getExpr().getLineNumber(), 
-						as.getExpr().getColumnNumber(),
-						s);
-				Main.handleSemanticError(seo);
-			}
 
-			// check that all the indices inside indexedBrackets are ints
-			List<Expr> exprs = as.getIndexedBrackets().getContent();
-			for (Expr e: exprs) {
-				e.accept(this);
-				VarType eType = (VarType) tempType;
-				if (!eType.isInt()) {
-					String s = "Expected an int, but found " + 
-							eType.toString();
-					SemanticErrorObject seo = new SemanticErrorObject(
-							e.getLineNumber(),
-							e.getColumnNumber(), 
-							s);
-					Main.handleSemanticError(seo);
-				}
-			}
-		}
 		tempType = new UnitType();
 		stmtType = new UnitType();
 	}
@@ -1633,6 +1583,31 @@ public class TypeCheckVisitor implements ASTVisitor {
 			env.put(id.getTheValue(), type);
 			stack.push(id.getTheValue());
 		}
+	}
+	
+	private int checkValidDimensions(VarType idType, IndexedBrackets indexedBrackets, Object o) {
+		String msg = "";
+		int lineNum = 0;
+		int colNum = 0;
+		if (o instanceof Identifier) {
+			Identifier id = (Identifier) o;
+			msg = "Array " + id.getTheValue() + " does not have that many dimensions.";
+			lineNum = id.getLineNumber();
+			colNum = id.getColumnNumber();
+		} else if (o instanceof FunctionCall) {
+			FunctionCall fc = (FunctionCall) o;
+			msg = "Return type of function " + fc.getIdentifier().toString() + 
+					" does not have that many dimensions.";
+			lineNum = fc.getLineNumber();
+			colNum = fc.getColumnNumber();
+		} 
+		
+		if (idType.getNumBrackets() < indexedBrackets.getNumBrackets()){
+			SemanticErrorObject seo = new SemanticErrorObject(
+					lineNum, colNum, msg);
+			Main.handleSemanticError(seo);
+		}
+		return idType.getNumBrackets() - indexedBrackets.getNumBrackets();
 	}
 	
 	/**

@@ -272,7 +272,8 @@ public class dohMyGod {
 //		ClassType ct2 = new ClassType("dog", instance2, hm2);
 		
 //		assertEquals(ct1, ct2);
-		int dohMyGod = 0;
+		int[] test = {1,2,3};
+		test[10000] = 0;
 		
 	
 }

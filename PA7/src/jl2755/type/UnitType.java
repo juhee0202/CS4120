@@ -13,4 +13,9 @@ public class UnitType implements VType {
 	public String toString() {
 		return "unit";
 	}
+
+	@Override
+	public boolean canDot() {
+		return false;
+	}
 }

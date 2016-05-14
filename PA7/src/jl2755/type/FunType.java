@@ -129,4 +129,9 @@ public class FunType implements VType {
 		returnString += returnTypes.toString();
 		return returnString;
 	}
+
+	@Override
+	public boolean canDot() {
+		return false;
+	}
 }

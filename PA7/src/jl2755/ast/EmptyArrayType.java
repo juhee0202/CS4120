@@ -74,6 +74,16 @@ public class EmptyArrayType implements Type{
 	public void setIndex(int index) {
 		this.index = index;
 	}
+	
+	public String getElementType() {
+		String elementType = "";
+		if (index == 0) {
+			elementType = (primitiveType.getIndex() == 0)? "int" : "bool";
+		} else {
+			elementType = identifier.getTheValue();
+		}
+		return elementType;
+	}
 
 	@Override
 	public void accept(ASTVisitor v) {

@@ -234,7 +234,8 @@ public class TypeCheckVisitor implements ASTVisitor {
 	public void visit(AssignmentStmt as) {
 		int index = as.getIndex();
 		
-		if (index == 0) { 									// ex: a = 3
+		// ex: a = 3
+		if (index == 0) { 									
 			// Identifier visit checks if its in env
 			String id = as.getIdentifier().toString();
 			if (!(env.containsVar(id))) {

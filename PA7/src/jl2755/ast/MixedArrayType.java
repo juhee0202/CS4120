@@ -154,6 +154,16 @@ public class MixedArrayType implements Type {
 		}
 	}
 	
+	public String getElementType() {
+		String elementType = "";
+		if (index == 0 || index == 1) {
+			elementType = (p_type.getIndex() == 0)? "int" : "bool";
+		} else {
+			elementType = o_type.getTheValue();
+		}
+		return elementType;
+	}
+	
 	public void accept(ASTVisitor v){
 		return;
 	}

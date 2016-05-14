@@ -442,10 +442,7 @@ public class TypeCheckVisitor implements ASTVisitor {
 			String s = "Expected a variable type, but found " + 
 					tempType.toString();
 			SemanticErrorObject seo = new SemanticErrorObject(
-					be.getLineNumber(),
-					be.getColumnNumber(), 
-					s
-					);
+					be.getLineNumber(), be.getColumnNumber(), s);
 			Main.handleSemanticError(seo);
 		}
 		VarType leftType = (VarType) tempType;
@@ -455,10 +452,7 @@ public class TypeCheckVisitor implements ASTVisitor {
 			String s = "Expected a variable type, but found " + 
 					tempType.toString();
 			SemanticErrorObject seo = new SemanticErrorObject(
-					be.getLineNumber(),
-					be.getColumnNumber(), 
-					s
-					);
+					be.getLineNumber(), be.getColumnNumber(), s);
 			Main.handleSemanticError(seo);
 		}
 		VarType rightType = (VarType) tempType;
@@ -1572,8 +1566,6 @@ public class TypeCheckVisitor implements ASTVisitor {
 	private List<String> getSuperClasses(String currentClass) {
 		// TODO
 //		List<String> superclasses = new ArrayList<String>();
-//		ClassType ct = 
-//		while ()
 //		return superclasses;
 	}
 	

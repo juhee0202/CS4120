@@ -1,5 +1,6 @@
 package jl2755.ast;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -30,5 +31,17 @@ public class Interface extends XiFile {
 
 	public UseId getUseId() {
 		return useId;
+	}
+	
+	/**
+	 * @return a List of all the Files that are imported by
+	 * this xi file
+	 */
+	public List<String> getUseFiles() {
+		List<String> tempList = new ArrayList<String>();
+		if (useId != null){
+			tempList.addAll(useId.getUseFiles());
+		}
+		return tempList;
 	}
 }

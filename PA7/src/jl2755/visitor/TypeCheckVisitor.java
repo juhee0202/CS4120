@@ -916,7 +916,7 @@ public class TypeCheckVisitor implements ASTVisitor {
 	public void visit(Program p) {
 		// Visit own interface file IF IT EXISTS
 		String fileName = Main.getSrcFile();
-		if (Main.checkInterfaceExists(fileName)) {
+		if (Main.interfaceExists(fileName)) {
 			visitInterfaceFile(fileName, 1, 1);
 		}
 		

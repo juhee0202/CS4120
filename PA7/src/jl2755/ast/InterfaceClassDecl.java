@@ -39,4 +39,9 @@ public class InterfaceClassDecl {
 	public void setIntClassBody(InterfaceClassBody intClassBody) {
 		this.intClassBody = intClassBody;
 	}
+	
+	@Override
+	public String toString() {
+		return className.toString();
+	}
 }

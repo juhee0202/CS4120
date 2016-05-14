@@ -45,4 +45,9 @@ public class InterfaceFunc {
 	public void setReturnType(ReturnType returnType) {
 		this.returnType = returnType;
 	}
+	
+	@Override
+	public String toString() {
+		return identifier.toString();
+	}
 }

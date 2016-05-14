@@ -1,5 +1,6 @@
 package jl2755.ast;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import edu.cornell.cs.cs4120.util.CodeWriterSExpPrinter;
@@ -81,6 +82,18 @@ public class Program extends XiFile {
 	
 	public void accept(ASTVisitor v){
 		v.visit(this);
+	}
+	
+	/**
+	 * @return a List of all the Files that are imported by
+	 * this xi file (can be empty)
+	 */
+	public List<String> getUseFiles() {
+		List<String> tempList = new ArrayList<String>();
+		if (index == 1){
+			tempList.addAll(useId.getUseFiles());
+		}
+		return tempList;
 	}
 
 }

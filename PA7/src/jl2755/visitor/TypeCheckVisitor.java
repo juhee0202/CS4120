@@ -13,6 +13,7 @@ import jl2755.SemanticErrorObject;
 import jl2755.ast.*;
 import jl2755.type.ClassType;
 import jl2755.type.FunType;
+import jl2755.type.NullType;
 import jl2755.type.TupleType;
 import jl2755.type.UnitType;
 import jl2755.type.VType;
@@ -25,9 +26,11 @@ public class TypeCheckVisitor implements ASTVisitor {
 	private Environment env;
 	
 	/** HashMap of all declared variables */
-	private Stack<String> stack;	// "_": special marker
+	private Stack<String> stack;		// "_": special marker
 	private VType tempType;
-	private VType stmtType;	// either UnitType or VoidType
+	private VType stmtType;				// either UnitType or VoidType
+	private ClassType classType; 		// current class's type that we're typechecking 
+										// -> dirtied by visit(ClassDecl)
 	private VType functionReturnType;
 	private boolean negativeNumber = false; // needed for UnaryExpr, Literal
 	
@@ -757,28 +760,6 @@ public class TypeCheckVisitor implements ASTVisitor {
 	}
 	
 	/**
-	 * Call the accept/visit on the underlying decl/init
-	 */
-	@Override
-	public void visit(GlobalDecl gd) {
-		GlobalDecl.Type gdType = gd.getType();
-		switch(gdType) {
-		case SHORT_TUPLE_DECL:
-			gd.getShortTupleDecl().accept(this);
-			break;
-		case TUPLE_INIT:
-			gd.getTupleInit().accept(this);
-			break;
-		case VAR_DECL:
-			gd.getVarDecl().accept(this);
-			break;
-		case VAR_INIT:
-			gd.getVarInit().accept(this);
-			break;
-		}
-	}
-	
-	/**
 	 * Dirties tempType
 	 * id can be either a class type or a variable
 	 */
@@ -917,11 +898,6 @@ public class TypeCheckVisitor implements ASTVisitor {
 			case 2: tempType = new VarType(false, 0); break;		// char
 			case 3: tempType = new VarType(true, 0);  break;		// boolean
 		}
-	}
-	
-	@Override
-	public void visit(Null n) {
-		// TODO: Is this needed
 	}
 	
 	/**
@@ -1410,6 +1386,7 @@ public class TypeCheckVisitor implements ASTVisitor {
 
 	@Override
 	public void visit(ClassDecl cd) {
+		classEnv = env.get(cd.getClassName().toString());
 		cd.getClassBody().accept(this);
 	}
 
@@ -1417,11 +1394,35 @@ public class TypeCheckVisitor implements ASTVisitor {
 	public void visit(DotableExpr de) {
 		DotableExpr.Type type = de.getType();
 		switch(type) {
-		case DOT: // 
+		case DOT:
+			de.getDotableExpr().accept(this);
+			VType childType = tempType;
+			ClassType classOfChild = env.getClassType(childType.toString());
+			if (!childType.singleReturn()) {
+				String s = "Cannot call a method on a function return that doesn't have exactly 1 return";
+				SemanticErrorObject seo = new SemanticErrorObject(
+											de.getLineNumber(), 
+											de.getColumnNumber(),
+											s
+											);
+				Main.handleSemanticError(seo);
+			}
 			
+			if (!env.containsClass(tempType.toString())) {
+				String s = "Cannot call a method on a non-Class variable";
+				SemanticErrorObject seo = new SemanticErrorObject(
+											de.getLineNumber(), 
+											de.getColumnNumber(),
+											s
+											);
+				Main.handleSemanticError(seo);
+			}
+			
+			ClassType classOfDotted = env.getClassType(tempType.toString());
+			tempType = env.getVarType(de.getId().toString());
 			break;
 		case FUNCTION_CALL:
-			
+			de.getFunctionCall().accept(this);
 			break;
 		case IDENTIFIER:
 			Identifier id = de.getId();
@@ -1430,6 +1431,16 @@ public class TypeCheckVisitor implements ASTVisitor {
 		case NEW:
 			// make sure that the className is a valid class name
 			Identifier className = de.getId();
+			if (!env.containsClass(className.toString())) {
+				String s = "" + className.toString() + " is an unresolved Class";
+				SemanticErrorObject seo = new SemanticErrorObject(
+											de.getLineNumber(), 
+											de.getColumnNumber(),
+											s
+											);
+				Main.handleSemanticError(seo);
+			}
+			tempType = env.getClassType(de.getId().toString());
 			break;
 		case PAREN:
 			de.getDotableExpr().accept(this);
@@ -1440,6 +1451,33 @@ public class TypeCheckVisitor implements ASTVisitor {
 		default:
 			break;
 		}
+	}
+
+	/**
+	 * Call the accept/visit on the underlying decl/init
+	 */
+	@Override
+	public void visit(GlobalDecl gd) {
+		GlobalDecl.Type gdType = gd.getType();
+		switch(gdType) {
+		case SHORT_TUPLE_DECL:
+			gd.getShortTupleDecl().accept(this);
+			break;
+		case TUPLE_INIT:
+			gd.getTupleInit().accept(this);
+			break;
+		case VAR_DECL:
+			gd.getVarDecl().accept(this);
+			break;
+		case VAR_INIT:
+			gd.getVarInit().accept(this);
+			break;
+		}
+	}
+
+	@Override
+	public void visit(Null n) {
+		tempType = new NullType();
 	}
 
 	/**

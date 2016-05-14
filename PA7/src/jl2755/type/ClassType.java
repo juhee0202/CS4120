@@ -212,7 +212,13 @@ public class ClassType implements VType{
 	public boolean canDot() {
 		return true;
 	}
-	
+
+
+	@Override
+	public boolean singleReturn() {
+		return true;
+	}
+		
 	@Override
 	public boolean equals(Object o) {
 		if (!(o instanceof ClassType)) {

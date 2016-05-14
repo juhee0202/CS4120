@@ -41,6 +41,10 @@ import jl2755.SemanticErrorObject;
 import jl2755.ixiParser;
 import jl2755.parser;
 import jl2755.sym;
+import jl2755.ast.ClassDecl;
+import jl2755.ast.Decl;
+import jl2755.ast.FunctionDecl;
+import jl2755.ast.GlobalDecl;
 import jl2755.ast.Identifier;
 import jl2755.ast.Interface;
 import jl2755.ast.InterfaceClassDecl;
@@ -995,6 +999,7 @@ public class Main {
 		Map<String, Interface> stringToInterface = new HashMap<String, Interface>();
 		Map<String, Environment> interfaceToPublic = new HashMap<String, Environment>();
 		Map<String, Set<EmptyClassType>> interfaceToUnresolved = new HashMap<String, Set<EmptyClassType>>();
+		Map<String, Set<String>> interfaceToInterface = new HashMap<String, Set<String>>();
 		
 		// Add all uses to toCheck
 		toCheck.addAll(program.getUseFiles());
@@ -1003,26 +1008,63 @@ public class Main {
 		}
 		
 		// Check all interfaces until none are left in queue
+		//	Add each interfaces module to globalEnv
+		//	Update interfaceToPublic, interfaceToUnresolved, interfaceToInterface
+		Environment globalEnv = new Environment();
 		while (!toCheck.isEmpty()) {
 			String nextFile = toCheck.poll();
 			if (checked.contains(nextFile)) continue;
 			Set<EmptyClassType> unresolved = new HashSet<EmptyClassType>();
-			Environment env = checkInterface(nextFile, checked, toCheck, unresolved, stringToInterface);
+			Set<String> uses = new HashSet<String>();
+			Environment env = checkInterface(nextFile, checked, toCheck, 
+					unresolved, stringToInterface, globalEnv, uses);
+			globalEnv.putAll(env);
 			interfaceToPublic.put(nextFile, env);
 			interfaceToUnresolved.put(nextFile, unresolved);
+			interfaceToInterface.put(nextFile, uses);
 		}
 		
 		// Resolve all unresolved types and add to initial environment
-		Environment initialEnv = new Environment();
 		for (String s : checked) {
 			if (interfaceToUnresolved.containsKey(s)) {
 				for (EmptyClassType unresolved : interfaceToUnresolved.get(s)) {
 					resolveTypes(stringToInterface.get(s),unresolved,interfaceToPublic);
 				}
 			}
-			initialEnv.putAll(interfaceToPublic.get(s));
 		}
-		return initialEnv;
+		
+		// Check source file
+		for (Decl d : program.getAllDecls()) {
+			if (d instanceof ClassDecl) {
+				ClassType classType = new ClassType((ClassDecl) d);
+				String className = classType.getClassName();
+				if (globalEnv.containsClass(className) &&
+						!classType.equals(globalEnv.getClassType(className))) {
+					Identifier id = ((ClassDecl) d).getClassName();
+					String e = "Mismatched class declaration found for " + className;
+					SemanticErrorObject seo = new SemanticErrorObject(
+							id.getLineNumber(),id.getColumnNumber(),e);
+					handleSemanticError(seo);
+				} else {
+					globalEnv.put(className, classType);
+				}
+			} else if (d instanceof FunctionDecl) {
+				FunType funType = new FunType((FunctionDecl) d);
+				Identifier id = ((FunctionDecl) d).getIdentifier();
+				String name = id.toString();
+				if (globalEnv.containsFun(name) &&
+						!funType.equals(globalEnv.getClassType(name))) {
+					String e = "Mismatched class declaration found for " + name;
+					SemanticErrorObject seo = new SemanticErrorObject(
+							id.getLineNumber(),id.getColumnNumber(),e);
+					handleSemanticError(seo);
+				} else {
+					globalEnv.put(name, funType);
+				}
+			}
+		}
+		// TODO
+		return globalEnv;
 	}
 	
 	/**
@@ -1035,11 +1077,13 @@ public class Main {
 	private static void resolveTypes(Interface i, EmptyClassType ect, Map<String, Environment> interfaceToPublic) {
 		String name = ect.getName();
 		String file = i.toString();
+		// Resolved in own interface
 		if (interfaceToPublic.get(file).containsClass(name)) {
 			replaceAll(ect, interfaceToPublic.get(file).getClassType(name),
 					file, interfaceToPublic);
 			return;
 		}
+		// Resolved in other interface
 		for (String use : i.getUseFiles()) {
 			if (interfaceToPublic.get(use).containsClass(name)) {
 				replaceAll(ect, interfaceToPublic.get(use).getClassType(name),
@@ -1047,7 +1091,8 @@ public class Main {
 				return;
 			}
 		}
-		String e = "Duplicate function declaration found";
+		// Unresolved
+		String e = "Unable to resolve type " + ect.getName();
 		handleSemanticError(new SemanticErrorObject(1,1,e));
 	}
 
@@ -1059,15 +1104,17 @@ public class Main {
 	 * @param s						the name of the interface file
 	 * @param interfaceToPublic		the map of interface file names to module
 	 */
-	private static void replaceAll(EmptyClassType ect, ClassType classType,
+	private static void replaceAll(EmptyClassType ect, ClassType ct,
 			String s, Map<String, Environment> interfaceToPublic) {
+		// Replace all uses of ect with ct in functions
 		for (FunType funType : interfaceToPublic.get(s).getFunTypes()) {
-			funType.replaceAll(ect, classType);
+			funType.replaceAll(ect, ct);
 		}
-		for (ClassType ct : interfaceToPublic.get(s).getClassTypes()) {
-			for (FunType funType : ct.getMethodEnv().values()) {
-				funType.replaceAll(ect, classType);
-			}
+		// Replace all uses of ect with ct in classes
+		for (ClassType classType : interfaceToPublic.get(s).getClassTypes()) {
+			classType.replaceAll(ect, ct);
+			// Check duplicate function in super class
+			classType.checkSuper(ct);
 		}
 		
 	}
@@ -1076,11 +1123,18 @@ public class Main {
 	 * Parses the interface files used by the program we are typechecking
 	 * 
 	 * @param interfaceName	the name of the interface file to parse
+	 * @param checked		the set of interface files already checked
+	 * @param toCheck		the queue of interface files to check
+	 * @param unresolved	the set of unresolved class types
+	 * @param sTI			the map of interface names to interface objects
+	 * @param globalEnv		the global environment as seen by the source file
+	 * @param interface		the set of interfaces used by this interface
 	 * @return				a hashmap representing the function environment
 	 */
 	private static Environment checkInterface(String interfaceName,
 								Set<String> checked, Queue<String> toCheck,
-								Set<EmptyClassType> unresolved, Map<String, Interface> sTI){
+								Set<EmptyClassType> unresolved, Map<String, Interface> sTI,
+								Environment globalEnv, Set<String> interfaces){
 		String absPath = libPath + interfaceName + ".ixi";
 		Environment env = new Environment();
 		try {
@@ -1095,6 +1149,7 @@ public class Main {
 				if (!checked.contains(use)) {
 					toCheck.add(use);
 				}
+				interfaces.add(use);
 			}
 			
 			// Add functions to environment
@@ -1102,11 +1157,20 @@ public class Main {
 			for (InterfaceFunc func : tempFuncs){
 				FunType tempType = new FunType(func);
 				String name = func.toString();
+				// Duplicate function in file
 				if (env.containsFun(name)) {
+					Identifier id = func.getIdentifier();
+					String e = "Duplicate function declaration found for " + name;
+					SemanticErrorObject seo = new SemanticErrorObject(
+							id.getLineNumber(),id.getColumnNumber(),e);
+					handleSemanticError(seo);
+				}
+				// Duplicate function across files
+				if (globalEnv.containsFun(name)) {
 					FunType type = env.getFunType(name);
 					if (!type.equals(tempType)) {
 						Identifier id = func.getIdentifier();
-						String e = "Duplicate function declaration found";
+						String e = "Mismatched function declaration found " + name;
 						SemanticErrorObject seo = new SemanticErrorObject(
 								id.getLineNumber(),id.getColumnNumber(),e);
 						handleSemanticError(seo);
@@ -1121,14 +1185,37 @@ public class Main {
 			for (InterfaceClassDecl classDecl: classDecls) {
 				ClassType tempType = new ClassType(classDecl);
 				String name = classDecl.toString();
+				// Duplicate class in file
 				if (env.containsClass(name)) {
-					ClassType type = env.getClassType(name);
+					Identifier id = classDecl.getClassName();
+					String e = "Duplicate class declaration found for " + name;
+					SemanticErrorObject seo = new SemanticErrorObject(
+							id.getLineNumber(),id.getColumnNumber(),e);
+					handleSemanticError(seo);
+				}
+				// Duplicate class across files
+				if (globalEnv.containsClass(name)) {
+					ClassType type = globalEnv.getClassType(name);
 					if (!type.equals(tempType)) {
 						Identifier id = classDecl.getClassName();
-						String e = "Duplicate function declaration found";
+						String e = "Mismatched class declaration found " + name;
 						SemanticErrorObject seo = new SemanticErrorObject(
 								id.getLineNumber(),id.getColumnNumber(),e);
 						handleSemanticError(seo);
+					}
+				}
+				// Duplicate function in class
+				Set<String> seen = new HashSet<String>();
+				for (InterfaceFunc func : classDecl.getMethods()) {
+					String fName = func.toString();
+					if (seen.contains(fName)) {
+						Identifier id = func.getIdentifier();
+						String e = "Duplicate method declaration found for " + fName;
+						SemanticErrorObject seo = new SemanticErrorObject(
+								id.getLineNumber(),id.getColumnNumber(),e);
+						handleSemanticError(seo);
+					} else {
+						seen.add(fName);
 					}
 				}
 				unresolved.addAll(checkUnresolved(tempType));

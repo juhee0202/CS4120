@@ -16,11 +16,21 @@ import jl2755.ast.*;
 public class ClassType implements VType{
 
 	String className;
+	String superClassName;
 	HashMap<String, VType> fieldEnv;
 	HashMap<String, FunType> methodEnv; 
 
 	public ClassType(String name, HashMap<String, VType> fe, HashMap<String, FunType> me) {
 		className = name;
+		fieldEnv = fe;
+		methodEnv = me;
+		superClassName = null;
+	}
+	
+	public ClassType(String name, String superName, 
+			HashMap<String, VType> fe, HashMap<String, FunType> me) {
+		className = name;
+		superClassName = superName;
 		fieldEnv = fe;
 		methodEnv = me;
 	}
@@ -33,6 +43,14 @@ public class ClassType implements VType{
 		this.className = className;
 	}
 
+	public String getSuperClassName() {
+		return superClassName;
+	}
+	
+	public void setSuperClassName(String superName) {
+		superClassName = superName;
+	}
+	
 	public HashMap<String, VType> getFieldEnv() {
 		return fieldEnv;
 	}
@@ -93,8 +111,15 @@ public class ClassType implements VType{
 			return false;
 		}
 		
+		// if class names are different, return false
 		ClassType argClassType = (ClassType) o;
 		if (!argClassType.getClassName().equals(className)) {
+			return false;
+		}
+		
+		// if they extend different superclasses, return false
+		String argSuperClassName = argClassType.getSuperClassName();
+		if (!argSuperClassName.equals(superClassName)) {
 			return false;
 		}
 		

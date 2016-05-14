@@ -1,5 +1,8 @@
 package jl2755.ast;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import edu.cornell.cs.cs4120.util.CodeWriterSExpPrinter;
 import jl2755.GlobalPrettyPrinter;
 import jl2755.visitor.ASTVisitor;
@@ -44,6 +47,20 @@ public class ClassDecl implements Decl {
 	 */
 	public boolean hasExtends() {
 		return superclassName != null;
+	}
+	
+	/**
+	 * @return a list of all methods in the class
+	 */
+	public List<FunctionDecl> getMethods() {
+		return classBody.getMethods();
+	}
+	
+	/**
+	 * @return a list of all fields in the class
+	 */
+	public List<GlobalDecl> getFields() {
+		return classBody.getFields();
 	}
 	
 	@Override

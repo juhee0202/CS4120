@@ -62,6 +62,28 @@ public class ClassBody {
 		return decls;
 	}
 	
+	public List<FunctionDecl> getMethods() {
+		List<FunctionDecl> methods = new ArrayList<FunctionDecl>();
+		if (functionDecl != null) {
+			methods.add(functionDecl);
+		}
+		if (classBody != null) {
+			methods.addAll(classBody.getMethods());
+		}
+		return methods;
+	}
+	
+	public List<GlobalDecl> getFields() {
+		List<GlobalDecl> fields = new ArrayList<GlobalDecl>();
+		if (globalDecl != null) {
+			fields.add(globalDecl);
+		}
+		if (classBody != null) {
+			fields.addAll(classBody.getFields());
+		}
+		return fields;
+	}
+	
 	public void accept(ASTVisitor v) {
 		v.visit(this);
 	}

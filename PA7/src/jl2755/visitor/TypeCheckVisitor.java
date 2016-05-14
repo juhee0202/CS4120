@@ -669,21 +669,14 @@ public class TypeCheckVisitor implements ASTVisitor {
 		String id = fc.getIdentifier().toString();
 		
 		/* Check if the function is declared */
-		if (!env.containsKey(id)) {
+		if (!env.containsFun(id)) {
 			String s = "Name " + id.toString() + " cannot be resolved";
 			SemanticErrorObject seo = new SemanticErrorObject(
 					fc.getIdentifier_line(), fc.getIdentifier_col(), s);
 			Main.handleSemanticError(seo);
 		}
 		
-		VType temp = env.get(id);
-		if (!(temp instanceof FunType)) {
-			String s = "Expected function type, but found " + temp.toString();
-			SemanticErrorObject seo = new SemanticErrorObject(
-					fc.getIdentifier_line(), fc.getIdentifier_col(), s);
-			Main.handleSemanticError(seo);
-		}
-		FunType funType = (FunType)temp;
+		FunType funType = env.getFunType(id);
 		String ABIName = functionToABIName(id, funType);
 		fc.setABIName(ABIName);
 		VType paramType = funType.getParamTypes();

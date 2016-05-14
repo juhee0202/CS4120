@@ -33,12 +33,9 @@ public class TypeCheckVisitor implements ASTVisitor {
 										// -> dirtied by visit(ClassDecl)
 	private VType functionReturnType;
 	private boolean negativeNumber = false; // needed for UnaryExpr, Literal
-<<<<<<< HEAD
 	private int whileCount;				// number of nested while loops we're currently in
-=======
 	private boolean isInClass = false;
 	private boolean isInFunctionDecl = false;
->>>>>>> 9b465a57774d2209d116f4da869f6d4a077e89e5
 	
 	/**
 	 * Creates a TypeCheckVisitor instance

@@ -780,6 +780,29 @@ public class TypeCheckVisitor implements ASTVisitor {
 	}
 	
 	/**
+	 * Call the accept/visit on the underlying decl/init
+	 */
+	@Override
+	public void visit(GlobalDecl gd) {
+		GlobalDecl.Type gdType = gd.getType();
+		switch(gdType) {
+		case SHORT_TUPLE_DECL:
+			gd.getShortTupleDecl().accept(this);
+			break;
+		case TUPLE_INIT:
+			gd.getTupleInit().accept(this);
+			break;
+		case VAR_DECL:
+			gd.getVarDecl().accept(this);
+			break;
+		case VAR_INIT:
+			gd.getVarInit().accept(this);
+			break;
+		}
+	}
+	
+	/**
+	 * Dirties tempType
 	 * id can be either a class type or a variable
 	 */
 	@Override
@@ -1398,10 +1421,11 @@ public class TypeCheckVisitor implements ASTVisitor {
 		}
 
 	}
-
+	
 	@Override
 	public void visit(ClassBody cb) {
 		List<Decl> decls = cb.getAllDecls();
+		// decl can be either 1) GlobalDecl 2) FunctionDecl
 		for (Decl decl : decls) {
 			decl.accept(this);
 		}
@@ -1437,28 +1461,6 @@ public class TypeCheckVisitor implements ASTVisitor {
 			// make sure that we are in class scope
 			break;
 		default:
-			break;
-		}
-	}
-
-	/**
-	 * Call the accept/visit on the underlying decl/init
-	 */
-	@Override
-	public void visit(GlobalDecl gd) {
-		GlobalDecl.Type gdType = gd.getType();
-		switch(gdType) {
-		case SHORT_TUPLE_DECL:
-			gd.getShortTupleDecl().accept(this);
-			break;
-		case TUPLE_INIT:
-			gd.getTupleInit().accept(this);
-			break;
-		case VAR_DECL:
-			gd.getVarDecl().accept(this);
-			break;
-		case VAR_INIT:
-			gd.getVarInit().accept(this);
 			break;
 		}
 	}

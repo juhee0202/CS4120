@@ -1581,5 +1581,19 @@ public class TypeCheckVisitor implements ASTVisitor {
 		
 		return ABIName + returnTypeString + paramTypesString;
 	}
+
+	/**
+	 * 
+	 * @param currentClass: name of the class to get super classes of
+	 * @return list of superclasses in order of most immediate superclass to
+	 * highest superclass
+	 */
+	private List<String> getSuperClasses(String currentClass) {
+		// TODO
+//		List<String> superclasses = new ArrayList<String>();
+//		ClassType ct = 
+//		while ()
+//		return superclasses;
+	}
 	
 }

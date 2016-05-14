@@ -25,9 +25,11 @@ public class TypeCheckVisitor implements ASTVisitor {
 	private Environment env;
 	
 	/** HashMap of all declared variables */
-	private Stack<String> stack;	// "_": special marker
+	private Stack<String> stack;		// "_": special marker
 	private VType tempType;
-	private VType stmtType;	// either UnitType or VoidType
+	private VType stmtType;				// either UnitType or VoidType
+	private ClassType classType; 		// current class's type that we're typechecking 
+										// -> dirtied by visit(ClassDecl)
 	private VType functionReturnType;
 	private boolean negativeNumber = false; // needed for UnaryExpr, Literal
 	
@@ -1410,6 +1412,7 @@ public class TypeCheckVisitor implements ASTVisitor {
 
 	@Override
 	public void visit(ClassDecl cd) {
+		classEnv = env.get(cd.getClassName().toString());
 		cd.getClassBody().accept(this);
 	}
 

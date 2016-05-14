@@ -20,19 +20,64 @@ public class ClassType implements VType{
 	HashMap<String, VType> fieldEnv;
 	HashMap<String, FunType> methodEnv; 
 
-	public ClassType(String name, HashMap<String, VType> fe, HashMap<String, FunType> me) {
-		className = name;
-		fieldEnv = fe;
-		methodEnv = me;
-		superClassName = null;
+	public ClassType(InterfaceClassDecl intClassDecl) {
+		className = intClassDecl.getClassName().getTheValue();
+		superClassName = intClassDecl.getSuperclassName().getTheValue();
+		fieldEnv = null;
+		methodEnv = new HashMap<String, FunType>();
+		List<InterfaceFunc> methods = intClassDecl.getMethods();
+		for (InterfaceFunc method: methods) {
+			methodEnv.put(method.getIdentifier().toString(), new FunType(method));
+		}
 	}
 	
-	public ClassType(String name, String superName, 
-			HashMap<String, VType> fe, HashMap<String, FunType> me) {
-		className = name;
-		superClassName = superName;
-		fieldEnv = fe;
-		methodEnv = me;
+	public ClassType(ClassDecl classDecl) {
+		className = classDecl.getClassName().getTheValue();
+		superClassName = classDecl.getSuperclassName().getTheValue();
+		fieldEnv = new HashMap<String, VType>();
+		methodEnv = new HashMap<String, FunType>();
+		
+		List<GlobalDecl> fields = classDecl.getFields();
+		List<FunctionDecl> methods = classDecl.getMethods();
+		
+		for (GlobalDecl field: fields) {
+			String fieldName;
+			VType fieldType;
+			
+			switch (field.getType()) {
+			case VAR_DECL:
+				VarDecl varDecl = field.getVarDecl();
+				fieldName = varDecl.getIdentifier().toString();
+				fieldType = new VarType(varDecl);
+				fieldEnv.put(fieldName, fieldType);
+				break;
+			case VAR_INIT:
+				// this should actually just be a duplicate add.. could get rid of it
+				VarInit varInit = field.getVarInit();
+				fieldName = varInit.getId().toString();
+				fieldType = new VarType(varInit.getVarDecl());
+				fieldEnv.put(fieldName, fieldType);
+				break;
+			case SHORT_TUPLE_DECL:
+				ShortTupleDecl tupleDecl = field.getShortTupleDecl();
+				for (Identifier id: tupleDecl.getAllIdentifiers()) {
+					fieldName = id.getTheValue();
+					fieldType = new VarType(tupleDecl.getType());
+					fieldEnv.put(fieldName, fieldType);
+				}
+				break;
+			case TUPLE_INIT:
+				TupleInit tupleInit = field.getTupleInit();
+				break;
+			default:
+				break;
+			}
+			
+		}
+		
+		for (FunctionDecl method: methods) {
+			methodEnv.put(method.getIdentifier().toString(), new FunType(method));
+		}
 	}
 
 	public String getClassName() {
@@ -72,7 +117,8 @@ public class ClassType implements VType{
 	 * @return the VType of the member. 
 	 * Returns null if the member does not exist in the class environment
 	 */
-	public VType getType(String name) {
+	public VType getFieldType(String name) {
+		// TODO
 		VType fieldType = fieldEnv.get(name);
 		if (fieldType != null) {
 			return fieldType;
@@ -105,14 +151,9 @@ public class ClassType implements VType{
 		return 1;
 	}
 	
-	@Override
-	public boolean equals(Object o) {
-		if (!(o instanceof ClassType)) {
-			return false;
-		}
+	public boolean compareClassSignatures(ClassType argClassType) {
 		
 		// if class names are different, return false
-		ClassType argClassType = (ClassType) o;
 		if (!argClassType.getClassName().equals(className)) {
 			return false;
 		}

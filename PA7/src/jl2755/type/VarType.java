@@ -21,7 +21,7 @@ public class VarType implements VType {
 	private boolean isArray;
 	private boolean isObject;
 	private String elementType;
-	private Integer numBrackets;
+	private int numBrackets;
 	
 //	private boolean isBool;				// true if primitive boolean, else false
 //	private boolean isPrimitiveArray;	// true if Primitive array type, else false
@@ -119,26 +119,26 @@ public class VarType implements VType {
 //		}
 	}
 	
-	/**
-	 * Precondition: creating either a PrimitiveType or ArrayType with only primitive elements
-	 * @param argIsBool
-	 * @param argNumBrackets
-	 */
-	public VarType(boolean argIsBool, int argNumBrackets){
-		numBrackets = argNumBrackets;
-		elementType = (argIsBool)? "bool" : "int";
-		if (argNumBrackets == 0) {
-			isPrimitive = true;
-			isArray = false;
-			isObject = false;
-		} else {
-			isPrimitive = false;
-			isArray = true;
-			isObject = false;
-		}
-//		isBool = argIsBool;
+//	/**
+//	 * Precondition: creating either a PrimitiveType or ArrayType with only primitive elements
+//	 * @param argIsBool
+//	 * @param argNumBrackets
+//	 */
+//	public VarType(boolean argIsBool, int argNumBrackets){
 //		numBrackets = argNumBrackets;
-	}
+//		elementType = (argIsBool)? "bool" : "int";
+//		if (argNumBrackets == 0) {
+//			isPrimitive = true;
+//			isArray = false;
+//			isObject = false;
+//		} else {
+//			isPrimitive = false;
+//			isArray = true;
+//			isObject = false;
+//		}
+////		isBool = argIsBool;
+////		numBrackets = argNumBrackets;
+//	}
 	
 	public VarType(String elementType, int numBrackets) {
 		this.elementType = elementType;
@@ -179,9 +179,9 @@ public class VarType implements VType {
 	 */
 	public VarType getPrimitiveType() {
 		if (elementType.equals("bool")) {
-			return new VarType(true, 0);
+			return new VarType("bool", 0);
 		} else if (elementType.equals("int")) {
-			return new VarType(false, 0);
+			return new VarType("int", 0);
 		} else {
 			System.out.println("VarType.java: getPrimitiveType()");
 			return null;
@@ -214,6 +214,10 @@ public class VarType implements VType {
 
 	public int getNumBrackets() {
 		return numBrackets;
+	}
+	
+	public boolean canCast() {
+		return numBrackets == 0;
 	}
 	
 	public String getElementType() {

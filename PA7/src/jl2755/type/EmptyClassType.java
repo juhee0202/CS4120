@@ -22,4 +22,10 @@ public class EmptyClassType implements VType {
 		// TODO Auto-generated method stub
 		return false;
 	}
+
+	@Override
+	public boolean singleReturn() {
+		// TODO Auto-generated method stub
+		return false;
+	}
 }

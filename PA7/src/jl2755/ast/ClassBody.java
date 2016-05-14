@@ -13,13 +13,13 @@ import jl2755.visitor.ASTVisitor;
  *
  */
 public class ClassBody {
-	private GlobalDecl globalDecl;
+	private FieldDecl fieldDecl;
 	private ClassBody classBody;
 	private FunctionDecl functionDecl;
 	private int index;
 	
-	public ClassBody(GlobalDecl gd) {
-		globalDecl = gd;
+	public ClassBody(FieldDecl fd) {
+		fieldDecl = fd;
 		index = 0;
 	}
 
@@ -27,8 +27,8 @@ public class ClassBody {
 		index = 4;
 	}
 	
-	public ClassBody(GlobalDecl gd, ClassBody cb) {
-		globalDecl = gd;
+	public ClassBody(FieldDecl fd, ClassBody cb) {
+		fieldDecl = fd;
 		classBody = cb;
 		index = 1;
 	}
@@ -49,8 +49,8 @@ public class ClassBody {
 	 */
 	public List<Decl> getAllDecls() {
 		List<Decl> decls = new ArrayList<Decl>();
-		if (globalDecl != null) {
-			decls.add(globalDecl);
+		if (fieldDecl != null) {
+			decls.add(fieldDecl);
 		} else if (functionDecl != null) {
 			decls.add(functionDecl);
 		}
@@ -73,10 +73,10 @@ public class ClassBody {
 		return methods;
 	}
 	
-	public List<GlobalDecl> getFields() {
-		List<GlobalDecl> fields = new ArrayList<GlobalDecl>();
-		if (globalDecl != null) {
-			fields.add(globalDecl);
+	public List<FieldDecl> getFields() {
+		List<FieldDecl> fields = new ArrayList<FieldDecl>();
+		if (fieldDecl != null) {
+			fields.add(fieldDecl);
 		}
 		if (classBody != null) {
 			fields.addAll(classBody.getFields());
@@ -95,7 +95,7 @@ public class ClassBody {
 		switch (index) {
 		case 0:
 		case 1:
-			globalDecl.prettyPrintNode();
+			fieldDecl.prettyPrintNode();
 			break;
 		case 2:
 		case 3:

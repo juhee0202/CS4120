@@ -183,12 +183,13 @@ public class Scanner implements java_cup.runtime.Scanner {
     "\1\51\1\0\1\52\1\53\1\54\1\0\1\55\1\56"+
     "\5\0\1\57\10\4\1\60\3\4\1\61\1\62\2\4"+
     "\1\63\3\0\1\64\1\65\1\66\3\0\1\67\1\70"+
-    "\3\4\1\71\3\4\1\72\1\73\1\74\2\4\1\75"+
-    "\1\76\2\0\1\77\4\4\1\100\1\101\1\102\1\103"+
-    "\1\104\1\105\1\106\2\4\1\107\1\4\1\110";
+    "\3\4\1\71\4\4\1\72\1\73\1\74\2\4\1\75"+
+    "\1\76\2\0\1\77\3\4\1\100\1\4\1\101\1\102"+
+    "\1\103\1\104\1\105\1\106\1\107\2\4\1\110\1\4"+
+    "\1\111";
 
   private static int [] zzUnpackAction() {
-    int [] result = new int[153];
+    int [] result = new int[155];
     int offset = 0;
     offset = zzUnpackAction(ZZ_ACTION_PACKED_0, offset, result);
     return result;
@@ -228,14 +229,14 @@ public class Scanner implements java_cup.runtime.Scanner {
     "\0\u0cb0\0\u0ce8\0\u0d20\0\u0d58\0\u0150\0\u0d90\0\u0dc8\0\u0e00"+
     "\0\u0150\0\u0150\0\u0e38\0\u0e70\0\250\0\u0ea8\0\u0ee0\0\u0f18"+
     "\0\250\0\250\0\250\0\u0f50\0\u0f88\0\u0fc0\0\250\0\u0150"+
-    "\0\u0ff8\0\u1030\0\u1068\0\u0150\0\u10a0\0\u10d8\0\u1110\0\u0150"+
-    "\0\u0150\0\u0150\0\u1148\0\u1180\0\250\0\250\0\u11b8\0\u11f0"+
-    "\0\u0150\0\u1228\0\u1260\0\u1298\0\u12d0\0\u0150\0\u0150\0\u0150"+
-    "\0\250\0\250\0\u0150\0\u0150\0\u1308\0\u1340\0\u0150\0\u1378"+
-    "\0\u0150";
+    "\0\u0ff8\0\u1030\0\u1068\0\u0150\0\u10a0\0\u10d8\0\u1110\0\u1148"+
+    "\0\u0150\0\u0150\0\u0150\0\u1180\0\u11b8\0\250\0\250\0\u11f0"+
+    "\0\u1228\0\u0150\0\u1260\0\u1298\0\u12d0\0\u0150\0\u1308\0\u0150"+
+    "\0\u0150\0\u0150\0\250\0\250\0\u0150\0\u0150\0\u1340\0\u1378"+
+    "\0\u0150\0\u13b0\0\u0150";
 
   private static int [] zzUnpackRowMap() {
-    int [] result = new int[153];
+    int [] result = new int[155];
     int offset = 0;
     offset = zzUnpackRowMap(ZZ_ROWMAP_PACKED_0, offset, result);
     return result;
@@ -302,29 +303,30 @@ public class Scanner implements java_cup.runtime.Scanner {
     "\1\0\5\10\1\171\15\10\32\0\12\10\1\0\20\10"+
     "\1\172\2\10\32\0\12\10\1\0\14\10\1\173\6\10"+
     "\32\0\12\10\1\0\4\10\1\174\16\10\32\0\12\10"+
-    "\1\0\4\10\1\175\16\10\32\0\12\10\1\0\12\10"+
-    "\1\176\10\10\32\0\12\10\1\0\10\10\1\177\12\10"+
-    "\32\0\12\10\1\0\2\10\1\200\20\10\32\0\12\10"+
-    "\1\0\4\10\1\201\16\10\32\0\12\10\1\0\10\10"+
-    "\1\202\12\10\32\0\12\10\1\0\10\10\1\203\12\10"+
-    "\32\0\12\10\1\0\2\10\1\204\20\10\36\0\6\205"+
-    "\62\0\6\206\62\0\2\206\1\205\3\206\62\0\6\207"+
-    "\62\0\6\210\62\0\2\210\1\207\3\210\56\0\12\10"+
-    "\1\0\6\10\1\211\14\10\32\0\12\10\1\0\12\10"+
-    "\1\212\10\10\32\0\12\10\1\0\3\10\1\213\17\10"+
-    "\32\0\12\10\1\0\11\10\1\214\11\10\32\0\12\10"+
-    "\1\0\13\10\1\215\7\10\32\0\12\10\1\0\10\10"+
-    "\1\216\12\10\32\0\12\10\1\0\4\10\1\217\16\10"+
-    "\32\0\12\10\1\0\4\10\1\220\16\10\35\0\1\221"+
-    "\67\0\1\222\64\0\12\10\1\0\21\10\1\223\1\10"+
-    "\32\0\12\10\1\0\11\10\1\224\11\10\32\0\12\10"+
-    "\1\0\16\10\1\225\4\10\32\0\12\10\1\0\11\10"+
-    "\1\226\11\10\32\0\12\10\1\0\10\10\1\227\12\10"+
-    "\32\0\12\10\1\0\14\10\1\230\6\10\32\0\12\10"+
-    "\1\0\4\10\1\231\16\10\25\0";
+    "\1\0\4\10\1\175\16\10\32\0\12\10\1\0\10\10"+
+    "\1\176\1\10\1\177\10\10\32\0\12\10\1\0\10\10"+
+    "\1\200\12\10\32\0\12\10\1\0\2\10\1\201\20\10"+
+    "\32\0\12\10\1\0\4\10\1\202\16\10\32\0\12\10"+
+    "\1\0\10\10\1\203\12\10\32\0\12\10\1\0\10\10"+
+    "\1\204\12\10\32\0\12\10\1\0\2\10\1\205\20\10"+
+    "\36\0\6\206\62\0\6\207\62\0\2\207\1\206\3\207"+
+    "\62\0\6\210\62\0\6\211\62\0\2\211\1\210\3\211"+
+    "\56\0\12\10\1\0\6\10\1\212\14\10\32\0\12\10"+
+    "\1\0\12\10\1\213\10\10\32\0\12\10\1\0\3\10"+
+    "\1\214\17\10\32\0\12\10\1\0\11\10\1\215\11\10"+
+    "\32\0\12\10\1\0\12\10\1\216\10\10\32\0\12\10"+
+    "\1\0\13\10\1\217\7\10\32\0\12\10\1\0\10\10"+
+    "\1\220\12\10\32\0\12\10\1\0\4\10\1\221\16\10"+
+    "\32\0\12\10\1\0\4\10\1\222\16\10\35\0\1\223"+
+    "\67\0\1\224\64\0\12\10\1\0\21\10\1\225\1\10"+
+    "\32\0\12\10\1\0\11\10\1\226\11\10\32\0\12\10"+
+    "\1\0\16\10\1\227\4\10\32\0\12\10\1\0\11\10"+
+    "\1\230\11\10\32\0\12\10\1\0\10\10\1\231\12\10"+
+    "\32\0\12\10\1\0\14\10\1\232\6\10\32\0\12\10"+
+    "\1\0\4\10\1\233\16\10\25\0";
 
   private static int [] zzUnpackTrans() {
-    int [] result = new int[5040];
+    int [] result = new int[5096];
     int offset = 0;
     offset = zzUnpackTrans(ZZ_TRANS_PACKED_0, offset, result);
     return result;
@@ -366,10 +368,10 @@ public class Scanner implements java_cup.runtime.Scanner {
     "\4\1\3\11\1\1\5\11\1\1\2\11\1\1\1\11"+
     "\2\1\2\11\25\1\4\11\1\0\3\11\1\0\2\11"+
     "\5\0\1\11\20\1\1\11\3\0\3\11\3\0\1\11"+
-    "\15\1\2\11\2\0\10\1\2\11\7\1";
+    "\16\1\2\11\2\0\11\1\2\11\7\1";
 
   private static int [] zzUnpackAttribute() {
-    int [] result = new int[153];
+    int [] result = new int[155];
     int offset = 0;
     offset = zzUnpackAttribute(ZZ_ATTRIBUTE_PACKED_0, offset, result);
     return result;
@@ -877,291 +879,295 @@ public class Scanner implements java_cup.runtime.Scanner {
           case 1: 
             { throw new LexicalError(yyline(), yycolumn(), "Illegal input \"" + yytext() + "\"");
             }
-          case 73: break;
+          case 74: break;
           case 2: 
             { /* ignore */
             }
-          case 74: break;
+          case 75: break;
           case 3: 
             { return symbol(sym.DIVIDE,"/");
             }
-          case 75: break;
+          case 76: break;
           case 4: 
             { return symbol(sym.IDENTIFIER, yytext());
             }
-          case 76: break;
+          case 77: break;
           case 5: 
             { return symbol(sym.UNDERSCORE,"_");
             }
-          case 77: break;
+          case 78: break;
           case 6: 
             { yybegin(CHARLITERAL); origLine = yyline+1; origCol = yycolumn+1;
             }
-          case 78: break;
+          case 79: break;
           case 7: 
             { return symbol(sym.INTEGER_LITERAL, yytext());
             }
-          case 79: break;
+          case 80: break;
           case 8: 
             { return symbol(sym.OPEN_PAREN,"(");
             }
-          case 80: break;
+          case 81: break;
           case 9: 
             { return symbol(sym.CLOSE_PAREN,")");
             }
-          case 81: break;
+          case 82: break;
           case 10: 
             { return symbol(sym.OPEN_BRACE,"{");
             }
-          case 82: break;
+          case 83: break;
           case 11: 
             { return symbol(sym.CLOSE_BRACE,"}");
             }
-          case 83: break;
+          case 84: break;
           case 12: 
             { return symbol(sym.OPEN_BRACKET,"[");
             }
-          case 84: break;
+          case 85: break;
           case 13: 
             { return symbol(sym.CLOSE_BRACKET,"]");
             }
-          case 85: break;
+          case 86: break;
           case 14: 
             { return symbol(sym.SEMICOLON,";");
             }
-          case 86: break;
+          case 87: break;
           case 15: 
             { return symbol(sym.COMMA,",");
             }
-          case 87: break;
+          case 88: break;
           case 16: 
             { return symbol(sym.DOT,".");
             }
-          case 88: break;
+          case 89: break;
           case 17: 
             { return symbol(sym.GETS,"=");
             }
-          case 89: break;
+          case 90: break;
           case 18: 
             { return symbol(sym.GT,">");
             }
-          case 90: break;
+          case 91: break;
           case 19: 
             { return symbol(sym.LT,"<");
             }
-          case 91: break;
+          case 92: break;
           case 20: 
             { return symbol(sym.NOT,"!");
             }
-          case 92: break;
+          case 93: break;
           case 21: 
             { return symbol(sym.COLON,":");
             }
-          case 93: break;
+          case 94: break;
           case 22: 
             { return symbol(sym.PLUS,"+");
             }
-          case 94: break;
+          case 95: break;
           case 23: 
             { return symbol(sym.MINUS,"-");
             }
-          case 95: break;
+          case 96: break;
           case 24: 
             { return symbol(sym.TIMES,"*");
             }
-          case 96: break;
+          case 97: break;
           case 25: 
             { return symbol(sym.AND,"&");
             }
-          case 97: break;
+          case 98: break;
           case 26: 
             { return symbol(sym.OR,"|");
             }
-          case 98: break;
+          case 99: break;
           case 27: 
             { return symbol(sym.MODULO,"%");
             }
-          case 99: break;
+          case 100: break;
           case 28: 
             { yybegin(STRING); string.setLength(0); origLine = yyline+1; origCol = yycolumn+1; currCol = yycolumn+1;
             }
-          case 100: break;
+          case 101: break;
           case 29: 
             { string.append( yytext() ); currCol++;
             }
-          case 101: break;
+          case 102: break;
           case 30: 
             { throw new LexicalError(yyline(), currCol+1, "Illegal input \"\\n\"");
             }
-          case 102: break;
+          case 103: break;
           case 31: 
             { string.append( "'" ); currCol++;
             }
-          case 103: break;
+          case 104: break;
           case 32: 
             { throw new LexicalError(yyline(), currCol+1, "Illegal input \"" + yytext() + "\"");
             }
-          case 104: break;
+          case 105: break;
           case 33: 
             { yybegin(YYINITIAL); return symbol(sym.STRING_LITERAL, origLine, origCol, string.toString());
             }
-          case 105: break;
+          case 106: break;
           case 34: 
             { throw new LexicalError(yyline(), yycolumn(), "Illegal input \"\\n\"");
             }
-          case 106: break;
+          case 107: break;
           case 35: 
             { throw new LexicalError(origLine, origCol, "Illegal input \"\'\"");
             }
-          case 107: break;
+          case 108: break;
           case 36: 
             { return symbol(sym.TO,"to");
             }
-          case 108: break;
+          case 109: break;
           case 37: 
             { return symbol(sym.IF,"if");
             }
-          case 109: break;
+          case 110: break;
           case 38: 
             { return symbol(sym.EQUAL,"==");
             }
-          case 110: break;
+          case 111: break;
           case 39: 
             { return symbol(sym.GEQ,">=");
             }
-          case 111: break;
+          case 112: break;
           case 40: 
             { return symbol(sym.LEQ,"<=");
             }
-          case 112: break;
+          case 113: break;
           case 41: 
             { return symbol(sym.NOT_EQUAL,"!=");
             }
-          case 113: break;
+          case 114: break;
           case 42: 
             { string.append( "\\'" ); currCol++;
             }
-          case 114: break;
+          case 115: break;
           case 43: 
             { string.append( "\\\\" ); currCol++;
             }
-          case 115: break;
+          case 116: break;
           case 44: 
             { string.append( "\\n" ); currCol++;
             }
-          case 116: break;
+          case 117: break;
           case 45: 
             { string.append( "\\\"" ); currCol++;
             }
-          case 117: break;
+          case 118: break;
           case 46: 
             { yybegin(YYINITIAL); return symbol(sym.CHARACTER_LITERAL, origLine, origCol, yytext().substring(0,1));
             }
-          case 118: break;
+          case 119: break;
           case 47: 
             { yybegin(YYINITIAL); return symbol(sym.CHARACTER_LITERAL, origLine, origCol, "\"");
             }
-          case 119: break;
+          case 120: break;
           case 48: 
             { return symbol(sym.NEW,"new");
             }
-          case 120: break;
+          case 121: break;
           case 49: 
             { return symbol(sym.INT,"int");
             }
-          case 121: break;
+          case 122: break;
           case 50: 
             { return symbol(sym.USE,"use");
             }
-          case 122: break;
+          case 123: break;
           case 51: 
             { return symbol(sym.HIGH_MULT,"*>>");
             }
-          case 123: break;
+          case 124: break;
           case 52: 
             { yybegin(YYINITIAL); return symbol(sym.CHARACTER_LITERAL, origLine, origCol, "\\'");
             }
-          case 124: break;
+          case 125: break;
           case 53: 
             { yybegin(YYINITIAL); return symbol(sym.CHARACTER_LITERAL, origLine, origCol, "\\\\");
             }
-          case 125: break;
+          case 126: break;
           case 54: 
             { yybegin(YYINITIAL); return symbol(sym.CHARACTER_LITERAL, origLine, origCol, "\\n");
             }
-          case 126: break;
+          case 127: break;
           case 55: 
             { yybegin(YYINITIAL); return symbol(sym.CHARACTER_LITERAL, origLine, origCol, "\\\"");
             }
-          case 127: break;
+          case 128: break;
           case 56: 
             { return symbol(sym.BOOL,"bool");
             }
-          case 128: break;
+          case 129: break;
           case 57: 
             { return symbol(sym.ELSE,"else");
             }
-          case 129: break;
+          case 130: break;
           case 58: 
             { return symbol(sym.NULL,"null");
             }
-          case 130: break;
+          case 131: break;
           case 59: 
             { return symbol(sym.TRUE,Boolean.TRUE);
             }
-          case 131: break;
+          case 132: break;
           case 60: 
             { return symbol(sym.THIS,"this");
             }
-          case 132: break;
+          case 133: break;
           case 61: 
             { string.append( yytext() ); currCol = currCol+4;
             }
-          case 133: break;
+          case 134: break;
           case 62: 
             { string.append( parseHex(yytext()) ); currCol++;
             }
-          case 134: break;
+          case 135: break;
           case 63: 
             { return symbol(sym.BREAK,"break");
             }
-          case 135: break;
-          case 64: 
-            { return symbol(sym.CLASS,"class");
-            }
           case 136: break;
-          case 65: 
-            { return symbol(sym.FALSE,Boolean.FALSE);
+          case 64: 
+            { return symbol(sym.CONST,"const");
             }
           case 137: break;
-          case 66: 
-            { return symbol(sym.WHILE,"while");
+          case 65: 
+            { return symbol(sym.CLASS,"class");
             }
           case 138: break;
-          case 67: 
-            { yybegin(YYINITIAL); return symbol(sym.CHARACTER_LITERAL, origLine, origCol, yytext().substring(0, yylength()));
+          case 66: 
+            { return symbol(sym.FALSE,Boolean.FALSE);
             }
           case 139: break;
-          case 68: 
-            { yybegin(YYINITIAL); return symbol(sym.CHARACTER_LITERAL, origLine, origCol, parseHex(yytext().substring(0, yylength())));
+          case 67: 
+            { return symbol(sym.WHILE,"while");
             }
           case 140: break;
-          case 69: 
-            { return symbol(sym.LENGTH,"length");
+          case 68: 
+            { yybegin(YYINITIAL); return symbol(sym.CHARACTER_LITERAL, origLine, origCol, yytext().substring(0, yylength()));
             }
           case 141: break;
-          case 70: 
-            { return symbol(sym.RETURN,"return");
+          case 69: 
+            { yybegin(YYINITIAL); return symbol(sym.CHARACTER_LITERAL, origLine, origCol, parseHex(yytext().substring(0, yylength())));
             }
           case 142: break;
-          case 71: 
-            { return symbol(sym.EXTENDS,"extends");
+          case 70: 
+            { return symbol(sym.LENGTH,"length");
             }
           case 143: break;
-          case 72: 
-            { return symbol(sym.CONTINUE,"continue");
+          case 71: 
+            { return symbol(sym.RETURN,"return");
             }
           case 144: break;
+          case 72: 
+            { return symbol(sym.EXTENDS,"extends");
+            }
+          case 145: break;
+          case 73: 
+            { return symbol(sym.CONTINUE,"continue");
+            }
+          case 146: break;
           default:
             zzScanError(ZZ_NO_MATCH);
         }

@@ -34,4 +34,6 @@ public interface ASTVisitor {
 	public void visit(VarDecl vd);
 	public void visit(VarInit vi);
 	public void visit(WhileStmt ws);
+	public void visit(FieldDecl fieldDecl);
+	public void visit(SimpleVarInit simpleVarInit);
 }

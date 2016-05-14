@@ -46,8 +46,7 @@ public class VarType implements VType {
 			MixedArrayType mat = vd.getMixedArrayType();
 			isBool = mat.getP_type().getIndex() == 1;
 			numBrackets = mat.getTotalNumBrackets();
-		}
-		if (vd.getIndex() == 1){
+		} else if (vd.getIndex() == 1){
 			PrimitiveType pt = vd.getPrimitiveType();
 			setIsBool(pt.getIndex() == 1);
 			numBrackets = 0;

@@ -49,7 +49,7 @@ public class TupleInit implements NakedStmt {
 	}
 	
 	/**
-	 * @return a List of VarDecls in the tuple initialization statement
+	 * @return a List of all VarDecls in the tuple initialization statement
 	 * UNDERSCOREs are represented by null
 	 */
 	public List<VarDecl> getVarDecls() {

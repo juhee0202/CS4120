@@ -11,6 +11,7 @@ import java.util.Stack;
 import jl2755.Main;
 import jl2755.SemanticErrorObject;
 import jl2755.ast.*;
+import jl2755.type.ClassType;
 import jl2755.type.FunType;
 import jl2755.type.TupleType;
 import jl2755.type.UnitType;
@@ -20,22 +21,22 @@ import jl2755.type.VoidType;
 
 public class TypeCheckVisitor implements ASTVisitor {
 
-	/** HashMap for the object oriented Xi */
-	private HashMap<String, VType> globalEnv;
+	/** Environment of the program */
+	private Environment env;
 	
 	/** HashMap of all declared variables */
-	private HashMap<String, VType> env;
-	private HashMap<String, VType> if_env;
 	private Stack<String> stack;	// "_": special marker
 	private VType tempType;
 	private VType stmtType;	// either UnitType or VoidType
 	private VType functionReturnType;
 	private boolean negativeNumber = false; // needed for UnaryExpr, Literal
 	
-	public TypeCheckVisitor(){
-		globalEnv = new HashMap<String, VType>();
-//		env = new HashMap<String, VType>();
-//		if_env = new HashMap<String, VType>();
+	/**
+	 * Creates a TypeCheckVisitor instance
+	 * @param initial_env is the initial environment that the program can use
+	 */
+	public TypeCheckVisitor(Environment initial_env){
+		env = initial_env;
 		stack = new Stack<String>();
 	}
 	
@@ -904,152 +905,23 @@ public class TypeCheckVisitor implements ASTVisitor {
 	}
 	
 	/**
-	 * PA7 note: 
-	 * 	handle module list here (should use p.getAllDecls())
-	 * 
-	 * 1) Update if_env with function decls from interface files
-	 * 2) Update env with function decls from the file.
-	 * 
+	 * Visit all Decls to recursively typecheck
 	 * @param Program p
 	 */
 	@Override
 	public void visit(Program p) {
-		// Visit own interface file IF IT EXISTS
-		String fileName = Main.getSrcFile();
-		if (Main.checkInterfaceExists(fileName)) {
-			visitInterfaceFile(fileName, 1, 1);
-		}
-		
-		// Interface files are used => fill global environment with
-		if (p.getIndex() == 1) {
-			p.getUseId().accept(this);
-		}
-		
-		/* Add module members in current program to global env */
-		ModuleList ml = p.getModuleList();
-		List<Decl> decls = ml.getAllDecls();
-		for (Decl decl: decls) {
-			if (decl instanceof GlobalDecl) {
-				
-			} else if (decl instanceof ClassDecl) {
-				
-			} else if (decl instanceof FunctionDecl) {
-				List<FunctionDecl> functionDecls = p.getFunctionDecls();
-				for (FunctionDecl fd : functionDecls) {
-					String id = fd.getIdentifier().toString();
-					FunType funType = new FunType(fd);
-					
-					// if the function was declared in interface files
-					// OK if same FunType
-					if (if_env.containsKey(id)) {
-						FunType ifFunType = (FunType) if_env.get(id); // safe
-						if (!funType.equals(ifFunType)) {
-							String s = "Conflicting declarations on " + id + ": " 
-									+ "trying to add " + funType.toString() + " when "
-									+ ifFunType.toString() + " already exists.";
-							SemanticErrorObject seo = new SemanticErrorObject(
-									fd.getIdentifier_line(), fd.getIdentifier_col(), s);
-							Main.handleSemanticError(seo);
-						}
-					}
-					// if the function was declared before
-					if (env.containsKey(id)) {
-						String s = "Multiple declaration found for function " + id;
-						SemanticErrorObject seo = new SemanticErrorObject(
-								fd.getIdentifier_line(), fd.getIdentifier_col(), s);
-						Main.handleSemanticError(seo);
-					}
-					env.put(id, funType);
-					stack.push(id);
-				}
-			}
-		}
-		
-		///////////////////////////////////////////////////
-		
-		/* Add the function declarations to the environment */
-//		List<FunctionDecl> functionDecls = p.getFunctionDecls();
-//		for (FunctionDecl fd : functionDecls) {
-//			String id = fd.getIdentifier().toString();
-//			FunType funType = new FunType(fd);
-//			
-//			// if the function was declared in interface files
-//			// OK if same FunType
-//			if (if_env.containsKey(id)) {
-//				FunType ifFunType = (FunType) if_env.get(id); // safe
-//				if (!funType.equals(ifFunType)) {
-//					String s = "Conflicting declarations on " + id + ": " 
-//							+ "trying to add " + funType.toString() + " when "
-//							+ ifFunType.toString() + " already exists.";
-//					SemanticErrorObject seo = new SemanticErrorObject(
-//							fd.getIdentifier_line(), fd.getIdentifier_col(), s);
-//					Main.handleSemanticError(seo);
-//				}
-//			}
-//			// if the function was declared before
-//			if (env.containsKey(id)) {
-//				String s = "Multiple declaration found for function " + id;
-//				SemanticErrorObject seo = new SemanticErrorObject(
-//						fd.getIdentifier_line(), fd.getIdentifier_col(), s);
-//				Main.handleSemanticError(seo);
-//			}
-//			env.put(id, funType);
-//			stack.push(id);
-//		}
-		
-		/* Merge if_env with env */
-		env.putAll(if_env);
-		
-		// Check functions
-		for (FunctionDecl fd : functionDecls) {
-			fd.accept(this);
+		/* 
+		 * List of all declarations in the program
+		 * where declarations include
+		 * 	- GlobalDecl
+		 *  - FunctionDecl
+		 *  - ClassDecl
+		 */
+		List<Decl> decls = p.getAllDecls();
+		for (Decl decl : decls) {
+			decl.accept(this);
 		}
 	}
-//	@Override
-//	public void visit(Program p) {
-//		/* Update if_env if interface files are used */
-//		if (p.getIndex() == 1) {
-//			p.getUseId().accept(this);
-//		}
-//		
-//		/* Add the function declarations to the environment */
-//		List<FunctionDecl> functionDecls = p.getFunctionDecls();
-//		for (FunctionDecl fd : functionDecls) {
-//			String id = fd.getIdentifier().toString();
-//			FunType funType = new FunType(fd);
-//			
-//			// if the function was declared in interface files
-//			// OK if same FunType
-//			if (if_env.containsKey(id)) {
-//				FunType ifFunType = (FunType) if_env.get(id); // safe
-//				if (!funType.equals(ifFunType)) {
-//					String s = "Conflicting declarations on " + id + ": " 
-//							+ "trying to add " + funType.toString() + " when "
-//							+ ifFunType.toString() + " already exists.";
-//					SemanticErrorObject seo = new SemanticErrorObject(
-//							fd.getIdentifier_line(), fd.getIdentifier_col(), s);
-//					Main.handleSemanticError(seo);
-//				}
-//			}
-//			// if the function was declared before
-//			if (env.containsKey(id)) {
-//				String s = "Multiple declaration found for function " + id;
-//				SemanticErrorObject seo = new SemanticErrorObject(
-//						fd.getIdentifier_line(), fd.getIdentifier_col(), s);
-//				Main.handleSemanticError(seo);
-//			}
-//			env.put(id, funType);
-//			stack.push(id);
-//		}
-//		
-//		/* Merge if_env with env */
-//		env.putAll(if_env);
-//		
-//		// Check functions
-//		for (FunctionDecl fd : functionDecls) {
-//			fd.accept(this);
-//		}
-//	}
 
 	/**
 	 * DIRTIES tempType to the return type
@@ -1167,106 +1039,91 @@ public class TypeCheckVisitor implements ASTVisitor {
 	}
 	
 	/**
-	 * Similar to typechecking VarInit 
+	 * TupleInit has the following form:
+	 *  id,(id|_)* = functionCall
+	 *  ex) x,y = f()
+	 *  ex) x,_,z = g()
 	 * @param TupleInit ti
 	 */
 	@Override
 	public void visit(TupleInit ti) {
-		int index = ti.getIndex();
+		// type of the right hand side 
 		ti.getFunctionCall().accept(this);
 		VType returnType = tempType;
-		/* Case: _ = f() */
-		if (index == 0) {
-			if (!(returnType instanceof VarType)) {
-				if (returnType instanceof UnitType) {
-					String id = ti.getFunctionCall().getIdentifier().toString();
-					String s = id + " does not have a return value";
-					SemanticErrorObject seo = new SemanticErrorObject(
-							ti.getFunctionCall_line(), ti.getFunctionCall_col(), 
-							s);
-					Main.handleSemanticError(seo);
-				} else {
-					String s = "Mismatched number of values";
-					SemanticErrorObject seo = new SemanticErrorObject(
-							ti.getFunctionCall_line(), ti.getFunctionCall_col(), 
-							s);
-					Main.handleSemanticError(seo);	
-				}
-			}
-		}
-		/* Case: _, tdl = f() */
-		else if (index == 1) {
-			// typecheck
-			if (!(returnType instanceof TupleType)) {
+		
+		/* Special case of the form: _ = f() */
+		if (ti.getIndex() == 0) {
+			// returnType must be either a VarType or a ClassType
+			if (returnType instanceof UnitType) {
+				String id = ti.getFunctionCall().getIdentifier().toString();
+				String s = id + " does not have a return value";
+				SemanticErrorObject seo = new SemanticErrorObject(
+						ti.getFunctionCall_line(), ti.getFunctionCall_col(), 
+						s);
+				Main.handleSemanticError(seo);
+			} else if (returnType instanceof TupleType) {
 				String s = "Mismatched number of values";
 				SemanticErrorObject seo = new SemanticErrorObject(
-						ti.getFunctionCall_line(), ti.getFunctionCall_col(), s);
+						ti.getFunctionCall_line(), ti.getFunctionCall_col(), 
+						s);
 				Main.handleSemanticError(seo);	
 			}
-			returnType = (TupleType)returnType;
-			TupleType tupleType = new TupleType(ti);
-			if (!returnType.equals(tupleType)) {
-				String s = "Mismatched number of values";
-				SemanticErrorObject seo = new SemanticErrorObject(
-						ti.getFunctionCall_line(), ti.getFunctionCall_col(), s);
-				Main.handleSemanticError(seo);	
-			}
-			
-			// add to env
-			List<VarDecl> varDecls = ti.getVarDecls();
-			for (VarDecl vd : varDecls) {
-				if (vd == null) {
-					continue;
-				}
-				String id = vd.getIdentifier().toString();
-				if (env.containsKey(id)) {
-					String s = id + " is already declared";
-					SemanticErrorObject seo = new SemanticErrorObject(
-							vd.getIdentifier().getLineNumber(), 
-							vd.getIdentifier().getColumnNumber(), 
-							s);
-					Main.handleSemanticError(seo);	
-				}
-				VType type = new VarType(vd);
-				env.put(id, type);
-				stack.push(id);
-			}
-		}
-		/* Case: vd, tdl = f() */
+		} 
+		
+		/* General case */
 		else {
-			// typecheck
-			if (!(returnType instanceof TupleType)) {
-				String s = "Mismatched number of values";
+			// build a TupleType object for the left hand side
+			List<VarDecl> varDecls = ti.getVarDecls();
+			List<VType> types = new ArrayList<VType>();
+			for (int i = 0; i < varDecls.size(); i++) {
+				VarDecl varDecl = varDecls.get(i);
+				
+				// build types
+				if (varDecl == null) {	
+					types.add(new UnitType());
+				} else if (varDecl.getIndex() == 2) {
+					Identifier classId = varDecl.getClassType();
+					String className = classId.getTheValue();
+					if (!env.containsClass(className)) {
+						String s = "Type " + className + " cannot be resolved";
+						SemanticErrorObject seo = new SemanticErrorObject(
+								classId.getLineNumber(), classId.getColumnNumber(), s);
+						Main.handleSemanticError(seo);
+					}
+					types.add(env.getClassType(className));
+				} else {
+					types.add(new VarType(varDecl));
+				}
+				
+				// make sure that id is declared
+				Identifier id = varDecl.getIdentifier();
+				if (!env.containsVar(id.getTheValue())) {
+					String s = id + " cannot be resolved";
+					SemanticErrorObject seo = new SemanticErrorObject(
+							id.getLineNumber(), id.getColumnNumber(), s);
+					Main.handleSemanticError(seo);	
+				}
+			}
+			
+			// type of the left hand side
+			TupleType tupleType = new TupleType(types);
+			
+			// check if types of both sides agree
+			if (!returnType.equals(tupleType)) {
+				String s = "Mismatched types";
 				SemanticErrorObject seo = new SemanticErrorObject(
 						ti.getFunctionCall_line(), ti.getFunctionCall_col(), s);
 				Main.handleSemanticError(seo);	
 			}
-			returnType = (TupleType)returnType;
-			TupleType tupleType = new TupleType(ti);
-			if (!returnType.equals(tupleType)) {
-				String s = "Mismatched number of values";
-				SemanticErrorObject seo = new SemanticErrorObject(
-						ti.getVarDecl().getIdentifier().getLineNumber(), 
-						ti.getVarDecl().getIdentifier().getColumnNumber(), s);
-				Main.handleSemanticError(seo);	
-			}
 			
-			// add to env
-			List<VarDecl> varDecls = ti.getVarDecls();
-			for (VarDecl vd : varDecls) {
+			// update env & stack
+			for (int i = 0; i < varDecls.size(); i++) {
+				VarDecl vd = varDecls.get(i);
 				if (vd == null) {
 					continue;
 				}
-				String id = vd.getIdentifier().toString();
-				if (env.containsKey(id)) {
-					String s = id + " is already declared";
-					SemanticErrorObject seo = new SemanticErrorObject(
-							vd.getIdentifier().getLineNumber(), 
-							vd.getIdentifier().getColumnNumber(), 
-							s);
-					Main.handleSemanticError(seo);	
-				}
-				VType type = new VarType(vd);
+				String id = vd.getIdentifier().getTheValue();
+				VType type = types.get(i);
 				env.put(id, type);
 				stack.push(id);
 			}
@@ -1389,66 +1246,36 @@ public class TypeCheckVisitor implements ASTVisitor {
 		}
 	}
 
-//	@Override
-//	public void visit(UseId ui) {
-//		List<String> listOfUses = ui.getUseFiles();
-//		for (int i = 0; i < listOfUses.size(); i++){
-//			String fileName = listOfUses.get(i);
-//			Map<String, VType> tempMap = Main.checkInterface(fileName);
-//			Iterator<String> funcNameIter = tempMap.keySet().iterator();
-//			while (funcNameIter.hasNext()){
-//				String funcName = funcNameIter.next();
-//				
-//				// if multiple function declarations, then check that
-//				// the types are the same
-//				if (if_env.containsKey(funcName)) {
-//					VType existingType = if_env.get(funcName);
-//					VType newType = tempMap.get(funcName);
-//
-//					if (!(existingType.equals(newType))) {
-//						String s = "Conflicting declarations on " + funcName + ": "
-//								+ "trying to add " + newType.toString() + " when "
-//								+ existingType.toString() + " already exists.";
-//						SemanticErrorObject seo = new SemanticErrorObject(
-//								ui.getIdentifier().getLineNumber(), 
-//								ui.getIdentifier().getColumnNumber(),
-//								s);
-//						Main.handleSemanticError(seo);
-//					}
-//				}
-//				// no multiple declarations: add function to env
-//				else{
-//					if_env.put(funcName, tempMap.get(funcName));
-//				}
-//			}
-//		}
-//	}
-
 	/**
+	 * VarDecl has the following form:
+	 * 	id:t
+	 *  ex) x:int
+	 *  ex) b:bool
+	 *  
 	 * Dirties tempType
 	 */
 	@Override
 	public void visit(VarDecl vd) {
-		// Check if identifier is predeclared
-		if (env.containsKey(vd.getIdentifier().toString())) {
+		/* 
+		 * Typecheck the identifier by 
+		 * making sure that the id is never declared before 
+		 */
+		Identifier id = vd.getIdentifier();
+		if (env.containsVar(id.getTheValue())) {
+			// Check if the identifier is declared before
 			String s = vd.getIdentifier().toString() + " is already declared";
 			SemanticErrorObject seo = new SemanticErrorObject(
-										vd.getIdentifier().getLineNumber(), 
-										vd.getIdentifier().getColumnNumber(),
-										s
-										);
+					vd.getIdentifier().getLineNumber(), 
+					vd.getIdentifier().getColumnNumber(),
+					s);
 			Main.handleSemanticError(seo);
 		}
-		else {
-			String id = vd.getIdentifier().toString();
-			env.put(id, new VarType(vd));
-			tempType = env.get(id);
-			stack.push(id);
-		}
 		
-		// 0: MixedArrayType
-		// must check that all the indices have been declared
-		if (vd.getIndex() == 0) {
+		/* Typecheck the type */
+		int index = vd.getIndex();
+		VType varType;
+		if (index == 0) { // 0: MixedArrayType
+			// check that all index expressions have been declared
 			MixedBrackets mb= vd.getMixedArrayType().getMixedBrackets();
 			if (vd.getMixedArrayType().getIndex() == 1) {
 				for (Expr idx: mb.getContent()) {
@@ -1459,29 +1286,51 @@ public class TypeCheckVisitor implements ASTVisitor {
 							((VarType) tempType).isInt())) {
 						String s = "Expected int, but found " + tempType.toString();
 						SemanticErrorObject seo = new SemanticErrorObject(
-													idx.getLineNumber(), 
-													idx.getColumnNumber(),
-													s
-													);
+								idx.getLineNumber(), idx.getColumnNumber(), s);
 						Main.handleSemanticError(seo);
 					}
 				}
 			}
-		}
-		// 1: PrimitiveArrayType
-		if (vd.getIndex() == 1) {
+			varType = new VarType(vd);
+		} else if (index == 1) { // 1: PrimitiveArrayType
 			vd.getPrimitiveType().accept(this);
 			env.put(vd.getIdentifier().toString(), tempType);
+			varType = tempType;
+		} else { // 2: ClassType
+			Identifier classId = vd.getClassType();
+			String className = classId.getTheValue();
+			if (!env.containsClass(className)) {
+				String s = "Type " + className + " cannot be resolved";
+				SemanticErrorObject seo = new SemanticErrorObject(
+						classId.getLineNumber(), classId.getColumnNumber(), s);
+				Main.handleSemanticError(seo);
+			}
+			varType = env.getClassType(className);
 		}
 		
+		/* Update the env & stack */
+		env.put(id.getTheValue(), varType);
+		stack.push(id.getTheValue());
+		
+		/* Update global variables */
 		stmtType = new UnitType();
-		tempType = new UnitType();
+		tempType = new UnitType(); // TODO: is this needed?
 	}
 	
+	/**
+	 * VarInit has the following form:
+	 *  id:t = e
+	 *  ex) x:int = 5
+	 *  ex) a:Animal = initLion("Simba")
+	 */
 	@Override
 	public void visit(VarInit vi) {
-		// Check if identifier is predeclared
-		if (env.containsKey(vi.getId().toString())){
+		/* 
+		 * Typecheck the identifier by 
+		 * ensuring that the id is never declared before
+		 */
+		Identifier id = vi.getId();
+		if (env.containsVar(id.getTheValue())){
 			String s = vi.getId().toString() + " is already declared";
 			SemanticErrorObject seo = new SemanticErrorObject(
 										vi.getId().getLineNumber(), 
@@ -1491,30 +1340,49 @@ public class TypeCheckVisitor implements ASTVisitor {
 			Main.handleSemanticError(seo);
 		}
 		
-		tempType = new VarType(vi.getType());	// set tempType to this varType
+		/* Typecheck the type */
+		Type t = vi.getType();
+		VType varType;
+		if (t instanceof Identifier) {
+			Identifier classId = (Identifier)t;
+			String className = classId.getTheValue();
+			
+			// make sure the class type is in the env
+			if (!env.containsClass(className)) {
+				String s = "Type " + className + " cannot be resolved";
+				SemanticErrorObject seo = new SemanticErrorObject(
+						classId.getLineNumber(), classId.getColumnNumber(), s);
+				Main.handleSemanticError(seo);
+			}
+			
+			varType = env.getClassType(className);
+		} else {
+			varType = new VarType(t);
+		}
 		
-		vi.getType().accept(this);
-		VType tempLeftType = tempType;
+		/* Typecheck the whole statement */
+		assert(varType instanceof VarType || varType instanceof ClassType);
+		VType tempLeftType = varType;
 		vi.getExpr().accept(this);
 		VType tempRightType = tempType;
-
+		
+		// make sure the left and right types are equal
 		if (!(tempLeftType.equals(tempRightType))){
 			String s = "Expected " + tempLeftType.toString() 
 						+ ", but found " + tempRightType.toString();
 			SemanticErrorObject seo = new SemanticErrorObject(
-										vi.getExpr().getLineNumber(), 
-										vi.getExpr().getColumnNumber(),
-										s
-										);
+					vi.getExpr().getLineNumber(), 
+					vi.getExpr().getColumnNumber(),
+					s);
 			Main.handleSemanticError(seo);
 		}
 		
-		// add variable to the env
-		String id = vi.getId().toString();
-		env.put(id, new VarType(vi.getType()));
-		tempType = env.get(id);
-		stack.push(id);
+		/* Update env & stack */
+		String idString = vi.getId().toString();
+		env.put(idString, varType);
+		stack.push(idString);
 		
+		/* Update global variables */
 		stmtType = new UnitType();
 		tempType = new UnitType();
 	}
@@ -1602,18 +1470,60 @@ public class TypeCheckVisitor implements ASTVisitor {
 		}
 	}
 
+	/**
+	 * Call the accept/visit on the underlying decl/init
+	 */
 	@Override
 	public void visit(GlobalDecl gd) {
-		// TODO switch case to visit different types of gd 
-		
+		GlobalDecl.Type gdType = gd.getType();
+		switch(gdType) {
+		case SHORT_TUPLE_DECL:
+			gd.getShortTupleDecl().accept(this);
+			break;
+		case TUPLE_INIT:
+			gd.getTupleInit().accept(this);
+			break;
+		case VAR_DECL:
+			gd.getVarDecl().accept(this);
+			break;
+		case VAR_INIT:
+			gd.getVarInit().accept(this);
+			break;
+		}
 	}
 
+	/**
+	 * ShortTupleDecl has the following form:
+	 * 	id,id,id*:type (at least two ids)
+	 *  ex) x,y:int
+	 *  ex) a,b,c:bool
+	 */
 	@Override
 	public void visit(ShortTupleDecl std) {
-		// TODO 
-		// 1) make sure the variables are never declared before
-		// 2) make sure type is a valid type (primitive,array,class)
+		/* Typecheck the identifiers */
+		List<Identifier> ids = std.getAllIdentifiers();
+		for (Identifier id : ids) {
+			// make sure the variable is never declared before
+			if (env.containsVar(id.getTheValue())) {
+				String s = id.toString() + " is already declared";
+				SemanticErrorObject seo = new SemanticErrorObject(
+						id.getLineNumber(), id.getColumnNumber(), s);
+				Main.handleSemanticError(seo);
+			}
+		}
 		
+		/* Typecheck the type */
+		Type t = std.getType();
+		if (t instanceof Identifier) {
+			Identifier classId = (Identifier)t;
+			String className = classId.getTheValue();
+			if (!env.containsClass(className)) {
+				String s = "Type " + classId.toString() + " cannot be resolved";
+				SemanticErrorObject seo = new SemanticErrorObject(
+						classId.getLineNumber(), classId.getColumnNumber(), s);
+				Main.handleSemanticError(seo);
+			}
+		}
 	}
 	
 	/**

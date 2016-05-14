@@ -5,6 +5,7 @@ import java.util.List;
 
 import jl2755.ast.TupleInit;
 import jl2755.ast.VarDecl;
+import jl2755.visitor.Environment;
 
 /**
  * Represents a Tuple type
@@ -16,41 +17,35 @@ public class TupleType implements VType {
 		types = new ArrayList<VType>();
 	}
 	
+	public TupleType(List<VType> argTypes) {
+		types = argTypes;
+	}
+	
 	/** 
-	 * Shouldn't use this to create a one element tuple object 
-	 * 
 	 * Creates a TupleType object from the left side of a TupleInit stmt.
+	 * (Shouldn't use this to create a one element tuple object)
+	 * 
 	 * @param argTupleInit and makes a List of
-	 * VarTypes for the elements in the Tuple
+	 * 	VTypes (VarType or ClassType) for the elements in the Tuple
+	 * @param env
 	 * 
 	 * UNDERSCOREs are represented by UnitType
 	 */
-	public TupleType(TupleInit argTupleInit) {
+	public TupleType(TupleInit argTupleInit, Environment env) {
 		types = new ArrayList<VType>();
-		if (argTupleInit.getIndex() == 0){
-			types.add(new UnitType());
-		}
-		if (argTupleInit.getIndex() == 1){
-			types.add(new UnitType());
-			List<VarDecl> tempDecls = argTupleInit.getTupleDeclList().getVarDecls();
-			for (int i = 0; i < tempDecls.size(); i++){
-				if (tempDecls.get(i) == null) {
-					types.add(new UnitType());
-				}
-				else {
-					types.add(new VarType(tempDecls.get(i)));
-				}
+		List<VarDecl> allDecls = argTupleInit.getVarDecls();
+		for (int i = 0; i < allDecls.size(); i++){
+			VarDecl varDecl = allDecls.get(i);
+			if (varDecl == null) {
+				types.add(new UnitType());
 			}
-		}
-		if (argTupleInit.getIndex() == 2){
-			types.add(new VarType(argTupleInit.getVarDecl()));
-			List<VarDecl> tempDecls = argTupleInit.getTupleDeclList().getVarDecls();
-			for (int i = 0; i < tempDecls.size(); i++){
-				if (tempDecls.get(i) == null) {
-					types.add(new UnitType());
-				}
-				else {
-					types.add(new VarType(tempDecls.get(i)));
+			else {
+				int index = varDecl.getIndex();
+				if (index == 2) {
+					VType vType = env.getClassType(varDecl.getClassType().getTheValue());
+					types.add(vType);
+				} else {
+					types.add(new VarType(varDecl));
 				}
 			}
 		}

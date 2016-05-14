@@ -33,6 +33,10 @@ public class TypeCheckVisitor implements ASTVisitor {
 										// -> dirtied by visit(ClassDecl)
 	private VType functionReturnType;
 	private boolean negativeNumber = false; // needed for UnaryExpr, Literal
+	private boolean isInClass = false;
+	private boolean isInFunctionDecl = false;
+
+	private ClassType currentClassType;
 	
 	/**
 	 * Creates a TypeCheckVisitor instance
@@ -743,7 +747,9 @@ public class TypeCheckVisitor implements ASTVisitor {
 		String id = fd.getIdentifier().toString();
 		funType = env.getFunType(id);
 		functionReturnType = funType.getReturnTypes();
+		isInFunctionDecl = true;
 		fd.getBlockStmt().accept(this);
+		isInFunctionDecl = false;
 		
 		// check the return type using tempType
 		if (!tempType.equals(functionReturnType)) {
@@ -1379,14 +1385,16 @@ public class TypeCheckVisitor implements ASTVisitor {
 	public void visit(ClassBody cb) {
 		List<Decl> decls = cb.getAllDecls();
 		// decl can be either 1) GlobalDecl 2) FunctionDecl
+		isInClass = true;
 		for (Decl decl : decls) {
 			decl.accept(this);
 		}
+		isInClass = false;
 	}
 
 	@Override
 	public void visit(ClassDecl cd) {
-		classEnv = env.get(cd.getClassName().toString());
+		currentClassType = env.getClassType(cd.getClassName().toString());
 		cd.getClassBody().accept(this);
 	}
 
@@ -1397,9 +1405,8 @@ public class TypeCheckVisitor implements ASTVisitor {
 		case DOT:
 			de.getDotableExpr().accept(this);
 			VType childType = tempType;
-			ClassType classOfChild = env.getClassType(childType.toString());
 			if (!childType.singleReturn()) {
-				String s = "Cannot call a method on a function return that doesn't have exactly 1 return";
+				String s = "Cannot get a field on a function return that doesn't have exactly 1 return";
 				SemanticErrorObject seo = new SemanticErrorObject(
 											de.getLineNumber(), 
 											de.getColumnNumber(),
@@ -1408,7 +1415,7 @@ public class TypeCheckVisitor implements ASTVisitor {
 				Main.handleSemanticError(seo);
 			}
 			
-			if (!env.containsClass(tempType.toString())) {
+			if (!(childType instanceof ClassType)) {
 				String s = "Cannot call a method on a non-Class variable";
 				SemanticErrorObject seo = new SemanticErrorObject(
 											de.getLineNumber(), 
@@ -1417,9 +1424,8 @@ public class TypeCheckVisitor implements ASTVisitor {
 											);
 				Main.handleSemanticError(seo);
 			}
-			
-			ClassType classOfDotted = env.getClassType(tempType.toString());
-			tempType = env.getVarType(de.getId().toString());
+			ClassType classView = (ClassType) childType;
+			tempType = classView.getFieldType(de.getId().toString());
 			break;
 		case FUNCTION_CALL:
 			de.getFunctionCall().accept(this);
@@ -1446,7 +1452,15 @@ public class TypeCheckVisitor implements ASTVisitor {
 			de.getDotableExpr().accept(this);
 			break;
 		case THIS:
-			// make sure that we are in class scope
+			if (!(isInClass && isInFunctionDecl)) {
+				String s = "Can only use the keyword \"this\" in a class method";
+				SemanticErrorObject seo = new SemanticErrorObject(
+											de.getLineNumber(), 
+											de.getColumnNumber(),
+											s
+											);
+				Main.handleSemanticError(seo);
+			}
 			break;
 		default:
 			break;

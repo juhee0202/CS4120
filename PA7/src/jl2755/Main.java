@@ -999,7 +999,7 @@ public class Main {
 		Map<String, Interface> stringToInterface = new HashMap<String, Interface>();
 		Map<String, Environment> interfaceToPublic = new HashMap<String, Environment>();
 		Map<String, Set<EmptyClassType>> interfaceToUnresolved = new HashMap<String, Set<EmptyClassType>>();
-		Map<String, Set<String>> interfaceToInterface = new HashMap<String, Set<String>>();
+		Map<String, Set<String>> interfaceToInterfaces = new HashMap<String, Set<String>>();
 		
 		// Add all uses to toCheck
 		toCheck.addAll(program.getUseFiles());
@@ -1021,14 +1021,15 @@ public class Main {
 			globalEnv.putAll(env);
 			interfaceToPublic.put(nextFile, env);
 			interfaceToUnresolved.put(nextFile, unresolved);
-			interfaceToInterface.put(nextFile, uses);
+			interfaceToInterfaces.put(nextFile, uses);
 		}
 		
 		// Resolve all unresolved types and add to initial environment
 		for (String s : checked) {
 			if (interfaceToUnresolved.containsKey(s)) {
 				for (EmptyClassType unresolved : interfaceToUnresolved.get(s)) {
-					resolveTypes(stringToInterface.get(s),unresolved,interfaceToPublic);
+					resolveTypes(stringToInterface.get(s), unresolved,
+							interfaceToPublic, interfaceToInterfaces);
 				}
 			}
 		}
@@ -1063,7 +1064,6 @@ public class Main {
 				}
 			}
 		}
-		// TODO
 		return globalEnv;
 	}
 	
@@ -1074,26 +1074,57 @@ public class Main {
 	 * @param s						the unresolved type
 	 * @param interfaceToPublic		the map of interface name to its module
 	 */
-	private static void resolveTypes(Interface i, EmptyClassType ect, Map<String, Environment> interfaceToPublic) {
+	private static void resolveTypes(Interface i, EmptyClassType ect, 
+							Map<String, Environment> interfaceToPublic, 
+							Map<String, Set<String>> iTI) {
+		
 		String name = ect.getName();
 		String file = i.toString();
+		Set<String> checked = new HashSet<String>();
+		
 		// Resolved in own interface
 		if (interfaceToPublic.get(file).containsClass(name)) {
 			replaceAll(ect, interfaceToPublic.get(file).getClassType(name),
 					file, interfaceToPublic);
 			return;
 		}
+		checked.add(file);
+		
 		// Resolved in other interface
 		for (String use : i.getUseFiles()) {
-			if (interfaceToPublic.get(use).containsClass(name)) {
-				replaceAll(ect, interfaceToPublic.get(use).getClassType(name),
-							file, interfaceToPublic);
-				return;
+			ClassType resolve = recursiveResolve(use, ect, interfaceToPublic, iTI, checked);
+			if (resolve != null) {
+				replaceAll(ect, resolve, file, interfaceToPublic);
 			}
 		}
+		
 		// Unresolved
 		String e = "Unable to resolve type " + ect.getName();
 		handleSemanticError(new SemanticErrorObject(1,1,e));
+	}
+	
+	/**
+	 * Checks recursively to resolve types
+	 */
+	private static ClassType recursiveResolve(String inter, EmptyClassType ect,
+			Map<String, Environment> interfaceToPublic,
+			Map<String, Set<String>> iTI, Set<String> checked) {
+		
+		String name = ect.getName();
+		if (interfaceToPublic.get(inter).containsClass(name)) {
+			return interfaceToPublic.get(inter).getClassType(name);
+		}
+		checked.add(inter);
+		for (String use : iTI.get(inter)) {
+			if (!checked.contains(use)) {
+				ClassType type = recursiveResolve(use, ect, interfaceToPublic, iTI, checked);
+				if (type != null) {
+					return type;
+				}
+				checked.add(use);
+			}
+		}
+		return null;
 	}
 
 	/**

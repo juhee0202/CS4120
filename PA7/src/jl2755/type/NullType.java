@@ -5,7 +5,7 @@ public class NullType implements VType {
 	
 	@Override
 	public boolean equals(Object o) {
-		return (o instanceof VType);
+		return (o instanceof ClassType || o instanceof VarType);
 	}
 	
 	@Override

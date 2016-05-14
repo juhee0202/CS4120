@@ -33,8 +33,8 @@ public class TypeCheckVisitor implements ASTVisitor {
 										// -> dirtied by visit(ClassDecl)
 	private VType functionReturnType;
 	private boolean negativeNumber = false; // needed for UnaryExpr, Literal
-	private boolean isInClass = false;
-	private boolean isInFunctionDecl = false;
+	private boolean isInClass = false;	// Needed for this keyword
+	private boolean isInFunctionDecl = false; // Needed for this keyword
 	
 	/**
 	 * Creates a TypeCheckVisitor instance

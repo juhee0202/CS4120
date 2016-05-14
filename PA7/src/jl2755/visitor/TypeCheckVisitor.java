@@ -1,16 +1,53 @@
 package jl2755.visitor;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.Stack;
 
 import jl2755.Main;
 import jl2755.SemanticErrorObject;
-import jl2755.ast.*;
+import jl2755.ast.ArrayElement;
+import jl2755.ast.ArrayElementList;
+import jl2755.ast.ArrayLiteral;
+import jl2755.ast.AssignmentStmt;
+import jl2755.ast.BinaryExpr;
+import jl2755.ast.BinaryOp;
+import jl2755.ast.BlockStmt;
+import jl2755.ast.Break;
+import jl2755.ast.ClassBody;
+import jl2755.ast.ClassDecl;
+import jl2755.ast.Continue;
+import jl2755.ast.Decl;
+import jl2755.ast.DotableExpr;
+import jl2755.ast.Expr;
+import jl2755.ast.FunctionArg;
+import jl2755.ast.FunctionCall;
+import jl2755.ast.FunctionDecl;
+import jl2755.ast.GlobalDecl;
+import jl2755.ast.Identifier;
+import jl2755.ast.IfStmt;
+import jl2755.ast.IndexedBrackets;
+import jl2755.ast.Literal;
+import jl2755.ast.MixedBrackets;
+import jl2755.ast.Null;
+import jl2755.ast.PrimitiveType;
+import jl2755.ast.Program;
+import jl2755.ast.ReturnStmt;
+import jl2755.ast.ShortTupleDecl;
+import jl2755.ast.Stmt;
+import jl2755.ast.StmtList;
+import jl2755.ast.TupleInit;
+import jl2755.ast.Type;
+import jl2755.ast.UnaryExpr;
+import jl2755.ast.UnaryOp;
+import jl2755.ast.UseId;
+import jl2755.ast.VarDecl;
+import jl2755.ast.VarInit;
+import jl2755.ast.WhileStmt;
 import jl2755.type.ClassType;
 import jl2755.type.FunType;
 import jl2755.type.NullType;
@@ -168,38 +205,93 @@ public class TypeCheckVisitor implements ASTVisitor {
 	@Override
 	public void visit(ArrayElementList ael) {
 		List<Expr> tempExprs = ael.getAllExprInArray();
-		List<VarType> tempTypesOfExprs = new ArrayList<VarType>();
-		for (int i = 0; i < tempExprs.size(); i++){
-			tempExprs.get(i).accept(this);
-			if (!(tempType instanceof VarType)){
-				String errorDesc = "Name " + tempExprs.get(i).toString() +
-						" is not of VarType";
-				SemanticErrorObject seo = new SemanticErrorObject(
-						tempExprs.get(i).getLineNumber(),
-						tempExprs.get(i).getColumnNumber(), 
-						errorDesc
-						);
-				Main.handleSemanticError(seo);
-			}
-			tempTypesOfExprs.add((VarType)tempType);
-		}
-		for (int i = 0; i < tempTypesOfExprs.size() - 1; i++){
-			if (!(tempTypesOfExprs.get(i).equals(tempTypesOfExprs.get(i+1)))){
-				String errorDesc = "Expected " + tempTypesOfExprs.get(i).toString() + ", but found "
-						+ tempTypesOfExprs.get(i+1).toString();
-				SemanticErrorObject seo = new SemanticErrorObject(
-						tempExprs.get(i+1).getLineNumber(),
-						tempExprs.get(i+1).getColumnNumber(), 
-						errorDesc
-						);
-				Main.handleSemanticError(seo);
-			}
-		}
-		if (tempTypesOfExprs.size() == 0) {
+		if (tempExprs.size() == 0) {
 			tempType = new VarType(false,0);
+			return;
 		}
-		else {
+		tempExprs.get(0).accept(this);
+		VType baseType = tempType;
+		if (baseType instanceof VarType) {
+			List<VarType> tempTypesOfExprs = new ArrayList<VarType>();
+			for (int i = 0; i < tempExprs.size(); i++){
+				tempExprs.get(i).accept(this);
+				if (!(tempType instanceof VarType)){
+					String errorDesc = "Element " + tempExprs.get(i).toString() +
+							" is not an int or bool";
+					SemanticErrorObject seo = new SemanticErrorObject(
+							tempExprs.get(i).getLineNumber(),
+							tempExprs.get(i).getColumnNumber(), 
+							errorDesc
+							);
+					Main.handleSemanticError(seo);
+				}
+				tempTypesOfExprs.add((VarType)tempType);
+			}
+			for (int i = 0; i < tempTypesOfExprs.size() - 1; i++){
+				if (!(tempTypesOfExprs.get(i).equals(tempTypesOfExprs.get(i+1)))){
+					String errorDesc = "Expected " + tempTypesOfExprs.get(i).toString() + ", but found "
+							+ tempTypesOfExprs.get(i+1).toString();
+					SemanticErrorObject seo = new SemanticErrorObject(
+							tempExprs.get(i+1).getLineNumber(),
+							tempExprs.get(i+1).getColumnNumber(), 
+							errorDesc
+							);
+					Main.handleSemanticError(seo);
+				}
+			}
 			tempType = new VarType(tempTypesOfExprs.get(0).getIsBool(), tempTypesOfExprs.get(0).getNumBrackets());
+		}
+		else if (baseType instanceof ClassType) {
+			ClassType classViewOfBase = (ClassType) baseType;
+			Set<String> intersectionOfClasses = new HashSet<String>();
+			intersectionOfClasses.addAll(getSuperClasses(classViewOfBase.getClassName()));
+			intersectionOfClasses.add(classViewOfBase.getClassName());
+			for (int i = 1; i < tempExprs.size(); i++) {
+				tempExprs.get(i).accept(this);
+				if (!(tempType instanceof ClassType)) {
+					String errorDesc = "Expected an object but got an int or bool";
+					SemanticErrorObject seo = new SemanticErrorObject(
+							tempExprs.get(i).getLineNumber(),
+							tempExprs.get(i).getColumnNumber(), 
+							errorDesc
+							);
+					Main.handleSemanticError(seo);
+				}
+				ClassType classView = (ClassType) tempType;
+				List<String> superClasses = getSuperClasses(classView.getClassName());
+				superClasses.add(classView.getClassName());
+				intersectionOfClasses.retainAll(superClasses);
+				if (intersectionOfClasses.isEmpty()) {
+					String errorDesc = "Object " + tempExprs.get(i) + " is different from the ones before";
+					SemanticErrorObject seo = new SemanticErrorObject(
+							tempExprs.get(i).getLineNumber(),
+							tempExprs.get(i).getColumnNumber(), 
+							errorDesc
+							);
+					Main.handleSemanticError(seo);
+				}
+ 			}
+			// At this point the intersection is not empty.
+			// Pick the ClassType that is the subclass of all the other classes.
+			List<String> listOfAllIntersection = new ArrayList<String>(intersectionOfClasses);
+			int mostSubIndex = -1;
+			for (int i = 0; i < listOfAllIntersection.size(); i++) {
+				boolean candidate = true;
+				for (int j = 0; j < listOfAllIntersection.size(); j++) {
+					if (j == i) {
+						continue;
+					}
+					if (!isSubTypeOf(listOfAllIntersection.get(i),listOfAllIntersection.get(j))) {
+						candidate = false;
+					}
+					
+				}
+				if (candidate) {
+					mostSubIndex = i;
+				}
+			}
+			assert(mostSubIndex > -1);
+			tempType = env.getClassType(listOfAllIntersection.get(mostSubIndex));
 		}
 	}
 
@@ -209,9 +301,9 @@ public class TypeCheckVisitor implements ASTVisitor {
 	@Override
 	public void visit(ArrayLiteral al) {
 		al.getArrElemList().accept(this);
-		if (!(tempType instanceof VarType)){
+		if (!(tempType instanceof VarType || tempType instanceof ClassType)){
 			String errorDesc = "Name " + tempType.toString() +
-					" is not of VarType";
+					" is not of VarType or ClassType";
 			SemanticErrorObject seo = new SemanticErrorObject( 
 					al.getLineNumber(),
 					al.getColumnNumber(),
@@ -1675,6 +1767,7 @@ public class TypeCheckVisitor implements ASTVisitor {
 	 * highest superclass
 	 */
 	private List<String> getSuperClasses(String currClassName, List<String> superclasses) {
+		assert(env.containsClass(currClassName));
 		ClassType ct = env.getClassType(currClassName);
 		String superName = ct.getSuperClassName();
 		if (superName != null) {
@@ -1684,4 +1777,14 @@ public class TypeCheckVisitor implements ASTVisitor {
 		return superclasses;
 	}
 	
+	/**
+	 * Checks whether arg1 is a subtype of arg2.
+	 * 
+	 * @param arg1 is the subtypee
+	 * @param arg2 is the subtyper
+	 * @return true iff arg1 is a subtype of arg2
+	 */
+	private boolean isSubTypeOf(String arg1, String arg2) {
+		return (getSuperClasses(arg1).contains(arg2));
+	}
 }

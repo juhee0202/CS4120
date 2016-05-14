@@ -225,11 +225,10 @@ public class TypeCheckVisitor implements ASTVisitor {
 	public void visit(AssignmentStmt as) {
 		int index = as.getIndex();
 		
-		// ex: a = 3
-		if (index == 0) {
+		if (index == 0) { 									// ex: a = 3
 			// Identifier visit checks if its in env
 			String id = as.getIdentifier().toString();
-			if (!env.containsKey(id)) {
+			if (!(env.containsVar(id))) {
 				String s = "Name " + id + " cannot be resolved";
 				SemanticErrorObject seo = new SemanticErrorObject(
 						as.getIdentifier().getLineNumber(), 
@@ -238,18 +237,10 @@ public class TypeCheckVisitor implements ASTVisitor {
 				Main.handleSemanticError(seo);
 			}
 			
-			VType idType = env.get(id);
+			// get the VType of left hand side
+			VType idType = env.getVarType(id);
 			
-			//check that identifier is a var type
-			if (!(idType instanceof VarType)) {
-				String s = "Expected variable type, but found function type.";
-				SemanticErrorObject seo = new SemanticErrorObject(
-											as.getIdentifier().getLineNumber(), 
-											as.getIdentifier().getColumnNumber(),
-											s
-											);
-				Main.handleSemanticError(seo);
-			}
+			// get the VType of right hand side
 			as.getExpr().accept(this);
 			VType exprType = tempType;
 			
@@ -258,29 +249,24 @@ public class TypeCheckVisitor implements ASTVisitor {
 				String s = "Expected " + idType.toString() 
 							+ ", but found " + exprType.toString();
 				SemanticErrorObject seo = new SemanticErrorObject(
-											as.getExpr().getLineNumber(), 
-											as.getExpr().getColumnNumber(),
-											s
-											);
+						as.getExpr().getLineNumber(), 
+						as.getExpr().getColumnNumber(),
+						s);
 				Main.handleSemanticError(seo);
 			}
-			
-		//ex: arr[2] = 3;
-		} else if (index == 1) {
-			
+		} else if (index == 1) {							//ex: arr[2] = 3;
 			// check if identifier is in env
 			String id = as.getIdentifier().toString();
-			if (!env.containsKey(id)) {
+			if (!env.containsVar(id)) {
 				String s = "Name " + id + " cannot be resolved";
 				SemanticErrorObject seo = new SemanticErrorObject(
-											as.getIdentifier().getLineNumber(), 
-											as.getIdentifier().getColumnNumber(),
-											s
-											);
+						as.getIdentifier().getLineNumber(), 
+						as.getIdentifier().getColumnNumber(),
+						s);
 				Main.handleSemanticError(seo);
 			}
 			
-			VarType idType = (VarType)env.get(id);
+			VarType idType = (VarType)env.getVarType(id);
 			
 			VType elementType = new VarType(idType,as.getIndexedBrackets(),as.getIdentifier());
 
@@ -386,10 +372,9 @@ public class TypeCheckVisitor implements ASTVisitor {
 					 s = "Expected variable type, but found incompatible type";
 				}
 				SemanticErrorObject seo = new SemanticErrorObject(
-											as.getFunctionCall().getLineNumber(), 
-											as.getFunctionCall().getColumnNumber(),
-											s
-											);
+						as.getFunctionCall().getLineNumber(), 
+						as.getFunctionCall().getColumnNumber(),
+						s);
 				Main.handleSemanticError(seo);
 			}
 			
@@ -403,10 +388,9 @@ public class TypeCheckVisitor implements ASTVisitor {
 				String s = "Expected " + elementType.toString() 
 				+ ", but found " + exprType.toString();
 				SemanticErrorObject seo = new SemanticErrorObject(
-											as.getExpr().getLineNumber(), 
-											as.getExpr().getColumnNumber(),
-											s
-											);
+						as.getExpr().getLineNumber(), 
+						as.getExpr().getColumnNumber(),
+						s);
 				Main.handleSemanticError(seo);
 			}
 
@@ -421,8 +405,7 @@ public class TypeCheckVisitor implements ASTVisitor {
 					SemanticErrorObject seo = new SemanticErrorObject(
 							e.getLineNumber(),
 							e.getColumnNumber(), 
-							s
-							);
+							s);
 					Main.handleSemanticError(seo);
 				}
 			}
@@ -1083,7 +1066,7 @@ public class TypeCheckVisitor implements ASTVisitor {
 	
 	/**
 	 * TupleInit has the following form:
-	 *  id:t,(id:t|_)* = functionCall
+	 *  id:t,(id:t | _)* = functionCall
 	 *  ex) x:int,y:int = f()
 	 *  ex) x:Person,_,z:bool = g()
 	 * @param TupleInit ti
@@ -1311,7 +1294,7 @@ public class TypeCheckVisitor implements ASTVisitor {
 		
 		/* Update global variables */
 		stmtType = new UnitType();
-		tempType = new UnitType(); // TODO: is this needed?
+		tempType = new UnitType();
 	}
 	
 	/**

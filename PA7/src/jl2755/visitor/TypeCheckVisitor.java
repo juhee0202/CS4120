@@ -273,7 +273,16 @@ public class TypeCheckVisitor implements ASTVisitor {
 				Main.handleSemanticError(seo);
 			}
 			
-			VarType idType = (VarType)env.getVarType(id);
+			VarType idType = (VarType) env.getVarType(id);
+			if (!idType.isArray()) {
+				String s = "The type of the expression must be an array type "
+						+ "but it resolved to " + idType.toString();
+				SemanticErrorObject seo = new SemanticErrorObject(
+						as.getIdentifier().getLineNumber(), 
+						as.getIdentifier().getColumnNumber(),
+						s);
+				Main.handleSemanticError(seo);
+			}
 			
 			VType elementType = new VarType(idType,as.getIndexedBrackets(),as.getIdentifier());
 
@@ -599,6 +608,9 @@ public class TypeCheckVisitor implements ASTVisitor {
 		}
 	}
 	
+	/**
+	 * DIRTIES stmtType to void type
+	 */
 	@Override
 	public void visit(Break b) {
 		System.out.println("visiting break!");
@@ -608,8 +620,12 @@ public class TypeCheckVisitor implements ASTVisitor {
 					b.getLineNumber(), b.getColumnNumber(), s);
 			Main.handleSemanticError(seo);
 		}
+		stmtType = new VoidType();	// Question: do I dirty tempType?
 	}
 	
+	/**
+	 * DIRTIES stmtType to void type
+	 */
 	@Override
 	public void visit(Continue c) {
 		System.out.println("visiting continue!");
@@ -619,6 +635,7 @@ public class TypeCheckVisitor implements ASTVisitor {
 					c.getLineNumber(), c.getColumnNumber(), s);
 			Main.handleSemanticError(seo);
 		}
+		stmtType = new VoidType();
 	}
 
 	/**

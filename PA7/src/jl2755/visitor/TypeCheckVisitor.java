@@ -1083,9 +1083,9 @@ public class TypeCheckVisitor implements ASTVisitor {
 	
 	/**
 	 * TupleInit has the following form:
-	 *  id,(id|_)* = functionCall
-	 *  ex) x,y = f()
-	 *  ex) x,_,z = g()
+	 *  id:t,(id:t|_)* = functionCall
+	 *  ex) x:int,y:int = f()
+	 *  ex) x:Person,_,z:bool = g()
 	 * @param TupleInit ti
 	 */
 	@Override
@@ -1138,10 +1138,10 @@ public class TypeCheckVisitor implements ASTVisitor {
 					types.add(new VarType(varDecl));
 				}
 				
-				// make sure that id is declared
+				// make sure that id is not in the env
 				Identifier id = varDecl.getIdentifier();
-				if (!env.containsVar(id.getTheValue())) {
-					String s = id + " cannot be resolved";
+				if (env.containsVar(id.getTheValue())) {
+					String s = id + " is already declared";
 					SemanticErrorObject seo = new SemanticErrorObject(
 							id.getLineNumber(), id.getColumnNumber(), s);
 					Main.handleSemanticError(seo);	

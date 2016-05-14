@@ -62,6 +62,26 @@ public class GlobalDecl implements Decl {
 		this.isConst = isConst;
 	}
 
+	public Type getType() {
+		return type;
+	}
+
+	public VarDecl getVarDecl() {
+		return varDecl;
+	}
+
+	public VarInit getVarInit() {
+		return varInit;
+	}
+
+	public ShortTupleDecl getShortTupleDecl() {
+		return shortTupleDecl;
+	}
+
+	public TupleInit getTupleInit() {
+		return tupleInit;
+	}
+
 	@Override
 	public void accept(ASTVisitor v) {
 		v.visit(this);

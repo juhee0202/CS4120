@@ -1,8 +1,11 @@
+import static org.junit.Assert.*;
+
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import org.junit.Test;
@@ -14,8 +17,19 @@ import jl2755.assembly.Instruction;
 import jl2755.assembly.Instruction.Operation;
 import jl2755.assembly.Label;
 import jl2755.assembly.Register;
+import jl2755.ast.BlockStmt;
+import jl2755.ast.FunctionDecl;
+import jl2755.ast.FunctionParam;
+import jl2755.ast.Identifier;
+import jl2755.ast.PrimitiveType;
+import jl2755.ast.ReturnType;
+import jl2755.ast.Type;
 import jl2755.controlflow.ControlFlowGraph;
 import jl2755.dataflow.IRExprOverrider;
+import jl2755.type.ClassType;
+import jl2755.type.FunType;
+import jl2755.type.VType;
+import jl2755.type.VarType;
 
 public class dohMyGod {
 
@@ -233,5 +247,31 @@ public class dohMyGod {
 		System.out.println(overrider2.hashCode());
 	}
 	
+	@Test
+	public void testClassTypeEquals() {
+		HashMap<String, FunType> hm1 = new HashMap<String, FunType>();
+		HashMap<String, VType> instance = new HashMap<String, VType>();
+		
+		Type intType = new PrimitiveType(0);
+		FunctionParam fp = new FunctionParam(new Identifier("arg1", 0, 0), intType);
+		ReturnType rt = new ReturnType();
+		BlockStmt bs = new BlockStmt();
+		FunctionDecl fd = new FunctionDecl(new Identifier("foo", 0, 0), fp, rt, bs);
+		hm1.put("foo", new FunType(fd));
+		
+		VarType var = new VarType(false, 0);
+		instance.put("x", var);
+		
+		ClassType ct1 = new ClassType("dog", instance, hm1);
+		
+		HashMap<String, FunType> hm2 = new HashMap<String, FunType>();
+		HashMap<String, VType> instance2 = new HashMap<String, VType>();
+
+		hm2.put("foo",  new FunType(fd));
+//		hm2.put("foo2",  new FunType(fd));
+		ClassType ct2 = new ClassType("dog", instance2, hm2);
+		
+		assertEquals(ct1, ct2);
+	}
 	
 }

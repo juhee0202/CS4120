@@ -109,4 +109,13 @@ public class Environment {
 		return classMap.containsKey(c);
 	}
 	
+	/**
+	 * Merge env into this
+	 * @param env
+	 */
+	public void putAll(Environment env) {
+		varMap.putAll(env.varMap);
+		funMap.putAll(env.funMap);
+		classMap.putAll(env.classMap);
+	}
 }

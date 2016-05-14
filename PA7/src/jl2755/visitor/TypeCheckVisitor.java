@@ -309,7 +309,9 @@ public class TypeCheckVisitor implements ASTVisitor {
 				}
 			}
 			assert(mostSubIndex > -1);
-			tempType = env.getClassType(listOfAllIntersection.get(mostSubIndex));
+			ClassType tempReturn = env.getClassType(listOfAllIntersection.get(mostSubIndex));
+			int numBrackets = vartypeView.getNumBrackets();
+			tempType = new VarType(tempReturn.getClassName(),numBrackets);
 		}
 	}
 
@@ -319,9 +321,9 @@ public class TypeCheckVisitor implements ASTVisitor {
 	@Override
 	public void visit(ArrayLiteral al) {
 		al.getArrElemList().accept(this);
-		if (!(tempType instanceof VarType || tempType instanceof ClassType)){
+		if (!(tempType instanceof VarType)){
 			String errorDesc = "Name " + tempType.toString() +
-					" is not of VarType or ClassType";
+					" is not of VarType";
 			SemanticErrorObject seo = new SemanticErrorObject( 
 					al.getLineNumber(),
 					al.getColumnNumber(),
@@ -330,9 +332,7 @@ public class TypeCheckVisitor implements ASTVisitor {
 			Main.handleSemanticError(seo);
 		}
 		VarType tempVarView = (VarType) tempType;
-		boolean oldIsBool = tempVarView.getIsBool();
-		int oldNumBrackets = tempVarView.getNumBrackets();
-		tempType = new VarType(oldIsBool, oldNumBrackets + 1);
+		tempType = new VarType(tempVarView.getElementType(), tempVarView.getNumBrackets() + 1);
 	}
 
 	/**

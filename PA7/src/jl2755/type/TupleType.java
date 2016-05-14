@@ -120,4 +120,9 @@ public class TupleType implements VType {
 		}
 		return returnString;
 	}
+
+	@Override
+	public boolean canDot() {
+		return false;
+	}
 }

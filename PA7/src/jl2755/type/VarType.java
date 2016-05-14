@@ -164,4 +164,9 @@ public class VarType implements VType {
 		}
 		return returnString;
 	}
+
+	@Override
+	public boolean canDot() {
+		return false;
+	}
 }

@@ -26,9 +26,11 @@ public class TypeCheckVisitor implements ASTVisitor {
 	private Environment env;
 	
 	/** HashMap of all declared variables */
-	private Stack<String> stack;	// "_": special marker
+	private Stack<String> stack;		// "_": special marker
 	private VType tempType;
-	private VType stmtType;	// either UnitType or VoidType
+	private VType stmtType;				// either UnitType or VoidType
+	private ClassType classType; 		// current class's type that we're typechecking 
+										// -> dirtied by visit(ClassDecl)
 	private VType functionReturnType;
 	private boolean negativeNumber = false; // needed for UnaryExpr, Literal
 	
@@ -226,11 +228,10 @@ public class TypeCheckVisitor implements ASTVisitor {
 	public void visit(AssignmentStmt as) {
 		int index = as.getIndex();
 		
-		// ex: a = 3
-		if (index == 0) {
+		if (index == 0) { 									// ex: a = 3
 			// Identifier visit checks if its in env
 			String id = as.getIdentifier().toString();
-			if (!env.containsKey(id)) {
+			if (!(env.containsVar(id))) {
 				String s = "Name " + id + " cannot be resolved";
 				SemanticErrorObject seo = new SemanticErrorObject(
 						as.getIdentifier().getLineNumber(), 
@@ -239,18 +240,10 @@ public class TypeCheckVisitor implements ASTVisitor {
 				Main.handleSemanticError(seo);
 			}
 			
-			VType idType = env.get(id);
+			// get the VType of left hand side
+			VType idType = env.getVarType(id);
 			
-			//check that identifier is a var type
-			if (!(idType instanceof VarType)) {
-				String s = "Expected variable type, but found function type.";
-				SemanticErrorObject seo = new SemanticErrorObject(
-											as.getIdentifier().getLineNumber(), 
-											as.getIdentifier().getColumnNumber(),
-											s
-											);
-				Main.handleSemanticError(seo);
-			}
+			// get the VType of right hand side
 			as.getExpr().accept(this);
 			VType exprType = tempType;
 			
@@ -259,29 +252,24 @@ public class TypeCheckVisitor implements ASTVisitor {
 				String s = "Expected " + idType.toString() 
 							+ ", but found " + exprType.toString();
 				SemanticErrorObject seo = new SemanticErrorObject(
-											as.getExpr().getLineNumber(), 
-											as.getExpr().getColumnNumber(),
-											s
-											);
+						as.getExpr().getLineNumber(), 
+						as.getExpr().getColumnNumber(),
+						s);
 				Main.handleSemanticError(seo);
 			}
-			
-		//ex: arr[2] = 3;
-		} else if (index == 1) {
-			
+		} else if (index == 1) {							//ex: arr[2] = 3;
 			// check if identifier is in env
 			String id = as.getIdentifier().toString();
-			if (!env.containsKey(id)) {
+			if (!env.containsVar(id)) {
 				String s = "Name " + id + " cannot be resolved";
 				SemanticErrorObject seo = new SemanticErrorObject(
-											as.getIdentifier().getLineNumber(), 
-											as.getIdentifier().getColumnNumber(),
-											s
-											);
+						as.getIdentifier().getLineNumber(), 
+						as.getIdentifier().getColumnNumber(),
+						s);
 				Main.handleSemanticError(seo);
 			}
 			
-			VarType idType = (VarType)env.get(id);
+			VarType idType = (VarType)env.getVarType(id);
 			
 			VType elementType = new VarType(idType,as.getIndexedBrackets(),as.getIdentifier());
 
@@ -387,10 +375,9 @@ public class TypeCheckVisitor implements ASTVisitor {
 					 s = "Expected variable type, but found incompatible type";
 				}
 				SemanticErrorObject seo = new SemanticErrorObject(
-											as.getFunctionCall().getLineNumber(), 
-											as.getFunctionCall().getColumnNumber(),
-											s
-											);
+						as.getFunctionCall().getLineNumber(), 
+						as.getFunctionCall().getColumnNumber(),
+						s);
 				Main.handleSemanticError(seo);
 			}
 			
@@ -404,10 +391,9 @@ public class TypeCheckVisitor implements ASTVisitor {
 				String s = "Expected " + elementType.toString() 
 				+ ", but found " + exprType.toString();
 				SemanticErrorObject seo = new SemanticErrorObject(
-											as.getExpr().getLineNumber(), 
-											as.getExpr().getColumnNumber(),
-											s
-											);
+						as.getExpr().getLineNumber(), 
+						as.getExpr().getColumnNumber(),
+						s);
 				Main.handleSemanticError(seo);
 			}
 
@@ -422,8 +408,7 @@ public class TypeCheckVisitor implements ASTVisitor {
 					SemanticErrorObject seo = new SemanticErrorObject(
 							e.getLineNumber(),
 							e.getColumnNumber(), 
-							s
-							);
+							s);
 					Main.handleSemanticError(seo);
 				}
 			}
@@ -443,10 +428,7 @@ public class TypeCheckVisitor implements ASTVisitor {
 			String s = "Expected a variable type, but found " + 
 					tempType.toString();
 			SemanticErrorObject seo = new SemanticErrorObject(
-					be.getLineNumber(),
-					be.getColumnNumber(), 
-					s
-					);
+					be.getLineNumber(), be.getColumnNumber(), s);
 			Main.handleSemanticError(seo);
 		}
 		VarType leftType = (VarType) tempType;
@@ -456,10 +438,7 @@ public class TypeCheckVisitor implements ASTVisitor {
 			String s = "Expected a variable type, but found " + 
 					tempType.toString();
 			SemanticErrorObject seo = new SemanticErrorObject(
-					be.getLineNumber(),
-					be.getColumnNumber(), 
-					s
-					);
+					be.getLineNumber(), be.getColumnNumber(), s);
 			Main.handleSemanticError(seo);
 		}
 		VarType rightType = (VarType) tempType;
@@ -611,13 +590,13 @@ public class TypeCheckVisitor implements ASTVisitor {
 		// Pop out of scope
 		String id = stack.pop();
 		while (!id.equals("_")) {
-			env.remove(id);
+			env.removeVar(id);
 			id = stack.pop();
 		}
 	}
 
 	/**
-	 * DIRTIES tempType to function argument type (VarType or TupleType)
+	 * DIRTIES tempType to function argument type (VarType, ClassType, or TupleType)
 	 * @param FunctionArg fa
 	 */
 	@Override
@@ -630,7 +609,7 @@ public class TypeCheckVisitor implements ASTVisitor {
 			TupleType argType = new TupleType();
 			for (Expr e : argExprs) {
 				e.accept(this);
-				argType.addToTypes((VarType)tempType);
+				argType.addToTypes(tempType);
 			}
 			tempType = argType;
 		}
@@ -670,21 +649,14 @@ public class TypeCheckVisitor implements ASTVisitor {
 		String id = fc.getIdentifier().toString();
 		
 		/* Check if the function is declared */
-		if (!env.containsKey(id)) {
+		if (!env.containsFun(id)) {
 			String s = "Name " + id.toString() + " cannot be resolved";
 			SemanticErrorObject seo = new SemanticErrorObject(
 					fc.getIdentifier_line(), fc.getIdentifier_col(), s);
 			Main.handleSemanticError(seo);
 		}
 		
-		VType temp = env.get(id);
-		if (!(temp instanceof FunType)) {
-			String s = "Expected function type, but found " + temp.toString();
-			SemanticErrorObject seo = new SemanticErrorObject(
-					fc.getIdentifier_line(), fc.getIdentifier_col(), s);
-			Main.handleSemanticError(seo);
-		}
-		FunType funType = (FunType)temp;
+		FunType funType = env.getFunType(id);
 		String ABIName = functionToABIName(id, funType);
 		fc.setABIName(ABIName);
 		VType paramType = funType.getParamTypes();
@@ -789,20 +761,28 @@ public class TypeCheckVisitor implements ASTVisitor {
 	
 	/**
 	 * Dirties tempType
+	 * id can be either a class type or a variable
 	 */
 	@Override
 	public void visit(Identifier id) {
-		if (!(env.containsVar(id.toString()))){
-			String s = "Name " + id.toString() + " cannot be resolved.";
-			SemanticErrorObject seo = new SemanticErrorObject(
-					id.getLineNumber(), 
-					id.getColumnNumber(),
-					s
-					);
-			Main.handleSemanticError(seo);
+		if (id.isClassName()) { // class type
+			if (!env.containsClass(id.getTheValue())) {
+				String s = "Name " + id.toString() + " cannot be resolved.";
+				SemanticErrorObject seo = new SemanticErrorObject(
+						id.getLineNumber(), id.getColumnNumber(), s);
+				Main.handleSemanticError(seo);
+			}
+			tempType = env.getClassType(id.getTheValue());
+		} else {	// variable
+			if (!(env.containsVar(id.toString()))){
+				String s = "Name " + id.toString() + " cannot be resolved.";
+				SemanticErrorObject seo = new SemanticErrorObject(
+						id.getLineNumber(), id.getColumnNumber(), s);
+				Main.handleSemanticError(seo);
+			}
+			tempType = env.getVarType(id.toString());
+			id.setType(tempType);
 		}
-		tempType = env.getVarType(id.toString());
-		id.setType(tempType);
 	}
 	
 	/**
@@ -1056,9 +1036,9 @@ public class TypeCheckVisitor implements ASTVisitor {
 	
 	/**
 	 * TupleInit has the following form:
-	 *  id,(id|_)* = functionCall
-	 *  ex) x,y = f()
-	 *  ex) x,_,z = g()
+	 *  id:t,(id:t | _)* = functionCall
+	 *  ex) x:int,y:int = f()
+	 *  ex) x:Person,_,z:bool = g()
 	 * @param TupleInit ti
 	 */
 	@Override
@@ -1111,10 +1091,10 @@ public class TypeCheckVisitor implements ASTVisitor {
 					types.add(new VarType(varDecl));
 				}
 				
-				// make sure that id is declared
+				// make sure that id is not in the env
 				Identifier id = varDecl.getIdentifier();
-				if (!env.containsVar(id.getTheValue())) {
-					String s = id + " cannot be resolved";
+				if (env.containsVar(id.getTheValue())) {
+					String s = id + " is already declared";
 					SemanticErrorObject seo = new SemanticErrorObject(
 							id.getLineNumber(), id.getColumnNumber(), s);
 					Main.handleSemanticError(seo);	
@@ -1284,7 +1264,7 @@ public class TypeCheckVisitor implements ASTVisitor {
 		
 		/* Update global variables */
 		stmtType = new UnitType();
-		tempType = new UnitType(); // TODO: is this needed?
+		tempType = new UnitType();
 	}
 	
 	/**
@@ -1303,10 +1283,7 @@ public class TypeCheckVisitor implements ASTVisitor {
 		if (env.containsVar(id.getTheValue())){
 			String s = vi.getId().toString() + " is already declared";
 			SemanticErrorObject seo = new SemanticErrorObject(
-										vi.getId().getLineNumber(), 
-										vi.getId().getColumnNumber(),
-										s
-										);
+					vi.getId().getLineNumber(),vi.getId().getColumnNumber(),s);
 			Main.handleSemanticError(seo);
 		}
 		
@@ -1397,10 +1374,11 @@ public class TypeCheckVisitor implements ASTVisitor {
 		}
 
 	}
-
+	
 	@Override
 	public void visit(ClassBody cb) {
 		List<Decl> decls = cb.getAllDecls();
+		// decl can be either 1) GlobalDecl 2) FunctionDecl
 		for (Decl decl : decls) {
 			decl.accept(this);
 		}
@@ -1408,6 +1386,7 @@ public class TypeCheckVisitor implements ASTVisitor {
 
 	@Override
 	public void visit(ClassDecl cd) {
+		classEnv = env.get(cd.getClassName().toString());
 		cd.getClassBody().accept(this);
 	}
 
@@ -1509,6 +1488,23 @@ public class TypeCheckVisitor implements ASTVisitor {
 	 */
 	@Override
 	public void visit(ShortTupleDecl std) {
+		/* Typecheck the type */
+		Type t = std.getType();
+		VType type;
+		if (t instanceof Identifier) {
+			Identifier classId = (Identifier)t;
+			String className = classId.getTheValue();
+			if (!env.containsClass(className)) {
+				String s = "Type " + classId.toString() + " cannot be resolved";
+				SemanticErrorObject seo = new SemanticErrorObject(
+						classId.getLineNumber(), classId.getColumnNumber(), s);
+				Main.handleSemanticError(seo);
+			}
+			type = env.getClassType(className);
+		} else {
+			type = new VarType(t);
+		}
+		
 		/* Typecheck the identifiers */
 		List<Identifier> ids = std.getAllIdentifiers();
 		for (Identifier id : ids) {
@@ -1519,19 +1515,10 @@ public class TypeCheckVisitor implements ASTVisitor {
 						id.getLineNumber(), id.getColumnNumber(), s);
 				Main.handleSemanticError(seo);
 			}
-		}
-		
-		/* Typecheck the type */
-		Type t = std.getType();
-		if (t instanceof Identifier) {
-			Identifier classId = (Identifier)t;
-			String className = classId.getTheValue();
-			if (!env.containsClass(className)) {
-				String s = "Type " + classId.toString() + " cannot be resolved";
-				SemanticErrorObject seo = new SemanticErrorObject(
-						classId.getLineNumber(), classId.getColumnNumber(), s);
-				Main.handleSemanticError(seo);
-			}
+			
+			// put it in the env
+			env.put(id.getTheValue(), type);
+			stack.push(id.getTheValue());
 		}
 	}
 	
@@ -1600,8 +1587,6 @@ public class TypeCheckVisitor implements ASTVisitor {
 	private List<String> getSuperClasses(String currentClass) {
 		// TODO
 //		List<String> superclasses = new ArrayList<String>();
-//		ClassType ct = 
-//		while ()
 //		return superclasses;
 	}
 	

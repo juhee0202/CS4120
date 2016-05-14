@@ -1,7 +1,9 @@
 package jl2755.type;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import jl2755.ast.TupleInit;
 import jl2755.ast.VarDecl;
@@ -129,5 +131,25 @@ public class TupleType implements VType {
 	@Override
 	public boolean singleReturn() {
 		return false;
+	}
+		
+	/**
+	 * Replaces all usage of ect with ct
+	 * @param ect
+	 * @param ct
+	 */
+	public void replaceAll(EmptyClassType ect, ClassType ct) {
+		Set<Integer> indices = new HashSet<Integer>();
+		// find replace indices
+		for (int i = 0; i < types.size(); i++) {
+			VType t = types.get(i);
+			if (t instanceof EmptyClassType && t.equals(ect)) {
+				indices.add(i);
+			}
+		}
+		// replace
+		for (int i : indices) {
+			types.set(i, ct);
+		}
 	}
 }

@@ -213,8 +213,18 @@ public class ClassType implements VType{
 		return true;
 	}
 
+
 	@Override
 	public boolean singleReturn() {
 		return true;
+	}
+		
+	@Override
+	public boolean equals(Object o) {
+		if (!(o instanceof ClassType)) {
+			return false;
+		}
+		ClassType ct = (ClassType) o;
+		return ct.getClassName().equals(className);
 	}
 }

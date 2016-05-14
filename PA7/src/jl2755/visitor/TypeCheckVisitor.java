@@ -68,7 +68,7 @@ public class TypeCheckVisitor implements ASTVisitor {
 		
 		int index = ae.getIndex();
 		if (index == 0){
-			if (!(env.containsKey(ae.getIdentifier().toString()))){
+			if (!(env.containsVar(ae.getIdentifier().toString()))){
 				String errorDesc = "Name " + ae.getIdentifier().toString() +
 						" cannot be resolved.";
 				SemanticErrorObject seo = new SemanticErrorObject(
@@ -78,7 +78,7 @@ public class TypeCheckVisitor implements ASTVisitor {
 						);
 				Main.handleSemanticError(seo);
 			}
-			VType tempScopeType = env.get(ae.getIdentifier().toString());
+			VType tempScopeType = env.getVarType(ae.getIdentifier().toString());
 			if (!(tempScopeType instanceof VarType)){
 				String errorDesc = "Name " + ae.getIdentifier().toString() +
 						" is not of variable type.";
@@ -1106,7 +1106,7 @@ public class TypeCheckVisitor implements ASTVisitor {
 			
 			// check if types of both sides agree
 			if (!returnType.equals(tupleType)) {
-				String s = "Mismatched types";
+				String s = "Mismatched type";
 				SemanticErrorObject seo = new SemanticErrorObject(
 						ti.getFunctionCall_line(), ti.getFunctionCall_col(), s);
 				Main.handleSemanticError(seo);	
@@ -1296,7 +1296,7 @@ public class TypeCheckVisitor implements ASTVisitor {
 			
 			// make sure the class type is in the env
 			if (!env.containsClass(className)) {
-				String s = "Type " + className + " cannot be resolved";
+				String s = "Name " + className + " cannot be resolved";
 				SemanticErrorObject seo = new SemanticErrorObject(
 						classId.getLineNumber(), classId.getColumnNumber(), s);
 				Main.handleSemanticError(seo);

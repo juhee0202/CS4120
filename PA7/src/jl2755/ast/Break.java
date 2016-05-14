@@ -11,6 +11,30 @@ import jl2755.visitor.ASTVisitor;
  */
 public class Break implements NakedStmt {
 	
+	private int lineNumber;
+	private int colNumber;
+	
+	public Break(int bleft, int bright) {
+		lineNumber = bleft;
+		colNumber = bright;
+	}
+	
+	public int getLineNumber() {
+		return lineNumber;
+	}
+
+	public void setLineNum(int lineNum) {
+		this.lineNumber = lineNum;
+	}
+
+	public int getColumnNumber() {
+		return colNumber;
+	}
+
+	public void setColumnNumber(int colNumber) {
+		this.colNumber = colNumber;
+	}
+
 	@Override
 	public void prettyPrintNode() {
 		CodeWriterSExpPrinter tempPrinter = GlobalPrettyPrinter.getInstance();
@@ -20,7 +44,7 @@ public class Break implements NakedStmt {
 	@Override
 	public void accept(ASTVisitor v) {
 		// TODO Auto-generated method stub
-		
+		v.visit(this);
 	}
 
 }

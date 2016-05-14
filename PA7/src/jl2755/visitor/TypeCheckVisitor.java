@@ -214,8 +214,8 @@ public class TypeCheckVisitor implements ASTVisitor {
 			return;
 		}
 		tempExprs.get(0).accept(this);
-		VType baseType = tempType;
-		if (baseType instanceof VarType) {
+		VarType vartypeView = (VarType) tempType;
+		if (vartypeView.isPrimitive()) {
 			List<VarType> tempTypesOfExprs = new ArrayList<VarType>();
 			for (int i = 0; i < tempExprs.size(); i++){
 				tempExprs.get(i).accept(this);
@@ -245,14 +245,17 @@ public class TypeCheckVisitor implements ASTVisitor {
 			}
 			tempType = new VarType(tempTypesOfExprs.get(0).getIsBool(), tempTypesOfExprs.get(0).getNumBrackets());
 		}
-		else if (baseType instanceof ClassType) {
-			ClassType classViewOfBase = (ClassType) baseType;
+		else {
+			ClassType classViewOfBase = env.getClassType(vartypeView.getElementType());
 			Set<String> intersectionOfClasses = new HashSet<String>();
 			intersectionOfClasses.addAll(getSuperClasses(classViewOfBase.getClassName()));
 			intersectionOfClasses.add(classViewOfBase.getClassName());
+			VarType previousIterationType = vartypeView;
 			for (int i = 1; i < tempExprs.size(); i++) {
 				tempExprs.get(i).accept(this);
-				if (!(tempType instanceof ClassType)) {
+				VarType tempVarTypeView = (VarType) tempType;
+				// Handle primitive appearing in an object array
+				if (tempVarTypeView.isPrimitive()) {
 					String errorDesc = "Expected an object but got an int or bool";
 					SemanticErrorObject seo = new SemanticErrorObject(
 							tempExprs.get(i).getLineNumber(),
@@ -261,10 +264,11 @@ public class TypeCheckVisitor implements ASTVisitor {
 							);
 					Main.handleSemanticError(seo);
 				}
-				ClassType classView = (ClassType) tempType;
+				ClassType classView = env.getClassType(tempVarTypeView.getElementType());
 				List<String> superClasses = getSuperClasses(classView.getClassName());
 				superClasses.add(classView.getClassName());
 				intersectionOfClasses.retainAll(superClasses);
+				// Handle the case where there is no more intersecting super class of elements
 				if (intersectionOfClasses.isEmpty()) {
 					String errorDesc = "Object " + tempExprs.get(i) + " is different from the ones before";
 					SemanticErrorObject seo = new SemanticErrorObject(
@@ -274,6 +278,17 @@ public class TypeCheckVisitor implements ASTVisitor {
 							);
 					Main.handleSemanticError(seo);
 				}
+				// Handle the case where the dimensions of elements don't match up.
+				if (tempVarTypeView.getNumBrackets() != previousIterationType.getNumBrackets()) {
+					String errorDesc = "Element " + tempExprs.get(i) + " has misaligned dimensions";
+					SemanticErrorObject seo = new SemanticErrorObject(
+							tempExprs.get(i).getLineNumber(),
+							tempExprs.get(i).getColumnNumber(), 
+							errorDesc
+							);
+					Main.handleSemanticError(seo);
+				}
+				previousIterationType = tempVarTypeView;
  			}
 			// At this point the intersection is not empty.
 			// Pick the ClassType that is the subclass of all the other classes.
@@ -288,7 +303,6 @@ public class TypeCheckVisitor implements ASTVisitor {
 					if (!isSubTypeOf(listOfAllIntersection.get(i),listOfAllIntersection.get(j))) {
 						candidate = false;
 					}
-					
 				}
 				if (candidate) {
 					mostSubIndex = i;

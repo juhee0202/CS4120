@@ -14,18 +14,19 @@ public class EmptyClassType implements VType {
 	
 	@Override
 	public boolean equals(Object o) {
+		if (!(o instanceof EmptyClassType)) {
+			return false;
+		}
 		return name.equals(((EmptyClassType)o).name);
 	}
 	
 	@Override
 	public boolean canDot() {
-		// TODO Auto-generated method stub
-		return false;
+		return true;
 	}
 
 	@Override
 	public boolean singleReturn() {
-		// TODO Auto-generated method stub
-		return false;
+		return true;
 	}
 }

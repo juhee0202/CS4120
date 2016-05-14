@@ -724,19 +724,38 @@ public class TypeCheckVisitor implements ASTVisitor {
 	 * @param FunctionDecl fd
 	 */
 	@Override
-	public void visit(FunctionDecl fd) {		
+	public void visit(FunctionDecl fd) {	
+		// get ABIName
 		String funId = fd.getIdentifier().toString();
-		FunType funType = (FunType) env.get(funId);
+		FunType funType = env.getFunType(funId);
 		String ABIName = functionToABIName(funId, funType);
 		fd.setABIName(ABIName);
 				
 		/* Update the function scope env */
 		Map<String, Type> paramToType = fd.getParamsWithTypes();
-		
 		for (Entry<String, Type> entry : paramToType.entrySet()) {
+			// get id
 			String id = entry.getKey();
-			VType type = new VarType(entry.getValue());
-			if (env.containsKey(id)) {
+			
+			// get type
+			VType type;
+			if (type instanceof Identifier) {
+				Identifier classId = (Identifier)type;
+				String className = classId.getTheValue();
+				if (!env.containsClass(className)) {
+					String s = "Type " + className + " cannot be resolved";
+					SemanticErrorObject seo = new SemanticErrorObject(
+							classId.getLineNumber(), classId.getColumnNumber(), s);
+					Main.handleSemanticError(seo);
+				}
+				type = env.getClassType(className);
+			} else {
+				type = new VarType(entry.getValue());	
+			}
+			
+			// TODO
+			// typecheck
+			if (env.containsVar(id)) {
 				String s = id + " is already declared";
 				SemanticErrorObject seo = new SemanticErrorObject(
 						fd.getIdentifier_line(), fd.getIdentifier_col(), s);
@@ -1191,59 +1210,13 @@ public class TypeCheckVisitor implements ASTVisitor {
 			negativeNumber = false;
 		}
 	}
-	
-	/**
-	 *  visits interface file and fills global environment
-	 */
-	private void visitInterfaceFile (String fileName, int lineNum, int colNum) {
-		Map<String, VType> interfaceEnv = Main.checkInterface(fileName);
-		Iterator<String> mapIter = interfaceEnv.keySet().iterator();
-		
-		while (mapIter.hasNext()){
-			String moduleMemberName = mapIter.next();
-			
-			// if multiple declarations, then check that
-			// the types are the same
-			if (globalEnv.containsKey(moduleMemberName)) {
-				VType existingType = globalEnv.get(moduleMemberName);
-				VType newType = interfaceEnv.get(moduleMemberName);
 
-				if (!(existingType.equals(newType))) {
-					String s = "Conflicting declarations on " 
-							+ moduleMemberName + ": "
-							+ "trying to add " + newType.toString() + " when "
-							+ existingType.toString() + " already exists.";
-					SemanticErrorObject seo = new SemanticErrorObject(
-							lineNum, 
-							colNum,
-							s);
-					Main.handleSemanticError(seo);
-				}
-			}
-			// no multiple declarations: add module member to global env
-			else{
-				globalEnv.put(moduleMemberName, interfaceEnv.get(moduleMemberName));
-			}
-		}
-	}
 	/**
-	 * Update global environment with functions, global variables, and
-	 * classes from the interface files
+	 * Deprecated
 	 */
 	@Override
 	public void visit(UseId ui) {
-		List<String> listOfUses = ui.getUseFiles();
-		
-		// iterate through each of the uses
-		for (int i = 0; i < listOfUses.size(); i++){
-			String fileName = listOfUses.get(i);
-			if (fileName.equals(Main.getSrcFile())) {
-				continue;
-			}
-			visitInterfaceFile(fileName, 
-					ui.getIdentifier().getLineNumber(),
-					ui.getIdentifier().getColumnNumber());
-		}
+		return;
 	}
 
 	/**
@@ -1581,5 +1554,4 @@ public class TypeCheckVisitor implements ASTVisitor {
 		
 		return ABIName + returnTypeString + paramTypesString;
 	}
-	
 }

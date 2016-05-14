@@ -610,7 +610,7 @@ public class TypeCheckVisitor implements ASTVisitor {
 		// Pop out of scope
 		String id = stack.pop();
 		while (!id.equals("_")) {
-			env.remove(id);
+			env.removeVar(id);
 			id = stack.pop();
 		}
 	}

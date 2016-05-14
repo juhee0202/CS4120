@@ -216,6 +216,10 @@ public class VarType implements VType {
 		return numBrackets;
 	}
 	
+	public boolean canCast() {
+		return numBrackets == 0;
+	}
+	
 	public String getElementType() {
 		return elementType;
 	}

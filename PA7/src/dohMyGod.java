@@ -274,6 +274,5 @@ public class dohMyGod {
 //		assertEquals(ct1, ct2);
 		int dohMyGod = 0;
 		
-	}
 	
 }

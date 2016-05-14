@@ -356,7 +356,7 @@ public class TypeCheckVisitor implements ASTVisitor {
 			}
 			
 			// get the VType of left hand side
-			VType idType = env.getVarType(id);
+			VarType idType = env.getVarType(id);
 			
 			// get the VType of right hand side
 			as.getExpr().accept(this);

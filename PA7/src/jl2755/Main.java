@@ -1040,7 +1040,7 @@ public class Main {
 				ClassType classType = new ClassType((ClassDecl) d);
 				String className = classType.getClassName();
 				if (globalEnv.containsClass(className) &&
-						!classType.equals(globalEnv.getClassType(className))) {
+						!classType.compareClassSignatures(globalEnv.getClassType(className))) {
 					Identifier id = ((ClassDecl) d).getClassName();
 					String e = "Mismatched class declaration found for " + className;
 					SemanticErrorObject seo = new SemanticErrorObject(
@@ -1227,7 +1227,7 @@ public class Main {
 				// Duplicate class across files
 				if (globalEnv.containsClass(name)) {
 					ClassType type = globalEnv.getClassType(name);
-					if (!type.equals(tempType)) {
+					if (!type.compareClassSignatures(tempType)) {
 						Identifier id = classDecl.getClassName();
 						String e = "Mismatched class declaration found " + name;
 						SemanticErrorObject seo = new SemanticErrorObject(

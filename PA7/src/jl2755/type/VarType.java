@@ -21,8 +21,7 @@ public class VarType implements VType {
 	private boolean isArray;
 	private boolean isObject;
 	private String elementType;
-	
-	private Integer numBrackets;
+	private int numBrackets;
 	
 //	private boolean isBool;				// true if primitive boolean, else false
 //	private boolean isPrimitiveArray;	// true if Primitive array type, else false

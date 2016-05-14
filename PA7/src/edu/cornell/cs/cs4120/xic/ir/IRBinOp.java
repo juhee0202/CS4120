@@ -20,7 +20,8 @@ public class IRBinOp extends IRExpr {
     private OpType type;
     private IRExpr left, right;
     private ChildType leftType, rightType;
-    private static Map<IRBinOp, Tile> nodeToTile;
+    private boolean validConstForMul;
+//    private static Map<IRBinOp, Tile> nodeToTile;
     
     /**
      *  0:	add		(const + reg)
@@ -116,7 +117,7 @@ public class IRBinOp extends IRExpr {
     			index = -1;
     		}
     	} else if (type == OpType.MUL) {
-    		if (operands == 1) {
+    		if (operands == 1 && validConstForMul) {
     			index = 2;
     		} else {
     			index = -1;
@@ -139,16 +140,18 @@ public class IRBinOp extends IRExpr {
     		if (right instanceof IRConst) {
     			return 0;
     		} else if (right instanceof IRTemp || right instanceof IRBinOp) {
+    			long value = ((IRConst) left).value();
+    			if (value == 1 || value == 2 || value == 4 || value == 8) {
+    				validConstForMul = true;
+    			}
     			return 1;
     		}
-    	} else if (left instanceof IRTemp) {
+    	} else if (left instanceof IRTemp || left instanceof IRBinOp) {
     		if (right instanceof IRConst) {
-    			return 1;
-    		} else if (right instanceof IRTemp || right instanceof IRBinOp) {
-    			return 2;
-    		}
-    	} else if (left instanceof IRBinOp) {
-    		if (right instanceof IRConst) {
+    			long value = ((IRConst) right).value();
+    			if (value == 1 || value == 2 || value == 4 || value == 8) {
+    				validConstForMul = true;
+    			}
     			return 1;
     		} else if (right instanceof IRTemp || right instanceof IRBinOp) {
     			return 2;
@@ -162,9 +165,10 @@ public class IRBinOp extends IRExpr {
         this.left = left;
         this.right = right;
         this.index = index;
-        if (nodeToTile == null) {
-        	nodeToTile = new HashMap<IRBinOp, Tile>();
-        }
+        validConstForMul = false;
+//        if (nodeToTile == null) {
+//        	nodeToTile = new HashMap<IRBinOp, Tile>();
+//        }
     }
 
     public OpType opType() {
@@ -188,9 +192,9 @@ public class IRBinOp extends IRExpr {
 		return index;
 	}
 
-	public static Map<IRBinOp, Tile> getNodeToTile() {
-		return nodeToTile;
-	}
+//	public static Map<IRBinOp, Tile> getNodeToTile() {
+//		return nodeToTile;
+//	}
 
 	@Override
     public IRNode visitChildren(IRVisitor v) {

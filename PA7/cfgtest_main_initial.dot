@@ -2,23 +2,21 @@ digraph {
 {	rankdir=LR
 	node[shape=box]
 }	"func
-jl2755.controlflow.AACFGNode@46fbb2c1" -> {"movq	$5, %temp
-jl2755.controlflow.AACFGNode@1698c449"}
+jl2755.controlflow.AACFGNode@7591083d" -> {"movq	$5, %temp
+jl2755.controlflow.AACFGNode@77a567e1"}
 	"movq	$5, %temp
-jl2755.controlflow.AACFGNode@1698c449" -> {"jnz	l2
-jl2755.controlflow.AACFGNode@5ef04b5"}
+jl2755.controlflow.AACFGNode@77a567e1" -> {"jnz	l2
+jl2755.controlflow.AACFGNode@736e9adb"}
 	"jnz	l2
-jl2755.controlflow.AACFGNode@5ef04b5" -> {"callq	func2
-jl2755.controlflow.AACFGNode@5f4da5c3", "ret
-jl2755.controlflow.AACFGNode@14514713"}
+jl2755.controlflow.AACFGNode@736e9adb" -> {"callq	func2
+jl2755.controlflow.AACFGNode@6d21714c", "ret
+jl2755.controlflow.AACFGNode@4ccabbaa"}
 	"callq	func2
-jl2755.controlflow.AACFGNode@5f4da5c3" -> {"jmp	l2
-jl2755.controlflow.AACFGNode@443b7951"}
+jl2755.controlflow.AACFGNode@6d21714c" -> {"jmp	l2
+jl2755.controlflow.AACFGNode@108c4c35"}
 	"jmp	l2
-jl2755.controlflow.AACFGNode@443b7951" -> {"ret
-jl2755.controlflow.AACFGNode@14514713"}
+jl2755.controlflow.AACFGNode@108c4c35" -> {"ret
+jl2755.controlflow.AACFGNode@4ccabbaa"}
 	"ret
-jl2755.controlflow.AACFGNode@14514713" -> {}
-	"ret
-jl2755.controlflow.AACFGNode@14514713" -> {}
+jl2755.controlflow.AACFGNode@4ccabbaa" -> {}
 }

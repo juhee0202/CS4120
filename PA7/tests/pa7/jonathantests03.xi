@@ -5,7 +5,7 @@ main(args:int[][]) {
 }
 
 class Jonathan extends Compilers{
-    okeydokey: Favorite = null;
+    okeydokey: Favorite;
 
     initJonathan(arg: Favorite) : Jonathan {
         masterLoop:

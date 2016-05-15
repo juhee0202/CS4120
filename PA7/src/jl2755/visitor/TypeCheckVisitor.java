@@ -915,7 +915,6 @@ public class TypeCheckVisitor implements ASTVisitor {
 		
 		/* Typecheck function body */
 		String id = fd.getIdentifier().toString();
-		funType = env.getFunType(id);
 		functionReturnType = funType.getReturnTypes();
 		isInFunctionDecl = true;
 		fd.getBlockStmt().accept(this);

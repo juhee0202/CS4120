@@ -194,6 +194,14 @@ public class ClassType implements VType{
 		
 		// if they extend different superclasses, return false
 		String argSuperClassName = argClassType.getSuperClassName();
+		
+		if (argSuperClassName == null) {
+			if (superClassName == null) {
+				return true;
+			}
+			return false;
+		}
+		
 		if (!argSuperClassName.equals(superClassName)) {
 			return false;
 		}

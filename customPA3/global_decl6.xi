@@ -1,7 +1,7 @@
-arr:bool[] = {False, False, False}
+arr:bool[]
 
 class C {
 	f(x:int) {
-		arr[x] = True
+		arr[x] = true
 	}
 }

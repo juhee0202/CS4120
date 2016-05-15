@@ -93,21 +93,21 @@ xic ("Test --typecheck -O") ["../customPA3"] "-libpath $(testpath) --typecheck -
     global_decl6.xi;
     module1.xi;
     neighbor.xi;
-    sameClassName-1ixifail.xi;
-    sameClassName-1xifail.xi;
-    sameClassName-2ixifail.xi;
-    sameClassName-2ixiok.xi;
-    sameClassName-bothfail.xi;
-    sameClassName-bothok.xi;
-    sameFunctionName-1ixifail.xi;
-    sameFunctionName-1xifail.xi;
-    sameFunctionName-2ixifail.xi;
-    sameFunctionName-2ixiok.xi;
-    sameFunctionName-bothfail.xi;
-    sameFunctionName-bothok.xi;
-    superClass-fail.xi;
-    superClass-ok.xi;
-    superClass2-fail.xi;
-    superClass2-ok.xi;
+    sameClassName1.xi;
+    sameClassName2.xi;
+    sameClassName3.xi;
+    sameClassName4.xi;
+    sameClassName_bothfail.xi;
+    sameClassName_bothok.xi;
+    sameFunctionName1.xi;
+    sameFunctionName2.xi;
+    sameFunctionName3.xi;
+    sameFunctionName4.xi;
+    sameFunctionName_bothfail.xi;
+    sameFunctionName_bothok.xi;
+    superClass_fail.xi;
+    superClass_ok.xi;
+    superClass2_fail.xi;
+    superClass2_ok.xi;
 }
 

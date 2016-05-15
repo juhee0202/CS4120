@@ -151,7 +151,7 @@ public class MixedArrayType implements Type {
 	}
 	
 	public int getTotalNumBrackets() {
-		if (index == 0){
+		if (index == 0 || index == 2){
 			return brackets.getNumBrackets();
 		}
 		else{

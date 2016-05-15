@@ -435,12 +435,13 @@ public class Main {
 			Program result = (Program) s.value;
 			
 			// Check all interfaces
-			Environment env = checkInterfaces(result, filename);
+			Environment env = checkInterfaces(result, rmExtension);
 			
 			TypeCheckVisitor visitor = new TypeCheckVisitor(env);
 			result.accept(visitor);
 			
 			/* Constant Folding */
+			// TODO: UNCOMMENT
 //			if (enabled[CF]) {
 //				ConstantFolderVisitor constantFold = new ConstantFolderVisitor();
 //				result.accept(constantFold);
@@ -518,7 +519,7 @@ public class Main {
 					fileToSymbol.put(filename, s);
 				}
 				program = (Program) s.value;
-				Environment env = checkInterfaces(program, filename);
+				Environment env = checkInterfaces(program, rmExtension);
 				TypeCheckVisitor visitor = new TypeCheckVisitor(env);
 				program.accept(visitor);
 				
@@ -701,7 +702,7 @@ public class Main {
 						fileToSymbol.put(filename, s);
 					}
 					program = (Program) s.value;
-					Environment env = checkInterfaces(program, filename);
+					Environment env = checkInterfaces(program, rmExtension);
 					TypeCheckVisitor visitor = new TypeCheckVisitor(env);
 					program.accept(visitor);
 					
@@ -785,7 +786,7 @@ public class Main {
 					fileToSymbol.put(filename, s);
 				}
 				program = (Program) s.value;
-				Environment env = checkInterfaces(program, filename);
+				Environment env = checkInterfaces(program, rmExtension);
 				TypeCheckVisitor visitor = new TypeCheckVisitor(env);
 				program.accept(visitor);
 				

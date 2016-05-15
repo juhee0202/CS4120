@@ -1049,7 +1049,7 @@ public class Main {
 							id.getLineNumber(),id.getColumnNumber(),e);
 					handleSemanticError(seo);
 				} else {
-					globalEnv.put(className, classType);
+					globalEnv.putClass(className, classType);
 				}
 			} else if (d instanceof FunctionDecl) {
 				FunType funType = new FunType((FunctionDecl) d);

@@ -802,7 +802,6 @@ public class MIRVisitor implements ASTVisitor{
 	 */
 	@Override
 	public void visit(VarInit vi) {
-//		VarDecl vd = vi.getVarDecl();
 		Identifier id = vi.getId();
 		
 		id.accept(this);
@@ -1108,8 +1107,15 @@ public class MIRVisitor implements ASTVisitor{
 	}
 
 	@Override
-	public void visit(SimpleVarInit simpleVarInit) {
-		// TODO Auto-generated method stub
+	public void visit(SimpleVarInit svi) {
+		Identifier id = svi.getIdentifier();
 		
+		id.accept(this);
+		IRExpr dest = (IRExpr) tempNode;
+		
+		svi.getLiteral().accept(this);
+		IRExpr e = (IRExpr) tempNode;
+		
+		tempNode = new IRMove(dest,e);
 	}
 }

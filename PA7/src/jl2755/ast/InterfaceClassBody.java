@@ -28,7 +28,9 @@ public class InterfaceClassBody {
 
 	public List<InterfaceFunc> getMethods() {
 		List<InterfaceFunc> methods = new ArrayList<InterfaceFunc>();
-		methods.add(intFunc);
+		if (intFunc != null) {
+			methods.add(intFunc);
+		}
 		if (intClassBody != null) {
 			methods.addAll(intClassBody.getMethods());
 		}

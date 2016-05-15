@@ -812,8 +812,9 @@ public class TypeCheckVisitor implements ASTVisitor {
 			String methodName = fc.getIdentifier().getTheValue();
 			
 			// check if methodName is valid
-			List<String> superclasses = getSuperClasses(dotableExprType.getElementType());
-			for (String superclass : superclasses) {
+			List<String> classes = getSuperClasses(dotableExprType.getElementType());
+			classes.add(0,dotableExprType.getElementType());
+			for (String superclass : classes) {
 				ClassType superclassType = env.getClassType(superclass);
 				if (superclassType.containsMethod(methodName)) {
 					funType = superclassType.getMethodType(methodName);

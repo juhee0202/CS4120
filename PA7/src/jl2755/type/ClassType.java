@@ -22,7 +22,12 @@ public class ClassType implements VType{
 
 	public ClassType(InterfaceClassDecl intClassDecl) {
 		className = intClassDecl.getClassName().getTheValue();
-		superClassName = intClassDecl.getSuperclassName().getTheValue();
+		Identifier sc = intClassDecl.getSuperclassName();
+		if (sc != null) {
+			superClassName = sc.getTheValue();
+		} else {
+			superClassName = null;
+		}
 		fieldEnv = null;
 		methodEnv = new HashMap<String, FunType>();
 		List<InterfaceFunc> methods = intClassDecl.getMethods();
@@ -33,7 +38,12 @@ public class ClassType implements VType{
 	
 	public ClassType(ClassDecl classDecl) {
 		className = classDecl.getClassName().getTheValue();
-		superClassName = classDecl.getSuperclassName().getTheValue();
+		Identifier sc = classDecl.getSuperclassName();
+		if (sc != null) {
+			superClassName = sc.getTheValue();
+		} else {
+			superClassName = null;
+		}
 		fieldEnv = new HashMap<String, VarType>();
 		methodEnv = new HashMap<String, FunType>();
 		

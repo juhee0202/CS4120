@@ -20,6 +20,9 @@ public class MIRVisitor implements ASTVisitor{
 	private int labelCount = 0;
 	private int tempCount = 0;
 	private static final IRConst WORD_SIZE = new IRConst(Configuration.WORD_SIZE);
+	private String currentWhileStart;
+	private String currentWhileEnd;
+	private Map<String, String> startToEnd = new HashMap<String, String>();
 	public IRNode program;
 	
 	@Override
@@ -619,11 +622,18 @@ public class MIRVisitor implements ASTVisitor{
 	@Override
 	public void visit(Program p) {
 		Map<String, IRFuncDecl> functions = new HashMap<String, IRFuncDecl>();
-		List<FunctionDecl> funcs = p.getFunctionDecls();
-		for (FunctionDecl fd: funcs) {
-			fd.accept(this);
-			functions.put(fd.getABIName(), (IRFuncDecl) tempNode);
+		
+		List<Decl> decls = p.getAllDecls();
+		for (Decl d: decls) {
+			d.accept(this);
 		}
+		
+		
+//		List<FunctionDecl> funcs = p.getFunctionDecls();
+//		for (FunctionDecl fd: funcs) {
+//			fd.accept(this);
+//			functions.put(fd.getABIName(), (IRFuncDecl) tempNode);
+//		}
 		program = new IRCompUnit("Program", functions);
 	}
 
@@ -780,6 +790,7 @@ public class MIRVisitor implements ASTVisitor{
 				tempNode = new IRSeq(newList);
 			}
 		} else {
+			// TODO: initialize values
 			tempNode = null;
 		}
 		
@@ -810,7 +821,17 @@ public class MIRVisitor implements ASTVisitor{
 		IRLabel trueLabel = new IRLabel("l"+labelCount++);
 		IRLabel falseLabel = new IRLabel("l"+labelCount++);
 		IRStmt cJumpNode = controlFlow(ws.getExpr(),trueLabel,falseLabel);
+		
+		// Update currentWhile as you enter and leave a while loop
+		String oldWhileStart = currentWhileStart;
+		String oldWhileEnd = currentWhileEnd;
+		currentWhileStart = start;
+		currentWhileEnd = falseLabel.name();
+		startToEnd.put(currentWhileStart, currentWhileEnd);
 		ws.getStmt().accept(this);
+		currentWhileStart = oldWhileStart;
+		currentWhileEnd = oldWhileEnd;
+		
 		IRStmt loopStmts = (IRStmt) tempNode;
 		IRJump jumpToStart = new IRJump(new IRName(start));
 		tempNode = new IRSeq(startOfLoop, cJumpNode, trueLabel, 
@@ -1009,5 +1030,86 @@ public class MIRVisitor implements ASTVisitor{
 				trueLabel, assignValue, incrementCounter, jumpToStart, falseLabel);
 		stmts.addAll(whileLoop);
 		return new IRESeq(new IRSeq(stmts), (IRTemp) freshArray.copy());
+	}
+
+	@Override
+	public void visit(Break br) {
+		String label;
+		if (br.hasLabel()) {
+			label = startToEnd.get(br.getLabel());
+		} else {
+			label = currentWhileEnd;
+		}
+		tempNode = new IRJump(new IRName(label));
+	}
+
+	@Override
+	public void visit(ClassBody cb) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void visit(ClassDecl cd) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void visit(Continue cn) {
+		String label;
+		if (cn.hasLabel()) {
+			label = cn.getLabel();
+		} else {
+			label = currentWhileStart;
+		}
+		tempNode = new IRJump(new IRName(label));
+	}
+
+	@Override
+	public void visit(DotableExpr de) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void visit(GlobalDecl gd) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	// TODO: check later
+	@Override
+	public void visit(ShortTupleDecl std) {
+		Type type = std.getType();
+		IRExpr src = null;
+		if (type instanceof PrimitiveType) {
+			src = new IRConst(0);
+		} else if (type instanceof Identifier) {
+			src = new IRConst(0);	// null = 0?
+		}
+		for (Identifier id : std.getAllIdentifiers()) {	
+			id.accept(this);
+			IRExpr dest = (IRExpr) tempNode;
+			tempNode = new IRMove(dest, src);
+		}
+	}
+
+	@Override
+	public void visit(FieldDecl fieldDecl) {
+		switch (fieldDecl.getType()) {
+		case SHORT_TUPLE_DECL:
+			fieldDecl.getShortTupleDecl().accept(this);
+			break;
+		case VAR_DECL:
+			fieldDecl.getVarDecl().accept(this);
+			break;
+		}
+	}
+
+	@Override
+	public void visit(SimpleVarInit simpleVarInit) {
+		// TODO Auto-generated method stub
+		
 	}
 }

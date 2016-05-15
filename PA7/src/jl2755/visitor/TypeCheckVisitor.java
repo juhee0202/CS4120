@@ -1,6 +1,7 @@
 package jl2755.visitor;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -1460,8 +1461,8 @@ public class TypeCheckVisitor implements ASTVisitor {
 		} else { 									// 2: ClassType
 			Identifier classId = vd.getClassType();
 			String className = classId.getTheValue();
-			if (!env.containsClass(className)) {
-				String s = "Type " + className + " cannot be resolved";
+			if (!env.containsClass(className)) {				
+				String s = "Class type " + className + " cannot be resolved";
 				SemanticErrorObject seo = new SemanticErrorObject(
 						classId.getLineNumber(), classId.getColumnNumber(), s);
 				Main.handleSemanticError(seo);
@@ -1783,28 +1784,23 @@ public class TypeCheckVisitor implements ASTVisitor {
 			Main.handleSemanticError(seo);
 		}
 		
-		/* Typecheck the type */
-		Type t = svi.getType();
-		VarType leftType = new VarType(t);
-		// if it's an object type, make sure its declared in env
-		if (leftType.isObject()) {
-			String s = "Non-primitive type object cannot be initialized";
-			SemanticErrorObject seo = new SemanticErrorObject(
-					t.getLineNumber(), t.getColumnNumber(), s);
-			Main.handleSemanticError(seo);
-		}
+		// make sure that type is valid
+		VType leftType;
+		PrimitiveType type = svi.getPrimitiveType();
+		leftType = new VarType(type);
 		
-		/* Typecheck the whole statement */
-		svi.getConstant().accept(this);
-		VarType rightType = (VarType)tempType;
+		// typecheck the statement
+		Literal lit = svi.getLiteral();
+		lit.accept(this);
+		VType rightType = tempType;
 		
 		// make sure the left and right types are equal
 		if (!(leftType.equals(rightType))){
 			String s = "Expected " + leftType.toString() 
 						+ ", but found " + rightType.toString();
 			SemanticErrorObject seo = new SemanticErrorObject(
-					svi.getConstant().getLineNumber(), 
-					svi.getConstant().getColumnNumber(),
+					lit.getLineNumber(), 
+					lit.getColumnNumber(),
 					s);
 			Main.handleSemanticError(seo);
 		}

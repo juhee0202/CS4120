@@ -414,7 +414,8 @@ short_tuple_decl ::= identifier:id COMMA identifier_list:idl
                      COLON type:t                                   {: RESULT = new ShortTupleDecl(id, idl, t); :}
                      ;
 
-simple_var_init ::= identifier:id COLON type:t GETS constant:c      {: RESULT = new SimpleVarInit(id,t,c); :}
+simple_var_init ::= identifier:id COLON primitive_type:pt 
+                    GETS literal:l                                  {: RESULT = new SimpleVarInit(id,pt,l); :}
                     ;
 
 stmt ::= naked_stmt:ns SEMICOLON                                    {: RESULT = new Stmt(ns, true, nsleft, nsright); :}

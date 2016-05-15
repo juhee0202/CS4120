@@ -40,164 +40,6 @@ Test script: xthScript2
                       The default is linux.
 ]
   xic (Test --help): 1 out of 1 tests succeeded.
-  Test collection: xic (Test --lex)
-    ex1.xi: OK
-    [Compiler's standard output:
-    [xic] Lexing
-[xic] Lexing completed
-]
-    ex2.xi: OK
-    [Compiler's standard output:
-    [xic] Lexing
-[xic] Lexing completed
-]
-    spec1.xi: OK
-    [Compiler's standard output:
-    [xic] Lexing
-[xic] Lexing completed
-]
-    spec2.xi: OK
-    [Compiler's standard output:
-    [xic] Lexing
-[xic] Lexing completed
-]
-    spec3.xi: OK
-    [Compiler's standard output:
-    [xic] Lexing
-[xic] Lexing completed
-]
-    gcd.xi: OK
-    [Compiler's standard output:
-    [xic] Lexing
-[xic] Lexing completed
-]
-    ratadd.xi: OK
-    [Compiler's standard output:
-    [xic] Lexing
-[xic] Lexing completed
-]
-    ratadduse.xi: OK
-    [Compiler's standard output:
-    [xic] Lexing
-[xic] Lexing completed
-]
-    insertionsort.xi: OK
-    [Compiler's standard output:
-    [xic] Lexing
-[xic] Lexing completed
-]
-    arrayinit.xi: OK
-    [Compiler's standard output:
-    [xic] Lexing
-[xic] Lexing completed
-]
-    arrayinit2.xi: OK
-    [Compiler's standard output:
-    [xic] Lexing
-[xic] Lexing completed
-]
-    mdarrays.xi: OK
-    [Compiler's standard output:
-    [xic] Lexing
-[xic] Lexing completed
-]
-    add.xi: OK
-    [Compiler's standard output:
-    [xic] Lexing
-[xic] Lexing completed
-]
-    beauty.xi: OK
-    [Compiler's standard output:
-    [xic] Lexing
-[xic] Lexing completed
-]
-  xic (Test --lex): 14 out of 14 tests succeeded.
-  Test collection: xic (Test --parse)
-    ex1.xi: OK
-    [Compiler's standard output:
-    [xic] Parsing
-[xic] Parsing completed
-]
-    ex2.xi: OK
-    [Compiler's standard output:
-    [xic] Parsing
-[xic] Parsing completed
-]
-    ex3.xi: OK
-    [Compiler's standard output:
-    [xic] Parsing
-	Syntactic error at ex3.xi:1:1: Syntax error: unexpected +
-[xic] Parsing failed
-]
-    spec1.xi: OK
-    [Compiler's standard output:
-    [xic] Parsing
-[xic] Parsing completed
-]
-    spec2.xi: OK
-    [Compiler's standard output:
-    [xic] Parsing
-[xic] Parsing completed
-]
-    spec3.xi: OK
-    [Compiler's standard output:
-    [xic] Parsing
-[xic] Parsing completed
-]
-    gcd.xi: Mismatch detected at line 2 of file gcd.parsed.nml
-expected:  ((gcd ((a int) (b int)) (int)
-found   :  ((gcd
-    [Compiler's standard output:
-    [xic] Parsing
-[xic] Parsing completed
-]
-    ratadd.xi: OK
-    [Compiler's standard output:
-    [xic] Parsing
-[xic] Parsing completed
-]
-    ratadduse.xi: OK
-    [Compiler's standard output:
-    [xic] Parsing
-[xic] Parsing completed
-]
-    insertionsort.xi: Mismatch detected at line 7 of file insertionsort.parsed.nml
-expected:     (while
-found   :     (()
-    [Compiler's standard output:
-    [xic] Parsing
-[xic] Parsing completed
-]
-    arrayinit.xi: OK
-    [Compiler's standard output:
-    [xic] Parsing
-[xic] Parsing completed
-]
-    arrayinit2.xi: Mismatch detected at line 6 of file arrayinit2.parsed.nml
-expected:     (while (> n 0) ((= n (- n 1)) (= ([] a n) n)))))))
-found   :     (() while (> n 0) ((= n (- n 1)) (= ([] a n) n)))))))
-    [Compiler's standard output:
-    [xic] Parsing
-[xic] Parsing completed
-]
-    mdarrays.xi: OK
-    [Compiler's standard output:
-    [xic] Parsing
-[xic] Parsing completed
-]
-    add.xi: OK
-    [Compiler's standard output:
-    [xic] Parsing
-	Syntactic error at add.xi:1:1: Syntax error: unexpected +
-[xic] Parsing failed
-]
-    beauty.xi: OK
-    [Compiler's standard output:
-    [xic] Parsing
-	Syntactic error at beauty.xi:1:1: Syntax error: unexpected ==
-[xic] Parsing failed
-]
-  xic (Test --parse): 12 out of 15 tests succeeded.
   Test collection: xic (Test --typecheck -O)
     ex01.xi: OK
     [Compiler's standard output:
@@ -214,7 +56,12 @@ found   :     (() while (> n 0) ((= n (- n 1)) (= ([] a n) n)))))))
     [xic] Typechecking
 [xic] Typechecking completed
 ]
-    ex04.xi: File ex04.xi already exists in directory ./
+    ex04.xi: OK
+    [Compiler's standard output:
+    [xic] Typechecking
+	Semantic error at ex04.xi:2:12: Expected bool, but found int
+[xic] Typechecking failed
+]
     ex05.xi: OK
     [Compiler's standard output:
     [xic] Typechecking
@@ -339,45 +186,44 @@ found   :     (() while (> n 0) ((= n (- n 1)) (= ([] a n) n)))))))
     [xic] Typechecking
 [xic] Typechecking completed
 ]
-  xic (Test --typecheck -O): 25 out of 26 tests succeeded.
+  xic (Test --typecheck -O): 26 out of 26 tests succeeded.
   Test collection: xic (Test --typecheck -O)
-    array01.xi: Mismatch detected at line 1 of file array01.typed.nml
-expected: Valid Xi Program
-found   : : error:
+    array01.xi: OK
     [Compiler's standard output:
     [xic] Typechecking
-	Syntactic error at array01.xi:8:25: Syntax error: unexpected =
+[xic] Typechecking completed
+]
+    array02.xi: OK
+    [Compiler's standard output:
+    [xic] Typechecking
+[xic] Typechecking completed
+]
+    assign01.xi: OK
+    [Compiler's standard output:
+    [xic] Typechecking
+	Semantic error at assign01.xi:5:13: Expected int, but found null
 [xic] Typechecking failed
 ]
-    array02.xi: Extra line in file array02.typed.nml: : error:
+    assign02.xi: OK
     [Compiler's standard output:
     [xic] Typechecking
-	Syntactic error at array02.xi:8:25: Syntax error: unexpected =
+[xic] Typechecking completed
+]
+    assign03.xi: OK
+    [Compiler's standard output:
+    [xic] Typechecking
+	Semantic error at assign03.xi:5:18: Expected Jonathan, but found int
 [xic] Typechecking failed
 ]
-    extend1.xi: Mismatch detected at line 1 of file extend1.typed.nml
-expected: Valid Xi Program
-found   : : error:
+    assign04.xi: OK
     [Compiler's standard output:
     [xic] Typechecking
-	Semantic error at extend1.xi:4:3: Name name cannot be resolved
-[xic] Typechecking failed
+[xic] Typechecking completed
 ]
-    extend3.xi: File extend3.typedsol does not exist in directory /home/vagrant/xth/tests/customPA3/../customPA3
-    extend4.xi: Mismatch detected at line 1 of file extend4.typed.nml
-expected: Valid Xi Program
-found   : : error:
+    assign05.xi: OK
     [Compiler's standard output:
     [xic] Typechecking
-	Failed to read input file xth/tests/customPA3/io.ixi
-	Semantic error at extend4.xi:5:3: Name println cannot be resolved
-[xic] Typechecking failed
-]
-    extend5.xi: OK
-    [Compiler's standard output:
-    [xic] Typechecking
-	Semantic error at extend5.xi:15:5: x is already declared
-[xic] Typechecking failed
+[xic] Typechecking completed
 ]
     field_decl1.xi: OK
     [Compiler's standard output:
@@ -400,14 +246,6 @@ found   : : error:
     [xic] Typechecking
 [xic] Typechecking completed
 ]
-    global_decl3.xi: Mismatch detected at line 1 of file global_decl3.typed.nml
-expected: Valid Xi Program
-found   : : error:
-    [Compiler's standard output:
-    [xic] Typechecking
-	Syntactic error at global_decl3.xi:1:9: Syntax error: unexpected =
-[xic] Typechecking failed
-]
     global_decl4.xi: OK
     [Compiler's standard output:
     [xic] Typechecking
@@ -424,23 +262,46 @@ found   : : error:
     [xic] Typechecking
 [xic] Typechecking completed
 ]
-    juheetest01.xi: File juheetest01.typedsol does not exist in directory /home/vagrant/xth/tests/customPA3/../customPA3
     module1.xi: OK
     [Compiler's standard output:
     [xic] Typechecking
 [xic] Typechecking completed
 ]
-    neighbor.xi: OK
+    neighbor.xi: Missing line in file neighbor.typed.nml: Valid Xi Program
     [Compiler's standard output:
     [xic] Typechecking
-[xic] Typechecking completed
 ]
-    sameClassName-1ixifail.xi: Mismatch detected at line 1 of file sameClassName-1ixifail.typed.nml
-expected: : error:
-found   : Valid Xi Program
+    [Compiler's standard error:
+    java.lang.NullPointerException
+	at jl2755.Main.resolveTypes(Main.java:1087)
+	at jl2755.Main.checkInterfaces(Main.java:1032)
+	at jl2755.Main.typecheck(Main.java:438)
+	at jl2755.Main.main(Main.java:189)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:498)
+	at org.eclipse.jdt.internal.jarinjarloader.JarRsrcLoader.main(JarRsrcLoader.java:58)
+]
+    sameClassName-1ixifail.xi: OK
     [Compiler's standard output:
     [xic] Typechecking
-[xic] Typechecking completed
+	xth/tests/customPA3/sameClassName-1ixifail.ixi
+	Failed to write to output file sameClassName-1ixifail.typed
+[xic] Typechecking failed
+]
+    [Compiler's standard error:
+    jl2755.exceptions.SemanticError: Semantic error beginning at 9:7:Duplicate class declaration found for Jeffrey
+	at jl2755.Main.handleSemanticError(Main.java:986)
+	at jl2755.Main.checkInterface(Main.java:1226)
+	at jl2755.Main.checkInterfaces(Main.java:1020)
+	at jl2755.Main.typecheck(Main.java:438)
+	at jl2755.Main.main(Main.java:189)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:498)
+	at org.eclipse.jdt.internal.jarinjarloader.JarRsrcLoader.main(JarRsrcLoader.java:58)
 ]
     sameClassName-1xifail.xi: Missing line in file sameClassName-1xifail.typed.nml: : error:
     [Compiler's standard output:
@@ -449,7 +310,7 @@ found   : Valid Xi Program
     [Compiler's standard error:
     java.lang.NullPointerException
 	at jl2755.type.ClassType.compareClassSignatures(ClassType.java:197)
-	at jl2755.Main.checkInterfaces(Main.java:1043)
+	at jl2755.Main.checkInterfaces(Main.java:1044)
 	at jl2755.Main.typecheck(Main.java:438)
 	at jl2755.Main.main(Main.java:189)
 	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
@@ -478,17 +339,41 @@ found   : : error:
 	Syntactic error at sameClassName-bothfail.xi:1:18: Syntax error: unexpected -
 [xic] Typechecking failed
 ]
-    sameClassName-bothok.xi: OK
+    sameClassName-bothok.xi: Missing line in file sameClassName-bothok.typed.nml: Valid Xi Program
     [Compiler's standard output:
     [xic] Typechecking
-[xic] Typechecking completed
 ]
-    sameFunctionName-1ixifail.xi: Mismatch detected at line 1 of file sameFunctionName-1ixifail.typed.nml
-expected: : error:
-found   : Valid Xi Program
+    [Compiler's standard error:
+    java.lang.NullPointerException
+	at jl2755.type.ClassType.compareClassSignatures(ClassType.java:197)
+	at jl2755.Main.checkInterfaces(Main.java:1044)
+	at jl2755.Main.typecheck(Main.java:438)
+	at jl2755.Main.main(Main.java:189)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:498)
+	at org.eclipse.jdt.internal.jarinjarloader.JarRsrcLoader.main(JarRsrcLoader.java:58)
+]
+    sameFunctionName-1ixifail.xi: OK
     [Compiler's standard output:
     [xic] Typechecking
-[xic] Typechecking completed
+	xth/tests/customPA3/sameFunctionName-1ixifail.ixi
+	Failed to write to output file sameFunctionName-1ixifail.typed
+[xic] Typechecking failed
+]
+    [Compiler's standard error:
+    jl2755.exceptions.SemanticError: Semantic error beginning at 3:1:Duplicate function declaration found for goo
+	at jl2755.Main.handleSemanticError(Main.java:986)
+	at jl2755.Main.checkInterface(Main.java:1198)
+	at jl2755.Main.checkInterfaces(Main.java:1020)
+	at jl2755.Main.typecheck(Main.java:438)
+	at jl2755.Main.main(Main.java:189)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:498)
+	at org.eclipse.jdt.internal.jarinjarloader.JarRsrcLoader.main(JarRsrcLoader.java:58)
 ]
     sameFunctionName-1xifail.xi: OK
     [Compiler's standard output:
@@ -502,22 +387,27 @@ found   : Valid Xi Program
 	Syntactic error at sameFunctionName-2ixifail.xi:1:21: Syntax error: unexpected -
 [xic] Typechecking failed
 ]
-    sameFunctionName-2ixiok.xi: OK
+    sameFunctionName-2ixiok.xi: Mismatch detected at line 1 of file sameFunctionName-2ixiok.typed.nml
+expected: Valid Xi Program
+found   : : error:
     [Compiler's standard output:
     [xic] Typechecking
-[xic] Typechecking completed
+	Semantic error at sameFunctionName-2ixiok.xi:1:1: Mismatched class declaration found for foo
+[xic] Typechecking failed
 ]
-    sameFunctionName-bothfail.xi: Mismatch detected at line 1 of file sameFunctionName-bothfail.typed.nml
-expected: : error:
-found   : Valid Xi Program
+    sameFunctionName-bothfail.xi: OK
     [Compiler's standard output:
     [xic] Typechecking
-[xic] Typechecking completed
+	Semantic error at sameFunctionName-bothfail.xi:1:1: Mismatched class declaration found for foo
+[xic] Typechecking failed
 ]
-    sameFunctionName-bothok.xi: OK
+    sameFunctionName-bothok.xi: Mismatch detected at line 1 of file sameFunctionName-bothok.typed.nml
+expected: Valid Xi Program
+found   : : error:
     [Compiler's standard output:
     [xic] Typechecking
-[xic] Typechecking completed
+	Semantic error at sameFunctionName-bothok.xi:1:1: Mismatched class declaration found for foo
+[xic] Typechecking failed
 ]
     superClass-fail.xi: Mismatch detected at line 1 of file superClass-fail.typed.nml
 expected: : error:
@@ -545,5 +435,5 @@ found   : : error:
 	Syntactic error at superClass2-ok.xi:1:16: Syntax error: unexpected -
 [xic] Typechecking failed
 ]
-  xic (Test --typecheck -O): 19 out of 33 tests succeeded.
-xthScript2: 72 out of 90 tests succeeded.
+  xic (Test --typecheck -O): 24 out of 32 tests succeeded.
+xthScript2: 52 out of 60 tests succeeded.

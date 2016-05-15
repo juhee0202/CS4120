@@ -1380,6 +1380,10 @@ public class TypeCheckVisitor implements ASTVisitor {
 		}
 		
 		for (int i = 0; i < leftTypes.size(); i++) {
+			if (leftTypes.get(i) instanceof UnitType) {
+				continue;
+			}
+			
 			VarType left = (VarType) leftTypes.get(i);
 			VarType right = (VarType) rightTypes.get(i);
 			
@@ -1566,6 +1570,14 @@ public class TypeCheckVisitor implements ASTVisitor {
 		
 		/* Typecheck the whole statement */
 		vi.getExpr().accept(this);
+		
+		if (!(tempType instanceof VarType)) {
+			String s = "Cannot initialize a variable with a procedural call";
+			SemanticErrorObject seo = new SemanticErrorObject(
+					t.getLineNumber(), t.getColumnNumber(), s);
+			Main.handleSemanticError(seo);
+		}
+		
 		VarType rightType = (VarType)tempType;
 		
 		// check for type hierarchy

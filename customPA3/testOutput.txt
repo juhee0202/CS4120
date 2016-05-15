@@ -245,12 +245,11 @@ found   :     (() while (> n 0) ((= n (- n 1)) (= ([] a n) n)))))))
 	Syntactic error at ex09.xi:1:13: Syntax error: unexpected 2
 [xic] Typechecking failed
 ]
-    ex10.xi: Mismatch detected at line 1 of file ex10.typed.nml
-expected: : error:
-found   : Valid Xi Program
+    ex10.xi: OK
     [Compiler's standard output:
     [xic] Typechecking
-[xic] Typechecking completed
+	Semantic error at ex10.xi:2:20: Mismatched type
+[xic] Typechecking failed
 ]
     ex11.xi: Mismatch detected at line 1 of file ex11.typed.nml
 expected: : error:
@@ -265,7 +264,7 @@ found   : Valid Xi Program
 ]
     [Compiler's standard error:
     java.lang.ClassCastException: jl2755.type.UnitType cannot be cast to jl2755.type.VarType
-	at jl2755.visitor.TypeCheckVisitor.visit(TypeCheckVisitor.java:1569)
+	at jl2755.visitor.TypeCheckVisitor.visit(TypeCheckVisitor.java:1573)
 	at jl2755.ast.VarInit.accept(VarInit.java:83)
 	at jl2755.visitor.TypeCheckVisitor.visit(TypeCheckVisitor.java:1232)
 	at jl2755.ast.Stmt.accept(Stmt.java:65)
@@ -369,7 +368,7 @@ found   : : error:
 	at jl2755.ast.ArrayElementList.accept(ArrayElementList.java:67)
 	at jl2755.visitor.TypeCheckVisitor.visit(TypeCheckVisitor.java:331)
 	at jl2755.ast.ArrayLiteral.accept(ArrayLiteral.java:45)
-	at jl2755.visitor.TypeCheckVisitor.visit(TypeCheckVisitor.java:1568)
+	at jl2755.visitor.TypeCheckVisitor.visit(TypeCheckVisitor.java:1572)
 	at jl2755.ast.VarInit.accept(VarInit.java:83)
 	at jl2755.visitor.TypeCheckVisitor.visit(TypeCheckVisitor.java:1232)
 	at jl2755.ast.Stmt.accept(Stmt.java:65)
@@ -389,7 +388,7 @@ found   : : error:
 	at java.lang.reflect.Method.invoke(Method.java:498)
 	at org.eclipse.jdt.internal.jarinjarloader.JarRsrcLoader.main(JarRsrcLoader.java:58)
 ]
-  xic (Test --typecheck -O): 20 out of 26 tests succeeded.
+  xic (Test --typecheck -O): 21 out of 26 tests succeeded.
   Test collection: xic (Test --typecheck -O)
     array01.xi: Mismatch detected at line 1 of file array01.typed.nml
 expected: Valid Xi Program
@@ -596,4 +595,4 @@ found   : : error:
 [xic] Typechecking failed
 ]
   xic (Test --typecheck -O): 19 out of 33 tests succeeded.
-xthScript2: 67 out of 90 tests succeeded.
+xthScript2: 68 out of 90 tests succeeded.

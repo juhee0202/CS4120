@@ -17,7 +17,7 @@ public class ClassType implements VType{
 
 	String className;
 	String superClassName;
-	HashMap<String, VType> fieldEnv;
+	HashMap<String, VarType> fieldEnv;
 	HashMap<String, FunType> methodEnv; 
 
 	public ClassType(InterfaceClassDecl intClassDecl) {
@@ -34,7 +34,7 @@ public class ClassType implements VType{
 	public ClassType(ClassDecl classDecl) {
 		className = classDecl.getClassName().getTheValue();
 		superClassName = classDecl.getSuperclassName().getTheValue();
-		fieldEnv = new HashMap<String, VType>();
+		fieldEnv = new HashMap<String, VarType>();
 		methodEnv = new HashMap<String, FunType>();
 		
 		List<FieldDecl> fields = classDecl.getFields();
@@ -42,7 +42,7 @@ public class ClassType implements VType{
 		
 		for (FieldDecl field: fields) {
 			String fieldName;
-			VType fieldType;
+			VarType fieldType;
 			
 			switch (field.getType()) {
 			case VAR_DECL:
@@ -86,11 +86,11 @@ public class ClassType implements VType{
 		superClassName = superName;
 	}
 	
-	public HashMap<String, VType> getFieldEnv() {
+	public HashMap<String, VarType> getFieldEnv() {
 		return fieldEnv;
 	}
 
-	public void setFieldEnv(HashMap<String, VType> fieldEnv) {
+	public void setFieldEnv(HashMap<String, VarType> fieldEnv) {
 		this.fieldEnv = fieldEnv;
 	}
 	
@@ -107,9 +107,9 @@ public class ClassType implements VType{
 	 * @return the VType of the field. 
 	 * Returns null if the field does not exist in the class environment
 	 */
-	public VType getFieldType(String name) {
+	public VarType getFieldType(String name) {
 		// TODO
-		VType fieldType = fieldEnv.get(name);
+		VarType fieldType = fieldEnv.get(name);
 		return fieldType;
 	}
 	
@@ -120,12 +120,12 @@ public class ClassType implements VType{
 	 * @return: returns 1 if successfully added, otherwise 0
 	 */
 	public int addFieldType(String name, VType type) {
-		if (type instanceof VarType || type instanceof ClassType) {
-			fieldEnv.put(name,  (FunType) type);
-			return 0;
+		if (type instanceof VarType) {
+			fieldEnv.put(name,  (VarType) type);
+			return 1;
 		}
 		else {
-			return 1;
+			return 0;
 		}
 	}
 	

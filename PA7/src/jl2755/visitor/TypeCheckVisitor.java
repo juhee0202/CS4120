@@ -246,7 +246,9 @@ public class TypeCheckVisitor implements ASTVisitor {
 		else {
 			ClassType classViewOfBase = env.getClassType(vartypeView.getElementType());
 			Set<String> intersectionOfClasses = new HashSet<String>();
-			intersectionOfClasses.addAll(getSuperClasses(classViewOfBase.getClassName()));
+			if (vartypeView.canCast()) {
+				intersectionOfClasses.addAll(getSuperClasses(classViewOfBase.getClassName()));
+			}
 			intersectionOfClasses.add(classViewOfBase.getClassName());
 			VarType previousIterationType = vartypeView;
 			for (int i = 1; i < tempExprs.size(); i++) {
@@ -263,9 +265,16 @@ public class TypeCheckVisitor implements ASTVisitor {
 					Main.handleSemanticError(seo);
 				}
 				ClassType classView = env.getClassType(tempVarTypeView.getElementType());
-				List<String> superClasses = getSuperClasses(classView.getClassName());
-				superClasses.add(classView.getClassName());
-				intersectionOfClasses.retainAll(superClasses);
+				if (tempVarTypeView.canCast()) {
+					List<String> superClasses = getSuperClasses(classView.getClassName());
+					superClasses.add(classView.getClassName());
+					intersectionOfClasses.retainAll(superClasses);
+				}
+				else {
+					List<String> onlyCurrentClass = new ArrayList<String>();
+					onlyCurrentClass.add(classView.getClassName());
+					intersectionOfClasses.retainAll(onlyCurrentClass);
+				}
 				// Handle the case where there is no more intersecting super class of elements
 				if (intersectionOfClasses.isEmpty()) {
 					String errorDesc = "Object " + tempExprs.get(i) + " is different from the ones before";
@@ -1624,7 +1633,8 @@ public class TypeCheckVisitor implements ASTVisitor {
 											);
 				Main.handleSemanticError(seo);
 			}
-			tempType = env.getClassType(de.getId().toString());
+			ClassType tempClass = env.getClassType(de.getId().toString());
+			tempType = new VarType(tempClass.getClassName(),0);
 			break;
 		case PAREN:
 			de.getDotableExpr().accept(this);
@@ -1639,7 +1649,7 @@ public class TypeCheckVisitor implements ASTVisitor {
 											);
 				Main.handleSemanticError(seo);
 			}
-			tempType = classEnv;
+			tempType = new VarType(classEnv.getClassName(),0);
 			break;
 		default:
 			break;

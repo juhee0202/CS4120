@@ -188,7 +188,6 @@ Test script: xthScript2
 ]
   xic (Test --typecheck -O): 26 out of 26 tests succeeded.
   Test collection: xic (Test --typecheck -O)
-    array01.xi: File array01.typedsol does not exist in directory /home/vagrant/xth/tests/customPA3/../customPA3
     array02.xi: OK
     [Compiler's standard output:
     [xic] Typechecking
@@ -270,14 +269,10 @@ Test script: xthScript2
 	Semantic error at extend1.xi:4:3: Name name cannot be resolved
 [xic] Typechecking failed
 ]
-    extend3.xi: File extend3.typedsol does not exist in directory /home/vagrant/xth/tests/customPA3/../customPA3
-    extend4.xi: Mismatch detected at line 1 of file extend4.typed.nml
-expected: Valid Xi Program
-found   : : error:
+    extend4.xi: OK
     [Compiler's standard output:
     [xic] Typechecking
-	Semantic error at extend4.xi:15:11: Name bark cannot be resolved
-[xic] Typechecking failed
+[xic] Typechecking completed
 ]
     extend5.xi: OK
     [Compiler's standard output:
@@ -400,12 +395,11 @@ found   : : error:
     [xic] Typechecking
 [xic] Typechecking completed
 ]
-    superClass_fail.xi: Mismatch detected at line 1 of file superClass_fail.typed.nml
-expected: : error:
-found   : Valid Xi Program
+    superClass_fail.xi: OK
     [Compiler's standard output:
     [xic] Typechecking
-[xic] Typechecking completed
+	Semantic error at superClass_fail.xi:4:2: initJeffrey's signature does not match super class(es)' signature(s).
+[xic] Typechecking failed
 ]
     superClass_ok.xi: OK
     [Compiler's standard output:
@@ -423,5 +417,5 @@ found   : Valid Xi Program
     [xic] Typechecking
 [xic] Typechecking completed
 ]
-  xic (Test --typecheck -O): 40 out of 44 tests succeeded.
-xthScript2: 68 out of 72 tests succeeded.
+  xic (Test --typecheck -O): 42 out of 42 tests succeeded.
+xthScript2: 70 out of 70 tests succeeded.

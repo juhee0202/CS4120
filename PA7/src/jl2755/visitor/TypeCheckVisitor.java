@@ -848,7 +848,14 @@ public class TypeCheckVisitor implements ASTVisitor {
 		else if (index == 1 || index == 4) {
 			fc.getFunctionArg().accept(this);
 			args = tempType;
-			if (!(args instanceof TupleType && tupleEqual((TupleType)args, (TupleType)paramType))) {
+			if (paramType instanceof TupleType && args instanceof TupleType) {
+				if (!tupleEqual((TupleType)args, (TupleType)paramType)) {
+					String s = "Expected " + paramType.toString() + ", but found " + args.toString();
+					SemanticErrorObject seo = new SemanticErrorObject(
+							fc.getIdentifier_line(), fc.getIdentifier_col(), s);
+					Main.handleSemanticError(seo);
+				}
+			} else if (!args.equals(paramType)) {
 				String s = "Expected " + paramType.toString() + ", but found " + args.toString();
 				SemanticErrorObject seo = new SemanticErrorObject(
 						fc.getIdentifier_line(), fc.getIdentifier_col(), s);

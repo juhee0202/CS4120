@@ -550,25 +550,6 @@ public class TypeCheckVisitor implements ASTVisitor {
 		}
 		VarType rightType = (VarType) tempType;
 		
-		if (!leftType.isPrimitiveBase() || !rightType.isPrimitiveBase()) {
-			if (leftType.isObject() || rightType.isObject()) {
-				String s = "Expected a primitive, but found an object " + 
-						tempType.toString();
-				SemanticErrorObject seo = new SemanticErrorObject(
-						be.getLineNumber(), be.getColumnNumber(), s);
-				Main.handleSemanticError(seo);
-			}
-			else {
-				if (be.getBinaryOp() != BinaryOp.PLUS) {
-					String s = "Cannot perform a binary operation on"
-							+ " two non primitive objects";
-					SemanticErrorObject seo = new SemanticErrorObject(
-							be.getLineNumber(), be.getColumnNumber(), s);
-					Main.handleSemanticError(seo);
-				}
-			}
-		}
-		
 		BinaryOp op = be.getBinaryOp();
 		
 		// check that left & right expr have the same type
@@ -584,7 +565,7 @@ public class TypeCheckVisitor implements ASTVisitor {
 		
 		/* + operator
 		 * 		(i) both int
-		 * 		(ii) both int arrays
+		 * 		(ii) any type of arrays
 		 */
 		if (op.toString().equals("+")) {
 			if (leftType.isInt()) {
@@ -603,21 +584,10 @@ public class TypeCheckVisitor implements ASTVisitor {
 			}
 		}
 		/* !=, == operator
-		 * 		(i) both are int/bool 
-		 * 		(ii) both are arrays with same element type
+		 * 		allow all types as long as left and right have the same type
 		 */
 		else if (op.toString().equals("!=") || op.toString().equals("==")) {
-			if (leftType.isBool() ||leftType.isInt() || leftType.isArray()) {	
-				tempType = new VarType("bool", 0);
-			} else {
-				String s = "Invalid types for " + op.toString() + " operation.";
-				SemanticErrorObject seo = new SemanticErrorObject(
-						be.getLineNumber(),
-						be.getColumnNumber(), 
-						s
-						);
-				Main.handleSemanticError(seo);
-			}
+			tempType = new VarType("bool", 0);
 		}
 		/* 
 		 * <, <=, >, >= operator
@@ -926,6 +896,18 @@ public class TypeCheckVisitor implements ASTVisitor {
 		FunType funType;
 		if (isInClass) {
 			funType = classEnv.getMethodType(funId);
+			List<String> allSupers = getSuperClasses(classEnv.getClassName());
+			for (String s : allSupers) {
+				ClassType superType = env.getClassType(s);
+				FunType superFunType = superType.getMethodType(funId);
+				if (!funType.equals(superFunType)) {
+					String ss = funId + "\'s signature does not "
+							+ "match super class(es)' signature(s).";
+					SemanticErrorObject seo = new SemanticErrorObject(
+							fd.getIdentifier_line(), fd.getIdentifier_col(), ss);
+					Main.handleSemanticError(seo);
+				}
+			}
 		} else {
 			funType = env.getFunType(funId);
 		}

@@ -1557,28 +1557,40 @@ public class TypeCheckVisitor implements ASTVisitor {
 		
 		/* Typecheck the whole statement */
 		vi.getExpr().accept(this);
-		VarType rightType = (VarType)tempType;
-		
-		// check for type hierarchy
-		boolean isSubType = false;
-		if (leftType.isObject() && rightType.isObject()) {
-			if (isSubTypeOf(rightType.getElementType(), leftType.getElementType())) {
-				if (leftType.getNumBrackets() == 0 && rightType.getNumBrackets() == 0) {
+		if (tempType instanceof NullType) {
+			if (leftType.isPrimitive()) {
+				String s = "Expected " + leftType.toString() 
+						+ ", but found " + tempType.toString();
+				SemanticErrorObject seo = new SemanticErrorObject(
+						vi.getExpr().getLineNumber(), 
+						vi.getExpr().getColumnNumber(), s);
+				Main.handleSemanticError(seo);
+			} else {
+				// DO NOTHING: can always initialize array or object with null
+			}
+		} else {
+			VarType rightType = (VarType) tempType;
+			
+			// check for type hierarchy
+			boolean isSubType = false;
+			if (leftType.isObject() && rightType.isObject()) {
+				if (isSubTypeOf(rightType.getElementType(), leftType.getElementType())) {
 					isSubType = true;
 				}
 			}
+			
+			// make sure the left and right types are equal
+			if (!(leftType.equals(rightType)) && !isSubType){
+				String s = "Expected " + leftType.toString() 
+							+ ", but found " + rightType.toString();
+				SemanticErrorObject seo = new SemanticErrorObject(
+						vi.getExpr().getLineNumber(), 
+						vi.getExpr().getColumnNumber(),
+						s);
+				Main.handleSemanticError(seo);
+			}
 		}
 		
-		// make sure the left and right types are equal
-		if (!(leftType.equals(rightType)) && !isSubType){
-			String s = "Expected " + leftType.toString() 
-						+ ", but found " + rightType.toString();
-			SemanticErrorObject seo = new SemanticErrorObject(
-					vi.getExpr().getLineNumber(), 
-					vi.getExpr().getColumnNumber(),
-					s);
-			Main.handleSemanticError(seo);
-		}
 		
 		/* Update env & stack */
 		String idString = vi.getId().toString();

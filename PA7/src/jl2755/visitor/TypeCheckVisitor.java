@@ -801,7 +801,7 @@ public class TypeCheckVisitor implements ASTVisitor {
 			fc.getDotableExpr().accept(this);
 			
 			// check if the dotableExpr is of ClassType
-			if (!(tempType instanceof ClassType)) {
+			if (!(tempType instanceof VarType && ((VarType)tempType).isObject())) {
 				String s = tempType.toString() + " cannot be dereferenced";
 				SemanticErrorObject seo = new SemanticErrorObject(
 						fc.getDotableExpr_line(), fc.getDotableExpr_col(), s);
@@ -914,7 +914,6 @@ public class TypeCheckVisitor implements ASTVisitor {
 		}
 		
 		/* Typecheck function body */
-		String id = fd.getIdentifier().toString();
 		functionReturnType = funType.getReturnTypes();
 		isInFunctionDecl = true;
 		fd.getBlockStmt().accept(this);

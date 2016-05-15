@@ -511,15 +511,25 @@ public class TypeCheckVisitor implements ASTVisitor {
 		} else {
 			if (!(rightType instanceof NullType)) {
 				VarType varRightType = (VarType) rightType;
-				// check that RHS is a subtype of LHS
-				if (!isSubTypeOf(varRightType.getElementType(), leftType.getElementType())) {
-					String s = "Expected a subtype of " + leftType.toString() 
-					+ ", but found " + varRightType.toString();
+				if (!varRightType.isObject()) {
+					String s = "Expected type " + leftType.toString() 
+							+ ", but found " + varRightType.toString();
 					SemanticErrorObject seo = new SemanticErrorObject(
 							as.getExpr().getLineNumber(), 
 							as.getExpr().getColumnNumber(),
 							s);
 					Main.handleSemanticError(seo);
+				} else {
+					// check that RHS is a subtype of LHS
+					if (!isSubTypeOf(varRightType.getElementType(), leftType.getElementType())) {
+						String s = "Expected a subtype of " + leftType.toString() 
+						+ ", but found " + varRightType.toString();
+						SemanticErrorObject seo = new SemanticErrorObject(
+								as.getExpr().getLineNumber(), 
+								as.getExpr().getColumnNumber(),
+								s);
+						Main.handleSemanticError(seo);
+					}
 				}
 			}
 		}

@@ -102,7 +102,7 @@ public class VarType implements VType {
 		} else {
 			isPrimitive = false;
 			isArray = false;
-			isObject = false;
+			isObject = true;
 			elementType = vd.getClassType().toString();
 			numBrackets = 0;
 			
@@ -189,15 +189,15 @@ public class VarType implements VType {
 	}
 
 	public boolean isPrimitive() {
-		if (elementType.equals("bool") || elementType.equals("int")) {
-			return true;
-		} else {
-			return false;
-		}
+		return isPrimitive;
 	}
 	
 	public boolean isArray() {
-		return numBrackets > 0;
+		return isArray;
+	}
+	
+	public boolean isObject() {
+		return isObject;
 	}
 	
 	public boolean isInt() {

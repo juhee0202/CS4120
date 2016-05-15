@@ -379,9 +379,9 @@ op_expr ::= MINUS:m expr:e                                          {: RESULT = 
             expr:e1 OR expr:e2                                      {: RESULT = new BinaryExpr(e1, e2, BinaryOp.OR); :}
             ;
 
-primitive_type ::= INT:i                                            {: RESULT = new PrimitiveType(0); :}         
+primitive_type ::= INT:i                                            {: RESULT = new PrimitiveType(0, ileft, iright); :}         
                    | 
-                   BOOL:b                                           {: RESULT = new PrimitiveType(1); :}
+                   BOOL:b                                           {: RESULT = new PrimitiveType(1, bleft, bright); :}
                    ;
 
 //*********************************************************************MODIF**********************************************************

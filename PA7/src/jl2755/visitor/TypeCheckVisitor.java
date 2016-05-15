@@ -1934,6 +1934,6 @@ public class TypeCheckVisitor implements ASTVisitor {
 	 * @return true iff arg1 is a subtype of arg2
 	 */
 	private boolean isSubTypeOf(String arg1, String arg2) {
-		return (getSuperClasses(arg1).contains(arg2));
+		return (arg1.equals(arg2) || getSuperClasses(arg1).contains(arg2));
 	}
 }

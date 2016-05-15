@@ -190,6 +190,10 @@ expr ::= dotable_expr:de                                            {: RESULT = 
 field_decl ::= var_decl:vd                                          {: RESULT = new FieldDecl(vd); :}
                |
                short_tuple_decl:std                                 {: RESULT = new FieldDecl(std); :}
+               |
+               var_decl:vd SEMICOLON                                {: RESULT = new FieldDecl(vd); :}
+               |
+               short_tuple_decl:std SEMICOLON                       {: RESULT = new FieldDecl(std); :}
                ;
 
 function_arg ::= expr:expression                                    {: RESULT = new FunctionArg(expression); :}

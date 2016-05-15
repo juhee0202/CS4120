@@ -1041,7 +1041,7 @@ public class Main {
 				ClassType classType = new ClassType((ClassDecl) d);
 				String className = classType.getClassName();
 				if (globalEnv.containsClass(className) &&
-						!classType.compareClassSignatures(globalEnv.getClassType(className))) {
+						!classType.equals(globalEnv.getClassType(className))) {
 					Identifier id = ((ClassDecl) d).getClassName();
 					String e = "Mismatched class declaration found for " + className;
 					SemanticErrorObject seo = new SemanticErrorObject(

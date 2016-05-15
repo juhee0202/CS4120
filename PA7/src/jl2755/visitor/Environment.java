@@ -1,6 +1,7 @@
 package jl2755.visitor;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -128,10 +129,10 @@ public class Environment {
 	}
 	
 	public Set<ClassType> getClassTypes() {
-		return (Set<ClassType>) classMap.values();
+		return new HashSet<ClassType>(classMap.values());
 	}
 	
 	public Set<FunType> getFunTypes() {
-		return (Set<FunType>) funMap.values();
+		return new HashSet<FunType>(funMap.values());
 	}
 }

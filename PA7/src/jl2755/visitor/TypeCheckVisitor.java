@@ -1,6 +1,7 @@
 package jl2755.visitor;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -1402,8 +1403,8 @@ public class TypeCheckVisitor implements ASTVisitor {
 		} else { // 2: ClassType
 			Identifier classId = vd.getClassType();
 			String className = classId.getTheValue();
-			if (!env.containsClass(className)) {
-				String s = "Type " + className + " cannot be resolved";
+			if (!env.containsClass(className)) {				
+				String s = "Class type " + className + " cannot be resolved";
 				SemanticErrorObject seo = new SemanticErrorObject(
 						classId.getLineNumber(), classId.getColumnNumber(), s);
 				Main.handleSemanticError(seo);

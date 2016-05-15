@@ -47,15 +47,4 @@ public class Interface extends XiFile {
 		}
 		return tempList;
 	}
-
-	public void replaceAll(EmptyClassType ect, ClassType classType) {
-		List<InterfaceFunc> funcs = intList.getInterfaceFunctions();
-		for (InterfaceClassDecl icd : intList.getInterfaceClasses()) {
-			funcs.addAll(icd.getMethods());
-		}
-		for (InterfaceFunc func : funcs) {
-			
-		}
-		
-	}
 }

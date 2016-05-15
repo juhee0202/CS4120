@@ -935,7 +935,6 @@ public class Main {
 			}
 		}
 		
-//		System.out.println(node);
 		return node;
 	}
 
@@ -1004,8 +1003,9 @@ public class Main {
 		
 		// Add all uses to toCheck
 		toCheck.addAll(program.getUseFiles());
-		if (interfaceExists(file)) {
-			toCheck.add(file);
+		String fileName = file.substring(file.lastIndexOf("/") + 1);
+		if (interfaceExists(fileName)) {
+			toCheck.add(fileName);
 		}
 		
 		// Check all interfaces until none are left in queue
@@ -1029,7 +1029,7 @@ public class Main {
 		for (String s : checked) {
 			if (interfaceToUnresolved.containsKey(s)) {
 				for (EmptyClassType unresolved : interfaceToUnresolved.get(s)) {
-					resolveTypes(stringToInterface.get(s), unresolved,
+					resolveTypes(stringToInterface.get(s), s, unresolved,
 							interfaceToPublic, interfaceToInterfaces);
 				}
 			}
@@ -1055,8 +1055,8 @@ public class Main {
 				Identifier id = ((FunctionDecl) d).getIdentifier();
 				String name = id.toString();
 				if (globalEnv.containsFun(name) &&
-						!funType.equals(globalEnv.getClassType(name))) {
-					String e = "Mismatched class declaration found for " + name;
+						!funType.equals(globalEnv.getFunType(name))) {
+					String e = "Mismatched function declaration found for " + name;
 					SemanticErrorObject seo = new SemanticErrorObject(
 							id.getLineNumber(),id.getColumnNumber(),e);
 					handleSemanticError(seo);
@@ -1075,12 +1075,11 @@ public class Main {
 	 * @param s						the unresolved type
 	 * @param interfaceToPublic		the map of interface name to its module
 	 */
-	private static void resolveTypes(Interface i, EmptyClassType ect, 
+	private static void resolveTypes(Interface i, String file, EmptyClassType ect, 
 							Map<String, Environment> interfaceToPublic, 
 							Map<String, Set<String>> iTI) {
 		
 		String name = ect.getName();
-		String file = i.toString();
 		Set<String> checked = new HashSet<String>();
 		
 		// Resolved in own interface
@@ -1096,6 +1095,7 @@ public class Main {
 			ClassType resolve = recursiveResolve(use, ect, interfaceToPublic, iTI, checked);
 			if (resolve != null) {
 				replaceAll(ect, resolve, file, interfaceToPublic);
+				return;
 			}
 		}
 		

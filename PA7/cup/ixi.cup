@@ -120,9 +120,9 @@ interface_list ::= interface_func:ifd interface_list:il             {: RESULT = 
                    // const_var:cv                                     {: RESULT = new InterfaceList(cv); :}
                    ;
 
-primitive_type ::= INT:i                                            {: RESULT = new PrimitiveType(0); :}         
+primitive_type ::= INT:i                                            {: RESULT = new PrimitiveType(0, ileft, iright); :}         
                    | 
-                   BOOL:b                                           {: RESULT = new PrimitiveType(1); :}
+                   BOOL:b                                           {: RESULT = new PrimitiveType(1, bleft, bright); :}
                    ;
 
 return_type ::= COLON type_list:tl                                  {: RESULT = new ReturnType(tl); :}

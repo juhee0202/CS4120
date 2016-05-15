@@ -6,25 +6,25 @@ import jl2755.visitor.ASTVisitor;
 
 public class SimpleVarInit {
 	private Identifier identifier;
-	private Type type;
-	private Constant constant;
+	private PrimitiveType primitiveType;
+	private Literal literal;
 	
-	public SimpleVarInit(Identifier id, Type t, Constant c) {
+	public SimpleVarInit(Identifier id, PrimitiveType pt, Literal l) {
 		identifier = id;
-		type = t;
-		constant = c;
+		primitiveType = pt;
+		literal = l;
 	}
 
 	public Identifier getIdentifier() {
 		return identifier;
 	}
 
-	public Type getType() {
-		return type;
+	public PrimitiveType getPrimitiveType() {
+		return primitiveType;
 	}
 
-	public Constant getConstant() {
-		return constant;
+	public Literal getLiteral() {
+		return literal;
 	}
 
 	public void prettyPrintNode() {
@@ -34,10 +34,9 @@ public class SimpleVarInit {
 		
 		tempPrinter.startList();
 		tempPrinter.printAtom(identifier.toString());
-		type.prettyPrintNode();
+		primitiveType.prettyPrintNode();
 		tempPrinter.endList();
-		
-		constant.prettyPrintNode();
+		literal.prettyPrintNode();
 		tempPrinter.endList();
 	}
 	

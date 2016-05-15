@@ -8,9 +8,17 @@ public class PrimitiveType implements Type{
 	
 	/** 0 for INT and 1 for BOOL */
 	private int index;
+	private int column;
+	private int line;
 	
-	public PrimitiveType(int index){
+	public PrimitiveType(int index) {
 		this.index = index;
+	}
+	
+	public PrimitiveType(int index, int left, int right){
+		this.index = index;
+		line = left;
+		column = right;
 	}
 	
 	public int getIndex() {
@@ -33,5 +41,15 @@ public class PrimitiveType implements Type{
 	@Override
 	public void accept(ASTVisitor v){
 		return;
+	}
+
+	@Override
+	public int getColumnNumber() {
+		return column;
+	}
+
+	@Override
+	public int getLineNumber() {
+		return line;
 	}
 }

@@ -1001,6 +1001,8 @@ public class Main {
 		Map<String, Set<EmptyClassType>> interfaceToUnresolved = new HashMap<String, Set<EmptyClassType>>();
 		Map<String, Set<String>> interfaceToInterfaces = new HashMap<String, Set<String>>();
 		
+		System.out.println(program.getUseFiles());
+		
 		// Add all uses to toCheck
 		toCheck.addAll(program.getUseFiles());
 		if (interfaceExists(file)) {
@@ -1047,7 +1049,7 @@ public class Main {
 							id.getLineNumber(),id.getColumnNumber(),e);
 					handleSemanticError(seo);
 				} else {
-					globalEnv.put(className, classType);
+					globalEnv.putClass(className, classType);
 				}
 			} else if (d instanceof FunctionDecl) {
 				FunType funType = new FunType((FunctionDecl) d);

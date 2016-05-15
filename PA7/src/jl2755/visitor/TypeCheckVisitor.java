@@ -369,20 +369,6 @@ public class TypeCheckVisitor implements ASTVisitor {
 			as.getExpr().accept(this);
 			rightType = tempType;
 			
-//			if (tempType instanceof NullType) {
-//				if (leftType.isPrimitive()) {
-//					String s = "Type mismatch: cannot convert from null to " 
-//							+ leftType.getElementType();
-//					SemanticErrorObject seo = new SemanticErrorObject(
-//							as.getIdentifier().getLineNumber(), 
-//							as.getIdentifier().getColumnNumber(),
-//							s);
-//					Main.handleSemanticError(seo);
-//				} 
-//			} else {
-//				rightType = tempType;
-//			}
-			
 		//ex: arr[2] = 3;
 		} else if (index == 1) {							
 			// Check that the identifier can be resolved to a VARIABLE in the env

@@ -1342,7 +1342,7 @@ public class TypeCheckVisitor implements ASTVisitor {
 			
 			// check if the leftType and returnType are equal
 			TupleType leftType = new TupleType(leftTypes);
-			if (!(returnType instanceof TupleType) && !tupleEqual(leftType,(TupleType)returnType)) {
+			if (!(returnType instanceof TupleType) || !tupleEqual(leftType,(TupleType)returnType)) {
 				String s = "Mismatched type";
 				SemanticErrorObject seo = new SemanticErrorObject(
 						ti.getFunctionCall_line(), ti.getFunctionCall_col(), s);

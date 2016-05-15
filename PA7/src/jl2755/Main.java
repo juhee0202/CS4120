@@ -441,10 +441,10 @@ public class Main {
 			result.accept(visitor);
 			
 			/* Constant Folding */
-			if (enabled[CF]) {
-				ConstantFolderVisitor constantFold = new ConstantFolderVisitor();
-				result.accept(constantFold);
-			}
+//			if (enabled[CF]) {
+//				ConstantFolderVisitor constantFold = new ConstantFolderVisitor();
+//				result.accept(constantFold);
+//			}
 			
 			// Update global map
 			fileToAST.put(filename, result);

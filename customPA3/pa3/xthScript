@@ -35,7 +35,42 @@ xic ("Test --help") "--help" {
     ;
 }
 
-xic ("Test --typecheck -O") ["../pa3"] "-libpath $(testpath) --typecheck -O" {
+xic ("Test --lex") ["../pa1"] "--lex" {
+    ex1.xi;
+    ex2.xi (Lexical, "empty character literal");
+    spec1.xi;
+    spec2.xi;
+    spec3.xi;
+    gcd.xi;
+    ratadd.xi;
+    ratadduse.xi;
+    insertionsort.xi;
+    arrayinit.xi;
+    arrayinit2.xi;
+    mdarrays.xi;
+    add.xi;
+    beauty.xi;
+}
+
+xic ("Test --parse") ["../pa2"] "--parse" {
+    ex1.xi;
+    ex2.xi;
+    ex3.xi (Syntax, "Unexpected token +");
+    spec1.xi;
+    spec2.xi;
+    spec3.xi;
+    gcd.xi;
+    ratadd.xi;
+    ratadduse.xi;
+    insertionsort.xi;
+    arrayinit.xi;
+    arrayinit2.xi;
+    mdarrays.xi;
+    add.xi (Syntax, "Unexpected token +");
+    beauty.xi (Syntax, "Unexpected token ==");
+}
+
+xic ("Test --typecheck") "-libpath $(testpath) --typecheck" {
     ex01.xi;
     ex02.xi;
     ex03.xi;
@@ -63,40 +98,3 @@ xic ("Test --typecheck -O") ["../pa3"] "-libpath $(testpath) --typecheck -O" {
     arrayinit2.xi (Semantic, "Name .* cannot be resolved");
     mdarrays.xi;
 }
-
-xic ("Test --typecheck -O") ["../customPA3"] "-libpath $(testpath) --typecheck -O" {
-    array01.xi;
-    array02.xi;
-    extend1.xi;
-    extend3.xi;
-    extend4.xi;
-    extend5.xi;
-    field_decl1.xi;
-    field_decl2.xi;
-    global_decl1.xi;
-    global_decl2.xi;
-    global_decl3.xi;
-    global_decl4.xi;
-    global_decl5.xi;
-    global_decl6.xi;
-    juheetest01.xi;
-    module1.xi;
-    neighbor.xi;
-    sameClassName-1ixifail.xi;
-    sameClassName-1xifail.xi;
-    sameClassName-2ixifail.xi;
-    sameClassName-2ixiok.xi;
-    sameClassName-bothfail.xi;
-    sameClassName-bothok.xi;
-    sameFunctionName-1ixifail.xi;
-    sameFunctionName-1xifail.xi;
-    sameFunctionName-2ixifail.xi;
-    sameFunctionName-2ixiok.xi;
-    sameFunctionName-bothfail.xi;
-    sameFunctionName-bothok.xi;
-    superClass-fail.xi;
-    superClass-ok.xi;
-    superClass2-fail.xi;
-    superClass2-ok.xi;
-}
-

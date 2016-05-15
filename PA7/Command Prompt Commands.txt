@@ -1,4 +1,7 @@
-xth /home/vagrant/shared/CS4120/customPA3/xthScript2 -compilerpath /home/vagrant/shared/cs4120/pa7 -testpath /home/vagrant/shared/CS4120/customPA3 > /home/vagrant/shared/CS4120/customPA3/testOutput.txt
+xth /home/vagrant/xth/tests/customPA3/xthScript2 -compilerpath /home/vagrant/shared/cs4120/pa7 -testpath /home/vagrant/xth/tests/customPA3 > /home/vagrant/shared/CS4120/customPA3/testOutput.txt
+
+cp -r /home/vagrant/shared/cs4120/customPA3/ /home/vagrant/xth/tests/customPA3/
+
 
 java -cp java_cup.jar java_cup.Main -interface C:/Users/Jonathan/Desktop/Files/CS4120/vmstuff/shared/CS4120/PA7/cup/xi.cup
 

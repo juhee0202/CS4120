@@ -1030,7 +1030,7 @@ public class Main {
 			if (interfaceToUnresolved.containsKey(s)) {
 				for (EmptyClassType unresolved : interfaceToUnresolved.get(s)) {
 					resolveTypes(stringToInterface.get(s), s, unresolved,
-							interfaceToPublic, interfaceToInterfaces);
+							interfaceToPublic, interfaceToInterfaces, globalEnv);
 				}
 			}
 		}
@@ -1091,7 +1091,7 @@ public class Main {
 	 */
 	private static void resolveTypes(Interface i, String file, EmptyClassType ect, 
 							Map<String, Environment> interfaceToPublic, 
-							Map<String, Set<String>> iTI) {
+							Map<String, Set<String>> iTI, Environment env) {
 		
 		String name = ect.getName();
 		Set<String> checked = new HashSet<String>();
@@ -1099,7 +1099,7 @@ public class Main {
 		// Resolved in own interface
 		if (interfaceToPublic.get(file).containsClass(name)) {
 			replaceAll(ect, interfaceToPublic.get(file).getClassType(name),
-					file, interfaceToPublic);
+					file, interfaceToPublic, env);
 			return;
 		}
 		checked.add(file);
@@ -1108,7 +1108,7 @@ public class Main {
 		for (String use : i.getUseFiles()) {
 			ClassType resolve = recursiveResolve(use, ect, interfaceToPublic, iTI, checked);
 			if (resolve != null) {
-				replaceAll(ect, resolve, file, interfaceToPublic);
+				replaceAll(ect, resolve, file, interfaceToPublic, env);
 				return;
 			}
 		}
@@ -1151,7 +1151,7 @@ public class Main {
 	 * @param interfaceToPublic		the map of interface file names to module
 	 */
 	private static void replaceAll(EmptyClassType ect, ClassType ct,
-			String s, Map<String, Environment> interfaceToPublic) {
+			String s, Map<String, Environment> interfaceToPublic, Environment env) {
 		// Replace all uses of ect with ct in functions
 		for (FunType funType : interfaceToPublic.get(s).getFunTypes()) {
 			funType.replaceAll(ect, ct);
@@ -1160,7 +1160,7 @@ public class Main {
 		for (ClassType classType : interfaceToPublic.get(s).getClassTypes()) {
 			classType.replaceAll(ect, ct);
 			// Check duplicate function in super class
-			classType.checkSuper(ct);
+			classType.checkSupers(env);
 		}
 		
 	}

@@ -20,9 +20,15 @@ public class MIRVisitor implements ASTVisitor{
 	private int labelCount = 0;
 	private int tempCount = 0;
 	private static final IRConst WORD_SIZE = new IRConst(Configuration.WORD_SIZE);
+	
+	// While loop globals for break and continue
 	private String currentWhileStart;
 	private String currentWhileEnd;
 	private Map<String, String> startToEnd = new HashMap<String, String>();
+	
+	// Globals for Method Dispatch
+	private Map<String, List<String>> classToDispatch =  new HashMap<String, List<String>>();
+	
 	public IRNode program;
 	
 	@Override
@@ -613,11 +619,6 @@ public class MIRVisitor implements ASTVisitor{
 			break;
 		}
 	}
-
-	@Override
-	public void visit(Null n) {
-		// TODO: Is this needed
-	}
 	
 	@Override
 	public void visit(Program p) {
@@ -1104,6 +1105,11 @@ public class MIRVisitor implements ASTVisitor{
 			fieldDecl.getVarDecl().accept(this);
 			break;
 		}
+	}
+	
+	@Override
+	public void visit(Null n) {
+		// TODO: Is this needed
 	}
 
 	@Override

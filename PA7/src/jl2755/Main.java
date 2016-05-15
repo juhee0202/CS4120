@@ -1036,18 +1036,21 @@ public class Main {
 		}
 		
 		// Check source file
+		Environment sourceEnv = new Environment();
 		for (Decl d : program.getAllDecls()) {
 			if (d instanceof ClassDecl) {
 				ClassType classType = new ClassType((ClassDecl) d);
 				String className = classType.getClassName();
 				if (globalEnv.containsClass(className) &&
-						!classType.equals(globalEnv.getClassType(className))) {
+						!classType.compareClassSignatures(globalEnv.getClassType(className))
+						|| sourceEnv.containsClass(className)) {
 					Identifier id = ((ClassDecl) d).getClassName();
 					String e = "Mismatched class declaration found for " + className;
 					SemanticErrorObject seo = new SemanticErrorObject(
 							id.getLineNumber(),id.getColumnNumber(),e);
 					handleSemanticError(seo);
 				} else {
+					sourceEnv.putClass(className, classType);
 					globalEnv.putClass(className, classType);
 				}
 			} else if (d instanceof FunctionDecl) {
@@ -1061,6 +1064,7 @@ public class Main {
 							id.getLineNumber(),id.getColumnNumber(),e);
 					handleSemanticError(seo);
 				} else {
+					sourceEnv.put(name, funType);
 					globalEnv.put(name, funType);
 				}
 			}

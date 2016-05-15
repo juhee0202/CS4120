@@ -1278,6 +1278,9 @@ public class Main {
 		} catch(SyntaxError error) {
 			error.setFilename(absPath);
 			throw error;
+		} catch(SemanticError error) {
+			error.setFilename(absPath);
+			throw error;
 		} catch (FileNotFoundException e) {
 			System.out.println("\tFailed to read input file " + absPath);
 		} catch (Exception e) {

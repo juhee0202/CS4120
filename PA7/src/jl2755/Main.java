@@ -441,10 +441,10 @@ public class Main {
 			result.accept(visitor);
 			
 			/* Constant Folding */
-			if (enabled[CF]) {
-				ConstantFolderVisitor constantFold = new ConstantFolderVisitor();
-				result.accept(constantFold);
-			}
+//			if (enabled[CF]) {
+//				ConstantFolderVisitor constantFold = new ConstantFolderVisitor();
+//				result.accept(constantFold);
+//			}
 			
 			// Update global map
 			fileToAST.put(filename, result);
@@ -1000,8 +1000,6 @@ public class Main {
 		Map<String, Environment> interfaceToPublic = new HashMap<String, Environment>();
 		Map<String, Set<EmptyClassType>> interfaceToUnresolved = new HashMap<String, Set<EmptyClassType>>();
 		Map<String, Set<String>> interfaceToInterfaces = new HashMap<String, Set<String>>();
-		
-		System.out.println(program.getUseFiles());
 		
 		// Add all uses to toCheck
 		toCheck.addAll(program.getUseFiles());

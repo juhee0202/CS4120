@@ -886,7 +886,14 @@ public class TypeCheckVisitor implements ASTVisitor {
 		else if (index == 1 || index == 4) {
 			fc.getFunctionArg().accept(this);
 			args = tempType;
-			if (!(args instanceof TupleType && tupleEqual((TupleType)args, (TupleType)paramType))) {
+			if (paramType instanceof TupleType && args instanceof TupleType) {
+				if (!tupleEqual((TupleType)args, (TupleType)paramType)) {
+					String s = "Expected " + paramType.toString() + ", but found " + args.toString();
+					SemanticErrorObject seo = new SemanticErrorObject(
+							fc.getIdentifier_line(), fc.getIdentifier_col(), s);
+					Main.handleSemanticError(seo);
+				}
+			} else if (!args.equals(paramType)) {
 				String s = "Expected " + paramType.toString() + ", but found " + args.toString();
 				SemanticErrorObject seo = new SemanticErrorObject(
 						fc.getIdentifier_line(), fc.getIdentifier_col(), s);
@@ -1322,18 +1329,20 @@ public class TypeCheckVisitor implements ASTVisitor {
 				}
 				
 				// make sure that id is not in the env
-				Identifier id = varDecl.getIdentifier();
-				if (env.containsVar(id.getTheValue())) {
-					String s = id + " is already declared";
-					SemanticErrorObject seo = new SemanticErrorObject(
-							id.getLineNumber(), id.getColumnNumber(), s);
-					Main.handleSemanticError(seo);	
+				if (varDecl != null) {
+					Identifier id = varDecl.getIdentifier();
+					if (env.containsVar(id.getTheValue())) {
+						String s = id + " is already declared";
+						SemanticErrorObject seo = new SemanticErrorObject(
+								id.getLineNumber(), id.getColumnNumber(), s);
+						Main.handleSemanticError(seo);	
+					}
 				}
 			}
 			
 			// check if the leftType and returnType are equal
 			TupleType leftType = new TupleType(leftTypes);
-			if (!(returnType instanceof TupleType) && !tupleEqual(leftType,(TupleType)returnType)) {
+			if (!(returnType instanceof TupleType) || !tupleEqual(leftType,(TupleType)returnType)) {
 				String s = "Mismatched type";
 				SemanticErrorObject seo = new SemanticErrorObject(
 						ti.getFunctionCall_line(), ti.getFunctionCall_col(), s);
@@ -1984,6 +1993,6 @@ public class TypeCheckVisitor implements ASTVisitor {
 	 * @return true iff arg1 is a subtype of arg2
 	 */
 	private boolean isSubTypeOf(String arg1, String arg2) {
-		return (getSuperClasses(arg1).contains(arg2));
+		return (arg1.equals(arg2) || getSuperClasses(arg1).contains(arg2));
 	}
 }

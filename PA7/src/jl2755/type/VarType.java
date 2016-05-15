@@ -212,10 +212,6 @@ public class VarType implements VType {
 		return elementType.equals("bool") && (numBrackets == 0);
 	}
 
-	public boolean isObject() {
-		return isObject;
-	}
-
 	public int getNumBrackets() {
 		return numBrackets;
 	}

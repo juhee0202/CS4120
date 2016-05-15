@@ -1329,12 +1329,14 @@ public class TypeCheckVisitor implements ASTVisitor {
 				}
 				
 				// make sure that id is not in the env
-				Identifier id = varDecl.getIdentifier();
-				if (env.containsVar(id.getTheValue())) {
-					String s = id + " is already declared";
-					SemanticErrorObject seo = new SemanticErrorObject(
-							id.getLineNumber(), id.getColumnNumber(), s);
-					Main.handleSemanticError(seo);	
+				if (varDecl != null) {
+					Identifier id = varDecl.getIdentifier();
+					if (env.containsVar(id.getTheValue())) {
+						String s = id + " is already declared";
+						SemanticErrorObject seo = new SemanticErrorObject(
+								id.getLineNumber(), id.getColumnNumber(), s);
+						Main.handleSemanticError(seo);	
+					}
 				}
 			}
 			

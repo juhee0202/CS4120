@@ -1723,24 +1723,11 @@ public class TypeCheckVisitor implements ASTVisitor {
 		
 		// make sure that type is valid
 		VType leftType;
-		Type type = simpleVarInit.getType();
-		String className = ((Identifier)type).getTheValue();
-		if (type instanceof Identifier) {
-			if (!env.containsClass(className)) {
-				String s = "Name " + className + " cannot be resolved";
-				SemanticErrorObject seo = new SemanticErrorObject(
-						((Identifier)type).getLineNumber(), 
-						((Identifier)type).getColumnNumber(), 
-						s);
-				Main.handleSemanticError(seo);
-			}
-			leftType = env.getClassType(className);
-		} else {
-			leftType = new VarType(type);
-		}
+		PrimitiveType type = simpleVarInit.getPrimitiveType();
+		leftType = new VarType(type);
 		
 		// typecheck the statement
-		simpleVarInit.getConstant().accept(this);
+		simpleVarInit.getLiteral().accept(this);
 		VType rightType = tempType;
 		
 		if (!leftType.equals(rightType)) {

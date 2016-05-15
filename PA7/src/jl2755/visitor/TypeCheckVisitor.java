@@ -870,7 +870,12 @@ public class TypeCheckVisitor implements ASTVisitor {
 	public void visit(FunctionDecl fd) {	
 		// get ABIName
 		String funId = fd.getIdentifier().toString();
-		FunType funType = env.getFunType(funId);
+		FunType funType;
+		if (isInClass) {
+			funType = classEnv.getMethodType(funId);
+		} else {
+			funType = env.getFunType(funId);
+		}
 		String ABIName = functionToABIName(funId, funType);
 		fd.setABIName(ABIName);
 				

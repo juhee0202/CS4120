@@ -1,7 +1,0 @@
-class Jeffrey {
-	initJeffrey(x:int)
-
-	walk(x:int):bool
-
-	talk(x:int[]):bool
-}

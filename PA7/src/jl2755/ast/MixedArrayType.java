@@ -18,7 +18,12 @@ public class MixedArrayType implements Type {
 	private MixedBrackets mixedBrackets;
 	private Brackets brackets;
 	private MixedArrayType arrayType;
-	/** 0 is just empty brackets, 1 is at least 1 brackets with numbers */
+	/** 
+	 * 0 is (int/bool)[], 
+	 * 1 is (int/bool) with at least 1 brackets with numbers,
+	 * 2 is object[],
+	 * 3 is object with at least 1 brackets with numbers
+	 **/
 	private int index;
 	
 	public MixedArrayType(PrimitiveType p_type, Brackets brackets) {
@@ -166,5 +171,23 @@ public class MixedArrayType implements Type {
 	
 	public void accept(ASTVisitor v){
 		return;
+	}
+
+	@Override
+	public int getColumnNumber() {
+		if (index < 2) {
+			return p_type.getColumnNumber();
+		} else {
+			return o_type.getColumnNumber();
+		}
+	}
+
+	@Override
+	public int getLineNumber() {
+		if (index < 2) {
+			return p_type.getLineNumber();
+		} else {
+			return o_type.getLineNumber();
+		}
 	}
 }

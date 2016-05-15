@@ -102,7 +102,7 @@ public class VarType implements VType {
 		} else {
 			isPrimitive = false;
 			isArray = false;
-			isObject = false;
+			isObject = true;
 			elementType = vd.getClassType().toString();
 			numBrackets = 0;
 			
@@ -210,6 +210,10 @@ public class VarType implements VType {
 	
 	public boolean isBool() {
 		return elementType.equals("bool") && (numBrackets == 0);
+	}
+
+	public boolean isObject() {
+		return isObject;
 	}
 
 	public int getNumBrackets() {

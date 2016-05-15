@@ -159,6 +159,14 @@ public class ClassType implements VType{
 	}
 	
 	/**
+	 * @param fieldName
+	 * @return true if fieldName is in fieldEnv
+	 */
+	public boolean containsField(String fieldName) {
+		return fieldEnv.containsKey(fieldName);
+	}
+	
+	/**
 	 * 
 	 * @param argClassType
 	 * @return returns true if 

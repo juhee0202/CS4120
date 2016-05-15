@@ -231,7 +231,7 @@ public class ClassType implements VType{
 	}
 
 	public void checkSuper(ClassType ct) {
-		if (superClassName != null && ct.superClassName.equals(superClassName)) {
+		if (superClassName != null && ct.className.equals(superClassName)) {
 			HashMap<String, FunType> superMethodEnv = ct.methodEnv;
 			for (Entry<String, FunType> f1 : methodEnv.entrySet()) {
 				for (Entry<String, FunType> f2 : superMethodEnv.entrySet()) {

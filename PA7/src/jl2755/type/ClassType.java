@@ -1,4 +1,5 @@
 package jl2755.type;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -7,6 +8,7 @@ import java.util.Map.Entry;
 import jl2755.Main;
 import jl2755.SemanticErrorObject;
 import jl2755.ast.*;
+import jl2755.visitor.Environment;
 
 /** 
  * className: the string name of the class
@@ -243,9 +245,11 @@ public class ClassType implements VType{
 		}
 	}
 
-	public void checkSuper(ClassType ct) {
-		if (superClassName != null && ct.className.equals(superClassName)) {
-			HashMap<String, FunType> superMethodEnv = ct.methodEnv;
+	public void checkSupers(Environment env) {
+		List<ClassType> superClasses = new ArrayList<ClassType>();
+		getSuperClasses(this, superClasses, env);
+		for (ClassType superClass : superClasses) {
+			HashMap<String, FunType> superMethodEnv = superClass.methodEnv;
 			for (Entry<String, FunType> f1 : methodEnv.entrySet()) {
 				for (Entry<String, FunType> f2 : superMethodEnv.entrySet()) {
 					if (f1.getKey().equals(f2.getKey()) &&
@@ -256,6 +260,17 @@ public class ClassType implements VType{
 				}
 			}
 		}
+	}
+	
+	private List<ClassType> getSuperClasses(ClassType currClass, List<ClassType> superclasses,
+			Environment env) {
+		String superName = currClass.getSuperClassName();
+		if (superName != null) {
+			ClassType superClass = env.getClassType(superName);
+			superclasses.add(superClass);
+			getSuperClasses(superClass, superclasses, env);
+		}
+		return superclasses;
 	}
 	
 	@Override

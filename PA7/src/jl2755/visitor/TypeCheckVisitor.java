@@ -214,7 +214,7 @@ public class TypeCheckVisitor implements ASTVisitor {
 		}
 		tempExprs.get(0).accept(this);
 		VarType vartypeView = (VarType) tempType;
-		if (vartypeView.isPrimitive()) {
+		if (vartypeView.isPrimitiveBase()) {
 			List<VarType> tempTypesOfExprs = new ArrayList<VarType>();
 			for (int i = 0; i < tempExprs.size(); i++){
 				tempExprs.get(i).accept(this);
@@ -554,12 +554,23 @@ public class TypeCheckVisitor implements ASTVisitor {
 		}
 		VarType rightType = (VarType) tempType;
 		
-		if (!leftType.isPrimitive() || !rightType.isPrimitive()) {
-			String s = "Expected a primitive, but found an object " + 
-					tempType.toString();
-			SemanticErrorObject seo = new SemanticErrorObject(
-					be.getLineNumber(), be.getColumnNumber(), s);
-			Main.handleSemanticError(seo);
+		if (!leftType.isPrimitiveBase() || !rightType.isPrimitiveBase()) {
+			if (leftType.isObject() || rightType.isObject()) {
+				String s = "Expected a primitive, but found an object " + 
+						tempType.toString();
+				SemanticErrorObject seo = new SemanticErrorObject(
+						be.getLineNumber(), be.getColumnNumber(), s);
+				Main.handleSemanticError(seo);
+			}
+			else {
+				if (be.getBinaryOp() != BinaryOp.PLUS) {
+					String s = "Cannot perform a binary operation on"
+							+ " two non primitive objects";
+					SemanticErrorObject seo = new SemanticErrorObject(
+							be.getLineNumber(), be.getColumnNumber(), s);
+					Main.handleSemanticError(seo);
+				}
+			}
 		}
 		
 		BinaryOp op = be.getBinaryOp();
@@ -1391,6 +1402,9 @@ public class TypeCheckVisitor implements ASTVisitor {
 				if (!isSubTypeOf(right.getElementType(), left.getElementType())) {
 					return false;
 				}
+			}
+			else if (!left.equals(right)) {
+				return false;
 			}
 		}
 		

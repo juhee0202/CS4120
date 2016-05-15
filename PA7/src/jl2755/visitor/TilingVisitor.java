@@ -91,7 +91,6 @@ public class TilingVisitor implements IRTreeVisitor {
 
 	// TODO : remove asserts
 	public Tile computeTile(IRBinOp node) {
-//		Map<IRBinOp, Tile> nodeToTile = IRBinOp.getNodeToTile();
 		if (tileMap.containsKey(node)) {
 			return tileMap.get(node);
 		}
@@ -112,7 +111,7 @@ public class TilingVisitor implements IRTreeVisitor {
 		Memory mem;
 		Instruction lea;
 		switch (node.getIndex()) {
-		case 3:
+		case 3:	// const + (reg + reg)
 			IRBinOp child;
 			if (left instanceof IRBinOp) {
 				child = (IRBinOp) left;
@@ -129,20 +128,17 @@ public class TilingVisitor implements IRTreeVisitor {
 			baseTile = tileMap.get(regBase);
 			offTile = tileMap.get(regOff);
 			dest = new Register("tileRegister" + registerCount++);
-			cost = baseTile.getCost() + offTile.getCost() + 1;
+			cost = baseTile.getCost() + offTile.getCost();
 			
 			// Tile child
 			child.accept(this);
 			Tile childTile = tileMap.get(child);
-			if (childTile.getCost() + 2 < cost) {
-				cost = childTile.getCost() + 2;
-				Instruction mov = new Instruction(Operation.MOVQ, 
-						childTile.getDest(), dest);
+			if (childTile.getCost() < cost) {
+				dest = (Register) childTile.getDest();
 				Instruction add = new Instruction(Operation.ADDQ, constOff, dest);
-				insts.add(mov);
 				insts.add(add);
-				newTile = new Tile(insts, 2, dest);
-				newTile = Tile.mergeTiles(newTile, childTile);
+				newTile = new Tile(insts, 1, dest);
+				newTile = Tile.mergeTiles(childTile, newTile);
 			} else {
 				base = (Register) baseTile.getDest();
 				off = (Register) offTile.getDest();
@@ -150,16 +146,15 @@ public class TilingVisitor implements IRTreeVisitor {
 				lea = new Instruction(Operation.LEAQ, mem, dest);
 				insts.add(lea);
 				newTile = new Tile(insts, 1, dest);
-				newTile = Tile.mergeTiles(newTile, baseTile);
-				newTile = Tile.mergeTiles(newTile, offTile);
+				newTile = Tile.mergeTiles(offTile, newTile);
+				newTile = Tile.mergeTiles(baseTile, newTile);
 			}
 			break;
-		case 4:
+		case 4:	// reg + (const + reg)
 			IRBinOp child1;
 			if (left instanceof IRBinOp) {
 				child1 = (IRBinOp) left;
 				regBase = right;
-				
 			} else {
 				assert(right instanceof IRBinOp);
 				child1 = (IRBinOp) right;
@@ -178,22 +173,19 @@ public class TilingVisitor implements IRTreeVisitor {
 			baseTile = tileMap.get(regBase);
 			offTile = tileMap.get(regOff);
 			dest = new Register("tileRegister" + registerCount++);
-			cost = baseTile.getCost() + offTile.getCost() + 1;
+			cost = baseTile.getCost() + offTile.getCost();
 			
 			// Tile child
 			child1.accept(this);
 			Tile childTile1 = tileMap.get(child1);
-			if (childTile1.getCost() + baseTile.getCost() + 2 < cost) {
-				cost = childTile1.getCost() + baseTile.getCost() + 2;
-				Instruction mov = new Instruction(Operation.MOVQ, 
-						childTile1.getDest(), dest);
+			if (childTile1.getCost() + baseTile.getCost() < cost) {
+				dest = (Register) childTile1.getDest();
 				Instruction add = new Instruction(Operation.ADDQ, 
 						baseTile.getDest(), dest);
-				insts.add(mov);
 				insts.add(add);
-				newTile = new Tile(insts, 2, dest);
-				newTile = Tile.mergeTiles(newTile, baseTile);
-				newTile = Tile.mergeTiles(newTile, childTile1);
+				newTile = new Tile(insts, 1, dest);
+				newTile = Tile.mergeTiles(baseTile, newTile);
+				newTile = Tile.mergeTiles(childTile1, newTile);
 			} else {
 				base = (Register) baseTile.getDest();
 				off = (Register) offTile.getDest();
@@ -201,11 +193,11 @@ public class TilingVisitor implements IRTreeVisitor {
 				lea = new Instruction(Operation.LEAQ, mem, dest);
 				insts.add(lea);
 				newTile = new Tile(insts, 1, dest);
-				newTile = Tile.mergeTiles(newTile, baseTile);
-				newTile = Tile.mergeTiles(newTile, offTile);
+				newTile = Tile.mergeTiles(baseTile, newTile);
+				newTile = Tile.mergeTiles(offTile, newTile);
 			}
 			break;
-		case 5:
+		case 5:	// const + (const * reg)
 			IRBinOp child2;
 			if (left instanceof IRBinOp) {
 				child2 = (IRBinOp) left;
@@ -226,35 +218,31 @@ public class TilingVisitor implements IRTreeVisitor {
 			regOff.accept(this);
 			offTile = tileMap.get(regOff);
 			dest = new Register("tileRegister" + registerCount++);
-			cost = offTile.getCost() + 1;
+			cost = offTile.getCost();
 			
 			// Tile child
 			child2.accept(this);
 			Tile childTile2 = tileMap.get(child2);
-			if (childTile2.getCost() + 2 < cost) {
-				cost = childTile2.getCost() + 2;
-				Instruction mov = new Instruction(Operation.MOVQ, 
-						childTile2.getDest(), dest);
+			if (childTile2.getCost() < cost) {
+				dest = (Register) childTile2.getDest();
 				Instruction add = new Instruction(Operation.ADDQ, constOff, dest);
-				insts.add(mov);
 				insts.add(add);
-				newTile = new Tile(insts, 2, dest);
-				newTile = Tile.mergeTiles(newTile, childTile2);
+				newTile = new Tile(insts, 1, dest);
+				newTile = Tile.mergeTiles(childTile2, newTile);
 			} else {
 				off = (Register) offTile.getDest();
 				mem = new Memory(constOff, off, constFac);
 				lea = new Instruction(Operation.LEAQ, mem, dest);
 				insts.add(lea);
 				newTile = new Tile(insts, 1, dest);
-				newTile = Tile.mergeTiles(newTile, offTile);
+				newTile = Tile.mergeTiles(offTile, newTile);
 			}
 			break;
-		case 6:
+		case 6:	// reg + (const * reg)
 			IRBinOp child3;
 			if (left instanceof IRBinOp) {
 				child3 = (IRBinOp) left;
-				regBase = right;
-				
+				regBase = right;	
 			} else {
 				assert(right instanceof IRBinOp);
 				child3 = (IRBinOp) right;
@@ -273,22 +261,19 @@ public class TilingVisitor implements IRTreeVisitor {
 			baseTile = tileMap.get(regBase);
 			offTile = tileMap.get(regOff);
 			dest = new Register("tileRegister" + registerCount++);
-			cost = baseTile.getCost() + offTile.getCost() + 1;
+			cost = baseTile.getCost() + offTile.getCost();
 			
 			// Tile child
 			child3.accept(this);
 			Tile childTile3 = tileMap.get(child3);
-			if (childTile3.getCost() + baseTile.getCost() + 2 < cost) {
-				cost = childTile3.getCost() + baseTile.getCost() + 2;
-				Instruction mov = new Instruction(Operation.MOVQ, 
-						childTile3.getDest(), dest);
+			if (childTile3.getCost() + baseTile.getCost() < cost) {
+				dest = (Register) childTile3.getDest();
 				Instruction add = new Instruction(Operation.ADDQ, 
 						baseTile.getDest(), dest);
-				insts.add(mov);
 				insts.add(add);
-				newTile = new Tile(insts, 2, dest);
-				newTile = Tile.mergeTiles(newTile, baseTile);
-				newTile = Tile.mergeTiles(newTile, childTile3);
+				newTile = new Tile(insts, 1, dest);
+				newTile = Tile.mergeTiles(baseTile, newTile);
+				newTile = Tile.mergeTiles(childTile3, newTile);
 			} else {
 				base = (Register) baseTile.getDest();
 				off = (Register) offTile.getDest();
@@ -296,16 +281,15 @@ public class TilingVisitor implements IRTreeVisitor {
 				lea = new Instruction(Operation.LEAQ, mem, dest);
 				insts.add(lea);
 				newTile = new Tile(insts, 1, dest);
-				newTile = Tile.mergeTiles(newTile, baseTile);
-				newTile = Tile.mergeTiles(newTile, offTile);
+				newTile = Tile.mergeTiles(baseTile, newTile);
+				newTile = Tile.mergeTiles(offTile, newTile);
 			}
 			break;
-		case 7:
+		case 7:	// const + (reg + (reg * const))
 			IRBinOp child4;
 			if (left instanceof IRBinOp) {
 				child4 = (IRBinOp) left;
 				constOff = new Constant(((IRConst) right).value());
-				
 			} else {
 				assert(right instanceof IRBinOp);
 				child4 = (IRBinOp) right;
@@ -317,7 +301,7 @@ public class TilingVisitor implements IRTreeVisitor {
 				regBase = child4.right();
 			} else {
 				assert(child4.right() instanceof IRBinOp);
-				grandChild4 = (IRBinOp) child4.left();
+				grandChild4 = (IRBinOp) child4.right();
 				regBase = child4.left();
 			}
 			if (grandChild4.left() instanceof IRConst) {
@@ -330,31 +314,157 @@ public class TilingVisitor implements IRTreeVisitor {
 			}
 			regBase.accept(this);
 			regOff.accept(this);
+			baseTile = tileMap.get(regBase);
+			offTile = tileMap.get(regOff);
+			dest = new Register("tileRegister" + registerCount++);
+			cost = baseTile.getCost() + offTile.getCost();
 			
-			
+			// Tile child
+			child4.accept(this);
+			Tile childTile4 = tileMap.get(child4);
+			if (childTile4.getCost() < cost) {
+				dest = (Register) childTile4.getDest();
+				Instruction add = new Instruction(Operation.ADDQ, 
+						constOff, dest);
+				insts.add(add);
+				newTile = new Tile(insts, 1, dest);
+				newTile = Tile.mergeTiles(childTile4, newTile);
+			} else {
+				base = (Register) baseTile.getDest();
+				off = (Register) offTile.getDest();
+				mem = new Memory(constOff, base, off, constFac);
+				lea = new Instruction(Operation.LEAQ, mem, dest);
+				insts.add(lea);
+				newTile = new Tile(insts, 1, dest);
+				newTile = Tile.mergeTiles(baseTile, newTile);
+				newTile = Tile.mergeTiles(offTile, newTile);
+			}
 			break;
-		case 8:
+		case 8:	// reg + (const + (reg * const))
+			IRBinOp child5;
+			if (left instanceof IRBinOp) {
+				child5 = (IRBinOp) left;
+				regBase = right;
+			} else {
+				assert(right instanceof IRBinOp);
+				child5 = (IRBinOp) right;
+				regBase = left;
+			}
+			IRBinOp grandChild5;
+			if (child5.left() instanceof IRBinOp) {
+				grandChild5 = (IRBinOp) child5.left();
+				constOff = new Constant(((IRConst) child5.right()).value());
+			} else {
+				assert(child5.right() instanceof IRBinOp);
+				grandChild5 = (IRBinOp) child5.right();
+				constOff = new Constant(((IRConst) child5.left()).value());
+			}
+			if (grandChild5.left() instanceof IRConst) {
+				constFac = new Constant(((IRConst) grandChild5.left()).value());
+				regOff = grandChild5.right();
+			} else {
+				assert(grandChild5.right() instanceof IRConst);
+				constFac = new Constant(((IRConst) grandChild5.right()).value());
+				regOff = grandChild5.left();
+			}
+			regBase.accept(this);
+			regOff.accept(this);
+			baseTile = tileMap.get(regBase);
+			offTile = tileMap.get(regOff);
+			dest = new Register("tileRegister" + registerCount++);
+			cost = baseTile.getCost() + offTile.getCost();
 			
-		case 9:
+			// Tile child
+			child5.accept(this);
+			Tile childTile5 = tileMap.get(child5);
+			if (childTile5.getCost() < cost) {
+				dest = (Register) childTile5.getDest();
+				Instruction add = new Instruction(Operation.ADDQ, 
+						constOff, dest);
+				insts.add(add);
+				newTile = new Tile(insts, 1, dest);
+				newTile = Tile.mergeTiles(childTile5, newTile);
+			} else {
+				base = (Register) baseTile.getDest();
+				off = (Register) offTile.getDest();
+				mem = new Memory(constOff, base, off, constFac);
+				lea = new Instruction(Operation.LEAQ, mem, dest);
+				insts.add(lea);
+				newTile = new Tile(insts, 1, dest);
+				newTile = Tile.mergeTiles(baseTile, newTile);
+				newTile = Tile.mergeTiles(offTile, newTile);
+			}
+			break;
+		case 9:	// (const + reg) + (reg * const)
 			IRBinOp leftBin = (IRBinOp) left;
 			IRBinOp rightBin = (IRBinOp) right;
-			
-			IRExpr regBase6;
-			IRExpr regOff6;
-			Constant constOff6;
-			Constant constFac6;
 			if (leftBin.opType() == OpType.ADD) {
-				assert(rightBin.opType() == OpType.MUL);
 				if (leftBin.left() instanceof IRConst) {
-					regBase6 = leftBin.right();
-//					constOff6 = 
+					regBase = leftBin.right();
+					constOff = new Constant(((IRConst) leftBin.left()).value());
 				} else {
 					assert(leftBin.right() instanceof IRConst);
+					regBase = leftBin.left();
+					constOff = new Constant(((IRConst) leftBin.right()).value());
+				}
+				if (rightBin.left() instanceof IRConst) {
+					regOff = rightBin.right();
+					constFac = new Constant(((IRConst) rightBin.left()).value());
+				} else {
+					assert(rightBin.right() instanceof IRConst);
+					regOff = rightBin.left();
+					constFac = new Constant(((IRConst) rightBin.right()).value());
 				}
 			} else {
-				assert(leftBin.opType() == OpType.MUL);
 				assert(rightBin.opType() == OpType.ADD);
+				if (rightBin.left() instanceof IRConst) {
+					regBase = rightBin.right();
+					constOff = new Constant(((IRConst) rightBin.left()).value());
+				} else {
+					assert(rightBin.right() instanceof IRConst);
+					regBase = rightBin.left();
+					constOff = new Constant(((IRConst) rightBin.right()).value());
+				}
+				if (leftBin.left() instanceof IRConst) {
+					regOff = leftBin.right();
+					constFac = new Constant(((IRConst) leftBin.left()).value());
+				} else {
+					assert(leftBin.right() instanceof IRConst);
+					regOff = leftBin.left();
+					constFac = new Constant(((IRConst) leftBin.right()).value());
+				}
 			}
+			regBase.accept(this);
+			regOff.accept(this);
+			baseTile = tileMap.get(regBase);
+			offTile = tileMap.get(regOff);
+			dest = new Register("tileRegister" + registerCount++);
+			cost = baseTile.getCost() + offTile.getCost();
+			
+			// Tile left and right
+			leftBin.accept(this);
+			rightBin.accept(this);
+			Tile leftTile = tileMap.get(leftBin);
+			Tile rightTile = tileMap.get(rightBin);
+			if (leftTile.getCost() + rightTile.getCost() < cost) {
+				dest = (Register) leftTile.getDest();
+				Instruction add = new Instruction(Operation.ADDQ, 
+						rightTile.getDest(), dest);
+				insts.add(add);
+				newTile = new Tile(insts, 1, dest);
+				newTile = Tile.mergeTiles(leftTile, newTile);
+				newTile = Tile.mergeTiles(rightTile, newTile);
+			} else {
+				base = (Register) baseTile.getDest();
+				off = (Register) offTile.getDest();
+				mem = new Memory(constOff, base, off, constFac);
+				lea = new Instruction(Operation.LEAQ, mem, dest);
+				insts.add(lea);
+				newTile = new Tile(insts, 1, dest);
+				newTile = Tile.mergeTiles(baseTile, newTile);
+				newTile = Tile.mergeTiles(offTile, newTile);
+			}
+			break;
 		case -1:
 		case 0:
 		case 1:
@@ -371,6 +481,15 @@ public class TilingVisitor implements IRTreeVisitor {
 	 *  */
 	@Override
 	public void visit(IRBinOp bo) {
+		// TODO: REMOVE IF CAUSING ERRORS
+		/**********************************************************************/
+		Tile temp = computeTile(bo);
+		if (temp != null) {
+			tileMap.put(bo, temp);
+			return;
+		}
+		/**********************************************************************/
+		
 		OpType op = bo.opType();
 		Operation tileOp = null;
 		
@@ -1392,15 +1511,25 @@ public class TilingVisitor implements IRTreeVisitor {
 		
 		if (mem.expr() instanceof IRBinOp) {
 			//OPTIMIZE TILING: addressing mode
-			Memory memory = createEffectiveMemory(mem);
-			if (memory != null) {
-				// TODO: memory should never be null if we're done implementing createEffectiveMemory
-
-				List<Instruction> emptyInstr = new ArrayList<Instruction>();
-				Tile dummyTile = new Tile(emptyInstr, 0, memory);
-				tileMap.put(mem, dummyTile);		//merged with children in IRMove
+//			Memory memory = createEffectiveMemory(mem);
+//			if (memory != null) {
+//				// TODO: memory should never be null if we're done implementing createEffectiveMemory
+//
+//				List<Instruction> emptyInstr = new ArrayList<Instruction>();
+//				Tile dummyTile = new Tile(emptyInstr, 0, memory);
+//				tileMap.put(mem, dummyTile);		//merged with children in IRMove
+//				return;
+//			}
+			
+			// TODO: REMOVE IF ERRORS
+			/******************************************************************/
+			Tile temp = computeTile(mem);
+			if (temp != null) {
+				tileMap.put(mem, temp);
 				return;
 			}
+			/******************************************************************/
+			
 		}
 		
 		mem.expr().accept(this);
@@ -1426,181 +1555,369 @@ public class TilingVisitor implements IRTreeVisitor {
 		tileMap.put(mem, finalTile);
 	}
 
-	/** takes in a IRBinOp and returns*/
-//	private Tile createLeaTile(IRBinOp binopExpr) {
-//		// TODO
-//		Memory resultMem = null;
-//		
-//		if (binopExpr.opType() == OpType.ADD || binopExpr.opType() == OpType.SUB) {
-//
-//			// Case 4: constantOffset(%base, %offset, constantFactor)
-//			if (binopExpr.left() instanceof IRTemp && binopExpr.right() instanceof IRBinOp) {
-//				
-//			}
-//			
-//			else if ()
-//			
-//			// Case 3: (%base, %registerOffset, constantFactor) 
-//			else if ((binopExpr.opType() == OpType.ADD) &&
-//					(binopExpr.left() instanceof IRTemp) && 
-//					(binopExpr.right() instanceof IRBinOp)) 
-//			{
-//				IRTemp baseTemp = (IRTemp) binopExpr.left();
-//				IRBinOp rightExpr = (IRBinOp) binopExpr.right();
-//				if (rightExpr.opType() == OpType.MUL) {
-//					IRTemp registerOffset = null;
-//					IRConst constantFactor = null;
-//
-//					if (rightExpr.left() instanceof IRConst && rightExpr.right() instanceof IRTemp) {
-//						registerOffset = (IRTemp) rightExpr.right();
-//						constantFactor = (IRConst) rightExpr.left();
-//					}
-//					else if (rightExpr.left() instanceof IRTemp && rightExpr.right() instanceof IRConst) {
-//						registerOffset = (IRTemp) rightExpr.left();
-//						constantFactor = (IRConst) rightExpr.right();
-//					}
-//					else {
-//						return null;
-//					}
-//
-//					resultMem = new Memory(new Constant(0),
-//							new Register(baseTemp.name()), 
-//							new Register(registerOffset.name()), 
-//							new Constant(constantFactor.value()));
-//				}
-//				
-//			}
-//
-//			// Case 2: constantOffset(%registerOffset, constantFactor)
-//			else if (binopExpr.opType() == OpType.ADD && 
-//					binopExpr.left() instanceof IRConst &&
-//					binopExpr.right() instanceof IRBinOp) 
-//			{
-//				List<Tile> tilesToMerge = new ArrayList<Tile>();
-//				List<Instruction> instrList = new ArrayList<Instruction>();
-//				int cost = 0;
-//
-//				binopExpr.left().accept(this);
-//				Tile constantOffsetTile = tileMap.get(binopExpr.left());
-//				tilesToMerge.add(constantOffsetTile);
-//
-//				Constant constantOffset = (Constant) constantOffsetTile.getDest();
-//
-//				IRBinOp binop = (IRBinOp) binopExpr.right();
-//				if (binop.opType() == OpType.MUL) {
-//					Register registerOffset = null;
-//					Constant constantFactor = null;
-//					Tile registerOffsetTile = null;
-//					Tile constantFactorTile = null;
-//
-//					binop.left().accept(this);						
-//					binop.right().accept(this);
-//
-//					if (binop.right() instanceof IRConst) {
-//						registerOffsetTile = tileMap.get(binop.left());
-//						constantFactorTile = tileMap.get(binop.right());
-//					}
-//					else if (binop.left() instanceof IRConst) {
-//						registerOffsetTile = tileMap.get(binop.right());
-//						constantFactorTile = tileMap.get(binop.left());
-//					}
-//					else {
-//						return null;
-//					}
-//
-//					constantFactor = (Constant) constantFactorTile.getDest();
-//
-//					if (!(registerOffsetTile.getDest() instanceof Register)) {
-//						//move to a register
-//						Register freshTemp = new Register("tilingRegister" + registerCount++);
-//						Instruction movToRegister = new Instruction(Operation.MOVQ, 
-//								registerOffsetTile.getDest().getNewOperand(), 
-//								freshTemp.getNewOperand());
-//						instrList.add(movToRegister);
-//						cost++;
-//
-//						registerOffset = freshTemp;
-//					}
-//					else {
-//						registerOffset = (Register) registerOffsetTile.getDest();
-//					}
-//
-//					tilesToMerge.add(registerOffsetTile);
-//					tilesToMerge.add(constantFactorTile);
-//
-//					resultMem = new Memory(constantOffset, registerOffset, constantFactor);
-//				}
-//				else {
-//					return null;
-//				}
-//
-//				Tile currTile = new Tile(instrList, cost, resultMem);
-//				tilesToMerge.add(currTile);
-//
-//				Tile mergedTile = tilesToMerge.get(0);
-//				for (int i = 1; i < tilesToMerge.size(); i++) {
-//					mergedTile = Tile.mergeTiles(mergedTile, tilesToMerge.get(i));
-//				}
-//
-//				tileMap.put(mem, mergedTile);
-//			}
-//
-//			// Case 1: constantOffset(%base)
-//			else if (binopExpr.left() instanceof IRConst && binopExpr.right() instanceof IRTemp) {				
-//				IRConst leftConst = (IRConst) binopExpr.left();
-//				IRTemp rightTemp = (IRTemp) binopExpr.right();
-//
-//				//visit children
-//				leftConst.accept(this);
-//				rightTemp.accept(this);
-//				Tile leftTile = tileMap.get(leftConst);
-//				Tile rightTile = tileMap.get(rightTemp);
-//				Constant leftOperand = (Constant) leftTile.getDest();
-//				Register rightOperand = (Register) rightTile.getDest();
-//
-//				if (binopExpr.opType() == OpType.SUB) {
-//					leftOperand.setValue(leftOperand.getValue()*-1);
-//				}
-//				resultMem = new Memory(leftOperand, rightOperand);
-//
-//				List<Instruction> emptyInstr = new ArrayList<Instruction>();
-//				Tile currTile = new Tile(emptyInstr, 0, resultMem);
-//
-//				Tile childrenTiles = Tile.mergeTiles(leftTile, rightTile);
-//				currTile = Tile.mergeTiles(childrenTiles, currTile);
-//
-//				tileMap.put(mem, currTile);
-//			}
-//
-//			// Case 1: constantOffset(%base)
-//			else if (binopExpr.left() instanceof IRTemp && binopExpr.right() instanceof IRConst) {
-//				IRTemp leftTemp = (IRTemp) binopExpr.left();
-//				IRConst rightConst = (IRConst) binopExpr.right();
-//
-//				//visit children
-//				leftTemp.accept(this);
-//				rightConst.accept(this);
-//				Tile leftTile = tileMap.get(leftTemp);
-//				Tile rightTile = tileMap.get(rightConst);
-//				Register leftOperand = (Register) leftTile.getDest();
-//				Constant rightOperand = (Constant) rightTile.getDest();
-//
-//				if (binopExpr.opType() == OpType.SUB) {
-//					rightOperand.setValue(rightOperand.getValue()*-1);
-//				}
-//				resultMem = new Memory(rightOperand, leftOperand);
-//
-//				List<Instruction> emptyInstr = new ArrayList<Instruction>();
-//				Tile currTile = new Tile(emptyInstr, 0, resultMem);
-//
-//				Tile childrenTiles = Tile.mergeTiles(leftTile, rightTile);
-//				currTile = Tile.mergeTiles(childrenTiles, currTile);
-//
-//				tileMap.put(mem, currTile);
-//			}
-//		}
-//		return resultMem;
-//	}
+	public Tile computeTile(IRMem memNode) {
+		if (tileMap.containsKey(memNode)) {
+			return tileMap.get(memNode);
+		}
+		IRBinOp node = (IRBinOp) memNode.expr();
+		Tile newTile = null;
+		List<Instruction> insts = new ArrayList<Instruction>();
+		int cost = 0;
+		Register dest = null;
+		IRExpr left = node.left();
+		IRExpr right = node.right();
+		IRExpr regBase;
+		IRExpr regOff;
+		Register base;
+		Register off;
+		Tile baseTile;
+		Tile offTile;
+		Constant constOff;
+		Constant constFac;
+		Memory mem;
+		Instruction lea;
+		switch (node.getIndex()) {
+		case 3:	// const + (reg + reg)
+			IRBinOp child;
+			if (left instanceof IRBinOp) {
+				child = (IRBinOp) left;
+				constOff = new Constant(((IRConst) right).value());
+			} else {
+				assert(right instanceof IRBinOp);
+				child = (IRBinOp) right;
+				constOff = new Constant(((IRConst) left).value());
+			}
+			regBase = child.left();
+			regOff = child.right();
+			regBase.accept(this);
+			regOff.accept(this);
+			baseTile = tileMap.get(regBase);
+			offTile = tileMap.get(regOff);
+			dest = new Register("tileRegister" + registerCount++);
+			cost = baseTile.getCost() + offTile.getCost();
+			
+			// Tile child
+			child.accept(this);
+			Tile childTile = tileMap.get(child);
+			if (childTile.getCost() < cost) {
+				dest = (Register) childTile.getDest();
+				mem = new Memory(constOff, dest);
+				newTile = new Tile(insts, 0, mem);
+				newTile = Tile.mergeTiles(childTile, newTile);
+			} else {
+				base = (Register) baseTile.getDest();
+				off = (Register) offTile.getDest();
+				mem = new Memory(constOff, base, off);
+				newTile = new Tile(insts, 0, mem);
+				newTile = Tile.mergeTiles(offTile, newTile);
+				newTile = Tile.mergeTiles(baseTile, newTile);
+			}
+			break;
+		case 4:	// reg + (const + reg)
+			IRBinOp child1;
+			if (left instanceof IRBinOp) {
+				child1 = (IRBinOp) left;
+				regBase = right;
+			} else {
+				assert(right instanceof IRBinOp);
+				child1 = (IRBinOp) right;
+				regBase = left;
+			}
+			if (child1.left() instanceof IRConst) {
+				constOff = new Constant(((IRConst) child1.left()).value());
+				regOff = child1.right();
+			} else {
+				assert(child1.right() instanceof IRConst);
+				constOff = new Constant(((IRConst) child1.right()).value());
+				regOff = child1.left();
+			}
+			regBase.accept(this);
+			regOff.accept(this);
+			baseTile = tileMap.get(regBase);
+			offTile = tileMap.get(regOff);
+			dest = new Register("tileRegister" + registerCount++);
+			cost = baseTile.getCost() + offTile.getCost();
+			
+			// Tile child
+			child1.accept(this);
+			Tile childTile1 = tileMap.get(child1);
+			if (childTile1.getCost() + baseTile.getCost() < cost) {
+				dest = (Register) childTile1.getDest();
+				Register dest2 = (Register) baseTile.getDest();
+				mem = new Memory(dest, dest2, new Constant(1));
+				newTile = new Tile(insts, 0, mem);
+				newTile = Tile.mergeTiles(baseTile, newTile);
+				newTile = Tile.mergeTiles(childTile1, newTile);
+			} else {
+				base = (Register) baseTile.getDest();
+				off = (Register) offTile.getDest();
+				mem = new Memory(constOff, base, off);
+				newTile = new Tile(insts, 0, mem);
+				newTile = Tile.mergeTiles(baseTile, newTile);
+				newTile = Tile.mergeTiles(offTile, newTile);
+			}
+			break;
+		case 5:	// const + (const * reg)
+			IRBinOp child2;
+			if (left instanceof IRBinOp) {
+				child2 = (IRBinOp) left;
+				constOff = new Constant(((IRConst) right).value());
+			} else {
+				assert(right instanceof IRBinOp);
+				child2 = (IRBinOp) right;
+				constOff = new Constant(((IRConst) left).value());
+			}
+			if (child2.left() instanceof IRConst) {
+				constFac = new Constant(((IRConst) child2.left()).value());
+				regOff = child2.right();
+			} else {
+				assert(child2.right() instanceof IRConst);
+				constFac = new Constant(((IRConst) child2.right()).value());
+				regOff = child2.left();
+			}
+			regOff.accept(this);
+			offTile = tileMap.get(regOff);
+			dest = new Register("tileRegister" + registerCount++);
+			cost = offTile.getCost();
+			
+			// Tile child
+			child2.accept(this);
+			Tile childTile2 = tileMap.get(child2);
+			if (childTile2.getCost() < cost) {
+				dest = (Register) childTile2.getDest();
+				mem = new Memory(constOff, dest);
+				newTile = new Tile(insts, 0, mem);
+				newTile = Tile.mergeTiles(childTile2, newTile);
+			} else {
+				off = (Register) offTile.getDest();
+				mem = new Memory(constOff, off, constFac);
+				newTile = new Tile(insts, 0, mem);
+				newTile = Tile.mergeTiles(offTile, newTile);
+			}
+			break;
+		case 6:	// reg + (const * reg)
+			IRBinOp child3;
+			if (left instanceof IRBinOp) {
+				child3 = (IRBinOp) left;
+				regBase = right;	
+			} else {
+				assert(right instanceof IRBinOp);
+				child3 = (IRBinOp) right;
+				regBase = left;
+			}
+			if (child3.left() instanceof IRConst) {
+				constFac = new Constant(((IRConst) child3.left()).value());
+				regOff = child3.right();
+			} else {
+				assert(child3.right() instanceof IRConst);
+				constFac = new Constant(((IRConst) child3.right()).value());
+				regOff = child3.left();
+			}
+			regBase.accept(this);
+			regOff.accept(this);
+			baseTile = tileMap.get(regBase);
+			offTile = tileMap.get(regOff);
+			dest = new Register("tileRegister" + registerCount++);
+			cost = baseTile.getCost() + offTile.getCost();
+			
+			// Tile child
+			child3.accept(this);
+			Tile childTile3 = tileMap.get(child3);
+			if (childTile3.getCost() + baseTile.getCost() < cost) {
+				dest = (Register) childTile3.getDest();
+				Register dest2 = (Register) baseTile.getDest();
+				mem = new Memory(dest2, dest, new Constant(1));
+				newTile = new Tile(insts, 0, mem);
+				newTile = Tile.mergeTiles(baseTile, newTile);
+				newTile = Tile.mergeTiles(childTile3, newTile);
+			} else {
+				base = (Register) baseTile.getDest();
+				off = (Register) offTile.getDest();
+				mem = new Memory(base, off, constFac);
+				newTile = new Tile(insts, 0, mem);
+				newTile = Tile.mergeTiles(baseTile, newTile);
+				newTile = Tile.mergeTiles(offTile, newTile);
+			}
+			break;
+		case 7:	// const + (reg + (reg * const))
+			IRBinOp child4;
+			if (left instanceof IRBinOp) {
+				child4 = (IRBinOp) left;
+				constOff = new Constant(((IRConst) right).value());
+			} else {
+				assert(right instanceof IRBinOp);
+				child4 = (IRBinOp) right;
+				constOff = new Constant(((IRConst) left).value());
+			}
+			IRBinOp grandChild4;
+			if (child4.left() instanceof IRBinOp) {
+				grandChild4 = (IRBinOp) child4.left();
+				regBase = child4.right();
+			} else {
+				assert(child4.right() instanceof IRBinOp);
+				grandChild4 = (IRBinOp) child4.right();
+				regBase = child4.left();
+			}
+			if (grandChild4.left() instanceof IRConst) {
+				constFac = new Constant(((IRConst) grandChild4.left()).value());
+				regOff = grandChild4.right();
+			} else {
+				assert(grandChild4.right() instanceof IRConst);
+				constFac = new Constant(((IRConst) grandChild4.right()).value());
+				regOff = grandChild4.left();
+			}
+			regBase.accept(this);
+			regOff.accept(this);
+			baseTile = tileMap.get(regBase);
+			offTile = tileMap.get(regOff);
+			dest = new Register("tileRegister" + registerCount++);
+			cost = baseTile.getCost() + offTile.getCost();
+			
+			// Tile child
+			child4.accept(this);
+			Tile childTile4 = tileMap.get(child4);
+			if (childTile4.getCost() < cost) {
+				dest = (Register) childTile4.getDest();
+				mem = new Memory(constOff, dest);
+				newTile = new Tile(insts, 0, mem);
+				newTile = Tile.mergeTiles(childTile4, newTile);
+			} else {
+				base = (Register) baseTile.getDest();
+				off = (Register) offTile.getDest();
+				mem = new Memory(constOff, base, off, constFac);
+				newTile = new Tile(insts, 0, mem);
+				newTile = Tile.mergeTiles(baseTile, newTile);
+				newTile = Tile.mergeTiles(offTile, newTile);
+			}
+			break;
+		case 8:	// reg + (const + (reg * const))
+			IRBinOp child5;
+			if (left instanceof IRBinOp) {
+				child5 = (IRBinOp) left;
+				regBase = right;
+			} else {
+				assert(right instanceof IRBinOp);
+				child5 = (IRBinOp) right;
+				regBase = left;
+			}
+			IRBinOp grandChild5;
+			if (child5.left() instanceof IRBinOp) {
+				grandChild5 = (IRBinOp) child5.left();
+				constOff = new Constant(((IRConst) child5.right()).value());
+			} else {
+				assert(child5.right() instanceof IRBinOp);
+				grandChild5 = (IRBinOp) child5.right();
+				constOff = new Constant(((IRConst) child5.left()).value());
+			}
+			if (grandChild5.left() instanceof IRConst) {
+				constFac = new Constant(((IRConst) grandChild5.left()).value());
+				regOff = grandChild5.right();
+			} else {
+				assert(grandChild5.right() instanceof IRConst);
+				constFac = new Constant(((IRConst) grandChild5.right()).value());
+				regOff = grandChild5.left();
+			}
+			regBase.accept(this);
+			regOff.accept(this);
+			baseTile = tileMap.get(regBase);
+			offTile = tileMap.get(regOff);
+			dest = new Register("tileRegister" + registerCount++);
+			cost = baseTile.getCost() + offTile.getCost();
+			
+			// Tile child
+			child5.accept(this);
+			Tile childTile5 = tileMap.get(child5);
+			if (childTile5.getCost() < cost) {
+				dest = (Register) childTile5.getDest();
+				mem = new Memory(constOff, dest);
+				newTile = new Tile(insts, 0, mem);
+				newTile = Tile.mergeTiles(childTile5, newTile);
+			} else {
+				base = (Register) baseTile.getDest();
+				off = (Register) offTile.getDest();
+				mem = new Memory(constOff, base, off, constFac);
+				newTile = new Tile(insts, 0, mem);
+				newTile = Tile.mergeTiles(baseTile, newTile);
+				newTile = Tile.mergeTiles(offTile, newTile);
+			}
+			break;
+		case 9:	// (const + reg) + (reg * const)
+			IRBinOp leftBin = (IRBinOp) left;
+			IRBinOp rightBin = (IRBinOp) right;
+			if (leftBin.opType() == OpType.ADD) {
+				if (leftBin.left() instanceof IRConst) {
+					regBase = leftBin.right();
+					constOff = new Constant(((IRConst) leftBin.left()).value());
+				} else {
+					assert(leftBin.right() instanceof IRConst);
+					regBase = leftBin.left();
+					constOff = new Constant(((IRConst) leftBin.right()).value());
+				}
+				if (rightBin.left() instanceof IRConst) {
+					regOff = rightBin.right();
+					constFac = new Constant(((IRConst) rightBin.left()).value());
+				} else {
+					assert(rightBin.right() instanceof IRConst);
+					regOff = rightBin.left();
+					constFac = new Constant(((IRConst) rightBin.right()).value());
+				}
+			} else {
+				assert(rightBin.opType() == OpType.ADD);
+				if (rightBin.left() instanceof IRConst) {
+					regBase = rightBin.right();
+					constOff = new Constant(((IRConst) rightBin.left()).value());
+				} else {
+					assert(rightBin.right() instanceof IRConst);
+					regBase = rightBin.left();
+					constOff = new Constant(((IRConst) rightBin.right()).value());
+				}
+				if (leftBin.left() instanceof IRConst) {
+					regOff = leftBin.right();
+					constFac = new Constant(((IRConst) leftBin.left()).value());
+				} else {
+					assert(leftBin.right() instanceof IRConst);
+					regOff = leftBin.left();
+					constFac = new Constant(((IRConst) leftBin.right()).value());
+				}
+			}
+			regBase.accept(this);
+			regOff.accept(this);
+			baseTile = tileMap.get(regBase);
+			offTile = tileMap.get(regOff);
+			dest = new Register("tileRegister" + registerCount++);
+			cost = baseTile.getCost() + offTile.getCost();
+			
+			// Tile left and right
+			leftBin.accept(this);
+			rightBin.accept(this);
+			Tile leftTile = tileMap.get(leftBin);
+			Tile rightTile = tileMap.get(rightBin);
+			if (leftTile.getCost() + rightTile.getCost() < cost) {
+				dest = (Register) leftTile.getDest();
+				Register dest2 = (Register) rightTile.getDest();
+				mem = new Memory(dest2, dest, new Constant(1));
+				newTile = new Tile(insts, 0, mem);
+				newTile = Tile.mergeTiles(leftTile, newTile);
+				newTile = Tile.mergeTiles(rightTile, newTile);
+			} else {
+				base = (Register) baseTile.getDest();
+				off = (Register) offTile.getDest();
+				mem = new Memory(constOff, base, off, constFac);
+				newTile = new Tile(insts, 0, mem);
+				newTile = Tile.mergeTiles(baseTile, newTile);
+				newTile = Tile.mergeTiles(offTile, newTile);
+			}
+			break;
+		case -1:
+		case 0:
+		case 1:
+		case 2:
+		default:
+			return null;
+		}
+		tileMap.put(node, newTile);
+		return newTile;
+	}
 	
 	
 	/* Returns a Memory Operand with the most effective addressing mode */

@@ -687,6 +687,15 @@ public class TypeCheckVisitor implements ASTVisitor {
 					b.getLineNumber(), b.getColumnNumber(), s);
 			Main.handleSemanticError(seo);
 		}
+		if (b.hasLabel()) {
+			String label = b.getLabel();
+			if (!labelSet.contains(label)) {
+				String s = "Illegal label: " + label;
+				SemanticErrorObject seo = new SemanticErrorObject(
+						b.getLineNumber(), b.getColumnNumber(), s);
+				Main.handleSemanticError(seo);
+			}
+		}
 		stmtType = new VoidType();	// Question: do I dirty tempType?
 	}
 	
@@ -701,6 +710,15 @@ public class TypeCheckVisitor implements ASTVisitor {
 			SemanticErrorObject seo = new SemanticErrorObject(
 					c.getLineNumber(), c.getColumnNumber(), s);
 			Main.handleSemanticError(seo);
+		}
+		if (c.hasLabel()) {
+			String label = c.getLabel();
+			if (!labelSet.contains(label)) {
+				String s = "Illegal label: " + label;
+				SemanticErrorObject seo = new SemanticErrorObject(
+						c.getLineNumber(), c.getColumnNumber(), s);
+				Main.handleSemanticError(seo);
+			}
 		}
 		stmtType = new VoidType();
 	}
@@ -789,11 +807,11 @@ public class TypeCheckVisitor implements ASTVisitor {
 				Main.handleSemanticError(seo);
 			}
 			
-			ClassType dotableExprType = (ClassType)tempType;
+			VarType dotableExprType = (VarType)tempType;
 			String methodName = fc.getIdentifier().getTheValue();
 			
 			// check if methodName is valid
-			List<String> superclasses = getSuperClasses(dotableExprType.getClassName());
+			List<String> superclasses = getSuperClasses(dotableExprType.getElementType());
 			for (String superclass : superclasses) {
 				ClassType superclassType = env.getClassType(superclass);
 				if (superclassType.containsMethod(methodName)) {
@@ -828,7 +846,7 @@ public class TypeCheckVisitor implements ASTVisitor {
 		else if (index == 1 || index == 4) {
 			fc.getFunctionArg().accept(this);
 			args = tempType;
-			if (!args.equals(paramType)) {
+			if (!(args instanceof TupleType && tupleEqual((TupleType)args, (TupleType)paramType))) {
 				String s = "Expected " + paramType.toString() + ", but found " + args.toString();
 				SemanticErrorObject seo = new SemanticErrorObject(
 						fc.getIdentifier_line(), fc.getIdentifier_col(), s);
@@ -863,23 +881,22 @@ public class TypeCheckVisitor implements ASTVisitor {
 			
 			// get type
 			Type type = entry.getValue();
-			VType varType;
-			if (type instanceof Identifier) {
-				Identifier classId = (Identifier)type;
-				String className = classId.getTheValue();
+			VarType varType = new VarType(type);
+			
+			// if it's an object type, make sure its declared in env
+			if (varType.isObject()) {
+				String className = varType.getElementType();
 				if (!env.containsClass(className)) {
-					String s = "Type " + className + " cannot be resolved";
+					String s = "Name " + className + " cannot be resolved";
 					SemanticErrorObject seo = new SemanticErrorObject(
-							classId.getLineNumber(), classId.getColumnNumber(), s);
+							type.getLineNumber(), type.getColumnNumber(), s);
 					Main.handleSemanticError(seo);
-				}
-				varType = env.getClassType(className);
-			} else {
-				varType = new VarType(entry.getValue());	
+				}			
 			}
 			
 			// typecheck
-			if (env.containsVar(id)) {
+			if (env.containsVar(id) ||
+					(isInClass && classEnv.containsField(id)) ) {
 				String s = id + " is already declared";
 				SemanticErrorObject seo = new SemanticErrorObject(
 						fd.getIdentifier_line(), fd.getIdentifier_col(), s);
@@ -899,11 +916,20 @@ public class TypeCheckVisitor implements ASTVisitor {
 		isInFunctionDecl = false;
 		
 		// check the return type using tempType
-		if (!tempType.equals(functionReturnType)) {
-			String s = "Expected " + functionReturnType.toString() + ", but found " + tempType.toString();
-			SemanticErrorObject seo = new SemanticErrorObject(
-					fd.getIdentifier_line(), fd.getIdentifier_col(), s);
-			Main.handleSemanticError(seo);			
+		if (tempType instanceof TupleType && functionReturnType instanceof TupleType) {
+			if (!tupleEqual((TupleType)tempType, (TupleType)functionReturnType)) {
+				String s = "Expected " + functionReturnType.toString() + ", but found " + tempType.toString();
+				SemanticErrorObject seo = new SemanticErrorObject(
+						fd.getIdentifier_line(), fd.getIdentifier_col(), s);
+				Main.handleSemanticError(seo);		
+			}
+		} else {
+			if (!tempType.equals(functionReturnType)) {
+				String s = "Expected " + functionReturnType.toString() + ", but found " + tempType.toString();
+				SemanticErrorObject seo = new SemanticErrorObject(
+						fd.getIdentifier_line(), fd.getIdentifier_col(), s);
+				Main.handleSemanticError(seo);			
+			}
 		}
 		
 		/* Restore the parent scope by removing arguments from env */
@@ -1133,10 +1159,18 @@ public class TypeCheckVisitor implements ASTVisitor {
 		}
 		
 		// compare the return type with the function's return type
-		if (!returnType.equals(functionReturnType)) {
-			String s = "Expected " + functionReturnType.toString() + ", but found " + returnType.toString();
-			SemanticErrorObject seo = new SemanticErrorObject(rs.getReturn_line(), rs.getReturn_col(), s);
-			Main.handleSemanticError(seo);			
+		if (returnType instanceof TupleType && functionReturnType instanceof TupleType) {
+			if (!tupleEqual((TupleType)returnType,(TupleType)functionReturnType)) {
+				String s = "Expected " + functionReturnType.toString() + ", but found " + returnType.toString();
+				SemanticErrorObject seo = new SemanticErrorObject(rs.getReturn_line(), rs.getReturn_col(), s);
+				Main.handleSemanticError(seo);
+			}
+		} else {
+			if (!returnType.equals(functionReturnType)) {
+				String s = "Expected " + functionReturnType.toString() + ", but found " + returnType.toString();
+				SemanticErrorObject seo = new SemanticErrorObject(rs.getReturn_line(), rs.getReturn_col(), s);
+				Main.handleSemanticError(seo);			
+			}
 		}
 		
 		tempType = returnType;
@@ -1223,13 +1257,13 @@ public class TypeCheckVisitor implements ASTVisitor {
 		else {
 			// build a TupleType object for the left hand side
 			List<VarDecl> varDecls = ti.getVarDecls();
-			List<VType> types = new ArrayList<VType>();
+			List<VType> leftTypes = new ArrayList<VType>();
 			for (int i = 0; i < varDecls.size(); i++) {
 				VarDecl varDecl = varDecls.get(i);
 				
 				// build types
 				if (varDecl == null) {	
-					types.add(new UnitType());
+					leftTypes.add(new UnitType());
 				} else if (varDecl.getIndex() == 2) {
 					Identifier classId = varDecl.getClassType();
 					String className = classId.getTheValue();
@@ -1239,9 +1273,9 @@ public class TypeCheckVisitor implements ASTVisitor {
 								classId.getLineNumber(), classId.getColumnNumber(), s);
 						Main.handleSemanticError(seo);
 					}
-					types.add(env.getClassType(className));
+					leftTypes.add(new VarType(classId));
 				} else {
-					types.add(new VarType(varDecl));
+					leftTypes.add(new VarType(varDecl));
 				}
 				
 				// make sure that id is not in the env
@@ -1254,11 +1288,9 @@ public class TypeCheckVisitor implements ASTVisitor {
 				}
 			}
 			
-			// type of the left hand side
-			TupleType tupleType = new TupleType(types);
-			
-			// check if types of both sides agree
-			if (!returnType.equals(tupleType)) {
+			// check if the leftType and returnType are equal
+			TupleType leftType = new TupleType(leftTypes);
+			if (!(returnType instanceof TupleType) && !tupleEqual(leftType,(TupleType)returnType)) {
 				String s = "Mismatched type";
 				SemanticErrorObject seo = new SemanticErrorObject(
 						ti.getFunctionCall_line(), ti.getFunctionCall_col(), s);
@@ -1272,7 +1304,7 @@ public class TypeCheckVisitor implements ASTVisitor {
 					continue;
 				}
 				String id = vd.getIdentifier().getTheValue();
-				VType type = types.get(i);
+				VType type = leftTypes.get(i);
 				env.put(id, type);
 				stack.push(id);
 			}
@@ -1280,6 +1312,33 @@ public class TypeCheckVisitor implements ASTVisitor {
 		
 		stmtType = new UnitType();
 		tempType = new UnitType();
+	}
+
+	/**
+	 * Allows type hierarchical equality
+	 * @param leftType
+	 * @param returnType
+	 * @return true if rightType can be assigned to leftType
+	 */
+	private boolean tupleEqual(TupleType leftType, TupleType rightType) {
+		List<VType> leftTypes = leftType.getTypes();
+		List<VType> rightTypes = rightType.getTypes();
+		if (leftTypes.size() != rightTypes.size()) {
+			return false;
+		}
+		
+		for (int i = 0; i < leftTypes.size(); i++) {
+			VarType left = (VarType) leftTypes.get(i);
+			VarType right = (VarType) rightTypes.get(i);
+			
+			if (left.isObject() && right.isObject()) {
+				if (!isSubTypeOf(right.getElementType(), left.getElementType())) {
+					return false;
+				}
+			}
+		}
+		
+		return true;
 	}
 
 	@Override
@@ -1395,11 +1454,10 @@ public class TypeCheckVisitor implements ASTVisitor {
 				}
 			}
 			varType = new VarType(vd);
-		} else if (index == 1) { // 1: PrimitiveArrayType
-			vd.getPrimitiveType().accept(this);
-			env.put(vd.getIdentifier().toString(), tempType);
-			varType = tempType;
-		} else { // 2: ClassType
+		} else if (index == 1) { 					// 1: PrimitiveArrayType
+			varType = new VarType(vd.getPrimitiveType());
+			env.put(vd.getIdentifier().toString(), varType);
+		} else { 									// 2: ClassType
 			Identifier classId = vd.getClassType();
 			String className = classId.getTheValue();
 			if (!env.containsClass(className)) {
@@ -1408,7 +1466,7 @@ public class TypeCheckVisitor implements ASTVisitor {
 						classId.getLineNumber(), classId.getColumnNumber(), s);
 				Main.handleSemanticError(seo);
 			}
-			varType = env.getClassType(className);
+			varType = new VarType(classId);
 		}
 		
 		/* Update the env & stack */
@@ -1442,34 +1500,36 @@ public class TypeCheckVisitor implements ASTVisitor {
 		
 		/* Typecheck the type */
 		Type t = vi.getType();
-		VType varType;
-		if (t instanceof Identifier) {
-			Identifier classId = (Identifier)t;
-			String className = classId.getTheValue();
-			
-			// make sure the class type is in the env
+		VarType leftType = new VarType(t);
+		// if it's an object type, make sure its declared in env
+		if (leftType.isObject()) {
+			String className = leftType.getElementType();
 			if (!env.containsClass(className)) {
 				String s = "Name " + className + " cannot be resolved";
 				SemanticErrorObject seo = new SemanticErrorObject(
-						classId.getLineNumber(), classId.getColumnNumber(), s);
+						t.getLineNumber(), t.getColumnNumber(), s);
 				Main.handleSemanticError(seo);
-			}
-			
-			varType = env.getClassType(className);
-		} else {
-			varType = new VarType(t);
+			}			
 		}
 		
 		/* Typecheck the whole statement */
-		assert(varType instanceof VarType || varType instanceof ClassType);
-		VType tempLeftType = varType;
 		vi.getExpr().accept(this);
-		VType tempRightType = tempType;
+		VarType rightType = (VarType)tempType;
+		
+		// check for type hierarchy
+		boolean isSubType = false;
+		if (leftType.isObject() && rightType.isObject()) {
+			if (isSubTypeOf(rightType.getElementType(), leftType.getElementType())) {
+				if (leftType.getNumBrackets() == 0 && rightType.getNumBrackets() == 0) {
+					isSubType = true;
+				}
+			}
+		}
 		
 		// make sure the left and right types are equal
-		if (!(tempLeftType.equals(tempRightType))){
-			String s = "Expected " + tempLeftType.toString() 
-						+ ", but found " + tempRightType.toString();
+		if (!(leftType.equals(rightType)) && !isSubType){
+			String s = "Expected " + leftType.toString() 
+						+ ", but found " + rightType.toString();
 			SemanticErrorObject seo = new SemanticErrorObject(
 					vi.getExpr().getLineNumber(), 
 					vi.getExpr().getColumnNumber(),
@@ -1479,7 +1539,7 @@ public class TypeCheckVisitor implements ASTVisitor {
 		
 		/* Update env & stack */
 		String idString = vi.getId().toString();
-		env.put(idString, varType);
+		env.put(idString, leftType);
 		stack.push(idString);
 		
 		/* Update global variables */
@@ -1666,19 +1726,16 @@ public class TypeCheckVisitor implements ASTVisitor {
 	public void visit(ShortTupleDecl std) {
 		/* Typecheck the type */
 		Type t = std.getType();
-		VType type;
-		if (t instanceof Identifier) {
-			Identifier classId = (Identifier)t;
-			String className = classId.getTheValue();
+		VarType varType = new VarType(t);
+		// if it's an object type, make sure its declared in env
+		if (varType.isObject()) {
+			String className = varType.getElementType();
 			if (!env.containsClass(className)) {
-				String s = "Type " + classId.toString() + " cannot be resolved";
+				String s = "Name " + className + " cannot be resolved";
 				SemanticErrorObject seo = new SemanticErrorObject(
-						classId.getLineNumber(), classId.getColumnNumber(), s);
+						t.getLineNumber(), t.getColumnNumber(), s);
 				Main.handleSemanticError(seo);
-			}
-			type = env.getClassType(className);
-		} else {
-			type = new VarType(t);
+			}			
 		}
 		
 		/* Typecheck the identifiers */
@@ -1693,7 +1750,7 @@ public class TypeCheckVisitor implements ASTVisitor {
 			}
 			
 			// put it in the env
-			env.put(id.getTheValue(), type);
+			env.put(id.getTheValue(), varType);
 			stack.push(id.getTheValue());
 		}
 	}
@@ -1711,36 +1768,44 @@ public class TypeCheckVisitor implements ASTVisitor {
 	}
 
 	@Override
-	public void visit(SimpleVarInit simpleVarInit) {
-		// make sure that id is not in env
-		Identifier id = simpleVarInit.getIdentifier();
-		if (env.containsVar(id.getTheValue())) {
-			String s = id.toString() + " is already declared";
+	public void visit(SimpleVarInit svi) {
+		/* 
+		 * Typecheck the identifier by 
+		 * ensuring that the id is never declared before
+		 */
+		Identifier id = svi.getIdentifier();
+		if (env.containsVar(id.getTheValue())){
+			String s = svi.getIdentifier().toString() + " is already declared";
 			SemanticErrorObject seo = new SemanticErrorObject(
-					id.getLineNumber(),id.getColumnNumber(),s);
+					svi.getIdentifier().getLineNumber(),
+					svi.getIdentifier().getColumnNumber(),
+					s);
 			Main.handleSemanticError(seo);
 		}
 		
 		// make sure that type is valid
 		VType leftType;
-		PrimitiveType type = simpleVarInit.getPrimitiveType();
+		PrimitiveType type = svi.getPrimitiveType();
 		leftType = new VarType(type);
 		
 		// typecheck the statement
-		simpleVarInit.getLiteral().accept(this);
+		Literal lit = svi.getLiteral();
+		lit.accept(this);
 		VType rightType = tempType;
 		
-		if (!leftType.equals(rightType)) {
-			String s = "Expected " + leftType.toString() + ", but found " + rightType.toString();
+		// make sure the left and right types are equal
+		if (!(leftType.equals(rightType))){
+			String s = "Expected " + leftType.toString() 
+						+ ", but found " + rightType.toString();
 			SemanticErrorObject seo = new SemanticErrorObject(
-					simpleVarInit.getIdentifier().getLineNumber(), 
-					simpleVarInit.getIdentifier().getColumnNumber(),
+					lit.getLineNumber(), 
+					lit.getColumnNumber(),
 					s);
 			Main.handleSemanticError(seo);
 		}
 		
 		/* Update env & stack */
-		String idString = simpleVarInit.getIdentifier().toString();
+		String idString = id.toString();
 		env.put(idString, leftType);
 		stack.push(idString);
 		

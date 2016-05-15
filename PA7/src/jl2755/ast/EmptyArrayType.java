@@ -89,4 +89,14 @@ public class EmptyArrayType implements Type{
 	public void accept(ASTVisitor v) {
 		return;
 	}
+
+	@Override
+	public int getColumnNumber() {
+		return identifier.getColumnNumber();
+	}
+
+	@Override
+	public int getLineNumber() {
+		return identifier.getLineNumber();
+	}
 }

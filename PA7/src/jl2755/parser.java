@@ -2513,7 +2513,7 @@ class CUP$parser$actions {
                 int ileft = CUP$parser$stack.peek().left;
                 int iright = CUP$parser$stack.peek().right;
                 Object i = CUP$parser$stack.peek().<Object> value();
-                 RESULT = new PrimitiveType(0); 
+                 RESULT = new PrimitiveType(0, ileft, iright); 
                 CUP$parser$result = parser.getSymbolFactory().newSymbol("primitive_type",30, CUP$parser$stack.peek(), CUP$parser$stack.peek(), RESULT);
             }
             return CUP$parser$result;
@@ -2525,7 +2525,7 @@ class CUP$parser$actions {
                 int bleft = CUP$parser$stack.peek().left;
                 int bright = CUP$parser$stack.peek().right;
                 Object b = CUP$parser$stack.peek().<Object> value();
-                 RESULT = new PrimitiveType(1); 
+                 RESULT = new PrimitiveType(1, bleft, bright); 
                 CUP$parser$result = parser.getSymbolFactory().newSymbol("primitive_type",30, CUP$parser$stack.peek(), CUP$parser$stack.peek(), RESULT);
             }
             return CUP$parser$result;

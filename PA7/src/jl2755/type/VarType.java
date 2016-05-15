@@ -102,7 +102,7 @@ public class VarType implements VType {
 		} else {
 			isPrimitive = false;
 			isArray = false;
-			isObject = false;
+			isObject = true;
 			elementType = vd.getClassType().toString();
 			numBrackets = 0;
 			

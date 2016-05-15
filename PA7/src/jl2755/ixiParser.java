@@ -476,7 +476,7 @@ class CUP$ixiParser$actions {
                 int ileft = CUP$ixiParser$stack.peek().left;
                 int iright = CUP$ixiParser$stack.peek().right;
                 Object i = CUP$ixiParser$stack.peek().<Object> value();
-                 RESULT = new PrimitiveType(0); 
+                 RESULT = new PrimitiveType(0, ileft, iright); 
                 CUP$ixiParser$result = parser.getSymbolFactory().newSymbol("primitive_type",9, CUP$ixiParser$stack.peek(), CUP$ixiParser$stack.peek(), RESULT);
             }
             return CUP$ixiParser$result;
@@ -488,7 +488,7 @@ class CUP$ixiParser$actions {
                 int bleft = CUP$ixiParser$stack.peek().left;
                 int bright = CUP$ixiParser$stack.peek().right;
                 Object b = CUP$ixiParser$stack.peek().<Object> value();
-                 RESULT = new PrimitiveType(1); 
+                 RESULT = new PrimitiveType(1, bleft, bright); 
                 CUP$ixiParser$result = parser.getSymbolFactory().newSymbol("primitive_type",9, CUP$ixiParser$stack.peek(), CUP$ixiParser$stack.peek(), RESULT);
             }
             return CUP$ixiParser$result;

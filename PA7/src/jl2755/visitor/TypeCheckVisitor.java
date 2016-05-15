@@ -940,6 +940,18 @@ public class TypeCheckVisitor implements ASTVisitor {
 		FunType funType;
 		if (isInClass) {
 			funType = classEnv.getMethodType(funId);
+			List<String> allSupers = getSuperClasses(classEnv.getClassName());
+			for (String s : allSupers) {
+				ClassType superType = env.getClassType(s);
+				FunType superFunType = superType.getMethodType(funId);
+				if (!funType.equals(superFunType)) {
+					String ss = funId + "\'s signature does not "
+							+ "match super class(es)' signature(s).";
+					SemanticErrorObject seo = new SemanticErrorObject(
+							fd.getIdentifier_line(), fd.getIdentifier_col(), ss);
+					Main.handleSemanticError(seo);
+				}
+			}
 		} else {
 			funType = env.getFunType(funId);
 		}

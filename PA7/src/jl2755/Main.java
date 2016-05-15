@@ -1213,7 +1213,7 @@ public class Main {
 				}
 				// Duplicate function across files
 				if (globalEnv.containsFun(name)) {
-					FunType type = env.getFunType(name);
+					FunType type = globalEnv.getFunType(name);
 					if (!type.equals(tempType)) {
 						Identifier id = func.getIdentifier();
 						String e = "Mismatched function declaration found " + name;

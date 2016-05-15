@@ -332,102 +332,96 @@ found   : : error:
     [xic] Typechecking
 [xic] Typechecking completed
 ]
-    sameClassName-1ixifail.xi: OK
+    sameClassName1.xi: OK
     [Compiler's standard output:
     [xic] Typechecking
-	Semantic error at xth/tests/customPA3/sameClassName-1ixifail.ixi:9:7: Duplicate class declaration found for Jeffrey
+	Semantic error at xth/tests/customPA3/sameClassName1.ixi:9:7: Duplicate class declaration found for Jeffrey
 [xic] Typechecking failed
 ]
-    sameClassName-1xifail.xi: OK
+    sameClassName2.xi: OK
     [Compiler's standard output:
     [xic] Typechecking
-	Semantic error at sameClassName-1xifail.xi:20:7: Duplicate class declaration found for Jeffrey
+	Semantic error at sameClassName2.xi:20:7: Duplicate class declaration found for Jeffrey
 [xic] Typechecking failed
 ]
-    sameClassName-2ixifail.xi: OK
+    sameClassName3.xi: OK
     [Compiler's standard output:
     [xic] Typechecking
-	Syntactic error at sameClassName-2ixifail.xi:1:18: Syntax error: unexpected -
+	Semantic error at xth/tests/customPA3/sameClassName3.ixi:1:7: Mismatched class declaration found Jeffrey
 [xic] Typechecking failed
 ]
-    sameClassName-2ixiok.xi: Mismatch detected at line 1 of file sameClassName-2ixiok.typed.nml
-expected: Valid Xi Program
-found   : : error:
-    [Compiler's standard output:
-    [xic] Typechecking
-	Syntactic error at sameClassName-2ixiok.xi:1:18: Syntax error: unexpected -
-[xic] Typechecking failed
-]
-    sameClassName-bothfail.xi: OK
-    [Compiler's standard output:
-    [xic] Typechecking
-	Syntactic error at sameClassName-bothfail.xi:1:18: Syntax error: unexpected -
-[xic] Typechecking failed
-]
-    sameClassName-bothok.xi: OK
+    sameClassName4.xi: OK
     [Compiler's standard output:
     [xic] Typechecking
 [xic] Typechecking completed
 ]
-    sameFunctionName-1ixifail.xi: OK
+    sameClassName_bothfail.xi: OK
     [Compiler's standard output:
     [xic] Typechecking
-	Semantic error at xth/tests/customPA3/sameFunctionName-1ixifail.ixi:3:1: Duplicate function declaration found for goo
+	Semantic error at sameClassName_bothfail.xi:3:7: Mismatched class declaration found for Jeffrey
 [xic] Typechecking failed
 ]
-    sameFunctionName-1xifail.xi: OK
-    [Compiler's standard output:
-    [xic] Typechecking
-	Semantic error at sameFunctionName-1xifail.xi:5:1: Mismatched function declaration found for goo
-[xic] Typechecking failed
-]
-    sameFunctionName-2ixifail.xi: OK
-    [Compiler's standard output:
-    [xic] Typechecking
-	Syntactic error at sameFunctionName-2ixifail.xi:1:21: Syntax error: unexpected -
-[xic] Typechecking failed
-]
-    sameFunctionName-2ixiok.xi: OK
+    sameClassName_bothok.xi: OK
     [Compiler's standard output:
     [xic] Typechecking
 [xic] Typechecking completed
 ]
-    sameFunctionName-bothfail.xi: OK
+    sameFunctionName1.xi: OK
     [Compiler's standard output:
     [xic] Typechecking
-	Semantic error at sameFunctionName-bothfail.xi:1:1: Mismatched function declaration found for foo
+	Semantic error at xth/tests/customPA3/sameFunctionName1.ixi:3:1: Duplicate function declaration found for goo
 [xic] Typechecking failed
 ]
-    sameFunctionName-bothok.xi: OK
+    sameFunctionName2.xi: OK
+    [Compiler's standard output:
+    [xic] Typechecking
+	Semantic error at sameFunctionName2.xi:5:1: Mismatched function declaration found for goo
+[xic] Typechecking failed
+]
+    sameFunctionName3.xi: OK
+    [Compiler's standard output:
+    [xic] Typechecking
+	Semantic error at xth/tests/customPA3/sameFunctionName3.ixi:1:1: Mismatched function declaration found foo
+[xic] Typechecking failed
+]
+    sameFunctionName4.xi: OK
     [Compiler's standard output:
     [xic] Typechecking
 [xic] Typechecking completed
 ]
-    superClass-fail.xi: Mismatch detected at line 1 of file superClass-fail.typed.nml
+    sameFunctionName_bothfail.xi: OK
+    [Compiler's standard output:
+    [xic] Typechecking
+	Semantic error at sameFunctionName_bothfail.xi:1:1: Mismatched function declaration found for foo
+[xic] Typechecking failed
+]
+    sameFunctionName_bothok.xi: OK
+    [Compiler's standard output:
+    [xic] Typechecking
+[xic] Typechecking completed
+]
+    superClass_fail.xi: Mismatch detected at line 1 of file superClass_fail.typed.nml
 expected: : error:
 found   : Valid Xi Program
     [Compiler's standard output:
     [xic] Typechecking
 [xic] Typechecking completed
 ]
-    superClass-ok.xi: OK
+    superClass_ok.xi: OK
     [Compiler's standard output:
     [xic] Typechecking
 [xic] Typechecking completed
 ]
-    superClass2-fail.xi: OK
+    superClass2_fail.xi: OK
     [Compiler's standard output:
     [xic] Typechecking
-	Syntactic error at superClass2-fail.xi:1:16: Syntax error: unexpected -
+	Semantic error at superClass2_fail.xi:1:1: Function signature does not match super class
 [xic] Typechecking failed
 ]
-    superClass2-ok.xi: Mismatch detected at line 1 of file superClass2-ok.typed.nml
-expected: Valid Xi Program
-found   : : error:
+    superClass2_ok.xi: OK
     [Compiler's standard output:
     [xic] Typechecking
-	Syntactic error at superClass2-ok.xi:1:16: Syntax error: unexpected -
-[xic] Typechecking failed
+[xic] Typechecking completed
 ]
-  xic (Test --typecheck -O): 38 out of 44 tests succeeded.
-xthScript2: 66 out of 72 tests succeeded.
+  xic (Test --typecheck -O): 40 out of 44 tests succeeded.
+xthScript2: 68 out of 72 tests succeeded.

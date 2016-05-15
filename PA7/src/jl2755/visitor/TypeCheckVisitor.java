@@ -246,7 +246,9 @@ public class TypeCheckVisitor implements ASTVisitor {
 		else {
 			ClassType classViewOfBase = env.getClassType(vartypeView.getElementType());
 			Set<String> intersectionOfClasses = new HashSet<String>();
-			intersectionOfClasses.addAll(getSuperClasses(classViewOfBase.getClassName()));
+			if (vartypeView.canCast()) {
+				intersectionOfClasses.addAll(getSuperClasses(classViewOfBase.getClassName()));
+			}
 			intersectionOfClasses.add(classViewOfBase.getClassName());
 			VarType previousIterationType = vartypeView;
 			for (int i = 1; i < tempExprs.size(); i++) {
@@ -263,9 +265,16 @@ public class TypeCheckVisitor implements ASTVisitor {
 					Main.handleSemanticError(seo);
 				}
 				ClassType classView = env.getClassType(tempVarTypeView.getElementType());
-				List<String> superClasses = getSuperClasses(classView.getClassName());
-				superClasses.add(classView.getClassName());
-				intersectionOfClasses.retainAll(superClasses);
+				if (tempVarTypeView.canCast()) {
+					List<String> superClasses = getSuperClasses(classView.getClassName());
+					superClasses.add(classView.getClassName());
+					intersectionOfClasses.retainAll(superClasses);
+				}
+				else {
+					List<String> onlyCurrentClass = new ArrayList<String>();
+					onlyCurrentClass.add(classView.getClassName());
+					intersectionOfClasses.retainAll(onlyCurrentClass);
+				}
 				// Handle the case where there is no more intersecting super class of elements
 				if (intersectionOfClasses.isEmpty()) {
 					String errorDesc = "Object " + tempExprs.get(i) + " is different from the ones before";
@@ -339,6 +348,8 @@ public class TypeCheckVisitor implements ASTVisitor {
 	@Override
 	public void visit(AssignmentStmt as) {
 		int index = as.getIndex();
+		VarType leftType = null;
+		VarType rightType = null;
 		
 		// ex: a = 3
 		if (index == 0) { 									
@@ -353,23 +364,9 @@ public class TypeCheckVisitor implements ASTVisitor {
 				Main.handleSemanticError(seo);
 			}
 			
-			// get the VType of left hand side
-			VarType idType = env.getVarType(id);
-			
-			// get the VType of right hand side
+			leftType = env.getVarType(id);
 			as.getExpr().accept(this);
-			VType exprType = tempType;
-			
-			// Check types
-			if (!idType.equals(exprType)) {
-				String s = "Expected " + idType.toString() 
-							+ ", but found " + exprType.toString();
-				SemanticErrorObject seo = new SemanticErrorObject(
-						as.getExpr().getLineNumber(), 
-						as.getExpr().getColumnNumber(),
-						s);
-				Main.handleSemanticError(seo);
-			}
+			rightType = (VarType) tempType;
 			
 		//ex: arr[2] = 3;
 		} else if (index == 1) {							
@@ -398,38 +395,10 @@ public class TypeCheckVisitor implements ASTVisitor {
 			}
 			
 			int newDimensions = checkValidDimensions(idType, as.getIndexedBrackets(), as.getIdentifier());
-			VType leftType = new VarType(idType.getElementType(), newDimensions);
-
-			// check that all the indices inside indexedBrackets are ints
-			List<Expr> exprs = as.getIndexedBrackets().getContent();
-			for (Expr e: exprs) {
-				e.accept(this);
-				VarType exprType = (VarType) tempType;
-				if (!exprType.isInt()) {
-					String s = "Expected an int, but found " + 
-							exprType.toString();
-					SemanticErrorObject seo = new SemanticErrorObject(
-							e.getLineNumber(),
-							e.getColumnNumber(), 
-							s
-							);
-					Main.handleSemanticError(seo);
-				}
-			}
+			leftType = new VarType(idType.getElementType(), newDimensions);
 			
 			as.getExpr().accept(this);
-			VType exprType = tempType;
-			
-			if (!leftType.equals(exprType)) {
-				String s = "Expected " + leftType.toString() 
-				+ ", but found " + exprType.toString();
-				SemanticErrorObject seo = new SemanticErrorObject(
-											as.getExpr().getLineNumber(), 
-											as.getExpr().getColumnNumber(),
-											s
-											);
-				Main.handleSemanticError(seo);
-			}
+			rightType = (VarType) tempType;
 		
 		//ex: f(3)[0] = "herro"
 		} else if (index == 2){
@@ -466,22 +435,14 @@ public class TypeCheckVisitor implements ASTVisitor {
 			}
 			
 			int newDimensions = checkValidDimensions(funcCallType, as.getIndexedBrackets(), as.getIdentifier());
-			VType leftType = new VarType(funcCallType.getElementType(), newDimensions);
+			leftType = new VarType(funcCallType.getElementType(), newDimensions);
 			
 			as.getExpr().accept(this);
-			VType exprType = tempType;
+			rightType = (VarType) tempType;
 			
-			if (!leftType.equals(exprType)) {
-				String s = "Expected " + leftType.toString() 
-				+ ", but found " + exprType.toString();
-				SemanticErrorObject seo = new SemanticErrorObject(
-											as.getExpr().getLineNumber(), 
-											as.getExpr().getColumnNumber(),
-											s
-											);
-				Main.handleSemanticError(seo);
-			}
-			
+		}
+		
+		if (index == 1 || index == 2) {
 			// check that all the indices inside indexedBrackets are ints
 			List<Expr> exprs = as.getIndexedBrackets().getContent();
 			for (Expr e: exprs) {
@@ -497,6 +458,30 @@ public class TypeCheckVisitor implements ASTVisitor {
 							);
 					Main.handleSemanticError(seo);
 				}
+			}
+		}
+		
+		// Check types
+		if (leftType.isPrimitive() || leftType.isArray()) {	//must match exactly
+			if (!leftType.equals(rightType)) {
+				String s = "Expected " + leftType.toString() 
+				+ ", but found " + rightType.toString();
+				SemanticErrorObject seo = new SemanticErrorObject(
+						as.getExpr().getLineNumber(), 
+						as.getExpr().getColumnNumber(),
+						s);
+				Main.handleSemanticError(seo);
+			}
+		} else {
+			// check that RHS is a subtype of LHS
+			if (!isSubTypeOf(rightType.getElementType(), leftType.getElementType())) {
+				String s = "Expected a subtype of " + leftType.toString() 
+				+ ", but found " + rightType.toString();
+				SemanticErrorObject seo = new SemanticErrorObject(
+						as.getExpr().getLineNumber(), 
+						as.getExpr().getColumnNumber(),
+						s);
+				Main.handleSemanticError(seo);
 			}
 		}
 
@@ -1624,7 +1609,8 @@ public class TypeCheckVisitor implements ASTVisitor {
 											);
 				Main.handleSemanticError(seo);
 			}
-			tempType = env.getClassType(de.getId().toString());
+			ClassType tempClass = env.getClassType(de.getId().toString());
+			tempType = new VarType(tempClass.getClassName(),0);
 			break;
 		case PAREN:
 			de.getDotableExpr().accept(this);
@@ -1639,7 +1625,7 @@ public class TypeCheckVisitor implements ASTVisitor {
 											);
 				Main.handleSemanticError(seo);
 			}
-			tempType = classEnv;
+			tempType = new VarType(classEnv.getClassName(),0);
 			break;
 		default:
 			break;

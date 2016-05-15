@@ -11,3 +11,7 @@ class Jonathan extends Compilers{
         return this;
     }
 }
+
+class Favorite {
+    
+}

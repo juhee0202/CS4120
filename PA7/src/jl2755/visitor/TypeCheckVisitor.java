@@ -214,7 +214,7 @@ public class TypeCheckVisitor implements ASTVisitor {
 		}
 		tempExprs.get(0).accept(this);
 		VarType vartypeView = (VarType) tempType;
-		if (vartypeView.isPrimitive()) {
+		if (vartypeView.isPrimitiveBase()) {
 			List<VarType> tempTypesOfExprs = new ArrayList<VarType>();
 			for (int i = 0; i < tempExprs.size(); i++){
 				tempExprs.get(i).accept(this);
@@ -350,7 +350,7 @@ public class TypeCheckVisitor implements ASTVisitor {
 	public void visit(AssignmentStmt as) {
 		int index = as.getIndex();
 		VarType leftType = null;
-		VarType rightType = null;
+		VType rightType = null;
 		
 		// ex: a = 3
 		if (index == 0) { 									
@@ -367,7 +367,21 @@ public class TypeCheckVisitor implements ASTVisitor {
 			
 			leftType = env.getVarType(id);
 			as.getExpr().accept(this);
-			rightType = (VarType) tempType;
+			rightType = tempType;
+			
+//			if (tempType instanceof NullType) {
+//				if (leftType.isPrimitive()) {
+//					String s = "Type mismatch: cannot convert from null to " 
+//							+ leftType.getElementType();
+//					SemanticErrorObject seo = new SemanticErrorObject(
+//							as.getIdentifier().getLineNumber(), 
+//							as.getIdentifier().getColumnNumber(),
+//							s);
+//					Main.handleSemanticError(seo);
+//				} 
+//			} else {
+//				rightType = tempType;
+//			}
 			
 		//ex: arr[2] = 3;
 		} else if (index == 1) {							
@@ -399,7 +413,7 @@ public class TypeCheckVisitor implements ASTVisitor {
 			leftType = new VarType(idType.getElementType(), newDimensions);
 			
 			as.getExpr().accept(this);
-			rightType = (VarType) tempType;
+			rightType = tempType;
 		
 		//ex: f(3)[0] = "herro"
 		} else if (index == 2){
@@ -439,7 +453,7 @@ public class TypeCheckVisitor implements ASTVisitor {
 			leftType = new VarType(funcCallType.getElementType(), newDimensions);
 			
 			as.getExpr().accept(this);
-			rightType = (VarType) tempType;
+			rightType = tempType;
 			
 		}
 		
@@ -448,6 +462,16 @@ public class TypeCheckVisitor implements ASTVisitor {
 			List<Expr> exprs = as.getIndexedBrackets().getContent();
 			for (Expr e: exprs) {
 				e.accept(this);
+				if (!(tempType instanceof VarType)) {
+					String s = "Expected an int, but found " + 
+							tempType.toString();
+					SemanticErrorObject seo = new SemanticErrorObject(
+							e.getLineNumber(),
+							e.getColumnNumber(), 
+							s
+							);
+					Main.handleSemanticError(seo);
+				}
 				VarType eType = (VarType) tempType;
 				if (!eType.isInt()) {
 					String s = "Expected an int, but found " + 
@@ -462,8 +486,7 @@ public class TypeCheckVisitor implements ASTVisitor {
 			}
 		}
 		
-		// Check types
-		if (leftType.isPrimitive() || leftType.isArray()) {	//must match exactly
+		if (leftType.isPrimitive()) {	// must match exactly
 			if (!leftType.equals(rightType)) {
 				String s = "Expected " + leftType.toString() 
 				+ ", but found " + rightType.toString();
@@ -473,16 +496,31 @@ public class TypeCheckVisitor implements ASTVisitor {
 						s);
 				Main.handleSemanticError(seo);
 			}
-		} else {
-			// check that RHS is a subtype of LHS
-			if (!isSubTypeOf(rightType.getElementType(), leftType.getElementType())) {
-				String s = "Expected a subtype of " + leftType.toString() 
+		} else if (leftType.isArray()) {	// unless right is null, must match exactly
+			if (!(rightType instanceof NullType) && !leftType.equals(rightType)) {
+				String s = "Expected " + leftType.toString() 
 				+ ", but found " + rightType.toString();
 				SemanticErrorObject seo = new SemanticErrorObject(
 						as.getExpr().getLineNumber(), 
 						as.getExpr().getColumnNumber(),
 						s);
 				Main.handleSemanticError(seo);
+			}
+		
+		// object type
+		} else {
+			if (!(rightType instanceof NullType)) {
+				VarType varRightType = (VarType) rightType;
+				// check that RHS is a subtype of LHS
+				if (!isSubTypeOf(varRightType.getElementType(), leftType.getElementType())) {
+					String s = "Expected a subtype of " + leftType.toString() 
+					+ ", but found " + varRightType.toString();
+					SemanticErrorObject seo = new SemanticErrorObject(
+							as.getExpr().getLineNumber(), 
+							as.getExpr().getColumnNumber(),
+							s);
+					Main.handleSemanticError(seo);
+				}
 			}
 		}
 
@@ -516,12 +554,23 @@ public class TypeCheckVisitor implements ASTVisitor {
 		}
 		VarType rightType = (VarType) tempType;
 		
-		if (!leftType.isPrimitive() || !rightType.isPrimitive()) {
-			String s = "Expected a primitive, but found an object " + 
-					tempType.toString();
-			SemanticErrorObject seo = new SemanticErrorObject(
-					be.getLineNumber(), be.getColumnNumber(), s);
-			Main.handleSemanticError(seo);
+		if (!leftType.isPrimitiveBase() || !rightType.isPrimitiveBase()) {
+			if (leftType.isObject() || rightType.isObject()) {
+				String s = "Expected a primitive, but found an object " + 
+						tempType.toString();
+				SemanticErrorObject seo = new SemanticErrorObject(
+						be.getLineNumber(), be.getColumnNumber(), s);
+				Main.handleSemanticError(seo);
+			}
+			else {
+				if (be.getBinaryOp() != BinaryOp.PLUS) {
+					String s = "Cannot perform a binary operation on"
+							+ " two non primitive objects";
+					SemanticErrorObject seo = new SemanticErrorObject(
+							be.getLineNumber(), be.getColumnNumber(), s);
+					Main.handleSemanticError(seo);
+				}
+			}
 		}
 		
 		BinaryOp op = be.getBinaryOp();
@@ -812,8 +861,9 @@ public class TypeCheckVisitor implements ASTVisitor {
 			String methodName = fc.getIdentifier().getTheValue();
 			
 			// check if methodName is valid
-			List<String> superclasses = getSuperClasses(dotableExprType.getElementType());
-			for (String superclass : superclasses) {
+			List<String> classes = getSuperClasses(dotableExprType.getElementType());
+			classes.add(0,dotableExprType.getElementType());
+			for (String superclass : classes) {
 				ClassType superclassType = env.getClassType(superclass);
 				if (superclassType.containsMethod(methodName)) {
 					funType = superclassType.getMethodType(methodName);
@@ -847,7 +897,14 @@ public class TypeCheckVisitor implements ASTVisitor {
 		else if (index == 1 || index == 4) {
 			fc.getFunctionArg().accept(this);
 			args = tempType;
-			if (!(args instanceof TupleType && tupleEqual((TupleType)args, (TupleType)paramType))) {
+			if (paramType instanceof TupleType && args instanceof TupleType) {
+				if (!tupleEqual((TupleType)args, (TupleType)paramType)) {
+					String s = "Expected " + paramType.toString() + ", but found " + args.toString();
+					SemanticErrorObject seo = new SemanticErrorObject(
+							fc.getIdentifier_line(), fc.getIdentifier_col(), s);
+					Main.handleSemanticError(seo);
+				}
+			} else if (!args.equals(paramType)) {
 				String s = "Expected " + paramType.toString() + ", but found " + args.toString();
 				SemanticErrorObject seo = new SemanticErrorObject(
 						fc.getIdentifier_line(), fc.getIdentifier_col(), s);
@@ -1283,18 +1340,20 @@ public class TypeCheckVisitor implements ASTVisitor {
 				}
 				
 				// make sure that id is not in the env
-				Identifier id = varDecl.getIdentifier();
-				if (env.containsVar(id.getTheValue())) {
-					String s = id + " is already declared";
-					SemanticErrorObject seo = new SemanticErrorObject(
-							id.getLineNumber(), id.getColumnNumber(), s);
-					Main.handleSemanticError(seo);	
+				if (varDecl != null) {
+					Identifier id = varDecl.getIdentifier();
+					if (env.containsVar(id.getTheValue())) {
+						String s = id + " is already declared";
+						SemanticErrorObject seo = new SemanticErrorObject(
+								id.getLineNumber(), id.getColumnNumber(), s);
+						Main.handleSemanticError(seo);	
+					}
 				}
 			}
 			
 			// check if the leftType and returnType are equal
 			TupleType leftType = new TupleType(leftTypes);
-			if (!(returnType instanceof TupleType) && !tupleEqual(leftType,(TupleType)returnType)) {
+			if (!(returnType instanceof TupleType) || !tupleEqual(leftType,(TupleType)returnType)) {
 				String s = "Mismatched type";
 				SemanticErrorObject seo = new SemanticErrorObject(
 						ti.getFunctionCall_line(), ti.getFunctionCall_col(), s);
@@ -1332,6 +1391,10 @@ public class TypeCheckVisitor implements ASTVisitor {
 		}
 		
 		for (int i = 0; i < leftTypes.size(); i++) {
+			if (leftTypes.get(i) instanceof UnitType) {
+				continue;
+			}
+			
 			VarType left = (VarType) leftTypes.get(i);
 			VarType right = (VarType) rightTypes.get(i);
 			
@@ -1339,6 +1402,9 @@ public class TypeCheckVisitor implements ASTVisitor {
 				if (!isSubTypeOf(right.getElementType(), left.getElementType())) {
 					return false;
 				}
+			}
+			else if (!left.equals(right)) {
+				return false;
 			}
 		}
 		
@@ -1518,28 +1584,53 @@ public class TypeCheckVisitor implements ASTVisitor {
 		
 		/* Typecheck the whole statement */
 		vi.getExpr().accept(this);
-		VarType rightType = (VarType)tempType;
 		
-		// check for type hierarchy
-		boolean isSubType = false;
-		if (leftType.isObject() && rightType.isObject()) {
-			if (isSubTypeOf(rightType.getElementType(), leftType.getElementType())) {
-				if (leftType.getNumBrackets() == 0 && rightType.getNumBrackets() == 0) {
+        if (tempType instanceof UnitType) {
+            String s = "Cannot initialize a variable with a procedural call";
+            SemanticErrorObject seo = new SemanticErrorObject(
+                    t.getLineNumber(), t.getColumnNumber(), s);
+            Main.handleSemanticError(seo);
+        }
+		
+		if (tempType instanceof NullType) {
+			if (leftType.isPrimitive()) {
+				String s = "Expected " + leftType.toString() 
+						+ ", but found " + tempType.toString();
+				SemanticErrorObject seo = new SemanticErrorObject(
+						vi.getExpr().getLineNumber(), 
+						vi.getExpr().getColumnNumber(), s);
+				Main.handleSemanticError(seo);
+			} else {
+				// DO NOTHING: can always initialize array or object with null
+			}
+		} else {
+			
+			
+			
+			VarType rightType = (VarType) tempType;
+			
+			
+			
+			// check for type hierarchy
+			boolean isSubType = false;
+			if (leftType.isObject() && rightType.isObject()) {
+				if (isSubTypeOf(rightType.getElementType(), leftType.getElementType())) {
 					isSubType = true;
 				}
 			}
+			
+			// make sure the left and right types are equal
+			if (!(leftType.equals(rightType)) && !isSubType){
+				String s = "Expected " + leftType.toString() 
+							+ ", but found " + rightType.toString();
+				SemanticErrorObject seo = new SemanticErrorObject(
+						vi.getExpr().getLineNumber(), 
+						vi.getExpr().getColumnNumber(),
+						s);
+				Main.handleSemanticError(seo);
+			}
 		}
 		
-		// make sure the left and right types are equal
-		if (!(leftType.equals(rightType)) && !isSubType){
-			String s = "Expected " + leftType.toString() 
-						+ ", but found " + rightType.toString();
-			SemanticErrorObject seo = new SemanticErrorObject(
-					vi.getExpr().getLineNumber(), 
-					vi.getExpr().getColumnNumber(),
-					s);
-			Main.handleSemanticError(seo);
-		}
 		
 		/* Update env & stack */
 		String idString = vi.getId().toString();
@@ -1933,6 +2024,6 @@ public class TypeCheckVisitor implements ASTVisitor {
 	 * @return true iff arg1 is a subtype of arg2
 	 */
 	private boolean isSubTypeOf(String arg1, String arg2) {
-		return (getSuperClasses(arg1).contains(arg2));
+		return (arg1.equals(arg2) || getSuperClasses(arg1).contains(arg2));
 	}
 }

@@ -1,11 +1,14 @@
-use io
 
 main(args:int[][]) {
     testing: int = 5;
 }
 
+class Favorite{
+    
+}
+
 class Jonathan extends Compilers{
-    okeydokey: Favorite = null;
+    okeydokey: Favorite;
 
     initJonathan(arg: Favorite) : Jonathan {
         masterLoop:

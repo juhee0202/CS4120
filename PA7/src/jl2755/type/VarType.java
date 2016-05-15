@@ -170,6 +170,19 @@ public class VarType implements VType {
 		}
 	}
 	
+	/**
+	 * @return true iff the variable is an int, bool, or an array
+	 * of one of either.
+	 */
+	public boolean isPrimitiveBase() {
+		if (isArray) {
+			return elementType.equals("int") || elementType.equals("bool");
+		}
+		else {
+			return isPrimitive;
+		}
+	}
+	
 	
 	/**
 	 * @return primitive type of this type

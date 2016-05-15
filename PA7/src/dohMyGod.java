@@ -259,19 +259,5 @@ public class dohMyGod {
 		FunctionDecl fd = new FunctionDecl(new Identifier("foo", 0, 0), fp, rt, bs);
 		hm1.put("foo", new FunType(fd));
 		
-		VarType var = new VarType(false, 0);
-		instance.put("x", var);
-		
-//		ClassType ct1 = new ClassType("dog", instance, hm1);
-		
-		HashMap<String, FunType> hm2 = new HashMap<String, FunType>();
-		HashMap<String, VType> instance2 = new HashMap<String, VType>();
-
-		hm2.put("foo",  new FunType(fd));
-//		hm2.put("foo2",  new FunType(fd));
-//		ClassType ct2 = new ClassType("dog", instance2, hm2);
-		
-//		assertEquals(ct1, ct2);
-		int[] test = {1,2,3};
 	}
 }

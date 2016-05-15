@@ -1042,10 +1042,15 @@ public class Main {
 				ClassType classType = new ClassType((ClassDecl) d);
 				String className = classType.getClassName();
 				if (globalEnv.containsClass(className) &&
-						!classType.compareClassSignatures(globalEnv.getClassType(className))
-						|| sourceEnv.containsClass(className)) {
+						!classType.compareClassSignatures(globalEnv.getClassType(className))) {
 					Identifier id = ((ClassDecl) d).getClassName();
 					String e = "Mismatched class declaration found for " + className;
+					SemanticErrorObject seo = new SemanticErrorObject(
+							id.getLineNumber(),id.getColumnNumber(),e);
+					handleSemanticError(seo);
+				} else if (sourceEnv.containsClass(className)) {
+					Identifier id = ((ClassDecl) d).getClassName();
+					String e = "Duplicate class declaration found for " + className;
 					SemanticErrorObject seo = new SemanticErrorObject(
 							id.getLineNumber(),id.getColumnNumber(),e);
 					handleSemanticError(seo);
@@ -1060,6 +1065,11 @@ public class Main {
 				if (globalEnv.containsFun(name) &&
 						!funType.equals(globalEnv.getFunType(name))) {
 					String e = "Mismatched function declaration found for " + name;
+					SemanticErrorObject seo = new SemanticErrorObject(
+							id.getLineNumber(),id.getColumnNumber(),e);
+					handleSemanticError(seo);
+				} else if (sourceEnv.containsFun(name)) {
+					String e = "Duplicate function declaration found for " + name;
 					SemanticErrorObject seo = new SemanticErrorObject(
 							id.getLineNumber(),id.getColumnNumber(),e);
 					handleSemanticError(seo);

@@ -553,14 +553,29 @@ public class TypeCheckVisitor implements ASTVisitor {
 		BinaryOp op = be.getBinaryOp();
 		
 		// check that left & right expr have the same type
-		if (!leftType.equals(rightType)) {
-			String s = "Mismatched types for binary operation " + op.toString();
-			SemanticErrorObject seo = new SemanticErrorObject(
-					be.getLineNumber(),
-					be.getColumnNumber(), 
-					s
-					);
-			Main.handleSemanticError(seo);
+		// EXCEPTION: if the operands are objects, then they can be related by hierarchy
+		if (leftType.isObject()) {
+			if (!(isSubTypeOf(leftType.getElementType(), rightType.getElementType()) || 
+				isSubTypeOf(rightType.getElementType(), leftType.getElementType()))) 
+			{
+				String s = "Incompatible operand types "  + leftType.getElementType() 
+						+ " and " + rightType.getElementType();
+				SemanticErrorObject seo = new SemanticErrorObject(
+						be.getLineNumber(), be.getColumnNumber(), s);
+				Main.handleSemanticError(seo);
+			}
+				
+		}
+		else {
+			if (!leftType.equals(rightType)) {
+				String s = "Mismatched types for binary operation " + op.toString();
+				SemanticErrorObject seo = new SemanticErrorObject(
+						be.getLineNumber(),
+						be.getColumnNumber(), 
+						s
+						);
+				Main.handleSemanticError(seo);
+			}
 		}
 		
 		/* + operator
@@ -584,7 +599,8 @@ public class TypeCheckVisitor implements ASTVisitor {
 			}
 		}
 		/* !=, == operator
-		 * 		allow all types as long as left and right have the same type
+		 * 		allow all types as long as left and right have the same type 
+		 * 		(or related by hierarchy in the case of OBJECTS only)
 		 */
 		else if (op.toString().equals("!=") || op.toString().equals("==")) {
 			tempType = new VarType("bool", 0);
@@ -798,14 +814,31 @@ public class TypeCheckVisitor implements ASTVisitor {
 		if (index < 2) {
 			String id = fc.getIdentifier().toString();
 			// check if the function is declared
-			if (!env.containsFun(id)) {
+			FunType matchingType = null;
+			if (env.containsFun(id)) {
+				matchingType = env.getFunType(id);
+			}
+			else if (isInClass) {
+				String currentClass = classEnv.getClassName();
+				List<String> classes = getSuperClasses(currentClass);
+				classes.add(0,currentClass);
+				for (String superclass : classes) {
+					ClassType superclassType = env.getClassType(superclass);
+					if (superclassType.containsMethod(id)) {
+						matchingType = superclassType.getMethodType(id);
+						break;
+					}
+				}
+			}
+			
+			if (matchingType == null) {
 				String s = "Name " + id.toString() + " cannot be resolved";
 				SemanticErrorObject seo = new SemanticErrorObject(
 						fc.getIdentifier_line(), fc.getIdentifier_col(), s);
 				Main.handleSemanticError(seo);
 			}
 			
-			funType = env.getFunType(id);
+			funType = matchingType;
 			String ABIName = functionToABIName(id, funType);
 			fc.setABIName(ABIName);
 			paramType = funType.getParamTypes();
@@ -900,12 +933,14 @@ public class TypeCheckVisitor implements ASTVisitor {
 			for (String s : allSupers) {
 				ClassType superType = env.getClassType(s);
 				FunType superFunType = superType.getMethodType(funId);
-				if (!funType.equals(superFunType)) {
-					String ss = funId + "\'s signature does not "
-							+ "match super class(es)' signature(s).";
-					SemanticErrorObject seo = new SemanticErrorObject(
-							fd.getIdentifier_line(), fd.getIdentifier_col(), ss);
-					Main.handleSemanticError(seo);
+				if (superFunType != null) {
+					if (!funType.equals(superFunType)) {
+						String ss = funId + "\'s signature does not "
+								+ "match super class(es)' signature(s).";
+						SemanticErrorObject seo = new SemanticErrorObject(
+								fd.getIdentifier_line(), fd.getIdentifier_col(), ss);
+						Main.handleSemanticError(seo);
+					}
 				}
 			}
 		} else {

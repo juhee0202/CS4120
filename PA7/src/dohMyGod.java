@@ -259,5 +259,11 @@ public class dohMyGod {
 		FunctionDecl fd = new FunctionDecl(new Identifier("foo", 0, 0), fp, rt, bs);
 		hm1.put("foo", new FunType(fd));
 		int[] x;
+		
+		Animal a = new Animal();
+		Dog d = new Dog();
+		CFGTester tester = new CFGTester();
+		boolean same = a == d;
+		boolean same2 = d==tester;
 	}
 }

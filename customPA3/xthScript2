@@ -65,7 +65,6 @@ xic ("Test --typecheck -O") ["../pa3"] "-libpath $(testpath) --typecheck -O" {
 }
 
 xic ("Test --typecheck -O") ["../customPA3"] "-libpath $(testpath) --typecheck -O" {
-    array01.xi;
     array02.xi;
     array03.xi;
     array04.xi;
@@ -81,7 +80,6 @@ xic ("Test --typecheck -O") ["../customPA3"] "-libpath $(testpath) --typecheck -
     assign05.xi;
     assign06.xi;
     extend1.xi;
-    extend3.xi;
     extend4.xi;
     extend5.xi;
     field_decl1.xi;

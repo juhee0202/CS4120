@@ -321,8 +321,8 @@ public class dohMyGod {
 	class Dog extends Animal{
 		private int[] x;
 		public void bark() {
-			new Animal().name[0][0] = "Tobi";
 			this.x[0] =2; 
+			this = 
 		}
 	}
 	class Animal {

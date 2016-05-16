@@ -371,6 +371,15 @@ public class TypeCheckVisitor implements ASTVisitor {
 				Main.handleSemanticError(seo);
 			}
 			
+			if (de.getType() == DotableExpr.Type.THIS) {
+				String s = "The left-hand side of an assignment must be a variable";
+				SemanticErrorObject seo = new SemanticErrorObject(
+						de.getLineNumber(), 
+						de.getColumnNumber(),
+						s);
+				Main.handleSemanticError(seo);
+			}
+			
 			leftType = (VarType) dotableExprType;
 		}
 		// a[i] = 3;
@@ -1011,22 +1020,36 @@ public class TypeCheckVisitor implements ASTVisitor {
 	 */
 	@Override
 	public void visit(Identifier id) {
+		String name = id.getTheValue();
+		boolean inScope = false; 
+		
 		if (id.isClassName()) { // class type
-			if (!env.containsClass(id.getTheValue())) {
-				String s = "Name " + id.toString() + " cannot be resolved.";
-				SemanticErrorObject seo = new SemanticErrorObject(
-						id.getLineNumber(), id.getColumnNumber(), s);
-				Main.handleSemanticError(seo);
+			if (env.containsClass(name)) {
+				inScope = true;
+				tempType = env.getClassType(name);
 			}
-			tempType = env.getClassType(id.getTheValue());
-		} else {	// variable
-			if (!(env.containsVar(id.toString()))){
-				String s = "Name " + id.toString() + " cannot be resolved.";
-				SemanticErrorObject seo = new SemanticErrorObject(
-						id.getLineNumber(), id.getColumnNumber(), s);
-				Main.handleSemanticError(seo);
+		} else {				// variable
+			// Check global + local
+			if (env.containsVar(name)) {
+				inScope = true;
+				tempType = env.getVarType(name);
+			
+			// Check class fields
+			} else {
+				// TODO: do i have to include classEnv.containsMethod(name)?
+				if (isInClass && classEnv.containsField(name)) {
+					inScope = true;
+					tempType = classEnv.getFieldEnv().get(name);
+				}
 			}
-			tempType = env.getVarType(id.toString());
+		}
+		
+		if (!inScope) {
+			String s = name + " cannot be resolved.";
+			SemanticErrorObject seo = new SemanticErrorObject(
+					id.getLineNumber(), id.getColumnNumber(), s);
+			Main.handleSemanticError(seo);
+		} else {
 			id.setType(tempType);
 		}
 	}
@@ -1535,7 +1558,6 @@ public class TypeCheckVisitor implements ASTVisitor {
 			varType = new VarType(vd);
 		} else if (index == 1) { 					// 1: PrimitiveArrayType
 			varType = new VarType(vd.getPrimitiveType());
-			env.put(vd.getIdentifier().toString(), varType);
 		} else { 									// 2: ClassType
 			Identifier classId = vd.getClassType();
 			String className = classId.getTheValue();

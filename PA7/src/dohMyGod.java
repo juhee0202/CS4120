@@ -268,6 +268,7 @@ public class dohMyGod {
 		String s = null;
 		String s2 = null;
 		boolean equalaasss = s2.equals(s2);
+		String s3 = this;
 	}
 	
 	@Test

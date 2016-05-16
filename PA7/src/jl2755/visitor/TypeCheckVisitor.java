@@ -839,7 +839,7 @@ public class TypeCheckVisitor implements ASTVisitor {
 			}
 			
 			funType = matchingType;
-			if (!isInClass) {
+			if (env.containsFun(id)) {
 				String ABIName = functionToABIName(id, funType);
 				fc.setABIName(ABIName);
 			} else {
@@ -881,7 +881,7 @@ public class TypeCheckVisitor implements ASTVisitor {
 						fc.getIdentifier_line(), fc.getIdentifier_col(), s);
 				Main.handleSemanticError(seo);
 			}
-			if (!isInClass) {
+			if (env.containsFun(methodName)) {
 				String ABIName = functionToABIName(methodName, funType);
 				fc.setABIName(ABIName);
 			} else {
@@ -959,7 +959,7 @@ public class TypeCheckVisitor implements ASTVisitor {
 		}
 		
 		/* Set ABIName */
-		if (!isInClass) {
+		if (env.containsFun(funId)) {
 			String ABIName = functionToABIName(funId, funType);
 			fd.setABIName(ABIName);
 		} else {
@@ -1804,6 +1804,15 @@ public class TypeCheckVisitor implements ASTVisitor {
 			}
 			ClassType classView = env.getClassType(((VarType) childType).getElementType());
 			tempType = classView.getFieldType(de.getId().toString());
+			if (tempType == null) {
+				String s = "Class " + classView.getClassName() + " does not have field " + de.getId().toString();
+				SemanticErrorObject seo = new SemanticErrorObject(
+											de.getId().getLineNumber(), 
+											de.getId().getColumnNumber(),
+											s
+											);
+				Main.handleSemanticError(seo);
+			}
 			break;
 		case FUNCTION_CALL:
 			de.getFunctionCall().accept(this);

@@ -842,6 +842,9 @@ public class TypeCheckVisitor implements ASTVisitor {
 			if (!isInClass) {
 				String ABIName = functionToABIName(id, funType);
 				fc.setABIName(ABIName);
+			} else {
+				String ABIName = classMethodToABIName(classEnv.getClassName(), id, funType);
+				fc.setABIName(ABIName);
 			}
 			
 			paramType = funType.getParamTypes();
@@ -880,6 +883,9 @@ public class TypeCheckVisitor implements ASTVisitor {
 			}
 			if (!isInClass) {
 				String ABIName = functionToABIName(methodName, funType);
+				fc.setABIName(ABIName);
+			} else {
+				String ABIName = classMethodToABIName(classEnv.getClassName(), methodName, funType);
 				fc.setABIName(ABIName);
 			}
 			paramType = funType.getParamTypes();
@@ -2011,6 +2017,11 @@ public class TypeCheckVisitor implements ASTVisitor {
 		String paramTypesString = translateVTypeToABIString(paramTypes);
 		
 		return ABIName + returnTypeString + paramTypesString;
+	}
+	
+	private String classMethodToABIName(String className, String fnName, FunType fnType) {
+		String ABIName = "_" + className + "_" + functionToABIName(fnName, fnType);
+		return ABIName;
 	}
 	
 	private List<String> getSuperClasses(String currClassName) {

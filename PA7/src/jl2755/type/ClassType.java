@@ -46,7 +46,7 @@ public class ClassType implements VType{
 		for (InterfaceFunc method: methods) {
 			FunType funType = new FunType(method);
 			String name = method.getIdentifier().toString();
-			String ABIName = functionToABIName(name, funType);
+			String ABIName = classMethodToABIName(className, name, funType);
 			methodEnv.put(name, funType);
 			orderedMethods.add(ABIName);
 		}
@@ -99,7 +99,7 @@ public class ClassType implements VType{
 		for (FunctionDecl method: methods) {
 			FunType funType = new FunType(method);
 			String methodName = method.getIdentifier().getTheValue();
-			String ABIName = functionToABIName(methodName, funType);
+			String ABIName = classMethodToABIName(className, methodName, funType);
 			method.setABIName(ABIName);
 			methodEnv.put(methodName, funType);
 			orderedMethods.add(ABIName);
@@ -129,6 +129,11 @@ public class ClassType implements VType{
 		String paramTypesString = translateVTypeToABIString(paramTypes);
 		
 		return ABIName + returnTypeString + paramTypesString;
+	}
+	
+	private String classMethodToABIName(String className, String fnName, FunType fnType) {
+		String ABIName = "_" + className + "_" + functionToABIName(fnName, fnType);
+		return ABIName;
 	}
 	
 	/**

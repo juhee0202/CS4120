@@ -1842,8 +1842,6 @@ public class TypeCheckVisitor implements ASTVisitor {
 			}
 			tempType = new VarType(classEnv.getClassName(),0);
 			break;
-		default:
-			break;
 		}
 	}
 
@@ -2003,16 +2001,20 @@ public class TypeCheckVisitor implements ASTVisitor {
 	private String translateVTypeToABIString(VType t) {
 		String ABIString = "";
 		if (t instanceof VarType) {
-			if (((VarType) t).isArray()) {		// array
+			if (((VarType) t).isArray()) {							// array
 				int numBrackets = ((VarType) t).getNumBrackets();
 				for (int i = 0; i < numBrackets; i++) {
 					ABIString += "a";
 				}
 				ABIString += ((VarType) t).getIsBool() ? "b" : "i";
-			} else if (((VarType) t).isInt()) {	// int
+			} else if (((VarType) t).isInt()) {						// int
 				ABIString = "i";
-			} else {							// bool
+			} else if (((VarType) t).isBool())  {					// bool
 				ABIString = "b";
+			} else {
+				String className = (((VarType) t).getElementType());
+				int len =  className.length();
+				ABIString = "o" + len + className;
 			}
 		} else if (t instanceof TupleType) {
 			List<VType> tList = ((TupleType) t).getTypes();

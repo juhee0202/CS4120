@@ -268,6 +268,7 @@ public class dohMyGod {
 		String s = null;
 		String s2 = null;
 		boolean equalaasss = s2.equals(s2);
+		String s3 = this;
 	}
 	
 	@Test
@@ -342,5 +343,15 @@ public class dohMyGod {
 		System.out.println(w.z);
 //		v.z = 1;
 		
+	}
+	class Dog extends Animal{
+		private int[] x;
+		public void bark() {
+			this.x[0] =2; 
+			this = 
+		}
+	}
+	class Animal {
+		public int[] name;
 	}
 }

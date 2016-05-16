@@ -260,4 +260,52 @@ public class dohMyGod {
 		hm1.put("foo", new FunType(fd));
 		int[] x;
 	}
+	
+	@Test
+	public void testClass() {
+		class VType {
+			VType() {
+				return;
+			}
+			
+			public boolean superClass() {
+				return true;
+			}
+			
+			@Override 
+			public String toString() {
+				return "super";
+			}
+		}
+		class VarType extends VType {
+			VarType() {
+				return;
+			}
+			
+			public boolean subClass() {
+				return false;
+			}
+			
+			@Override 
+			public String toString() {
+				return "sub";
+			}
+		}
+		
+		
+		VType temptype = new VarType();
+		System.out.println(temptype.toString());
+		VarType type = (VarType) temptype;
+		VType type2 = temptype;
+		System.out.println(type);
+		System.out.println(type2);
+		
+		System.out.println(temptype.superClass());
+		System.out.println(type.superClass());
+		System.out.println(type2.superClass());
+		
+//		System.out.println(temptype.subClass());
+//		System.out.println(type.subClass());
+//		System.out.println(type2.subClass());
+	}
 }

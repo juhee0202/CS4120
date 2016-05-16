@@ -15,6 +15,7 @@ import edu.cornell.cs.cs4120.xic.ir.IRFuncDecl;
 import edu.cornell.cs.cs4120.xic.ir.IRJump;
 import edu.cornell.cs.cs4120.xic.ir.IRLabel;
 import edu.cornell.cs.cs4120.xic.ir.IRMem;
+import edu.cornell.cs.cs4120.xic.ir.IRMethodTable;
 import edu.cornell.cs.cs4120.xic.ir.IRMove;
 import edu.cornell.cs.cs4120.xic.ir.IRName;
 import edu.cornell.cs.cs4120.xic.ir.IRNode;
@@ -421,6 +422,12 @@ public class IRTreeEqualsVisitor implements IRTreeVisitor{
 		System.out.println("Something wrong happened in IRTreeEqualsVisitor equals");
 		assert(false);
 		return false;
+	}
+
+	@Override
+	public void visit(IRMethodTable irMethodTable) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

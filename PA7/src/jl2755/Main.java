@@ -50,6 +50,10 @@ import jl2755.ast.Interface;
 import jl2755.ast.InterfaceClassDecl;
 import jl2755.ast.InterfaceFunc;
 import jl2755.ast.Program;
+import jl2755.ast.ShortTupleDecl;
+import jl2755.ast.SimpleVarInit;
+import jl2755.ast.Type;
+import jl2755.ast.VarDecl;
 import jl2755.controlflow.ControlFlowGraph;
 import jl2755.controlflow.SSAFormConverter;
 import jl2755.controlflow.SSAFormGraph;
@@ -66,6 +70,7 @@ import jl2755.type.EmptyClassType;
 import jl2755.type.FunType;
 import jl2755.type.TupleType;
 import jl2755.type.VType;
+import jl2755.type.VarType;
 import jl2755.visitor.ConstantFolderVisitor;
 import jl2755.visitor.Environment;
 import jl2755.visitor.LIRVisitor;
@@ -1056,7 +1061,12 @@ public class Main {
 					handleSemanticError(seo);
 				} else {
 					sourceEnv.putClass(className, classType);
-					globalEnv.putClass(className, classType);
+					if (globalEnv.containsClass(className)) {
+						ClassType interfaceClass = globalEnv.getClassType(className);
+						interfaceClass.addFieldsToClassType(d);
+					} else {
+						globalEnv.putClass(className, classType);
+					}
 				}
 			} else if (d instanceof FunctionDecl) {
 				FunType funType = new FunType((FunctionDecl) d);
@@ -1076,6 +1086,31 @@ public class Main {
 				} else {
 					sourceEnv.put(name, funType);
 					globalEnv.put(name, funType);
+				}
+			} else {
+				assert(d instanceof GlobalDecl);
+				GlobalDecl gdView = (GlobalDecl) d;
+				VarType type;
+				switch (gdView.getType()) {
+				case SHORT_TUPLE_DECL:
+					ShortTupleDecl std = gdView.getShortTupleDecl();
+					List<Identifier> list = std.getAllIdentifiers();
+					Type t = std.getType();
+					type = new VarType(t);
+					for (Identifier i : list) {
+						globalEnv.put(i.toString(), type);
+					}
+					break;
+				case SIMPLE_VAR_INIT:
+					SimpleVarInit svi = gdView.getSimpleVarInit();
+					type = new VarType(svi.getPrimitiveType());
+					globalEnv.put(svi.getIdentifier().toString(), type);
+					break;
+				case VAR_DECL:
+					VarDecl vd = gdView.getVarDecl();
+					type = new VarType(gdView.getVarDecl());
+					globalEnv.put(vd.getIdentifier().toString(), type);
+					break;
 				}
 			}
 		}
@@ -1242,7 +1277,7 @@ public class Main {
 				// Duplicate class across files
 				if (globalEnv.containsClass(name)) {
 					ClassType type = globalEnv.getClassType(name);
-					if (!type.compareClassSignatures(tempType)) {
+					if (!type.compareInterfaceClassSignatures(tempType)) {
 						Identifier id = classDecl.getClassName();
 						String e = "Mismatched class declaration found " + name;
 						SemanticErrorObject seo = new SemanticErrorObject(

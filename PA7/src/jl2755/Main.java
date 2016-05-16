@@ -1030,24 +1030,32 @@ public class Main {
 			if (interfaceToUnresolved.containsKey(s)) {
 				for (EmptyClassType unresolved : interfaceToUnresolved.get(s)) {
 					resolveTypes(stringToInterface.get(s), s, unresolved,
-							interfaceToPublic, interfaceToInterfaces);
+							interfaceToPublic, interfaceToInterfaces, globalEnv);
 				}
 			}
 		}
 		
 		// Check source file
+		Environment sourceEnv = new Environment();
 		for (Decl d : program.getAllDecls()) {
 			if (d instanceof ClassDecl) {
 				ClassType classType = new ClassType((ClassDecl) d);
 				String className = classType.getClassName();
 				if (globalEnv.containsClass(className) &&
-						!classType.equals(globalEnv.getClassType(className))) {
+						!classType.compareClassSignatures(globalEnv.getClassType(className))) {
 					Identifier id = ((ClassDecl) d).getClassName();
 					String e = "Mismatched class declaration found for " + className;
 					SemanticErrorObject seo = new SemanticErrorObject(
 							id.getLineNumber(),id.getColumnNumber(),e);
 					handleSemanticError(seo);
+				} else if (sourceEnv.containsClass(className)) {
+					Identifier id = ((ClassDecl) d).getClassName();
+					String e = "Duplicate class declaration found for " + className;
+					SemanticErrorObject seo = new SemanticErrorObject(
+							id.getLineNumber(),id.getColumnNumber(),e);
+					handleSemanticError(seo);
 				} else {
+					sourceEnv.putClass(className, classType);
 					globalEnv.putClass(className, classType);
 				}
 			} else if (d instanceof FunctionDecl) {
@@ -1060,7 +1068,13 @@ public class Main {
 					SemanticErrorObject seo = new SemanticErrorObject(
 							id.getLineNumber(),id.getColumnNumber(),e);
 					handleSemanticError(seo);
+				} else if (sourceEnv.containsFun(name)) {
+					String e = "Duplicate function declaration found for " + name;
+					SemanticErrorObject seo = new SemanticErrorObject(
+							id.getLineNumber(),id.getColumnNumber(),e);
+					handleSemanticError(seo);
 				} else {
+					sourceEnv.put(name, funType);
 					globalEnv.put(name, funType);
 				}
 			}
@@ -1077,7 +1091,7 @@ public class Main {
 	 */
 	private static void resolveTypes(Interface i, String file, EmptyClassType ect, 
 							Map<String, Environment> interfaceToPublic, 
-							Map<String, Set<String>> iTI) {
+							Map<String, Set<String>> iTI, Environment env) {
 		
 		String name = ect.getName();
 		Set<String> checked = new HashSet<String>();
@@ -1085,7 +1099,7 @@ public class Main {
 		// Resolved in own interface
 		if (interfaceToPublic.get(file).containsClass(name)) {
 			replaceAll(ect, interfaceToPublic.get(file).getClassType(name),
-					file, interfaceToPublic);
+					file, interfaceToPublic, env);
 			return;
 		}
 		checked.add(file);
@@ -1094,7 +1108,7 @@ public class Main {
 		for (String use : i.getUseFiles()) {
 			ClassType resolve = recursiveResolve(use, ect, interfaceToPublic, iTI, checked);
 			if (resolve != null) {
-				replaceAll(ect, resolve, file, interfaceToPublic);
+				replaceAll(ect, resolve, file, interfaceToPublic, env);
 				return;
 			}
 		}
@@ -1137,7 +1151,7 @@ public class Main {
 	 * @param interfaceToPublic		the map of interface file names to module
 	 */
 	private static void replaceAll(EmptyClassType ect, ClassType ct,
-			String s, Map<String, Environment> interfaceToPublic) {
+			String s, Map<String, Environment> interfaceToPublic, Environment env) {
 		// Replace all uses of ect with ct in functions
 		for (FunType funType : interfaceToPublic.get(s).getFunTypes()) {
 			funType.replaceAll(ect, ct);
@@ -1146,7 +1160,7 @@ public class Main {
 		for (ClassType classType : interfaceToPublic.get(s).getClassTypes()) {
 			classType.replaceAll(ect, ct);
 			// Check duplicate function in super class
-			classType.checkSuper(ct);
+			classType.checkSupers(env);
 		}
 		
 	}
@@ -1199,7 +1213,7 @@ public class Main {
 				}
 				// Duplicate function across files
 				if (globalEnv.containsFun(name)) {
-					FunType type = env.getFunType(name);
+					FunType type = globalEnv.getFunType(name);
 					if (!type.equals(tempType)) {
 						Identifier id = func.getIdentifier();
 						String e = "Mismatched function declaration found " + name;
@@ -1262,6 +1276,9 @@ public class Main {
 			error.setFilename(absPath);
 			throw error;
 		} catch(SyntaxError error) {
+			error.setFilename(absPath);
+			throw error;
+		} catch(SemanticError error) {
 			error.setFilename(absPath);
 			throw error;
 		} catch (FileNotFoundException e) {

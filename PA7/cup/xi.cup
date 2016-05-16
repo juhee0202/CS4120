@@ -90,6 +90,8 @@ precedence left PLUS, MINUS;
 precedence left TIMES, HIGH_MULT, DIVIDE, MODULO;
 precedence left UMINUS, NOT; // missing integer and logical negation (unary minus vs. binary minus)
 precedence left OPEN_BRACKET, OPEN_PAREN;  // missing function call, []
+precedence left NEW;
+precedence left DOT;
 precedence nonassoc ELSE;     // to avoid "dangling else" problem
 precedence nonassoc SEMICOLON;
 

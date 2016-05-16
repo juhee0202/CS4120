@@ -9,6 +9,8 @@ import jl2755.ast.Identifier;
 import jl2755.ast.IndexedBrackets;
 import jl2755.ast.MixedArrayType;
 import jl2755.ast.PrimitiveType;
+import jl2755.ast.ShortTupleDecl;
+import jl2755.ast.Type;
 import jl2755.ast.VarDecl;
 
 /**
@@ -118,6 +120,7 @@ public class VarType implements VType {
 //			numBrackets = 0;
 //		}
 	}
+	
 	
 //	/**
 //	 * Precondition: creating either a PrimitiveType or ArrayType with only primitive elements

@@ -65,17 +65,23 @@ xic ("Test --typecheck -O") ["../pa3"] "-libpath $(testpath) --typecheck -O" {
 }
 
 xic ("Test --typecheck -O") ["../customPA3"] "-libpath $(testpath) --typecheck -O" {
-    array01.xi;
     array02.xi;
     array03.xi;
     array04.xi;
     array05.xi;
     array06.xi;
+    array07.xi;
+    array08.xi;
+    array09.xi;
     assign01.xi;
     assign02.xi;
     assign03.xi;
     assign04.xi;
     assign05.xi;
+    assign06.xi;
+    extend1.xi;
+    extend4.xi;
+    extend5.xi;
     field_decl1.xi;
     field_decl2.xi;
     global_decl1.xi;
@@ -85,21 +91,21 @@ xic ("Test --typecheck -O") ["../customPA3"] "-libpath $(testpath) --typecheck -
     global_decl6.xi;
     module1.xi;
     neighbor.xi;
-    sameClassName-1ixifail.xi;
-    sameClassName-1xifail.xi;
-    sameClassName-2ixifail.xi;
-    sameClassName-2ixiok.xi;
-    sameClassName-bothfail.xi;
-    sameClassName-bothok.xi;
-    sameFunctionName-1ixifail.xi;
-    sameFunctionName-1xifail.xi;
-    sameFunctionName-2ixifail.xi;
-    sameFunctionName-2ixiok.xi;
-    sameFunctionName-bothfail.xi;
-    sameFunctionName-bothok.xi;
-    superClass-fail.xi;
-    superClass-ok.xi;
-    superClass2-fail.xi;
-    superClass2-ok.xi;
+    sameClassName1.xi;
+    sameClassName2.xi;
+    sameClassName3.xi;
+    sameClassName4.xi;
+    sameClassName_bothfail.xi;
+    sameClassName_bothok.xi;
+    sameFunctionName1.xi;
+    sameFunctionName2.xi;
+    sameFunctionName3.xi;
+    sameFunctionName4.xi;
+    sameFunctionName_bothfail.xi;
+    sameFunctionName_bothok.xi;
+    superClass_fail.xi;
+    superClass_ok.xi;
+    superClass2_fail.xi;
+    superClass2_ok.xi;
 }
 

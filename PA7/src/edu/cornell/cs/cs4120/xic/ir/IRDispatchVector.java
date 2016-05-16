@@ -6,7 +6,7 @@ import edu.cornell.cs.cs4120.util.SExpPrinter;
 import jl2755.assembly.ChildType;
 import jl2755.visitor.IRTreeVisitor;
 
-public class IRMethodTable extends IRNode {
+public class IRDispatchVector extends IRNode {
 
 	/** The class name that this method table refers to. */
 	private String className;
@@ -17,7 +17,7 @@ public class IRMethodTable extends IRNode {
 	/** The list of field names for the class of this dispatch vector. */
 	private List<String> fields;
 	
-	IRMethodTable(String name, List<String> dispatch, List<String> fs) {
+	public IRDispatchVector(String name, List<String> dispatch, List<String> fs) {
 		className = name;
 		methods = dispatch;
 		fields = fs;
@@ -29,6 +29,10 @@ public class IRMethodTable extends IRNode {
 
 	public List<String> getMethods() {
 		return methods;
+	}
+	
+	public List<String> getFields() {
+		return fields;
 	}
 
 	@Override

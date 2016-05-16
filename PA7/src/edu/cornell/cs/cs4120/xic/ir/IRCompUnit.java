@@ -18,7 +18,7 @@ import jl2755.visitor.IRTreeVisitor;
 public class IRCompUnit extends IRNode {
     private String name;
     private Map<String, IRFuncDecl> functions;
-    private Set<IRMethodTable> dispatchVectors;
+    private Set<IRDispatchVector> dispatchVectors;
 
     public IRCompUnit(String name) {
         this.name = name;
@@ -30,7 +30,7 @@ public class IRCompUnit extends IRNode {
         this.functions = functions;
     }
     
-    public IRCompUnit(String name, Map<String, IRFuncDecl> functions, Set<IRMethodTable> dvs) {
+    public IRCompUnit(String name, Map<String, IRFuncDecl> functions, Set<IRDispatchVector> dvs) {
         this.name = name;
         this.functions = functions;
         dispatchVectors = dvs;

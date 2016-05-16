@@ -1,9 +1,13 @@
 package jl2755.type;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import jl2755.Main;
 import jl2755.SemanticErrorObject;
 import jl2755.ast.ArrayLiteral;
 import jl2755.ast.EmptyArrayType;
+import jl2755.ast.Expr;
 import jl2755.ast.FunctionCall;
 import jl2755.ast.Identifier;
 import jl2755.ast.IndexedBrackets;
@@ -24,6 +28,7 @@ public class VarType implements VType {
 	private boolean isObject;
 	private String elementType;
 	private int numBrackets;
+	private List<Expr> exprs;
 	
 //	private boolean isBool;				// true if primitive boolean, else false
 //	private boolean isPrimitiveArray;	// true if Primitive array type, else false
@@ -48,7 +53,7 @@ public class VarType implements VType {
 			isObject = false;
 			elementType = eat.getElementType();
 			numBrackets = eat.getBrackets().getNumBrackets();
-		
+			exprs = new ArrayList<Expr>();
 		// object type
 		} else {
 			Identifier id = (Identifier) t;
@@ -76,7 +81,7 @@ public class VarType implements VType {
 		isObject = false;
 		elementType = mat.getElementType();
 		numBrackets = mat.getTotalNumBrackets();
-				
+		exprs = mat.getAllExprs();
 //		isBool = mat.getP_type().getIndex() == 1;
 //		numBrackets = mat.getTotalNumBrackets();
 	}
@@ -90,7 +95,7 @@ public class VarType implements VType {
 			MixedArrayType mat = vd.getMixedArrayType();
 			elementType = mat.getElementType();
 			numBrackets = mat.getTotalNumBrackets();
-		
+			exprs = mat.getAllExprs();
 		// PrimitiveType
 		} else if (vd.getIndex() == 1) {
 			isPrimitive = true;
@@ -157,6 +162,7 @@ public class VarType implements VType {
 				isPrimitive = false;
 				isArray = true;
 				isObject = false;
+				exprs = new ArrayList<Expr>();
 			}
 		} 
 		// class type
@@ -169,6 +175,7 @@ public class VarType implements VType {
 				isPrimitive = false;
 				isArray = true;
 				isObject = false;
+				exprs = new ArrayList<Expr>();
 			}
 		}
 	}
@@ -275,5 +282,13 @@ public class VarType implements VType {
 	@Override
 	public boolean singleReturn() {
 		return true;
+	}
+
+	public List<Expr> getExprs() {
+		return exprs;
+	}
+
+	public void setExprs(List<Expr> exprs) {
+		this.exprs = exprs;
 	}
 }

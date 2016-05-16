@@ -924,10 +924,11 @@ public class TypeCheckVisitor implements ASTVisitor {
 	 */
 	@Override
 	public void visit(FunctionDecl fd) {	
-		// get ABIName
+		// get the function's FunType
 		String funId = fd.getIdentifier().toString();
 		FunType funType;
 		if (isInClass) {
+			// if in class, look for the superclasses' env
 			funType = classEnv.getMethodType(fd.getABIName());
 			List<String> allSupers = getSuperClasses(classEnv.getClassName());
 			for (String s : allSupers) {
@@ -946,6 +947,7 @@ public class TypeCheckVisitor implements ASTVisitor {
 		} else {
 			funType = env.getFunType(funId);
 		}
+		// set ABIName
 		String ABIName = functionToABIName(funId, funType);
 		fd.setABIName(ABIName);
 				
@@ -1717,9 +1719,21 @@ public class TypeCheckVisitor implements ASTVisitor {
 		List<Decl> decls = cb.getAllDecls();
 		// decl can be either 1) GlobalDecl 2) FunctionDecl
 		isInClass = true;
+		
+		// Start of scope
+		stack.add("_");
+		
 		for (Decl decl : decls) {
 			decl.accept(this);
 		}
+		
+		// Pop out of scope
+		String id = stack.pop();
+		while (!id.equals("_")) {
+			env.removeVar(id);
+			id = stack.pop();
+		}
+		
 		isInClass = false;
 	}
 

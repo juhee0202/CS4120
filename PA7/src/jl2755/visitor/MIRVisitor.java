@@ -3,20 +3,22 @@ package jl2755.visitor;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import edu.cornell.cs.cs4120.xic.ir.*;
 import edu.cornell.cs.cs4120.xic.ir.interpret.Configuration;
-import jl2755.assembly.Instruction.Operation;
 import jl2755.ast.*;
+import jl2755.type.ClassType;
 import jl2755.type.VarType;
 
 public class MIRVisitor implements ASTVisitor{
 	
 	private IRNode tempNode;
-	private static final int TRUE = 1;
-	private static final int FALSE = 0;
+//	private static final int TRUE = 1;
+//	private static final int FALSE = 0;
 	private int labelCount = 0;
 	private int tempCount = 0;
 	private static final IRConst WORD_SIZE = new IRConst(Configuration.WORD_SIZE);
@@ -29,7 +31,14 @@ public class MIRVisitor implements ASTVisitor{
 	// Globals for Method Dispatch
 	private Map<String, List<String>> classToDispatch =  new HashMap<String, List<String>>();
 	
+	// Global Environment
+	private Environment env;
+	
 	public IRNode program;
+	
+	public MIRVisitor(Environment global) {
+		env = global;
+	}
 	
 	@Override
 	public void visit(ArrayElement ae) {
@@ -609,7 +618,6 @@ public class MIRVisitor implements ASTVisitor{
 			try {
 				character = l.getCharLit().charAt(0);
 			} catch (Exception e) {
-				// TODO
 				System.out.println("Expected a character stored in string");
 			}
 			tempNode = new IRConst(character);
@@ -622,11 +630,26 @@ public class MIRVisitor implements ASTVisitor{
 	
 	@Override
 	public void visit(Program p) {
+		// Create dispatch vectors for all class types
+		Set<IRDispatchVector> dispatchVectors = new HashSet<IRDispatchVector>();
+		for (ClassType ct : env.getClassTypes()) {
+			List<String> methodTable = ct.getDispatchMethods(env);
+			List<String> fieldTable = ct.getDispatchFields(env);
+			classToDispatch.put(ct.getClassName(), ct.getDispatchMethods(env));
+			IRDispatchVector dispatchVector = new IRDispatchVector(ct.getClassName(),
+					methodTable, fieldTable);
+			dispatchVectors.add(dispatchVector);
+		}
+
 		Map<String, IRFuncDecl> functions = new HashMap<String, IRFuncDecl>();
 		
+		// Visit all declarations: class, function, global
 		List<Decl> decls = p.getAllDecls();
 		for (Decl d: decls) {
 			d.accept(this);
+			if (d instanceof FunctionDecl) {
+				functions.put(((FunctionDecl) d).getABIName(), (IRFuncDecl) tempNode);
+			}
 		}
 		
 		
@@ -635,7 +658,7 @@ public class MIRVisitor implements ASTVisitor{
 //			fd.accept(this);
 //			functions.put(fd.getABIName(), (IRFuncDecl) tempNode);
 //		}
-		program = new IRCompUnit("Program", functions);
+		program = new IRCompUnit("Program", functions, dispatchVectors);
 	}
 
 	@Override

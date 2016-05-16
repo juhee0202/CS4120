@@ -824,8 +824,8 @@ public class TypeCheckVisitor implements ASTVisitor {
 				classes.add(0,currentClass);
 				for (String superclass : classes) {
 					ClassType superclassType = env.getClassType(superclass);
-					if (superclassType.containsMethod(id)) {
-						matchingType = superclassType.getMethodType(id);
+					if (superclassType.containsMethod(fc.getABIName())) {
+						matchingType = superclassType.getMethodType(fc.getABIName());
 						break;
 					}
 				}
@@ -864,8 +864,8 @@ public class TypeCheckVisitor implements ASTVisitor {
 			classes.add(0,dotableExprType.getElementType());
 			for (String superclass : classes) {
 				ClassType superclassType = env.getClassType(superclass);
-				if (superclassType.containsMethod(methodName)) {
-					funType = superclassType.getMethodType(methodName);
+				if (superclassType.containsMethod(fc.getABIName())) {
+					funType = superclassType.getMethodType(fc.getABIName());
 					break;
 				}
 			}
@@ -928,11 +928,11 @@ public class TypeCheckVisitor implements ASTVisitor {
 		String funId = fd.getIdentifier().toString();
 		FunType funType;
 		if (isInClass) {
-			funType = classEnv.getMethodType(funId);
+			funType = classEnv.getMethodType(fd.getABIName());
 			List<String> allSupers = getSuperClasses(classEnv.getClassName());
 			for (String s : allSupers) {
 				ClassType superType = env.getClassType(s);
-				FunType superFunType = superType.getMethodType(funId);
+				FunType superFunType = superType.getMethodType(fd.getABIName());
 				if (superFunType != null) {
 					if (!funType.equals(superFunType)) {
 						String ss = funId + "\'s signature does not "

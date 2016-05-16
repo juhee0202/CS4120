@@ -108,6 +108,7 @@ public class Main {
 	public static HashMap<String, Symbol> fileToSymbol;
 	public static HashMap<String, Program> fileToAST;
 	public static HashMap<String, IRCompUnit> fileToIR;
+	public static HashMap<Program, Environment> programToEnv;
 	
 	public static Set<String> IRPhases;
 	public static boolean initialWritten = false;
@@ -125,6 +126,7 @@ public class Main {
 		fileToSymbol = new HashMap<String, Symbol>();
 		fileToAST = new HashMap<String, Program>();
 		fileToIR = new HashMap<String, IRCompUnit>();
+		programToEnv = new HashMap<Program, Environment>();
 		IRPhases = new HashSet<String>();
 		CFGPhases = new HashSet<String>();
 		
@@ -454,6 +456,7 @@ public class Main {
 			
 			// Update global map
 			fileToAST.put(filename, result);
+			programToEnv.put(result, env);
 
 			bw.write("Valid Xi Program");
 			bw.close();
@@ -510,8 +513,10 @@ public class Main {
 			System.out.println("[xic] Generating intermediate code");
 
 			Program program;
+			Environment env;
 			if (fileToAST.containsKey(filename)) {
 				program = fileToAST.get(filename);
+				env = programToEnv.get(program);
 			} else {
 				Symbol s;
 				if (fileToSymbol.containsKey(filename)) {
@@ -524,7 +529,7 @@ public class Main {
 					fileToSymbol.put(filename, s);
 				}
 				program = (Program) s.value;
-				Environment env = checkInterfaces(program, rmExtension);
+				env = checkInterfaces(program, rmExtension);
 				TypeCheckVisitor visitor = new TypeCheckVisitor(env);
 				program.accept(visitor);
 				
@@ -536,10 +541,11 @@ public class Main {
 				
 				// Update global map
 				fileToAST.put(filename, program);
+				programToEnv.put(program, env);
 			}
 
 			/* Translate to MIR */
-			MIRVisitor mir = new MIRVisitor();
+			MIRVisitor mir = new MIRVisitor(env);
 			program.accept(mir);
 
 			// Output MIR
@@ -693,8 +699,10 @@ public class Main {
 				result = (IRCompUnit) fileToIR.get(filename).copy();
 			} else {
 				Program program;
+				Environment env;
 				if (fileToAST.containsKey(filename)) {
 					program = fileToAST.get(filename);
+					env = programToEnv.get(program);
 				} else {
 					Symbol s;
 					if (fileToSymbol.containsKey(filename)) {
@@ -707,7 +715,7 @@ public class Main {
 						fileToSymbol.put(filename, s);
 					}
 					program = (Program) s.value;
-					Environment env = checkInterfaces(program, rmExtension);
+					env = checkInterfaces(program, rmExtension);
 					TypeCheckVisitor visitor = new TypeCheckVisitor(env);
 					program.accept(visitor);
 					
@@ -719,8 +727,9 @@ public class Main {
 					
 					// Update global map
 					fileToAST.put(filename, program);
+					programToEnv.put(program, env);
 				}
-				MIRVisitor mir = new MIRVisitor();
+				MIRVisitor mir = new MIRVisitor(env);
 				program.accept(mir);
 				LIRVisitor lir = new LIRVisitor();
 				mir.program.accept(lir);
@@ -777,8 +786,10 @@ public class Main {
 
 			IRCompUnit result;
 			Program program;
+			Environment env;
 			if (fileToAST.containsKey(filename)) {
 				program = fileToAST.get(filename);
+				env = programToEnv.get(program);
 			} else {
 				Symbol s;
 				if (fileToSymbol.containsKey(filename)) {
@@ -791,7 +802,7 @@ public class Main {
 					fileToSymbol.put(filename, s);
 				}
 				program = (Program) s.value;
-				Environment env = checkInterfaces(program, rmExtension);
+				env = checkInterfaces(program, rmExtension);
 				TypeCheckVisitor visitor = new TypeCheckVisitor(env);
 				program.accept(visitor);
 				
@@ -803,9 +814,10 @@ public class Main {
 				
 				// Update global map
 				fileToAST.put(filename, program);
+				programToEnv.put(program, env);
 			}
 			
-			MIRVisitor mir = new MIRVisitor();
+			MIRVisitor mir = new MIRVisitor(env);
 			program.accept(mir);
 			LIRVisitor lir = new LIRVisitor();
 			mir.program.accept(lir);

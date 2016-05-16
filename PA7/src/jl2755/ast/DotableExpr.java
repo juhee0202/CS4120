@@ -75,7 +75,7 @@ public class DotableExpr implements Expr {
 	 * @param id
 	 */
 	public DotableExpr(DotableExpr de, Identifier id) {
-		type = Type.PAREN;
+		type = Type.DOT;
 		dotableExpr = de;
 		this.id = id;
 		col = de.col;

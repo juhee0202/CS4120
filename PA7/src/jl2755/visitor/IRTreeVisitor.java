@@ -11,7 +11,7 @@ import edu.cornell.cs.cs4120.xic.ir.IRFuncDecl;
 import edu.cornell.cs.cs4120.xic.ir.IRJump;
 import edu.cornell.cs.cs4120.xic.ir.IRLabel;
 import edu.cornell.cs.cs4120.xic.ir.IRMem;
-import edu.cornell.cs.cs4120.xic.ir.IRMethodTable;
+import edu.cornell.cs.cs4120.xic.ir.IRDispatchVector;
 import edu.cornell.cs.cs4120.xic.ir.IRMove;
 import edu.cornell.cs.cs4120.xic.ir.IRName;
 import edu.cornell.cs.cs4120.xic.ir.IRReturn;
@@ -35,5 +35,5 @@ public interface IRTreeVisitor {	// Rest: Jonathan
 	public void visit(IRReturn ret);	// Thomas
 	public void visit(IRSeq seq);
 	public void visit(IRTemp temp);
-	public void visit(IRMethodTable irMethodTable);
+	public void visit(IRDispatchVector irMethodTable);
 }

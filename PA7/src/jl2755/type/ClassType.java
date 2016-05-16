@@ -136,7 +136,7 @@ public class ClassType implements VType{
 		this.methodEnv = methodEnv;
 	}
 	
-	public List<String> getOrderedFields() {
+	private List<String> getOrderedFields() {
 		return orderedFields;
 	}
 
@@ -176,7 +176,7 @@ public class ClassType implements VType{
 		}
 	}
 
-	public List<String> getOrderedMethods() {
+	private List<String> getOrderedMethods() {
 		return orderedMethods;
 	}
 

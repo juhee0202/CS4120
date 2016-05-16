@@ -148,8 +148,10 @@ public class DotableExpr implements Expr {
 			functionCall.prettyPrintNode();
 		} else if (type == Type.NEW) {
 			CodeWriterSExpPrinter tempPrinter = GlobalPrettyPrinter.getInstance();
+			tempPrinter.startList();
 			tempPrinter.printAtom("new ");
 			id.prettyPrintNode();
+			tempPrinter.endList();
 		} else if (type == Type.DOT) {
 			CodeWriterSExpPrinter tempPrinter = GlobalPrettyPrinter.getInstance();
 			dotableExpr.prettyPrintNode();

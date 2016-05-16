@@ -95,9 +95,11 @@ public class FunctionCall implements Expr,NakedStmt {
 			tempPrinter.printAtom(".");
 			identifier.prettyPrintNode();
 		} else if (index == 4) {
+			tempPrinter.startList();
 			dotableExpr.prettyPrintNode();
 			tempPrinter.printAtom(".");
 			identifier.prettyPrintNode();
+			tempPrinter.endList();
 			functionArg.prettyPrintNode();
 		}
 		tempPrinter.endList();

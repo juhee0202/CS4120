@@ -5,8 +5,8 @@
 
 package jl2755;
 
-/** CUP generated class containing symbol constants. */
-public class sym {
+/** CUP generated interface containing symbol constants. */
+public interface sym {
   /* terminals */
   public static final int EXTENDS = 44;
   public static final int NEW = 45;

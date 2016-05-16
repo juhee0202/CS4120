@@ -351,140 +351,70 @@ public class TypeCheckVisitor implements ASTVisitor {
 		int index = as.getIndex();
 		VarType leftType = null;
 		VType rightType = null;
-
-		// ex: a = 3
-		if (index == 0) { 								
-
-			boolean inScope = false;
-
-			// Look for global variable + local variable
-			String id = as.getIdentifier().toString();
-			if (env.containsVar(id)) {
-				inScope = true;
-				leftType = env.getVarType(id);
-
-			// Look for instance variable
-			} else {
-				if (isInClass && classEnv.getFieldEnv().containsKey(id)) {
-					inScope = true;
-					leftType = classEnv.getFieldEnv().get(id);
-				}
-			}
-
-			if (!inScope) {
-				String s = "Name " + id + " cannot be resolved";
+		
+		DotableExpr de = as.getDotableExpr();
+		de.accept(this);
+		VType dotableExprType = tempType;
+		
+		// a = 3
+		if (index == 0) {
+			if (!(dotableExprType instanceof VarType)) {
+				String s = "The type of the expression must be VarType "
+						+ "but it resolved to " + dotableExprType.toString();
 				SemanticErrorObject seo = new SemanticErrorObject(
-						as.getIdentifier().getLineNumber(), 
-						as.getIdentifier().getColumnNumber(),
+						de.getLineNumber(), 
+						de.getColumnNumber(),
 						s);
 				Main.handleSemanticError(seo);
 			}
 			
-			as.getExpr().accept(this);
-			rightType = tempType;
-			
-		//ex: arr[2] = 3;
-		} else if (index == 1) {	
-			VType leftExprType = null;
-			boolean inScope = false;
-
-			// Look for global variable + local variable
-			String id = as.getIdentifier().toString();
-			if (env.containsVar(id)) {
-				inScope = true;
-				leftExprType = env.getVarType(id);
-
-			// Look for instance variable
-			} else {
-				if (isInClass && classEnv.getFieldEnv().containsKey(id)) {
-					inScope = true;
-					leftExprType = classEnv.getFieldEnv().get(id);
-				}
-			}
-
-			if (!inScope) {
-				String s = "Name " + id + " cannot be resolved";
-				SemanticErrorObject seo = new SemanticErrorObject(
-						as.getIdentifier().getLineNumber(), 
-						as.getIdentifier().getColumnNumber(),
-						s);
-				Main.handleSemanticError(seo);
-			}
-			
-			if (!(leftExprType instanceof VarType)) {
+			leftType = (VarType) dotableExprType;
+		}
+		// a[i] = 3;
+		else if (index == 1) {	
+			if (!(dotableExprType instanceof VarType)) {
 				String s = "The type of the expression must be an array type "
-						+ "but it resolved to " + leftExprType.toString();
+						+ "but it resolved to " + dotableExprType.toString();
 				SemanticErrorObject seo = new SemanticErrorObject(
-						as.getIdentifier().getLineNumber(), 
-						as.getIdentifier().getColumnNumber(),
+						de.getLineNumber(), 
+						de.getColumnNumber(),
 						s);
 				Main.handleSemanticError(seo);
 			}
 			
-			VarType idType = (VarType) env.getVarType(id);
+			VarType idType = (VarType) dotableExprType;
 			
-			// check that the identifier is of ARRAY TYPE
+			// check that the dotableExpr is of ARRAY TYPE
 			if (!idType.isArray()) {
 				String s = "The type of the expression must be an array type "
 						+ "but it resolved to " + idType.toString();
 				SemanticErrorObject seo = new SemanticErrorObject(
-						as.getIdentifier().getLineNumber(), 
-						as.getIdentifier().getColumnNumber(),
-						s);
+						de.getLineNumber(), de.getColumnNumber(), s);
 				Main.handleSemanticError(seo);
 			}
 			
-			int newDimensions = checkValidDimensions(idType, as.getIndexedBrackets(), as.getIdentifier());
+			// Check that the dimensions are valid
+			if (idType.getNumBrackets() < as.getIndexedBrackets().getNumBrackets()){
+				String msg = "The type of the expression must "
+						+ "be an array type but it resolved to " + idType.toString();
+				SemanticErrorObject seo = new SemanticErrorObject(
+						de.getLineNumber(), de.getColumnNumber(), msg);
+				Main.handleSemanticError(seo);
+			}
+			int newDimensions = idType.getNumBrackets() - as.getIndexedBrackets().getNumBrackets();
 			leftType = new VarType(idType.getElementType(), newDimensions);
 			
 			as.getExpr().accept(this);
 			rightType = tempType;
-		
-		//ex: f(3)[0] = "herro"
-		} else if (index == 2){
-			as.getFunctionCall().accept(this);
-			VType functionCallType = tempType;
-			if (!(functionCallType instanceof VarType)) {
-				String s;
-				if (functionCallType instanceof TupleType) {
-					s = "Expected variable type, but found tuple type";
-				} else if (functionCallType instanceof UnitType) {
-					s = "Expected variable type, but found unit type";
-				} else {
-					s = "Expected variable type, but found incompatible type";
-				}
-				SemanticErrorObject seo = new SemanticErrorObject(
-						as.getFunctionCall().getLineNumber(), 
-						as.getFunctionCall().getColumnNumber(),
-						s
-						);
-				Main.handleSemanticError(seo);
-			}
 
-			VarType funcCallType = (VarType) functionCallType;
-
-			// check that the function call return type is of ARRAY TYPE
-			if (!funcCallType.isArray()) {
-				String s = "The type of the expression must be an array type "
-						+ "but it resolved to " + funcCallType.toString();
-				SemanticErrorObject seo = new SemanticErrorObject(
-						as.getIdentifier().getLineNumber(), 
-						as.getIdentifier().getColumnNumber(),
-						s);
-				Main.handleSemanticError(seo);
-			}
-			
-			int newDimensions = checkValidDimensions(funcCallType, 
-					as.getIndexedBrackets(), as.getIdentifier());
-			leftType = new VarType(funcCallType.getElementType(), newDimensions);
-			
-			as.getExpr().accept(this);
-			rightType = tempType;
-			
 		}
 		
-		// Index = 1 if foo[2] = 3;  2 if foo()[2] = 3;.
-		if (index == 1 || index == 2) {
+		// Visit RHS of assignment stmt
+		as.getExpr().accept(this);
+		rightType = tempType;
+		
+		// indexed expression assignment stmt
+		if (index == 1) {
 			// check that all the indices inside indexedBrackets are ints
 			List<Expr> exprs = as.getIndexedBrackets().getContent();
 			for (Expr e: exprs) {
@@ -2016,32 +1946,7 @@ public class TypeCheckVisitor implements ASTVisitor {
 		stmtType = new UnitType();
 		tempType = new UnitType();
 	}
-	
-	private int checkValidDimensions(VarType idType, IndexedBrackets indexedBrackets, Object o) {
-		String msg = "";
-		int lineNum = 0;
-		int colNum = 0;
-		if (o instanceof Identifier) {
-			Identifier id = (Identifier) o;
-			msg = "Array " + id.getTheValue() + " does not have that many dimensions.";
-			lineNum = id.getLineNumber();
-			colNum = id.getColumnNumber();
-		} else if (o instanceof FunctionCall) {
-			FunctionCall fc = (FunctionCall) o;
-			msg = "Return type of function " + fc.getIdentifier().toString() + 
-					" does not have that many dimensions.";
-			lineNum = fc.getLineNumber();
-			colNum = fc.getColumnNumber();
-		} 
-		
-		if (idType.getNumBrackets() < indexedBrackets.getNumBrackets()){
-			SemanticErrorObject seo = new SemanticErrorObject(
-					lineNum, colNum, msg);
-			Main.handleSemanticError(seo);
-		}
-		return idType.getNumBrackets() - indexedBrackets.getNumBrackets();
-	}
-	
+
 	/**
 	 * Convert a VType to ABI string
 	 * Used for converting function params/returns

@@ -264,6 +264,9 @@ public class dohMyGod {
 		Dog d = new Dog();
 		CFGTester tester = new CFGTester();
 		boolean same = a == d;
-		boolean same2 = d==tester;
+		
+		String s = null;
+		String s2 = null;
+		boolean equalaasss = s2.equals(s2);
 	}
 }

@@ -262,21 +262,8 @@ public class ClassType implements VType{
 		
 		// if they extend different superclasses, return false
 		String argSuperClassName = argClassType.getSuperClassName();
-		
-		if (argSuperClassName == null) {
-			if (superClassName != null) {
-				return false;
-			}
-		}
-		else {
-			if (superClassName != null) {
-				if (!argSuperClassName.equals(superClassName)) {
-					return false;
-				}
-			}
-			else {
-				return false;
-			}
+		if (!argSuperClassName.equals(superClassName)) {
+			return false;
 		}
 		
 		// check that all method match EXACTLY
@@ -301,6 +288,44 @@ public class ClassType implements VType{
 			return false;
 		}
 		
+		return true;
+	
+	}
+	
+	/**
+	 * 
+	 * @param argClassType
+	 * @return returns true if 
+	 * 		1) class names are the same 
+	 * 		2) same superclass
+	 * 		3) all method signatures match exactly IN ORDER
+	 * 		4) number of methods are equal
+	 */
+	public boolean compareInterfaceClassSignatures(ClassType argClassType) {
+		
+		// if class names are different, return false
+		if (!argClassType.getClassName().equals(className)) {
+			return false;
+		}
+		
+		// if they extend different superclasses, return false
+		String argSuperClassName = argClassType.getSuperClassName();
+		if (!argSuperClassName.equals(superClassName)) {
+			return false;
+		}
+		
+		// check that all method match EXACTLY
+		List<String> argOrderedMethods = argClassType.getOrderedMethods();
+		if (orderedMethods.size() != argOrderedMethods.size()) {
+			return false;
+		}
+		
+		for (int i = 0; i < argOrderedMethods.size(); i++) {
+			if (!orderedMethods.get(i).equals(argOrderedMethods.get(i))) {
+				return false;
+			}
+		}
+				
 		return true;
 	
 	}

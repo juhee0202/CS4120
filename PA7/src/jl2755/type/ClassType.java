@@ -47,6 +47,14 @@ public class ClassType implements VType{
 			FunType funType = new FunType(method);
 			String name = method.getIdentifier().toString();
 			String ABIName = classMethodToABIName(className, name, funType);
+			if (methodEnv.containsKey(name)) {
+				String s = "Method " + name + " is already declared in " + className;
+				SemanticErrorObject seo = new SemanticErrorObject(
+						method.getIdentifier().getLineNumber(), 
+						method.getIdentifier().getColumnNumber(),
+						s);
+				Main.handleSemanticError(seo);
+			}
 			methodEnv.put(name, funType);
 			orderedMethods.add(ABIName);
 		}
@@ -78,6 +86,14 @@ public class ClassType implements VType{
 				VarDecl varDecl = field.getVarDecl();
 				fieldName = varDecl.getIdentifier().toString();
 				fieldType = new VarType(varDecl);
+				if (fieldEnv.containsKey(fieldName)) {
+					String s = fieldName + " is already declared in " + className;
+					SemanticErrorObject seo = new SemanticErrorObject(
+							varDecl.getIdentifier().getLineNumber(), 
+							varDecl.getIdentifier().getColumnNumber(),
+							s);
+					Main.handleSemanticError(seo);
+				}
 				fieldEnv.put(fieldName, fieldType);
 				orderedFields.add(fieldName);
 				break;
@@ -86,6 +102,14 @@ public class ClassType implements VType{
 				for (Identifier id: tupleDecl.getAllIdentifiers()) {
 					fieldName = id.getTheValue();
 					fieldType = new VarType(tupleDecl.getType());
+					if (fieldEnv.containsKey(fieldName)) {
+						String s = fieldName + " is already declared in " + className;
+						SemanticErrorObject seo = new SemanticErrorObject(
+								id.getLineNumber(), 
+								id.getColumnNumber(),
+								s);
+						Main.handleSemanticError(seo);
+					}
 					fieldEnv.put(fieldName, fieldType);
 					orderedFields.add(fieldName);
 				}
@@ -101,6 +125,14 @@ public class ClassType implements VType{
 			String methodName = method.getIdentifier().getTheValue();
 			String ABIName = classMethodToABIName(className, methodName, funType);
 			method.setABIName(ABIName);
+			if (methodEnv.containsKey(methodName)) {
+				String s = "Method " + methodName + " is already declared in " + className;
+				SemanticErrorObject seo = new SemanticErrorObject(
+						method.getIdentifier().getLineNumber(), 
+						method.getIdentifier().getColumnNumber(),
+						s);
+				Main.handleSemanticError(seo);
+			}
 			methodEnv.put(methodName, funType);
 			orderedMethods.add(ABIName);
 		}

@@ -1104,6 +1104,8 @@ public class Main {
 				assert(d instanceof GlobalDecl);
 				GlobalDecl gdView = (GlobalDecl) d;
 				VarType type;
+				Identifier id;
+				String varName;
 				switch (gdView.getType()) {
 				case SHORT_TUPLE_DECL:
 					ShortTupleDecl std = gdView.getShortTupleDecl();
@@ -1111,17 +1113,40 @@ public class Main {
 					Type t = std.getType();
 					type = new VarType(t);
 					for (Identifier i : list) {
+						varName = i.toString();
+						if (globalEnv.containsVar(varName)) {
+							String s = "Duplicate variable declaration found for " + varName;
+							SemanticErrorObject seo = new SemanticErrorObject(
+									i.getLineNumber(), i.getColumnNumber(), s);
+							handleSemanticError(seo);
+						}
 						globalEnv.put(i.toString(), type);
 					}
 					break;
 				case SIMPLE_VAR_INIT:
 					SimpleVarInit svi = gdView.getSimpleVarInit();
 					type = new VarType(svi.getPrimitiveType());
-					globalEnv.put(svi.getIdentifier().toString(), type);
+					id = svi.getIdentifier();
+					varName = id.toString();
+					if (globalEnv.containsVar(varName)) {
+						String s = "Duplicate variable declaration found for " + varName;
+						SemanticErrorObject seo = new SemanticErrorObject(
+								id.getLineNumber(), id.getColumnNumber(), s);
+						handleSemanticError(seo);
+					}
+					globalEnv.put(varName, type);
 					break;
 				case VAR_DECL:
 					VarDecl vd = gdView.getVarDecl();
 					type = new VarType(gdView.getVarDecl());
+					id = vd.getIdentifier();
+					varName = id.toString();
+					if (globalEnv.containsVar(varName)) {
+						String s = "Duplicate variable declaration found for " + varName;
+						SemanticErrorObject seo = new SemanticErrorObject(
+								id.getLineNumber(), id.getColumnNumber(), s);
+						handleSemanticError(seo);
+					}
 					globalEnv.put(vd.getIdentifier().toString(), type);
 					break;
 				}

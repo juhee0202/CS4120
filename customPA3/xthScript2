@@ -95,6 +95,7 @@ xic ("Test --typecheck -O") ["../customPA3"] "-libpath $(testpath) --typecheck -
     global_decl4.xi;
     global_decl5.xi;
     global_decl6.xi;
+    global_decl7.xi;
     module1.xi;
     neighbor.xi;
     new01.xi;

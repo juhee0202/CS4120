@@ -34,6 +34,7 @@ import jl2755.ast.Identifier;
 import jl2755.ast.IfStmt;
 import jl2755.ast.IndexedBrackets;
 import jl2755.ast.Literal;
+import jl2755.ast.MixedArrayType;
 import jl2755.ast.MixedBrackets;
 import jl2755.ast.Null;
 import jl2755.ast.PrimitiveType;
@@ -75,6 +76,8 @@ public class TypeCheckVisitor implements ASTVisitor {
 	private boolean negativeNumber = false; // needed for UnaryExpr, Literal
 	private boolean isInClass = false;	// Needed for this keyword
 	private boolean isInFunctionDecl = false; // Needed for this keyword
+	private boolean isInGlobalDecl = false;
+	private boolean isInFieldDecl = false;
 	private int whileCount;				// number of nested while loops we're currently in
 	private Set<String> labelSet;
 	
@@ -1496,14 +1499,17 @@ public class TypeCheckVisitor implements ASTVisitor {
 		 * making sure that the id is never declared before 
 		 */
 		Identifier id = vd.getIdentifier();
-		if (env.containsVar(id.getTheValue())) {
-			// Check if the identifier is declared before
-			String s = vd.getIdentifier().toString() + " is already declared";
-			SemanticErrorObject seo = new SemanticErrorObject(
-					vd.getIdentifier().getLineNumber(), 
-					vd.getIdentifier().getColumnNumber(),
-					s);
-			Main.handleSemanticError(seo);
+		
+		if (!isInGlobalDecl) {
+			if (env.containsVar(id.getTheValue())) {
+				// Check if the identifier is declared before
+				String s = vd.getIdentifier().toString() + " is already declared";
+				SemanticErrorObject seo = new SemanticErrorObject(
+						vd.getIdentifier().getLineNumber(), 
+						vd.getIdentifier().getColumnNumber(),
+						s);
+				Main.handleSemanticError(seo);
+			}	
 		}
 		
 		/* Typecheck the type */
@@ -1543,8 +1549,10 @@ public class TypeCheckVisitor implements ASTVisitor {
 		}
 		
 		/* Update the env & stack */
-		env.put(id.getTheValue(), varType);
-		stack.push(id.getTheValue());
+		if (!(isInGlobalDecl || isInFieldDecl)) { 
+			env.put(id.getTheValue(), varType);
+			stack.push(id.getTheValue());
+		}
 		
 		/* Update global variables */
 		stmtType = new UnitType();
@@ -1707,19 +1715,9 @@ public class TypeCheckVisitor implements ASTVisitor {
 		List<Decl> decls = cb.getAllDecls();
 		// decl can be either 1) GlobalDecl 2) FunctionDecl
 		isInClass = true;
-		
-		// Start of scope
-		stack.add("_");
-		
+
 		for (Decl decl : decls) {
 			decl.accept(this);
-		}
-		
-		// Pop out of scope
-		String id = stack.pop();
-		while (!id.equals("_")) {
-			env.removeVar(id);
-			id = stack.pop();
 		}
 		
 		isInClass = false;
@@ -1826,12 +1824,14 @@ public class TypeCheckVisitor implements ASTVisitor {
 	}
 
 	/**
-	 * Call the accept/visit on the underlying decl/init
+	 * Global variables are put in the env during pre-typecheck phase.
+	 * Make sure the type is valid if it's an Object type
+	 * Watch out for array initialization with size 
 	 */
 	@Override
 	public void visit(GlobalDecl gd) {
-		GlobalDecl.Type gdType = gd.getType();
-		switch(gdType) {
+		isInGlobalDecl = true;
+		switch(gd.getType()) {
 		case SHORT_TUPLE_DECL:
 			gd.getShortTupleDecl().accept(this);
 			break;
@@ -1842,6 +1842,7 @@ public class TypeCheckVisitor implements ASTVisitor {
 			gd.getSimpleVarInit().accept(this);
 			break;
 		}
+		isInGlobalDecl = false;
 	}
 
 	@Override
@@ -1872,24 +1873,31 @@ public class TypeCheckVisitor implements ASTVisitor {
 		}
 		
 		/* Typecheck the identifiers */
-		List<Identifier> ids = std.getAllIdentifiers();
-		for (Identifier id : ids) {
-			// make sure the variable is never declared before
-			if (env.containsVar(id.getTheValue())) {
-				String s = id.toString() + " is already declared";
-				SemanticErrorObject seo = new SemanticErrorObject(
-						id.getLineNumber(), id.getColumnNumber(), s);
-				Main.handleSemanticError(seo);
+		if (!isInGlobalDecl) {
+			List<Identifier> ids = std.getAllIdentifiers();
+			for (Identifier id : ids) {
+				// make sure the variable is never declared before
+				if (env.containsVar(id.getTheValue())) {
+					String s = id.toString() + " is already declared";
+					SemanticErrorObject seo = new SemanticErrorObject(
+							id.getLineNumber(), id.getColumnNumber(), s);
+					Main.handleSemanticError(seo);
+				}
+				
+				// put it in the env
+				env.put(id.getTheValue(), varType);
+				stack.push(id.getTheValue());
 			}
-			
-			// put it in the env
-			env.put(id.getTheValue(), varType);
-			stack.push(id.getTheValue());
 		}
 	}
 
+	/**
+	 * Field variables are put into the class env in the pre-typecheck phase.
+	 * Make sure the field variable is not the same as any global variable.
+	 */
 	@Override
 	public void visit(FieldDecl fieldDecl) {
+		isInFieldDecl = true;
 		switch(fieldDecl.getType()) {
 		case SHORT_TUPLE_DECL:
 			fieldDecl.getShortTupleDecl().accept(this);
@@ -1898,6 +1906,7 @@ public class TypeCheckVisitor implements ASTVisitor {
 			fieldDecl.getVarDecl().accept(this);
 			break;
 		}
+		isInFieldDecl = false;
 	}
 
 	@Override
@@ -1907,14 +1916,17 @@ public class TypeCheckVisitor implements ASTVisitor {
 		 * ensuring that the id is never declared before
 		 */
 		Identifier id = svi.getIdentifier();
-		if (env.containsVar(id.getTheValue())){
-			String s = svi.getIdentifier().toString() + " is already declared";
-			SemanticErrorObject seo = new SemanticErrorObject(
-					svi.getIdentifier().getLineNumber(),
-					svi.getIdentifier().getColumnNumber(),
-					s);
-			Main.handleSemanticError(seo);
+		if (!(isInGlobalDecl || isInFieldDecl)) {
+			if (env.containsVar(id.getTheValue())){
+				String s = svi.getIdentifier().toString() + " is already declared";
+				SemanticErrorObject seo = new SemanticErrorObject(
+						svi.getIdentifier().getLineNumber(),
+						svi.getIdentifier().getColumnNumber(),
+						s);
+				Main.handleSemanticError(seo);
+			}
 		}
+
 		
 		// make sure that type is valid
 		VType leftType;
@@ -1938,9 +1950,11 @@ public class TypeCheckVisitor implements ASTVisitor {
 		}
 		
 		/* Update env & stack */
-		String idString = id.toString();
-		env.put(idString, leftType);
-		stack.push(idString);
+		if (!(isInGlobalDecl || isInFieldDecl)) {
+			String idString = id.toString();
+			env.put(idString, leftType);
+			stack.push(idString);
+		}
 		
 		/* Update global variables */
 		stmtType = new UnitType();

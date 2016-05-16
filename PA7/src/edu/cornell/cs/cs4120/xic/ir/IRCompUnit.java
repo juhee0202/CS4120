@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import edu.cornell.cs.cs4120.util.SExpPrinter;
 import edu.cornell.cs.cs4120.xic.ir.visit.AggregateVisitor;
@@ -17,6 +18,7 @@ import jl2755.visitor.IRTreeVisitor;
 public class IRCompUnit extends IRNode {
     private String name;
     private Map<String, IRFuncDecl> functions;
+    private Set<IRDispatchVector> dispatchVectors;
 
     public IRCompUnit(String name) {
         this.name = name;
@@ -26,6 +28,12 @@ public class IRCompUnit extends IRNode {
     public IRCompUnit(String name, Map<String, IRFuncDecl> functions) {
         this.name = name;
         this.functions = functions;
+    }
+    
+    public IRCompUnit(String name, Map<String, IRFuncDecl> functions, Set<IRDispatchVector> dvs) {
+        this.name = name;
+        this.functions = functions;
+        dispatchVectors = dvs;
     }
 
     public void appendFunc(IRFuncDecl func) {

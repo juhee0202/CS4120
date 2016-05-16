@@ -50,6 +50,10 @@ import jl2755.ast.Interface;
 import jl2755.ast.InterfaceClassDecl;
 import jl2755.ast.InterfaceFunc;
 import jl2755.ast.Program;
+import jl2755.ast.ShortTupleDecl;
+import jl2755.ast.SimpleVarInit;
+import jl2755.ast.Type;
+import jl2755.ast.VarDecl;
 import jl2755.controlflow.ControlFlowGraph;
 import jl2755.controlflow.SSAFormConverter;
 import jl2755.controlflow.SSAFormGraph;
@@ -65,7 +69,9 @@ import jl2755.type.ClassType;
 import jl2755.type.EmptyClassType;
 import jl2755.type.FunType;
 import jl2755.type.TupleType;
+import jl2755.type.UnitType;
 import jl2755.type.VType;
+import jl2755.type.VarType;
 import jl2755.visitor.ConstantFolderVisitor;
 import jl2755.visitor.Environment;
 import jl2755.visitor.LIRVisitor;
@@ -103,6 +109,7 @@ public class Main {
 	public static HashMap<String, Symbol> fileToSymbol;
 	public static HashMap<String, Program> fileToAST;
 	public static HashMap<String, IRCompUnit> fileToIR;
+	public static HashMap<Program, Environment> programToEnv;
 	
 	public static Set<String> IRPhases;
 	public static boolean initialWritten = false;
@@ -120,6 +127,7 @@ public class Main {
 		fileToSymbol = new HashMap<String, Symbol>();
 		fileToAST = new HashMap<String, Program>();
 		fileToIR = new HashMap<String, IRCompUnit>();
+		programToEnv = new HashMap<Program, Environment>();
 		IRPhases = new HashSet<String>();
 		CFGPhases = new HashSet<String>();
 		
@@ -449,6 +457,7 @@ public class Main {
 			
 			// Update global map
 			fileToAST.put(filename, result);
+			programToEnv.put(result, env);
 
 			bw.write("Valid Xi Program");
 			bw.close();
@@ -505,8 +514,10 @@ public class Main {
 			System.out.println("[xic] Generating intermediate code");
 
 			Program program;
+			Environment env;
 			if (fileToAST.containsKey(filename)) {
 				program = fileToAST.get(filename);
+				env = programToEnv.get(program);
 			} else {
 				Symbol s;
 				if (fileToSymbol.containsKey(filename)) {
@@ -519,7 +530,7 @@ public class Main {
 					fileToSymbol.put(filename, s);
 				}
 				program = (Program) s.value;
-				Environment env = checkInterfaces(program, rmExtension);
+				env = checkInterfaces(program, rmExtension);
 				TypeCheckVisitor visitor = new TypeCheckVisitor(env);
 				program.accept(visitor);
 				
@@ -531,10 +542,11 @@ public class Main {
 				
 				// Update global map
 				fileToAST.put(filename, program);
+				programToEnv.put(program, env);
 			}
 
 			/* Translate to MIR */
-			MIRVisitor mir = new MIRVisitor();
+			MIRVisitor mir = new MIRVisitor(env);
 			program.accept(mir);
 
 			// Output MIR
@@ -688,8 +700,10 @@ public class Main {
 				result = (IRCompUnit) fileToIR.get(filename).copy();
 			} else {
 				Program program;
+				Environment env;
 				if (fileToAST.containsKey(filename)) {
 					program = fileToAST.get(filename);
+					env = programToEnv.get(program);
 				} else {
 					Symbol s;
 					if (fileToSymbol.containsKey(filename)) {
@@ -702,7 +716,7 @@ public class Main {
 						fileToSymbol.put(filename, s);
 					}
 					program = (Program) s.value;
-					Environment env = checkInterfaces(program, rmExtension);
+					env = checkInterfaces(program, rmExtension);
 					TypeCheckVisitor visitor = new TypeCheckVisitor(env);
 					program.accept(visitor);
 					
@@ -714,8 +728,9 @@ public class Main {
 					
 					// Update global map
 					fileToAST.put(filename, program);
+					programToEnv.put(program, env);
 				}
-				MIRVisitor mir = new MIRVisitor();
+				MIRVisitor mir = new MIRVisitor(env);
 				program.accept(mir);
 				LIRVisitor lir = new LIRVisitor();
 				mir.program.accept(lir);
@@ -772,8 +787,10 @@ public class Main {
 
 			IRCompUnit result;
 			Program program;
+			Environment env;
 			if (fileToAST.containsKey(filename)) {
 				program = fileToAST.get(filename);
+				env = programToEnv.get(program);
 			} else {
 				Symbol s;
 				if (fileToSymbol.containsKey(filename)) {
@@ -786,7 +803,7 @@ public class Main {
 					fileToSymbol.put(filename, s);
 				}
 				program = (Program) s.value;
-				Environment env = checkInterfaces(program, rmExtension);
+				env = checkInterfaces(program, rmExtension);
 				TypeCheckVisitor visitor = new TypeCheckVisitor(env);
 				program.accept(visitor);
 				
@@ -798,9 +815,10 @@ public class Main {
 				
 				// Update global map
 				fileToAST.put(filename, program);
+				programToEnv.put(program, env);
 			}
 			
-			MIRVisitor mir = new MIRVisitor();
+			MIRVisitor mir = new MIRVisitor(env);
 			program.accept(mir);
 			LIRVisitor lir = new LIRVisitor();
 			mir.program.accept(lir);
@@ -1056,7 +1074,12 @@ public class Main {
 					handleSemanticError(seo);
 				} else {
 					sourceEnv.putClass(className, classType);
-					globalEnv.putClass(className, classType);
+					if (globalEnv.containsClass(className)) {
+						ClassType interfaceClass = globalEnv.getClassType(className);
+						interfaceClass.addFieldsToClassType((ClassDecl) d);
+					} else {
+						globalEnv.putClass(className, classType);
+					}
 				}
 			} else if (d instanceof FunctionDecl) {
 				FunType funType = new FunType((FunctionDecl) d);
@@ -1076,6 +1099,31 @@ public class Main {
 				} else {
 					sourceEnv.put(name, funType);
 					globalEnv.put(name, funType);
+				}
+			} else {
+				assert(d instanceof GlobalDecl);
+				GlobalDecl gdView = (GlobalDecl) d;
+				VarType type;
+				switch (gdView.getType()) {
+				case SHORT_TUPLE_DECL:
+					ShortTupleDecl std = gdView.getShortTupleDecl();
+					List<Identifier> list = std.getAllIdentifiers();
+					Type t = std.getType();
+					type = new VarType(t);
+					for (Identifier i : list) {
+						globalEnv.put(i.toString(), type);
+					}
+					break;
+				case SIMPLE_VAR_INIT:
+					SimpleVarInit svi = gdView.getSimpleVarInit();
+					type = new VarType(svi.getPrimitiveType());
+					globalEnv.put(svi.getIdentifier().toString(), type);
+					break;
+				case VAR_DECL:
+					VarDecl vd = gdView.getVarDecl();
+					type = new VarType(gdView.getVarDecl());
+					globalEnv.put(vd.getIdentifier().toString(), type);
+					break;
 				}
 			}
 		}
@@ -1242,7 +1290,7 @@ public class Main {
 				// Duplicate class across files
 				if (globalEnv.containsClass(name)) {
 					ClassType type = globalEnv.getClassType(name);
-					if (!type.compareClassSignatures(tempType)) {
+					if (!type.compareInterfaceClassSignatures(tempType)) {
 						Identifier id = classDecl.getClassName();
 						String e = "Mismatched class declaration found " + name;
 						SemanticErrorObject seo = new SemanticErrorObject(

@@ -2800,5 +2800,11 @@ public class TilingVisitor implements IRTreeVisitor {
 		}
 		functionTile.setInstructions(instructions);
 	}
+
+	@Override
+	public void visit(IRDispatchVector irMethodTable) {
+		// TODO Auto-generated method stub
+		
+	}
 	
 }

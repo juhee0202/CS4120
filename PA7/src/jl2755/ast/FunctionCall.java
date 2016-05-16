@@ -38,6 +38,7 @@ public class FunctionCall implements Expr,NakedStmt {
     private boolean isSurroundedByParentheses = false;
     private int numReturns;
 
+    // foo(arg:int)
     public FunctionCall(Identifier id) {
         identifier = id;
         identifier_col = id.getColumnNumber();
@@ -45,6 +46,7 @@ public class FunctionCall implements Expr,NakedStmt {
         index = 0;
     }
     
+    // foo()
 	public FunctionCall(Identifier id, FunctionArg fArg) {
 		identifier = id;
         identifier_col = id.getColumnNumber();

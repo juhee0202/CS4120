@@ -79,6 +79,10 @@ xic ("Test --typecheck -O") ["../customPA3"] "-libpath $(testpath) --typecheck -
     assign04.xi;
     assign05.xi;
     assign06.xi;
+    binary01.xi;
+    binary02.xi;
+    binary03.xi;
+    binary04.xi;
     extend1.xi;
     extend4.xi;
     extend5.xi;

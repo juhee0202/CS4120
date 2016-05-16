@@ -259,5 +259,62 @@ public class dohMyGod {
 		FunctionDecl fd = new FunctionDecl(new Identifier("foo", 0, 0), fp, rt, bs);
 		hm1.put("foo", new FunType(fd));
 		int[] x;
+		
+		Animal a = new Animal();
+		Dog d = new Dog();
+		CFGTester tester = new CFGTester();
+		boolean same = a == d;
+		
+		String s = null;
+		String s2 = null;
+		boolean equalaasss = s2.equals(s2);
+	}
+	
+	@Test
+	public void testClass() {
+		class VType {
+			VType() {
+				return;
+			}
+			
+			public boolean superClass() {
+				return true;
+			}
+			
+			@Override 
+			public String toString() {
+				return "super";
+			}
+		}
+		class VarType extends VType {
+			VarType() {
+				return;
+			}
+			
+			public boolean subClass() {
+				return false;
+			}
+			
+			@Override 
+			public String toString() {
+				return "sub";
+			}
+		}
+		
+		
+		VType temptype = new VarType();
+		System.out.println(temptype.toString());
+		VarType type = (VarType) temptype;
+		VType type2 = temptype;
+		System.out.println(type);
+		System.out.println(type2);
+		
+		System.out.println(temptype.superClass());
+		System.out.println(type.superClass());
+		System.out.println(type2.superClass());
+		
+//		System.out.println(temptype.subClass());
+//		System.out.println(type.subClass());
+//		System.out.println(type2.subClass());
 	}
 }

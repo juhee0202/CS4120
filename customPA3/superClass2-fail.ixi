@@ -1,9 +1,0 @@
-use superClass2-fail2
-
-class Jeffrey extends Person {
-	initJeffrey()
-
-	walk(x:int):bool
-
-	talk(x:int[]):bool
-}

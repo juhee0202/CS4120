@@ -737,4 +737,10 @@ public class LIRVisitor implements IRTreeVisitor{
 		}
 		return trace;
 	}
+
+	@Override
+	public void visit(IRMethodTable irMethodTable) {
+		// TODO Auto-generated method stub
+		
+	}
 }

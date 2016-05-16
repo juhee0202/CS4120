@@ -216,6 +216,10 @@ public class VarType implements VType {
 		return isObject;
 	}
 	
+	/**
+	 * 
+	 * @return true if the VarType is an int with numBrackets == 0
+	 */
 	public boolean isInt() {
 		return elementType.equals("int") && (numBrackets == 0);
 	}

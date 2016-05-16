@@ -351,12 +351,27 @@ public class TypeCheckVisitor implements ASTVisitor {
 		int index = as.getIndex();
 		VarType leftType = null;
 		VType rightType = null;
-		
+
 		// ex: a = 3
-		if (index == 0) { 									
-			// Identifier visit checks if its in env
+		if (index == 0) { 								
+
+			boolean inScope = false;
+
+			// Look for global variable + local variable
 			String id = as.getIdentifier().toString();
-			if (!(env.containsVar(id))) {
+			if (env.containsVar(id)) {
+				inScope = true;
+				leftType = env.getVarType(id);
+
+			// Look for instance variable
+			} else {
+				if (isInClass && classEnv.getFieldEnv().containsKey(id)) {
+					inScope = true;
+					leftType = classEnv.getFieldEnv().get(id);
+				}
+			}
+
+			if (!inScope) {
 				String s = "Name " + id + " cannot be resolved";
 				SemanticErrorObject seo = new SemanticErrorObject(
 						as.getIdentifier().getLineNumber(), 
@@ -365,16 +380,40 @@ public class TypeCheckVisitor implements ASTVisitor {
 				Main.handleSemanticError(seo);
 			}
 			
-			leftType = env.getVarType(id);
 			as.getExpr().accept(this);
 			rightType = tempType;
 			
 		//ex: arr[2] = 3;
-		} else if (index == 1) {							
-			// Check that the identifier can be resolved to a VARIABLE in the env
+		} else if (index == 1) {	
+			VType leftExprType = null;
+			boolean inScope = false;
+
+			// Look for global variable + local variable
 			String id = as.getIdentifier().toString();
-			if (!env.containsVar(id)) {
-				String s = "Name " + id + " cannot be resolved to a variable";
+			if (env.containsVar(id)) {
+				inScope = true;
+				leftExprType = env.getVarType(id);
+
+			// Look for instance variable
+			} else {
+				if (isInClass && classEnv.getFieldEnv().containsKey(id)) {
+					inScope = true;
+					leftExprType = classEnv.getFieldEnv().get(id);
+				}
+			}
+
+			if (!inScope) {
+				String s = "Name " + id + " cannot be resolved";
+				SemanticErrorObject seo = new SemanticErrorObject(
+						as.getIdentifier().getLineNumber(), 
+						as.getIdentifier().getColumnNumber(),
+						s);
+				Main.handleSemanticError(seo);
+			}
+			
+			if (!(leftExprType instanceof VarType)) {
+				String s = "The type of the expression must be an array type "
+						+ "but it resolved to " + leftExprType.toString();
 				SemanticErrorObject seo = new SemanticErrorObject(
 						as.getIdentifier().getLineNumber(), 
 						as.getIdentifier().getColumnNumber(),
@@ -410,20 +449,20 @@ public class TypeCheckVisitor implements ASTVisitor {
 				if (functionCallType instanceof TupleType) {
 					s = "Expected variable type, but found tuple type";
 				} else if (functionCallType instanceof UnitType) {
-					 s = "Expected variable type, but found unit type";
+					s = "Expected variable type, but found unit type";
 				} else {
-					 s = "Expected variable type, but found incompatible type";
+					s = "Expected variable type, but found incompatible type";
 				}
 				SemanticErrorObject seo = new SemanticErrorObject(
-											as.getFunctionCall().getLineNumber(), 
-											as.getFunctionCall().getColumnNumber(),
-											s
-											);
+						as.getFunctionCall().getLineNumber(), 
+						as.getFunctionCall().getColumnNumber(),
+						s
+						);
 				Main.handleSemanticError(seo);
 			}
-			
+
 			VarType funcCallType = (VarType) functionCallType;
-			
+
 			// check that the function call return type is of ARRAY TYPE
 			if (!funcCallType.isArray()) {
 				String s = "The type of the expression must be an array type "
@@ -435,7 +474,8 @@ public class TypeCheckVisitor implements ASTVisitor {
 				Main.handleSemanticError(seo);
 			}
 			
-			int newDimensions = checkValidDimensions(funcCallType, as.getIndexedBrackets(), as.getIdentifier());
+			int newDimensions = checkValidDimensions(funcCallType, 
+					as.getIndexedBrackets(), as.getIdentifier());
 			leftType = new VarType(funcCallType.getElementType(), newDimensions);
 			
 			as.getExpr().accept(this);
@@ -443,6 +483,7 @@ public class TypeCheckVisitor implements ASTVisitor {
 			
 		}
 		
+		// Index = 1 if foo[2] = 3;  2 if foo()[2] = 3;.
 		if (index == 1 || index == 2) {
 			// check that all the indices inside indexedBrackets are ints
 			List<Expr> exprs = as.getIndexedBrackets().getContent();

@@ -318,4 +318,13 @@ public class dohMyGod {
 //		System.out.println(type.subClass());
 //		System.out.println(type2.subClass());
 	}
+	class Dog extends Animal{
+		private int x;
+		public void bark() {
+			int x = 5;
+		}
+	}
+	class Animal {
+		
+	}
 }

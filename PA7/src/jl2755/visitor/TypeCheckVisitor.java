@@ -369,20 +369,6 @@ public class TypeCheckVisitor implements ASTVisitor {
 			as.getExpr().accept(this);
 			rightType = tempType;
 			
-//			if (tempType instanceof NullType) {
-//				if (leftType.isPrimitive()) {
-//					String s = "Type mismatch: cannot convert from null to " 
-//							+ leftType.getElementType();
-//					SemanticErrorObject seo = new SemanticErrorObject(
-//							as.getIdentifier().getLineNumber(), 
-//							as.getIdentifier().getColumnNumber(),
-//							s);
-//					Main.handleSemanticError(seo);
-//				} 
-//			} else {
-//				rightType = tempType;
-//			}
-			
 		//ex: arr[2] = 3;
 		} else if (index == 1) {							
 			// Check that the identifier can be resolved to a VARIABLE in the env
@@ -564,41 +550,37 @@ public class TypeCheckVisitor implements ASTVisitor {
 		}
 		VarType rightType = (VarType) tempType;
 		
-		if (!leftType.isPrimitiveBase() || !rightType.isPrimitiveBase()) {
-			if (leftType.isObject() || rightType.isObject()) {
-				String s = "Expected a primitive, but found an object " + 
-						tempType.toString();
+		BinaryOp op = be.getBinaryOp();
+		
+		// check that left & right expr have the same type
+		// EXCEPTION: if the operands are objects, then they can be related by hierarchy
+		if (leftType.isObject()) {
+			if (!(isSubTypeOf(leftType.getElementType(), rightType.getElementType()) || 
+				isSubTypeOf(rightType.getElementType(), leftType.getElementType()))) 
+			{
+				String s = "Incompatible operand types "  + leftType.getElementType() 
+						+ " and " + rightType.getElementType();
 				SemanticErrorObject seo = new SemanticErrorObject(
 						be.getLineNumber(), be.getColumnNumber(), s);
 				Main.handleSemanticError(seo);
 			}
-			else {
-				if (be.getBinaryOp() != BinaryOp.PLUS) {
-					String s = "Cannot perform a binary operation on"
-							+ " two non primitive objects";
-					SemanticErrorObject seo = new SemanticErrorObject(
-							be.getLineNumber(), be.getColumnNumber(), s);
-					Main.handleSemanticError(seo);
-				}
-			}
+				
 		}
-		
-		BinaryOp op = be.getBinaryOp();
-		
-		// check that left & right expr have the same type
-		if (!leftType.equals(rightType)) {
-			String s = "Mismatched types for binary operation " + op.toString();
-			SemanticErrorObject seo = new SemanticErrorObject(
-					be.getLineNumber(),
-					be.getColumnNumber(), 
-					s
-					);
-			Main.handleSemanticError(seo);
+		else {
+			if (!leftType.equals(rightType)) {
+				String s = "Mismatched types for binary operation " + op.toString();
+				SemanticErrorObject seo = new SemanticErrorObject(
+						be.getLineNumber(),
+						be.getColumnNumber(), 
+						s
+						);
+				Main.handleSemanticError(seo);
+			}
 		}
 		
 		/* + operator
 		 * 		(i) both int
-		 * 		(ii) both int arrays
+		 * 		(ii) any type of arrays
 		 */
 		if (op.toString().equals("+")) {
 			if (leftType.isInt()) {
@@ -617,21 +599,11 @@ public class TypeCheckVisitor implements ASTVisitor {
 			}
 		}
 		/* !=, == operator
-		 * 		(i) both are int/bool 
-		 * 		(ii) both are arrays with same element type
+		 * 		allow all types as long as left and right have the same type 
+		 * 		(or related by hierarchy in the case of OBJECTS only)
 		 */
 		else if (op.toString().equals("!=") || op.toString().equals("==")) {
-			if (leftType.isBool() ||leftType.isInt() || leftType.isArray()) {	
-				tempType = new VarType("bool", 0);
-			} else {
-				String s = "Invalid types for " + op.toString() + " operation.";
-				SemanticErrorObject seo = new SemanticErrorObject(
-						be.getLineNumber(),
-						be.getColumnNumber(), 
-						s
-						);
-				Main.handleSemanticError(seo);
-			}
+			tempType = new VarType("bool", 0);
 		}
 		/* 
 		 * <, <=, >, >= operator

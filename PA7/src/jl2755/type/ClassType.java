@@ -44,10 +44,12 @@ public class ClassType implements VType{
 		
 		List<InterfaceFunc> methods = intClassDecl.getMethods();
 		for (InterfaceFunc method: methods) {
-			methodEnv.put(method.getIdentifier().toString(), new FunType(method));
+			FunType funType = new FunType(method);
+			String name = method.getIdentifier().toString();
+			String ABIName = functionToABIName(name, funType);
+			methodEnv.put(ABIName, new FunType(method));
 			orderedMethods.add(method.getIdentifier().toString());
 		}
-
 	}
 	
 	public ClassType(ClassDecl classDecl) {
@@ -95,13 +97,76 @@ public class ClassType implements VType{
 		}
 		
 		for (FunctionDecl method: methods) {
+			FunType funType = new FunType(method);
 			String methodName = method.getIdentifier().getTheValue();
-			methodEnv.put(methodName, new FunType(method));
+			String ABIName = functionToABIName(methodName, funType);
+			method.setABIName(ABIName);
+			methodEnv.put(ABIName, new FunType(method));
 			orderedMethods.add(methodName);
 		}
 		
 		orderedFields = new ArrayList<String>();
 		orderedMethods = new ArrayList<String>();
+	}
+	
+	/**
+	 * @param fnName
+	 * @param fnType
+	 * @return ABI string translation of the function
+	 */
+	private String functionToABIName(String fnName, FunType fnType) {
+		String ABIName = "_I" + fnName + "_";
+		
+		String returnTypeString = "";
+		VType returnTypes = fnType.getReturnTypes();
+		if (returnTypes instanceof UnitType) {
+			returnTypeString = "p";
+		} else if (returnTypes instanceof VarType) {
+			returnTypeString = translateVTypeToABIString(returnTypes);
+		} else if (returnTypes instanceof TupleType) {
+			int numTypes = ((TupleType) returnTypes).numTypes();
+			returnTypeString = "t" + numTypes + translateVTypeToABIString(returnTypes);
+		}
+		
+		VType paramTypes = fnType.getParamTypes();
+		String paramTypesString = translateVTypeToABIString(paramTypes);
+		
+		return ABIName + returnTypeString + paramTypesString;
+	}
+	
+	/**
+	 * Convert a VType to ABI string
+	 * Used for converting function params/returns
+	 * @param VType t (t cannot be of FunType)
+	 * @return ABI string translation of t
+	 */
+	private String translateVTypeToABIString(VType t) {
+		String ABIString = "";
+		if (t instanceof VarType) {
+			if (((VarType) t).isArray()) {		// array
+				int numBrackets = ((VarType) t).getNumBrackets();
+				for (int i = 0; i < numBrackets; i++) {
+					ABIString += "a";
+				}
+				ABIString += ((VarType) t).getIsBool() ? "b" : "i";
+			} else if (((VarType) t).isInt()) {	// int
+				ABIString = "i";
+			} else {							// bool
+				ABIString = "b";
+			}
+		} else if (t instanceof TupleType) {
+			List<VType> tList = ((TupleType) t).getTypes();
+			for (VType tt : tList) {
+				assert(!(tt instanceof UnitType));
+				ABIString += translateVTypeToABIString(tt);
+			}
+		} else if (t instanceof ClassType) {
+			String className = ((ClassType) t).getClassName();
+			int len = className.length();
+			ABIString += "o" + len + className; 
+		}
+		
+		return ABIString;
 	}
 
 	public String getClassName() {
@@ -421,8 +486,8 @@ public class ClassType implements VType{
 		List<String> allMethods = new ArrayList<String>();
 		List<ClassType> superclasses = getSuperClasses(env);
 		for (int i = superclasses.size()-1; i >= 0; i--) {
-			List<String> classFields = superclasses.get(i).getOrderedMethods();
-			allMethods.addAll(classFields);
+			List<String> classMethods = superclasses.get(i).getOrderedMethods();
+			allMethods.addAll(classMethods);
 		}
 		return allMethods;
 	}

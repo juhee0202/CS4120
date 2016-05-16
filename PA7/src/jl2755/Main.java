@@ -69,6 +69,7 @@ import jl2755.type.ClassType;
 import jl2755.type.EmptyClassType;
 import jl2755.type.FunType;
 import jl2755.type.TupleType;
+import jl2755.type.UnitType;
 import jl2755.type.VType;
 import jl2755.type.VarType;
 import jl2755.visitor.ConstantFolderVisitor;

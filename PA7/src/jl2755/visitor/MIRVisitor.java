@@ -3,8 +3,10 @@ package jl2755.visitor;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import edu.cornell.cs.cs4120.xic.ir.*;
 import edu.cornell.cs.cs4120.xic.ir.interpret.Configuration;
@@ -629,17 +631,25 @@ public class MIRVisitor implements ASTVisitor{
 	@Override
 	public void visit(Program p) {
 		// Create dispatch vectors for all class types
+		Set<IRDispatchVector> dispatchVectors = new HashSet<IRDispatchVector>();
 		for (ClassType ct : env.getClassTypes()) {
+			List<String> methodTable = ct.getDispatchMethods(env);
+			List<String> fieldTable = ct.getDispatchFields(env);
 			classToDispatch.put(ct.getClassName(), ct.getDispatchMethods(env));
+			IRDispatchVector dispatchVector = new IRDispatchVector(ct.getClassName(),
+					methodTable, fieldTable);
+			dispatchVectors.add(dispatchVector);
 		}
-		
-		
-		
+
 		Map<String, IRFuncDecl> functions = new HashMap<String, IRFuncDecl>();
 		
+		// Visit all declarations: class, function, global
 		List<Decl> decls = p.getAllDecls();
 		for (Decl d: decls) {
 			d.accept(this);
+			if (d instanceof FunctionDecl) {
+				functions.put(((FunctionDecl) d).getABIName(), (IRFuncDecl) tempNode);
+			}
 		}
 		
 		
@@ -648,7 +658,7 @@ public class MIRVisitor implements ASTVisitor{
 //			fd.accept(this);
 //			functions.put(fd.getABIName(), (IRFuncDecl) tempNode);
 //		}
-		program = new IRCompUnit("Program", functions);
+		program = new IRCompUnit("Program", functions, dispatchVectors);
 	}
 
 	@Override

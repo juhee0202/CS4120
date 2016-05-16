@@ -15,7 +15,7 @@ import edu.cornell.cs.cs4120.xic.ir.IRFuncDecl;
 import edu.cornell.cs.cs4120.xic.ir.IRJump;
 import edu.cornell.cs.cs4120.xic.ir.IRLabel;
 import edu.cornell.cs.cs4120.xic.ir.IRMem;
-import edu.cornell.cs.cs4120.xic.ir.IRMethodTable;
+import edu.cornell.cs.cs4120.xic.ir.IRDispatchVector;
 import edu.cornell.cs.cs4120.xic.ir.IRMove;
 import edu.cornell.cs.cs4120.xic.ir.IRName;
 import edu.cornell.cs.cs4120.xic.ir.IRNode;
@@ -425,7 +425,7 @@ public class IRTreeEqualsVisitor implements IRTreeVisitor{
 	}
 
 	@Override
-	public void visit(IRMethodTable irMethodTable) {
+	public void visit(IRDispatchVector irMethodTable) {
 		// TODO Auto-generated method stub
 		
 	}

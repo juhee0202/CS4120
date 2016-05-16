@@ -319,12 +319,13 @@ public class dohMyGod {
 //		System.out.println(type2.subClass());
 	}
 	class Dog extends Animal{
-		private int x;
+		private int[] x;
 		public void bark() {
-			int x = 5;
+			new Animal().name[0][0] = "Tobi";
+			this.x[0] =2; 
 		}
 	}
 	class Animal {
-		
+		public int[] name;
 	}
 }

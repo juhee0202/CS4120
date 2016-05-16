@@ -1063,7 +1063,7 @@ public class Main {
 					sourceEnv.putClass(className, classType);
 					if (globalEnv.containsClass(className)) {
 						ClassType interfaceClass = globalEnv.getClassType(className);
-						interfaceClass.addFieldsToClassType(d);
+						interfaceClass.addFieldsToClassType((ClassDecl) d);
 					} else {
 						globalEnv.putClass(className, classType);
 					}

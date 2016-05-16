@@ -159,6 +159,27 @@ public class MixedArrayType implements Type {
 		}
 	}
 	
+	/**
+	 * @return a list of all expressions in brackets
+	 */
+	public List<Expr> getAllExprs() {
+		List<Expr> exprs = new ArrayList<Expr>();
+		if (!(index == 0 || index == 2)) {
+			exprs.addAll(mixedBrackets.getContent());
+		}
+		return exprs;
+	}
+	
+	/**
+	 * @return true if this is an object array
+	 */
+	public boolean isObjectArray() {
+		if (index == 0 || index == 1) {
+			return false;
+		}
+		return true;
+	}
+	
 	public String getElementType() {
 		String elementType = "";
 		if (index == 0 || index == 1) {

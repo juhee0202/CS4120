@@ -34,6 +34,14 @@ public class IRDispatchVector extends IRNode {
 	public List<String> getFields() {
 		return fields;
 	}
+	
+	public int getFieldSize() {
+		return fields.size();
+	}
+	
+	public int getMethodSize() {
+		return methods.size();
+	}
 
 	@Override
 	public IRNode copy() {

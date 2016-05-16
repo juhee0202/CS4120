@@ -1127,6 +1127,9 @@ public class Main {
 				}
 			}
 		}
+		
+		// TODO: Check for cyclic inheritances
+		
 		return globalEnv;
 	}
 	

@@ -139,7 +139,7 @@ brackets ::= OPEN_BRACKET CLOSE_BRACKET                             {: RESULT = 
              ;
 
 //*********************************************************************MODIF**********************************************************
-class_body ::= field_decl:fd class_body:cb                         {: RESULT = new ClassBody(fd,cb); :}
+class_body ::= field_decl:fd class_body:cb                          {: RESULT = new ClassBody(fd,cb); :}
                |
                function_decl:fd class_body:cb                       {: RESULT = new ClassBody(fd,cb); :}
                |

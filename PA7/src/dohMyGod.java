@@ -273,6 +273,9 @@ public class dohMyGod {
 	@Test
 	public void testClass() {
 		class VType {
+			private int x = 0;
+			private int z = 0;
+			
 			VType() {
 				return;
 			}
@@ -281,18 +284,31 @@ public class dohMyGod {
 				return true;
 			}
 			
+			public int vtype() {
+				return x;
+			}
+			
 			@Override 
 			public String toString() {
 				return "super";
 			}
 		}
 		class VarType extends VType {
+			private int y;
+			private int x;
+			
 			VarType() {
 				return;
 			}
 			
 			public boolean subClass() {
 				return false;
+			}
+			
+			public int test() {
+				x = 5;
+//				z = 100;
+				return x;
 			}
 			
 			@Override 
@@ -316,5 +332,15 @@ public class dohMyGod {
 //		System.out.println(temptype.subClass());
 //		System.out.println(type.subClass());
 //		System.out.println(type2.subClass());
+		
+		VarType v = new VarType();
+		System.out.println(v.test());
+		System.out.println(v.vtype());
+		System.out.println(v.x);
+		VType w = v;
+		System.out.println(w.x);
+		System.out.println(w.z);
+//		v.z = 1;
+		
 	}
 }

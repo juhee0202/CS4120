@@ -31,8 +31,6 @@ public class DotableExpr implements Expr {
 	 * Constructor for "id" or "new id"
 	 * @param id
 	 * @param isNew
-	 * @param idleft
-	 * @param idright
 	 */
 	public DotableExpr(Identifier id, boolean isNew) {
 		if (isNew) {

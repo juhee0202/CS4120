@@ -824,8 +824,8 @@ public class TypeCheckVisitor implements ASTVisitor {
 				classes.add(0,currentClass);
 				for (String superclass : classes) {
 					ClassType superclassType = env.getClassType(superclass);
-					if (superclassType.containsMethod(fc.getABIName())) {
-						matchingType = superclassType.getMethodType(fc.getABIName());
+					if (superclassType.containsMethod(id)) {
+						matchingType = superclassType.getMethodType(id);
 						break;
 					}
 				}
@@ -839,8 +839,11 @@ public class TypeCheckVisitor implements ASTVisitor {
 			}
 			
 			funType = matchingType;
-			String ABIName = functionToABIName(id, funType);
-			fc.setABIName(ABIName);
+			if (!isInClass) {
+				String ABIName = functionToABIName(id, funType);
+				fc.setABIName(ABIName);
+			}
+			
 			paramType = funType.getParamTypes();
 		}
 		
@@ -864,8 +867,8 @@ public class TypeCheckVisitor implements ASTVisitor {
 			classes.add(0,dotableExprType.getElementType());
 			for (String superclass : classes) {
 				ClassType superclassType = env.getClassType(superclass);
-				if (superclassType.containsMethod(fc.getABIName())) {
-					funType = superclassType.getMethodType(fc.getABIName());
+				if (superclassType.containsMethod(methodName)) {
+					funType = superclassType.getMethodType(methodName);
 					break;
 				}
 			}
@@ -875,9 +878,10 @@ public class TypeCheckVisitor implements ASTVisitor {
 						fc.getIdentifier_line(), fc.getIdentifier_col(), s);
 				Main.handleSemanticError(seo);
 			}
-
-			String ABIName = functionToABIName(methodName, funType);
-			fc.setABIName(ABIName);
+			if (!isInClass) {
+				String ABIName = functionToABIName(methodName, funType);
+				fc.setABIName(ABIName);
+			}
 			paramType = funType.getParamTypes();
 		}
 		
@@ -924,16 +928,16 @@ public class TypeCheckVisitor implements ASTVisitor {
 	 */
 	@Override
 	public void visit(FunctionDecl fd) {	
-		// get the function's FunType
+		/* Get the function's FunType */
 		String funId = fd.getIdentifier().toString();
 		FunType funType;
 		if (isInClass) {
 			// if in class, look for the superclasses' env
-			funType = classEnv.getMethodType(fd.getABIName());
+			funType = classEnv.getMethodType(funId);
 			List<String> allSupers = getSuperClasses(classEnv.getClassName());
 			for (String s : allSupers) {
 				ClassType superType = env.getClassType(s);
-				FunType superFunType = superType.getMethodType(fd.getABIName());
+				FunType superFunType = superType.getMethodType(funId);
 				if (superFunType != null) {
 					if (!funType.equals(superFunType)) {
 						String ss = funId + "\'s signature does not "
@@ -947,9 +951,16 @@ public class TypeCheckVisitor implements ASTVisitor {
 		} else {
 			funType = env.getFunType(funId);
 		}
-		// set ABIName
-		String ABIName = functionToABIName(funId, funType);
-		fd.setABIName(ABIName);
+		
+		/* Set ABIName */
+		if (!isInClass) {
+			String ABIName = functionToABIName(funId, funType);
+			fd.setABIName(ABIName);
+		} else {
+			String className = classEnv.getClassName();
+			String ABIName = "_" + className + "_" + functionToABIName(funId, funType);
+			fd.setABIName(ABIName);
+		}
 				
 		/* Update the function scope by putting arguments to env */
 		Map<String, Type> paramToType = fd.getParamsWithTypes();
@@ -1739,6 +1750,22 @@ public class TypeCheckVisitor implements ASTVisitor {
 
 	@Override
 	public void visit(ClassDecl cd) {
+		// if superclass exists, check if the superclass is in the env
+		Identifier superclass = cd.getSuperclassName();
+		if (superclass != null) {
+			String superclassName = superclass.getTheValue();
+			if (!env.containsClass(superclassName)) {
+				String s = "Name " + superclassName + " cannot be resolved";
+				SemanticErrorObject seo = new SemanticErrorObject(
+											superclass.getLineNumber(), 
+											superclass.getColumnNumber(),
+											s
+											);
+				Main.handleSemanticError(seo);
+			}
+		}
+		
+		// typecheck the body
 		classEnv = env.getClassType(cd.getClassName().toString());
 		cd.getClassBody().accept(this);
 	}
@@ -1760,7 +1787,7 @@ public class TypeCheckVisitor implements ASTVisitor {
 				Main.handleSemanticError(seo);
 			}
 			
-			if (!(childType instanceof ClassType)) {
+			if (!(childType instanceof VarType && ((VarType)childType).isObject())) {
 				String s = "Cannot call a method on a non-Class variable";
 				SemanticErrorObject seo = new SemanticErrorObject(
 											de.getLineNumber(), 
@@ -1769,7 +1796,7 @@ public class TypeCheckVisitor implements ASTVisitor {
 											);
 				Main.handleSemanticError(seo);
 			}
-			ClassType classView = (ClassType) childType;
+			ClassType classView = env.getClassType(((VarType) childType).getElementType());
 			tempType = classView.getFieldType(de.getId().toString());
 			break;
 		case FUNCTION_CALL:

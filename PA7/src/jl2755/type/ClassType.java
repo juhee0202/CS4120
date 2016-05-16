@@ -21,12 +21,12 @@ import jl2755.visitor.Environment;
  */
 public class ClassType implements VType{
 
-	String className;
-	String superClassName;
-	HashMap<String, VarType> fieldEnv;
-	HashMap<String, FunType> methodEnv;		//contains methods of ONLY this class (no subclass or superclass)
-	List<String> orderedFields;
-	List<String> orderedMethods;
+	private String className;
+	private String superClassName;
+	private HashMap<String, VarType> fieldEnv;
+	private HashMap<String, FunType> methodEnv;		// contains pure method names of ONLY this class (no subclass or superclass)
+	private List<String> orderedFields;
+	private List<String> orderedMethods;			// contains ABI method names
 
 	public ClassType(InterfaceClassDecl intClassDecl) {
 		className = intClassDecl.getClassName().getTheValue();
@@ -47,8 +47,8 @@ public class ClassType implements VType{
 			FunType funType = new FunType(method);
 			String name = method.getIdentifier().toString();
 			String ABIName = functionToABIName(name, funType);
-			methodEnv.put(ABIName, new FunType(method));
-			orderedMethods.add(method.getIdentifier().toString());
+			methodEnv.put(name, funType);
+			orderedMethods.add(ABIName);
 		}
 	}
 	
@@ -101,12 +101,9 @@ public class ClassType implements VType{
 			String methodName = method.getIdentifier().getTheValue();
 			String ABIName = functionToABIName(methodName, funType);
 			method.setABIName(ABIName);
-			methodEnv.put(ABIName, new FunType(method));
-			orderedMethods.add(methodName);
+			methodEnv.put(methodName, funType);
+			orderedMethods.add(ABIName);
 		}
-		
-		orderedFields = new ArrayList<String>();
-		orderedMethods = new ArrayList<String>();
 	}
 	
 	/**
@@ -201,7 +198,7 @@ public class ClassType implements VType{
 		this.methodEnv = methodEnv;
 	}
 	
-	public List<String> getOrderedFields() {
+	private List<String> getOrderedFields() {
 		return orderedFields;
 	}
 
@@ -241,7 +238,7 @@ public class ClassType implements VType{
 		}
 	}
 
-	public List<String> getOrderedMethods() {
+	private List<String> getOrderedMethods() {
 		return orderedMethods;
 	}
 
@@ -407,7 +404,7 @@ public class ClassType implements VType{
 	public void checkSupers(Environment env) {
 		List<ClassType> superClasses = getSuperClasses(env);
 		for (ClassType superClass : superClasses) {
-			HashMap<String, FunType> superMethodEnv = superClass.methodEnv;
+			HashMap<String, FunType> superMethodEnv = superClass.getMethodEnv();
 			for (Entry<String, FunType> f1 : methodEnv.entrySet()) {
 				for (Entry<String, FunType> f2 : superMethodEnv.entrySet()) {
 					if (f1.getKey().equals(f2.getKey()) &&
@@ -485,9 +482,24 @@ public class ClassType implements VType{
 	public List<String> getDispatchMethods(Environment env) {
 		List<String> allMethods = new ArrayList<String>();
 		List<ClassType> superclasses = getSuperClasses(env);
+		HashMap<String, Integer> methodToIndex = new HashMap<String, Integer>();
+		
 		for (int i = superclasses.size()-1; i >= 0; i--) {
 			List<String> classMethods = superclasses.get(i).getOrderedMethods();
-			allMethods.addAll(classMethods);
+			for (String abiName: classMethods) {
+				// extract function name from abi name
+				int secondUnderscore = abiName.indexOf("_", 1);
+				String methodName = abiName.substring(secondUnderscore);
+				
+				// override method
+				if (methodToIndex.containsKey(methodName)) {
+					int idx = methodToIndex.get(methodName);
+					allMethods.set(idx, abiName);
+				} else {
+					allMethods.add(abiName);
+					methodToIndex.put(methodName, allMethods.size()-1);
+				}
+			}
 		}
 		return allMethods;
 	}

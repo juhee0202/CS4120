@@ -1830,12 +1830,22 @@ public class TypeCheckVisitor implements ASTVisitor {
 		isInFieldDecl = true;
 		switch(fieldDecl.getType()) {
 		case SHORT_TUPLE_DECL:
-			fieldDecl.getShortTupleDecl().accept(this);
+			ShortTupleDecl std = fieldDecl.getShortTupleDecl();
+			std.accept(this);
+			// decorate identifiers with isField
+			List<Identifier> ids = std.getAllIdentifiers();
+			for (Identifier id : ids) {
+				id.setIsField(true);
+			}
 			break;
 		case VAR_DECL:
-			fieldDecl.getVarDecl().accept(this);
+			VarDecl vd = fieldDecl.getVarDecl();
+			vd.accept(this);
+			// decorate identifiers with isField
+			vd.getIdentifier().setIsField(true);
 			break;
 		}
+		
 		isInFieldDecl = false;
 	}
 

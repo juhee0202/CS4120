@@ -7,13 +7,14 @@ import jl2755.visitor.ASTVisitor;
 public class DotableExpr implements Expr {
 	
 	public enum Type {
-		IDENTIFIER, FUNCTION_CALL, DOT, NEW, THIS, PAREN 
+		IDENTIFIER, FUNCTION_CALL, DOT, NEW, THIS, ARRAY
 	}
 	
 	private Type type;
 	private Identifier id;
 	private FunctionCall functionCall;
 	private DotableExpr dotableExpr;
+	private ArrayElement arrayElement;
 	private int col;
 	private int line;
 	private boolean isSurroundedByParentheses = false;
@@ -53,19 +54,6 @@ public class DotableExpr implements Expr {
 		col = fc.getIdentifier_col();
 		line = fc.getIdentifier_line();
 	}
-
-	
-	/**
-	 * Constructor for "(de)"
-	 * @param de
-	 */
-	public DotableExpr(DotableExpr de) {
-		type = Type.PAREN;
-		isSurroundedByParentheses = true;
-		dotableExpr = de;
-		col = de.col;
-		line = de.line;
-	}
 	
 	/**
 	 * Constructor for "de.i"
@@ -78,6 +66,13 @@ public class DotableExpr implements Expr {
 		this.id = id;
 		col = de.col;
 		line = de.line;
+	}
+
+	public DotableExpr(ArrayElement ae) {
+		type = Type.ARRAY;
+		arrayElement = ae;
+		col = ae.getIdentifier_col();
+		line = ae.getIdentifier_line();
 	}
 
 	public Type getType() {
@@ -110,6 +105,10 @@ public class DotableExpr implements Expr {
 
 	public void setDotableExpr(DotableExpr dotableExpr) {
 		this.dotableExpr = dotableExpr;
+	}
+	
+	public ArrayElement getArrayElement() {
+		return arrayElement;
 	}
 
 	@Override

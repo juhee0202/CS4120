@@ -1281,8 +1281,8 @@ public class MIRVisitor implements ASTVisitor{
 			IRESeq creatingObject = new IRESeq(seq, object);
 			tempNode = creatingObject;
 			break;
-		case PAREN:
-			de.getDotableExpr().accept(this);
+		case ARRAY:
+			de.getArrayElement().accept(this);
 			break;
 		case THIS:
 			tempNode = thisNode;

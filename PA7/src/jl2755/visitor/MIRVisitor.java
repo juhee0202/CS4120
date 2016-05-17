@@ -426,7 +426,6 @@ public class MIRVisitor implements ASTVisitor{
 		return;
 	}
 
-	// TODO: fix function call (use object pointer to dispatch vector?)
 	/**
 	 * f(a1,...,an) --IR--> CALL(NAME(f), e1,...,en)
 	 */
@@ -1372,7 +1371,6 @@ public class MIRVisitor implements ASTVisitor{
 		return ABIString;
 	}
 
-	// TODO: check later
 	@Override
 	public void visit(ShortTupleDecl std) {
 		Type type = std.getType();

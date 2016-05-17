@@ -18,6 +18,7 @@ public class ArrayElement implements Expr {
 	private FunctionCall functionCall;
 	private int functionCall_col;
 	private int functionCall_line;
+	private DotableExpr dotableExpr;
 	private IndexedBrackets indexedBrackets;
 	private ArrayLiteral arrayLiteral;
 	private int arrayLiteral_col;
@@ -27,6 +28,7 @@ public class ArrayElement implements Expr {
 	 * 0 if identifier with indexedBrackets,
 	 * 1 if functionCall with indexedBrackets,
 	 * 2 if arrayLiteral with indexedBrackets
+	 * 3 if dotableExpr with indexedBrackets
 	 */
 	private int index;
 	
@@ -53,7 +55,13 @@ public class ArrayElement implements Expr {
 		indexedBrackets = ib;
 		index = 2;
 	}
-	
+
+	public ArrayElement(DotableExpr de, IndexedBrackets ib) {
+		dotableExpr = de;
+		indexedBrackets = ib;
+		index = 3;
+	}
+
 	public void prettyPrintNode() {
 		CodeWriterSExpPrinter tempPrinter = GlobalPrettyPrinter.getInstance();
 		if (index == 0){
@@ -130,6 +138,14 @@ public class ArrayElement implements Expr {
 		this.arrayLiteral = arrayLiteral;
 	}
 
+	public DotableExpr getDotableExpr() {
+		return dotableExpr;
+	}
+
+	public void setDotableExpr(DotableExpr dotableExpr) {
+		this.dotableExpr = dotableExpr;
+	}
+
 	public int getIndex() {
 		return index;
 	}
@@ -194,8 +210,10 @@ public class ArrayElement implements Expr {
 		if (index == 1) {
 			return functionCall_col;
 		}
-		else {
+		else if (index == 2) {
 			return arrayLiteral_col;
+		} else {
+			return dotableExpr.getColumnNumber();
 		}
 	}
 
@@ -207,8 +225,10 @@ public class ArrayElement implements Expr {
 		if (index == 1) {
 			return functionCall_line;
 		}
-		else {
+		else if (index == 2) {
 			return arrayLiteral_line;
+		} else {
+			return dotableExpr.getLineNumber();
 		}
 	}
 

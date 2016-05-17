@@ -103,6 +103,9 @@ start with program;
 array_element ::= identifier:id indexed_brackets:ib                 {: RESULT = new ArrayElement(id, ib); :}
                   |
                   function_call:fc indexed_brackets:ib              {: RESULT = new ArrayElement(fc, ib); :}
+                  |
+                  dotable_expr:de DOT identifier:id 
+                  indexed_brackets:ib                               {: RESULT = new ArrayElement(new DotableExpr(de,id),ib); :}
                   ;
 
 array_element_list ::= expr:e                                       {: RESULT = new ArrayElementList(e); :}

@@ -28,6 +28,6 @@ main(args:int[][]) {
 
     s.studentID = "31242"
 
-    (new Student) = new Student
+    new Student = new Student
 
 }

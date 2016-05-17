@@ -18,4 +18,5 @@
     (init ((n ([] int)) (a int)) (Student)
      ((= name n) (= age a) (return (new  Student))))
     ()))
+  (class Object (()))
   (main ((args ([] ([] int)))) () ())))

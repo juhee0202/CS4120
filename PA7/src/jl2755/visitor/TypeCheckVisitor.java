@@ -116,21 +116,28 @@ public class TypeCheckVisitor implements ASTVisitor {
 		}
 
 		int index = ae.getIndex();
-		VType ogExprType;
-		if (index == 0) {
-			ae.getIdentifier().accept(this);
-			ogExprType = tempType;
-		} else if (index == 1) {
-			ae.getFunctionCall().accept(this);
-			ogExprType = tempType;
-		} else if (index == 2) {
+		VType ogExprType = null;
+		if (index == 2) {
 			ae.getArrayLiteral().accept(this);
 			ogExprType = tempType;
-		} else {
+		} else if (index == 3) {
+			DotableExpr de = ae.getDotableExpr();
 			ae.getDotableExpr().accept(this);
 			ogExprType = tempType;
+
+			if (de.getType() == DotableExpr.Type.NEW ||
+					de.getType() == DotableExpr.Type.THIS) 
+			{
+				String s = "The type of the expression must be an array type "
+						+ "but it resolved to " + ogExprType.toString();
+				SemanticErrorObject seo = new SemanticErrorObject(
+						ae.getLineNumber(), 
+						ae.getColumnNumber(),
+						s);
+				Main.handleSemanticError(seo);
+			}
 		}
-		
+
 		if (!(ogExprType instanceof VarType)) {
 			String s = "The type of the expression must be an array type "
 					+ "but it resolved to " + ogExprType.toString();

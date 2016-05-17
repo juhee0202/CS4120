@@ -139,12 +139,12 @@ public class TypeCheckVisitor implements ASTVisitor {
 			}
 
 			if (!(tempScopeType instanceof VarType)){
-				String errorDesc = "Name " + ae.getIdentifier().toString() +
-						" is not of variable type.";
+				String s = "The type of the expression must be VarType "
+						+ "but it resolved to " + tempScopeType.toString();
 				SemanticErrorObject seo = new SemanticErrorObject(
 						ae.getIdentifier_line(),
 						ae.getIdentifier_col(), 
-						errorDesc
+						s
 						);
 				Main.handleSemanticError(seo);
 			}
@@ -394,101 +394,30 @@ public class TypeCheckVisitor implements ASTVisitor {
 		de.accept(this);
 		VType dotableExprType = tempType;
 		
-		// a = 3
-		if (index == 0) {
-			if (!(dotableExprType instanceof VarType)) {
-				String s = "The type of the expression must be VarType "
-						+ "but it resolved to " + dotableExprType.toString();
-				SemanticErrorObject seo = new SemanticErrorObject(
-						de.getLineNumber(), 
-						de.getColumnNumber(),
-						s);
-				Main.handleSemanticError(seo);
-			}
-			
-			if (de.getType() == DotableExpr.Type.THIS) {
-				String s = "The left-hand side of an assignment must be a variable";
-				SemanticErrorObject seo = new SemanticErrorObject(
-						de.getLineNumber(), 
-						de.getColumnNumber(),
-						s);
-				Main.handleSemanticError(seo);
-			}
-			
-			leftType = (VarType) dotableExprType;
+		if (!(dotableExprType instanceof VarType)) {
+			String s = "The type of the expression must be VarType "
+					+ "but it resolved to " + dotableExprType.toString();
+			SemanticErrorObject seo = new SemanticErrorObject(
+					de.getLineNumber(), 
+					de.getColumnNumber(),
+					s);
+			Main.handleSemanticError(seo);
 		}
-		// a[i] = 3;
-		else if (index == 1) {	
-			if (!(dotableExprType instanceof VarType)) {
-				String s = "The type of the expression must be an array type "
-						+ "but it resolved to " + dotableExprType.toString();
-				SemanticErrorObject seo = new SemanticErrorObject(
-						de.getLineNumber(), 
-						de.getColumnNumber(),
-						s);
-				Main.handleSemanticError(seo);
-			}
-			
-			VarType idType = (VarType) dotableExprType;
-			
-			// check that the dotableExpr is of ARRAY TYPE
-			if (!idType.isArray()) {
-				String s = "The type of the expression must be an array type "
-						+ "but it resolved to " + idType.toString();
-				SemanticErrorObject seo = new SemanticErrorObject(
-						de.getLineNumber(), de.getColumnNumber(), s);
-				Main.handleSemanticError(seo);
-			}
-			
-			// Check that the dimensions are valid
-			if (idType.getNumBrackets() < as.getIndexedBrackets().getNumBrackets()){
-				String msg = "The type of the expression must "
-						+ "be an array type but it resolved to " + idType.toString();
-				SemanticErrorObject seo = new SemanticErrorObject(
-						de.getLineNumber(), de.getColumnNumber(), msg);
-				Main.handleSemanticError(seo);
-			}
-			int newDimensions = idType.getNumBrackets() - as.getIndexedBrackets().getNumBrackets();
-			leftType = new VarType(idType.getElementType(), newDimensions);
-			
-			as.getExpr().accept(this);
-			rightType = tempType;
-
+		
+		if (de.getType() == DotableExpr.Type.THIS) {
+			String s = "The left-hand side of an assignment must be a variable";
+			SemanticErrorObject seo = new SemanticErrorObject(
+					de.getLineNumber(), 
+					de.getColumnNumber(),
+					s);
+			Main.handleSemanticError(seo);
 		}
+		
+		leftType = (VarType) dotableExprType;
 		
 		// Visit RHS of assignment stmt
 		as.getExpr().accept(this);
 		rightType = tempType;
-		
-		// indexed expression assignment stmt
-		if (index == 1) {
-			// check that all the indices inside indexedBrackets are ints
-			List<Expr> exprs = as.getIndexedBrackets().getContent();
-			for (Expr e: exprs) {
-				e.accept(this);
-				if (!(tempType instanceof VarType)) {
-					String s = "Expected an int, but found " + 
-							tempType.toString();
-					SemanticErrorObject seo = new SemanticErrorObject(
-							e.getLineNumber(),
-							e.getColumnNumber(), 
-							s
-							);
-					Main.handleSemanticError(seo);
-				}
-				VarType eType = (VarType) tempType;
-				if (!eType.isInt()) {
-					String s = "Expected an int, but found " + 
-							eType.toString();
-					SemanticErrorObject seo = new SemanticErrorObject(
-							e.getLineNumber(),
-							e.getColumnNumber(), 
-							s
-							);
-					Main.handleSemanticError(seo);
-				}
-			}
-		}
 		
 		if (leftType.isPrimitive()) {	// must match exactly
 			if (!leftType.equals(rightType)) {

@@ -6,63 +6,18 @@ import edu.cornell.cs.cs4120.util.SExpPrinter;
 import jl2755.assembly.ChildType;
 import jl2755.visitor.IRTreeVisitor;
 
-public class IRGlobalVariable extends IRNode {
+public class IRGVList extends IRNode {
 
-	/** The name of this global variable. */
-	private String name;
-	/** The ABI name of this global variable. */
-	private String ABIName;
+	private List<IRGlobalVariable> globalVariables;
 	
-	/** The value of this global variable if not an array. */
-	private long value;
-	
-	/** Whether this variable is an array or not. */
-	private boolean isArray;
-	
-	/** The IRSeq representing the creation of this array. 
-	 * 		null: if not array or array without size
-	 * 		not null: if initialized with size
-	 */
-	private IRSeq createArray;
-	
-	public IRGlobalVariable(String n, String abi, long v) {
-		name = n;
-		ABIName = abi;
-		value = v;
-		isArray = false;
-	}
-
-	public IRGlobalVariable(String n, String abi, IRSeq s) {
-		name = n;
-		ABIName = abi;
-		createArray = s;
-		isArray = true;
-	}
-
-	public String getName() {
-		return name;
+	public IRGVList(List<IRGlobalVariable> gv) {
+		globalVariables = gv;
 	}
 	
-	public String getABIName() {
-		return ABIName;
+	public List<IRGlobalVariable> getGlobalVariables() {
+		return globalVariables;
 	}
 	
-	public IRSeq getCreateArray() {
-		return createArray;
-	}
-	
-	public void setCreateArray(IRSeq translated) {
-		createArray = translated;
-	}
-	
-	public boolean isArray() {
-		return isArray;
-	}
-	
-	public long getValue() {
-		return value;
-	}
-
 	@Override
 	public IRNode copy() {
 		// TODO Auto-generated method stub
@@ -77,7 +32,6 @@ public class IRGlobalVariable extends IRNode {
 
 	@Override
 	public void accept(IRTreeVisitor irv) {
-		irv.visit(this);
 	}
 	
 	@Override

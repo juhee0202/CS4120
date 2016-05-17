@@ -71,8 +71,9 @@ public class GlobalVariableSection {
 			if (valueType == GlobalVarValueType.PRIMITIVE_INITIALIZED) {
 				s += "\t.section .data\n";
 				s += "\t.align 8\n";
-				s += ".globl _I_g_" + variableName + "_i\n";
-				s += "_I_g_" + variableName + "_i:\n";
+				// TODO: Fill in @ with proper abi part
+				s += ".globl _I_g_" + variableName + "_@\n";
+				s += "_I_g_" + variableName + "_@:\n";
 				s += "\t.quad " +  variableValue + "\n";
 				s += "\t.text";
 			}
@@ -87,8 +88,9 @@ public class GlobalVariableSection {
 			else if (valueType == GlobalVarValueType.ARRAY) {
 				s += "\t.section .data\n";
 				s += "\t.align 8\n";
-				s += ".globl _I_g_" + variableName + "_aaai\n";
-				s += "_I_g_" + variableName + "_aaai:\n";
+				// TODO: Fill  in @@@@ with proper abi part
+				s += ".globl _I_g_" + variableName + "_@@@@\n";
+				s += "_I_g_" + variableName + "_@@@@:\n";
 				s += "\t.zero " +  8 + "\n";
 				s += "\t.text";
 			}
@@ -106,5 +108,14 @@ public class GlobalVariableSection {
 			s += "\t.text";
 		}
 		return s;
+	}
+	
+	/**
+	 * Generates the ABI postpend for global variables.
+	 * 
+	 * @param argType
+	 */
+	public static generateABIName(VarType argType) {
+		
 	}
 }

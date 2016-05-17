@@ -10,11 +10,18 @@ import jl2755.ast.AssignmentStmt;
 import jl2755.ast.BinaryExpr;
 import jl2755.ast.BinaryOp;
 import jl2755.ast.BlockStmt;
+import jl2755.ast.Break;
+import jl2755.ast.ClassBody;
+import jl2755.ast.ClassDecl;
+import jl2755.ast.Continue;
+import jl2755.ast.Decl;
+import jl2755.ast.DotableExpr;
 import jl2755.ast.Expr;
+import jl2755.ast.FieldDecl;
 import jl2755.ast.FunctionArg;
 import jl2755.ast.FunctionCall;
 import jl2755.ast.FunctionDecl;
-import jl2755.ast.FunctionDeclList;
+import jl2755.ast.GlobalDecl;
 import jl2755.ast.Identifier;
 import jl2755.ast.IfStmt;
 import jl2755.ast.IndexedBrackets;
@@ -23,9 +30,10 @@ import jl2755.ast.Null;
 import jl2755.ast.Program;
 import jl2755.ast.ReturnList;
 import jl2755.ast.ReturnStmt;
+import jl2755.ast.ShortTupleDecl;
+import jl2755.ast.SimpleVarInit;
 import jl2755.ast.Stmt;
 import jl2755.ast.StmtList;
-import jl2755.ast.TupleDeclList;
 import jl2755.ast.TupleInit;
 import jl2755.ast.UnaryExpr;
 import jl2755.ast.UnaryOp;
@@ -327,9 +335,9 @@ public class ConstantFolderVisitor implements ASTVisitor{
 
 	@Override
 	public void visit(Program p) {
-		List<FunctionDecl> funcs = p.getFunctionDecls();
-		for (FunctionDecl fd: funcs) {
-			fd.accept(this);
+		List<Decl> allDecls = p.getAllDecls();
+		for (Decl d: allDecls) {
+			d.accept(this);
 		}
 	}
 	
@@ -447,6 +455,58 @@ public class ConstantFolderVisitor implements ASTVisitor{
 			ws.setExpr(tempArray);
 		}
 		ws.getStmt().accept(this);
+	}
+
+	@Override
+	public void visit(Break br) {
+	}
+
+	@Override
+	public void visit(ClassBody cb) {
+		List<FunctionDecl> funcDecls = cb.getMethods();
+		for (FunctionDecl fd : funcDecls) {
+			fd.accept(this);
+		}
+	}
+
+	@Override
+	public void visit(ClassDecl cd) {
+		cd.getClassBody().accept(this);
+	}
+
+	@Override
+	public void visit(Continue cn) {
+	}
+
+	@Override
+	public void visit(DotableExpr de) {
+	}
+
+	@Override
+	public void visit(GlobalDecl gd) {
+		GlobalDecl.Type type = gd.getType();
+		if (type == GlobalDecl.Type.VAR_DECL) {
+			gd.getVarDecl().accept(this);
+		}
+		else if (type == GlobalDecl.Type.SHORT_TUPLE_DECL) {
+			gd.getShortTupleDecl().accept(this);
+		}
+		else if (type == GlobalDecl.Type.SIMPLE_VAR_INIT) {
+			gd.getSimpleVarInit().accept(this);
+		}
+	}
+
+	@Override
+	public void visit(ShortTupleDecl std) {
+	}
+
+	@Override
+	public void visit(FieldDecl fieldDecl) {
+		
+	}
+
+	@Override
+	public void visit(SimpleVarInit simpleVarInit) {
 	}
 
 }

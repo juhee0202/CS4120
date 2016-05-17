@@ -1838,8 +1838,8 @@ public class TypeCheckVisitor implements ASTVisitor {
 			ClassType tempClass = env.getClassType(de.getId().toString());
 			tempType = new VarType(tempClass.getClassName(),0);
 			break;
-		case PAREN:
-			de.getDotableExpr().accept(this);
+		case ARRAY:
+			de.getArrayElement().accept(this);
 			break;
 		case THIS:
 			if (!(isInClass && isInFunctionDecl)) {

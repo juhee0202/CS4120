@@ -103,8 +103,6 @@ start with program;
 array_element ::= identifier:id indexed_brackets:ib                 {: RESULT = new ArrayElement(id, ib); :}
                   |
                   function_call:fc indexed_brackets:ib              {: RESULT = new ArrayElement(fc, ib); :}
-                  |
-                  array_literal:al indexed_brackets:ib              {: RESULT = new ArrayElement(al, ib); :}
                   ;
 
 array_element_list ::= expr:e                                       {: RESULT = new ArrayElementList(e); :}
@@ -117,10 +115,8 @@ array_element_list ::= expr:e                                       {: RESULT = 
 array_literal ::= OPEN_BRACE:ob array_element_list:ael CLOSE_BRACE  {: RESULT = new ArrayLiteral(ael, obleft, obright); :}
                   ;
 
+//*********************************************************************MODIF**********************************************************
 assignment_stmt ::= dotable_expr:de GETS expr:e                     {: RESULT = new AssignmentStmt(de, e); :}
-                    |
-                    dotable_expr:de indexed_brackets:ib GETS 
-                    expr:e                                          {: RESULT = new AssignmentStmt(de, ib, e); :}
                     ;
 
 block_stmt ::= OPEN_BRACE CLOSE_BRACE                               {: RESULT = new BlockStmt(); :}
@@ -137,7 +133,6 @@ brackets ::= OPEN_BRACKET CLOSE_BRACKET                             {: RESULT = 
              OPEN_BRACKET CLOSE_BRACKET brackets:b                  {: RESULT = new Brackets(b); :}
              ;
 
-//*********************************************************************MODIF**********************************************************
 class_body ::= field_decl:fd class_body:cb                          {: RESULT = new ClassBody(fd,cb); :}
                |
                function_decl:fd class_body:cb                       {: RESULT = new ClassBody(fd,cb); :}
@@ -157,11 +152,7 @@ constant ::= literal:l                                              {: RESULT = 
              array_literal:al                                       {: RESULT = al; :}
              ;
 
-// const_var ::= CONST var_init:vi SEMICOLON                           {: RESULT = new GlobalDecl(vi, true, true); :}
-//               |
-//               CONST var_init:vi                                     {: RESULT = new GlobalDecl(vi, false, true); :}
-//               ;
-
+//*********************************************************************MODIF**********************************************************
 dotable_expr ::= identifier:id                                      {: RESULT = new DotableExpr(id,false); :}
                  |
                  function_call:fc                                   {: RESULT = new DotableExpr(fc); :}
@@ -172,7 +163,7 @@ dotable_expr ::= identifier:id                                      {: RESULT = 
                  |
                  THIS:t                                             {: RESULT = new DotableExpr(tleft, tright); :}
                  |
-                 OPEN_PAREN dotable_expr:de CLOSE_PAREN             {: RESULT = new DotableExpr(de); :}
+                 array_element:ae                                   {: RESULT = new DotableExpr(ae); :}
                  ;
 
 empty_array_type ::= primitive_type:pt brackets:b                   {: RESULT = new EmptyArrayType(pt, b); :}
@@ -180,7 +171,6 @@ empty_array_type ::= primitive_type:pt brackets:b                   {: RESULT = 
                      identifier:id brackets:b                       {: RESULT = new EmptyArrayType(id, b); :}
                      ;
 
-//*********************************************************************MODIF**********************************************************
 expr ::= dotable_expr:de                                            {: RESULT = de; :}
          |
          normal_expr:ne                                             {: RESULT = ne; :}
@@ -220,11 +210,6 @@ function_decl ::= identifier:id OPEN_PAREN CLOSE_PAREN
                   identifier:id OPEN_PAREN function_param:fp 
                   CLOSE_PAREN return_type:rt block_stmt:bs          {: RESULT = new FunctionDecl(id, fp, rt, bs); :}
                   ;
-
-// function_decl_list ::= function_decl:fd function_decl_list:fdl      {: RESULT = new FunctionDeclList(fd, fdl); :}
-//                        |                       
-//                        function_decl:fd                             {: RESULT = new FunctionDeclList(fd); :}
-//                        ;
 
 function_param ::= identifier:id COLON type:t                       {: RESULT = new FunctionParam(id, t); :}
                    |
@@ -295,7 +280,6 @@ mixed_brackets ::= OPEN_BRACKET expr:e CLOSE_BRACKET                {: RESULT = 
                    OPEN_BRACKET expr:e CLOSE_BRACKET brackets:b     {: RESULT = new MixedBrackets(e, b); :}
                    ;
 
-//*********************************************************************MODIF**********************************************************
 module_list ::= class_decl:cd module_list:ml                        {: RESULT = new ModuleList(cd, ml); :}
                 |
                 function_decl:fd module_list:ml                     {: RESULT = new ModuleList(fd, ml); :}
@@ -309,8 +293,6 @@ module_list ::= class_decl:cd module_list:ml                        {: RESULT = 
                 global_decl:gd                                      {: RESULT = new ModuleList(gd); :}
                 ;
 
-
-//*********************************************************************MODIF**********************************************************
 naked_stmt ::= assignment_stmt:ass                                  {: RESULT = ass; :}
                |
                if_stmt:is                                           {: RESULT = is; :}
@@ -338,15 +320,16 @@ naked_stmt ::= assignment_stmt:ass                                  {: RESULT = 
                CONTINUE:c TO IDENTIFIER:labelName                   {: RESULT = new Continue(labelName, cleft, cright); :}
                ;
 
+//*********************************************************************MODIF**********************************************************
 normal_expr ::= constant:c                                          {: RESULT = c; :}
                 |
                 op_expr:oe                                          {: RESULT = oe; :}
                 |
-                array_element:ae                                    {: RESULT = ae; :}
-                |
                 NULL:n                                              {: RESULT = new Null(nleft, nright); :}
                 |
-                OPEN_PAREN normal_expr:ne CLOSE_PAREN               {: ne.setSurroundedParentheses(); RESULT = ne; :}
+                OPEN_PAREN expr:e CLOSE_PAREN                       {: e.setSurroundedParentheses(); RESULT = e; :}
+                |
+                array_literal:al indexed_brackets:ib                {: RESULT = new ArrayElement(al, ib); :}
                 ;
 
 op_expr ::= MINUS:m expr:e                                          {: RESULT = new UnaryExpr(e, UnaryOp.INT_NEG, mleft, mright); :} %prec UMINUS
@@ -387,7 +370,6 @@ primitive_type ::= INT:i                                            {: RESULT = 
                    BOOL:b                                           {: RESULT = new PrimitiveType(1, bleft, bright); :}
                    ;
 
-//*********************************************************************MODIF**********************************************************
 program ::= module_list:ml                                          {: RESULT = new Program(ml); :}
             |
             use_id:useidc module_list:ml                            {: RESULT = new Program(useidc, ml); :}
@@ -412,7 +394,6 @@ return_type ::= COLON type_list:tl                                  {: RESULT = 
                                                                     {: RESULT = new ReturnType(); :}
                 ;
 
-//*********************************************************************MODIF**********************************************************
 short_tuple_decl ::= identifier:id COMMA identifier_list:idl        
                      COLON type:t                                   {: RESULT = new ShortTupleDecl(id, idl, t); :}
                      ;

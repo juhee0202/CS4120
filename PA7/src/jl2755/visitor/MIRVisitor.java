@@ -453,6 +453,7 @@ public class MIRVisitor implements ASTVisitor{
 		return;
 	}
 
+	// TODO: fix function call (use object pointer to dispatch vector?)
 	/**
 	 * f(a1,...,an) --IR--> CALL(NAME(f), e1,...,en)
 	 */
@@ -460,17 +461,33 @@ public class MIRVisitor implements ASTVisitor{
 	@Override
 	public void visit(FunctionCall fc) {
 		int index = fc.getIndex();
+		boolean inEnv = env.containsFun(fc.getIdentifier().toString());
 		if (index == 0) {									// f()
-			String id = fc.getABIName();
-			IRName lf = new IRName(id);
-			IRCall call = new IRCall(lf);
+			IRCall call;
+			if (inEnv) {
+				String id = fc.getABIName();
+				IRName lf = new IRName(id);
+				call = new IRCall(lf);
+			} else {
+				// Use this as the first argument
+				IRMem dispatch = new IRMem(thisNode);
+				IRDispatchVector dv = classToDispatch.get(classType.getClassName());
+				int i = -1;
+				for (String method : dv.getMethods()) {
+					i++;
+					if (method.equals(fc.getABIName())) {
+						break;
+					}
+				}
+				assert(i++ != -1);
+				IRConst offset = new IRConst(i*8);
+				IRBinOp offsetFromDispatch = new IRBinOp(OpType.ADD, dispatch, offset);
+				IRMem label = new IRMem(offsetFromDispatch);
+				call = new IRCall(label, thisNode);
+			}
 			call.setNumReturns(fc.getNumReturns());
 			tempNode = call;
 		} else if (index == 1) {							// f(a1,...,an) 
-			// get function label
-			String id = fc.getABIName();
-			IRName lf = new IRName(id);
-			
 			// get function args
 			FunctionArg functionArg = fc.getFunctionArg();
 			List<Expr> args = functionArg.getArgExprs();
@@ -479,15 +496,67 @@ public class MIRVisitor implements ASTVisitor{
 				arg.accept(this);
 				irArgs.add((IRExpr) tempNode);
 			}
-			
-			IRCall call = new IRCall(lf, irArgs);
+			IRCall call;
+			if (inEnv) {
+				// get function label
+				String id = fc.getABIName();
+				IRName lf = new IRName(id);
+				call = new IRCall(lf, irArgs);
+			} else {
+				// Use this as the first argument
+				irArgs.add(0, thisNode);
+				IRMem dispatch = new IRMem(thisNode);
+				IRDispatchVector dv = classToDispatch.get(classType.getClassName());
+				int i = -1;
+				for (String method : dv.getMethods()) {
+					i++;
+					if (method.equals(fc.getABIName())) {
+						break;
+					}
+				}
+				assert(i++ != -1);
+				IRConst offset = new IRConst(i*8);
+				IRBinOp offsetFromDispatch = new IRBinOp(OpType.ADD, dispatch, offset);
+				IRMem label = new IRMem(offsetFromDispatch);
+				call = new IRCall(label, irArgs);
+			}
 			call.setNumReturns(fc.getNumReturns());
 			tempNode = call;
-		} else {											// length(e)
+		} else if (index == 2){											// length(e)
 			fc.getExpr().accept(this);
 			IRExpr array = (IRExpr) tempNode;
 			IRBinOp lengthAddr = new IRBinOp(OpType.SUB, array, (IRConst) WORD_SIZE.copy());
 			tempNode = new IRMem(lengthAddr);
+		} else if (index == 3) {
+			// get function label
+			String id = fc.getABIName();
+			IRName lf = new IRName(id);
+			// Use this as the first argument
+			fc.getDotableExpr().accept(this);
+			IRCall call = new IRCall(lf, (IRTemp) tempNode);
+			call.setNumReturns(fc.getNumReturns());
+			tempNode = call;
+		} else {
+			assert(index == 4);
+			// get function label
+			String id = fc.getABIName();
+			IRName lf = new IRName(id);
+			
+			// get function args
+			FunctionArg functionArg = fc.getFunctionArg();
+			List<Expr> args = functionArg.getArgExprs();
+			List<IRExpr> irArgs = new ArrayList<IRExpr>();	
+			// Use this as the first argument
+			fc.getDotableExpr().accept(this);
+			irArgs.add((IRTemp) tempNode);
+			for (Expr arg : args) {
+				arg.accept(this);
+				irArgs.add((IRExpr) tempNode);
+			}
+			
+			IRCall call = new IRCall(lf, irArgs);
+			call.setNumReturns(fc.getNumReturns());
+			tempNode = call;
 		}
 	}
 	
@@ -502,7 +571,13 @@ public class MIRVisitor implements ASTVisitor{
 		
 		IRSeq seq = new IRSeq(new ArrayList<IRStmt>());
 		List<String> holyParamList = fd.getParams();
-		for (int i = 0; i < holyParamList.size(); i++) {
+		int start = 0;
+		if (inClass) {
+			// THIS is implicitly the first argument
+			thisNode = new IRTemp(Configuration.ABSTRACT_ARG_PREFIX + 0);
+			start = 1;
+		}
+		for (int i = start; i < holyParamList.size(); i++) {
 			IRTemp paramTemp = new IRTemp(holyParamList.get(i));
 			IRTemp argTemp = new IRTemp(Configuration.ABSTRACT_ARG_PREFIX + i);
 			IRMove tempMove = new IRMove(paramTemp, argTemp);
@@ -526,14 +601,38 @@ public class MIRVisitor implements ASTVisitor{
 		irFuncDecl.setNumReturns(fd.getNumReturns());
 		
 		tempNode = irFuncDecl;
-		
-		// TODO: class methods get implicit this argument
 	}
 
 	@Override
 	public void visit(Identifier id) {
-		// TODO: account for classes
-		tempNode = new IRTemp(id.toString());
+		String name = id.toString();
+		if (env.containsVar(name)) {
+//			VarType type = env.getVarType(name);
+//			if (type.isObject()) {
+//				
+//			} else {
+//				tempNode = new IRTemp(id.toString());
+//			}
+			tempNode = new IRTemp(id.toString());
+		} else {
+			// Variable must be a field
+			String object = thisNode.name();
+			IRDispatchVector dv = classToDispatch.get(object);
+			List<String> fields = dv.getFields();
+			// Find the field index (looking from back to front to get closest)
+			VarType varType = classType.getFieldType(name);
+			int i;
+			for (i = fields.size()-1; i >= 0; i--) {
+				VarType fieldType = classType.getFieldType(fields.get(i));
+				if (fieldType.equals(varType)) {
+					break;
+				}
+			}
+			// Offset from object pointer to get field
+			IRConst offset = new IRConst((i+1)*8);
+			IRBinOp offsetFromObject = new IRBinOp(OpType.ADD, thisNode, offset);
+			tempNode = new IRMem(offsetFromObject);
+		}
 	}
 
 	@Override
@@ -1107,13 +1206,11 @@ public class MIRVisitor implements ASTVisitor{
 
 	@Override
 	public void visit(DotableExpr de) {
-		
 		switch (de.getType()) {
 		case DOT:
 			de.getDotableExpr().accept(this);
 			thisNode = (IRTemp) tempNode;
 			de.getId().accept(this);
-			thisNode = null;
 			break;
 		case FUNCTION_CALL:
 			de.getFunctionCall().accept(this);
@@ -1122,6 +1219,8 @@ public class MIRVisitor implements ASTVisitor{
 			de.getId().accept(this);
 			break;
 		case NEW:
+			List<IRStmt> list = new ArrayList<IRStmt>();
+			
 			// Allocate space for the object
 			IRName nameOfAlloc = new IRName("_I_alloc_i");
 			String id = de.getId().toString();
@@ -1134,6 +1233,7 @@ public class MIRVisitor implements ASTVisitor{
 			// Move result to temp
 			IRTemp object = new IRTemp("t"+tempCount++);
 			IRMove moveResultToObject = new IRMove(object, callToAlloc);
+			list.add(moveResultToObject);
 			
 			// Initialize pointers
 				// 0: points to dispatch vector
@@ -1141,9 +1241,10 @@ public class MIRVisitor implements ASTVisitor{
 				// initialized arrays: points to array with null values
 			IRName dvName = new IRName("_I_vt_" + id);
 			IRMove moveDVToObject = new IRMove(new IRMem(object), dvName);
+			list.add(moveDVToObject);
 			ClassType type = env.getClassType(id);
-			for (String field : fields) {
-				VarType vtype = type.getFieldType(field);
+			for (int i = 0; i < fields.size(); i++) {
+				VarType vtype = type.getFieldType(fields.get(i));
 				if (vtype.isPrimitive() || vtype.isObject()) {
 					// Do nothing if alloc initializes to 0
 					continue;
@@ -1153,25 +1254,35 @@ public class MIRVisitor implements ASTVisitor{
 						// Do nothing if alloc initializes to 0
 						continue;
 					}
-					List<IRStmt> preamble = new ArrayList<IRStmt>();
+					// Initialize array with length
 					List<IRTemp> sizes = new ArrayList<IRTemp>();
 					for (Expr e : exprList) {
 						e.accept(this);
 						IRTemp exprTemp = new IRTemp("t" + tempCount++);
 						IRMove moveExprToTemp = new IRMove(exprTemp,(IRExpr) tempNode);
 						sizes.add(exprTemp);
-						preamble.add(moveExprToTemp);
+						list.add(moveExprToTemp);
 					}
-					IRESeq arrayGenesis = (IRESeq) createArray(0,sizes);
+					IRESeq arrayGenesis = (IRESeq) createArray(0, sizes);
+					list.addAll(((IRSeq) arrayGenesis.stmt()).stmts());
 					
+					// Move array pointer into object table at field offset
+					IRExpr array = arrayGenesis.expr();
+					IRBinOp offset = new IRBinOp(OpType.ADD, object, new IRConst((i+1)*8));
+					IRMem fieldAddr = new IRMem(offset);
+					IRMove moveArrayToFieldAddr = new IRMove(fieldAddr, array);
+					list.add(moveArrayToFieldAddr);
 				} else {
 					System.out.println("VarType has a weird type");
 					assert(false);
 				}
 			}
-			
+			IRSeq seq = new IRSeq(list);
+			IRESeq creatingObject = new IRESeq(seq, object);
+			tempNode = creatingObject;
 			break;
 		case PAREN:
+			de.getDotableExpr().accept(this);
 			break;
 		case THIS:
 			tempNode = thisNode;
@@ -1184,6 +1295,26 @@ public class MIRVisitor implements ASTVisitor{
 		// TODO Auto-generated method stub
 		
 		
+	}
+	
+	public String translateVarTypeToABI(VarType t) {
+		String ABIString = "";
+		if (t.isArray()) {							// array
+			int numBrackets = t.getNumBrackets();
+			for (int i = 0; i < numBrackets; i++) {
+				ABIString += "a";
+			}
+			ABIString += t.getIsBool() ? "b" : "i";
+		} else if (t.isInt()) {						// int
+			ABIString = "i";
+		} else if (t.isBool())  {					// bool
+			ABIString = "b";
+		} else {
+			String className = t.getElementType();
+			int len =  className.length();
+			ABIString = "o" + len + className;
+		}
+		return ABIString;
 	}
 
 	// TODO: check later
@@ -1218,7 +1349,7 @@ public class MIRVisitor implements ASTVisitor{
 	
 	@Override
 	public void visit(Null n) {
-		// TODO: Is this needed
+		tempNode = new IRConst(0);
 	}
 
 	@Override

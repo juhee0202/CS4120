@@ -159,6 +159,9 @@ dotable_expr ::= identifier:id                                      {: RESULT = 
                  |
                  dotable_expr:de DOT identifier:id                  {: RESULT = new DotableExpr(de,id); :}
                  |
+                 dotable_expr:de DOT identifier:id 
+                 indexed_brackets:ib                                {: RESULT = new DotableExpr(de,id,ib); :}
+                 |
                  NEW identifier:id                                  {: RESULT = new DotableExpr(id,true); :}
                  |
                  THIS:t                                             {: RESULT = new DotableExpr(tleft, tright); :}

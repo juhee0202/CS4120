@@ -75,6 +75,10 @@ public class DotableExpr implements Expr {
 		line = ae.getIdentifier_line();
 	}
 
+	public DotableExpr(DotableExpr de, Identifier id2, IndexedBrackets ib) {
+		// TODO Auto-generated constructor stub
+	}
+
 	public Type getType() {
 		return type;
 	}

@@ -1,0 +1,169 @@
+# xth test script
+#
+# This file is a test script for xth (xic Test Harness).  It
+# conforms to the following grammar:
+#
+#   ScriptFile      ::= Commands+
+#   Command         ::= build
+#                     | CompilerTest
+#   CompilerTest    ::= TestKind (\(TestName\))? ([TestPath])? ("CmdLineArgs")?
+#                           { (FileTest;)* }
+#   TestKind        ::= xic
+#   TestName        ::= LitString
+#   FileTest        ::= Filenames Description? FailureSet?
+#   Filenames       ::= Filename+
+#   Description     ::= LitString
+#   FailureSet      ::= Failure (, Failure)*
+#   Failure         ::= \( ErrorKind \)
+#                     | \( ErrorKind, LitString \)
+#
+#   TestPath        :   the path to the test files, enclosed in quotes,
+#                       relative to the path given in xth's -testpath flag.
+#   CmdLineArgs     :   command-line arguments for xic
+#   Filename        :   the name of a file, interpreted from TestPath.
+#   LitString       :   a literal string, enclosed in quotes.
+#   ErrorKind       :   one of, or a unique prefix of one of the following
+#                       strings: "Lexical Error", "Syntax Error", or
+#                       "Semantic Error".
+#
+# xth runs the commands in order of appearance.
+
+# build compiler first
+build
+
+xic ("Test --help") "--help" {
+    ;
+}
+
+xic ("Test --typecheck -O") ["pa3"] "-libpath $(testpath) --typecheck -O" {
+    ex01.xi;
+    ex02.xi;
+    ex03.xi;
+    ex04.xi (Semantic, "Cannot assign");
+    ex05.xi (Semantic, "Operands");
+    ex06.xi (Semantic, "Name .* cannot be resolved");
+    ex07.xi (Semantic, "Expected .*, but found .*");
+    ex08.xi (Semantic, "Missing return");
+    ex09.xi (Semantic, "Expected function call");
+    ex10.xi (Semantic, "Mismatched number of values");
+    ex11.xi (Semantic, "Expected .*, but found .*");
+    ex12.xi (Semantic, "not a function");
+    spec1-full.xi;
+    spec1.xi (Semantic, "Name .* cannot be resolved");
+    spec2.xi (Semantic, "Name .* cannot be resolved");
+    spec3.xi;
+    gcd.xi;
+    ratadd-full.xi;
+    ratadd.xi (Semantic, "Name .* cannot be resolved");
+    ratadduse-full.xi;
+    ratadduse.xi (Semantic, "Name .* cannot be resolved");
+    insertionsort.xi;
+    arrayinit.xi;
+    arrayinit2-full.xi;
+    arrayinit2.xi (Semantic, "Name .* cannot be resolved");
+    mdarrays.xi;
+}
+
+xic ("Test --typecheck -O") ["customPA3"] "-libpath $(testpath) --typecheck -O" {array01.xi
+    array02.xi;
+    array03.xi;
+    array04.xi;
+    array05.xi;
+    array06.xi;
+    array07.xi;
+    array08.xi;
+    array09.xi;
+    array10.xi;
+    array11.xi;
+    array12.xi;
+    assign01.xi;
+    assign02.xi;
+    assign03.xi;
+    assign04.xi;
+    assign05.xi;
+    assign06.xi;
+    assign07.xi;
+    binary01.xi;
+    binary02.xi;
+    binary03.xi;
+    binary04.xi;
+    extend1.xi;
+    extend2.xi;
+    extend3.xi;
+    extend4.xi;
+    extend5.xi;
+    extend6.xi;
+    extend7.xi;
+    extend8.xi;
+    field1.xi;
+    field2.xi;
+    field3.xi;
+    field4.xi;
+    field_decl1.xi;
+    field_decl2.xi;
+    functioncall01.xi;
+    functioncall02.xi;
+    global1.xi;
+    global2.xi;
+    global3.xi;
+    global4.xi;
+    global5.xi;
+    global6.xi;
+    global_decl1.xi;
+    global_decl2.xi;
+    global_decl3.xi;
+    global_decl4.xi;
+    global_decl5.xi;
+    global_decl6.xi;
+    global_decl7.xi;
+    inheritance1.xi;
+    inheritance2.xi;
+    inheritance3.xi;
+    jonathantests01.xi;
+    juhee.xi;
+    juheetest01.xi;
+    method1.xi;
+    method2.xi;
+    module1.xi;
+    neighbor.xi;
+    new01.xi;
+    new02.xi;
+    precedence1.xi;
+    returnType1.xi;
+    returnType2.xi;
+    sameClassName1.xi;
+    sameClassName2.xi;
+    sameClassName3.xi;
+    sameClassName4.xi;
+    sameClassName_bothfail.xi;
+    sameClassName_bothok.xi;
+    sameFunctionName1.xi;
+    sameFunctionName2.xi;
+    sameFunctionName3.xi;
+    sameFunctionName4.xi;
+    sameFunctionName_bothfail.xi;
+    sameFunctionName_bothok.xi;
+    short_tuple_decl1.xi;
+    short_tuple_decl2.xi;
+    subtyping1.xi;
+    subtyping2.xi;
+    subtyping3.xi;
+    subtyping4.xi;
+    subtyping5.xi;
+    subtyping6.xi;
+    subtyping7.xi;
+    subtyping8.xi;
+    superClass2_fail.xi;
+    superClass2_ok.xi;
+    superClass_fail.xi;
+    superClass_ok.xi;
+    this01.xi;
+    this1.xi;
+    this2.xi;
+    visibility1.xi;
+    visibility2.xi;
+    visibility3.xi;
+    visibility4.xi;
+    visibility5.xi;
+}
+

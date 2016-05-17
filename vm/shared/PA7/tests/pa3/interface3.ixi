@@ -1,0 +1,5 @@
+foo()
+
+foo(x:int)
+
+foo(x:int): int

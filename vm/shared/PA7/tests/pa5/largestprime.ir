@@ -1,0 +1,76 @@
+(COMPUNIT
+ Program
+ (FUNC
+  _Imain_paai
+  (SEQ
+   (MOVE (TEMP args) (TEMP _ARG0))
+   (MOVE
+    (TEMP x)
+    (ESEQ
+     (SEQ
+      (MOVE (TEMP t0) (CALL (NAME _I_alloc_i) (CONST 32)))
+      (MOVE (MEM (TEMP t0)) (CONST 3))
+      (MOVE (MEM (ADD (CONST 8) (TEMP t0))) (CONST 1))
+      (MOVE (MEM (ADD (CONST 16) (TEMP t0))) (CONST 2))
+      (MOVE (MEM (ADD (CONST 24) (TEMP t0))) (CONST 3))
+      (MOVE (TEMP t0) (ADD (TEMP t0) (CONST 8))))
+     (TEMP t0)))
+   (EXP
+    (CALL
+     (NAME _Iprint_pai)
+     (CALL
+      (NAME _IunparseInt_aii)
+      (MEM
+       (ESEQ
+        (SEQ
+         (MOVE (TEMP t1) (MEM (SUB (TEMP x) (CONST 8))))
+         (CJUMP (LT (CONST -1) (CONST 0)) l1 l0)
+         (LABEL l0)
+         (CJUMP (LT (CONST -1) (TEMP t1)) l2 l1)
+         (LABEL l1)
+         (EXP (CALL (NAME _I_outOfBounds_p)))
+         (LABEL l2))
+        (ADD (TEMP x) (MUL (CONST 8) (CONST -1))))))))))
+ (FUNC
+  _Ilargestprime_ii
+  (SEQ
+   (MOVE (TEMP max) (TEMP _ARG0))
+   (MOVE (TEMP a) (CONST 1))
+   (MOVE (TEMP largest) (CONST 1))
+   (MOVE (TEMP _RET0) (TEMP largest))
+   (RETURN))))
+(COMPUNIT
+ Program
+ (FUNC
+  _Imain_paai
+  (SEQ
+   (MOVE (TEMP args) (TEMP _ARG0))
+   (MOVE (TEMP temp0) (CONST 32))
+   (MOVE (TEMP temp1) (CALL (NAME _I_alloc_i) (TEMP temp0)))
+   (MOVE (TEMP t0) (TEMP temp1))
+   (MOVE (MEM (TEMP t0)) (CONST 3))
+   (MOVE (MEM (ADD (CONST 8) (TEMP t0))) (CONST 1))
+   (MOVE (MEM (ADD (CONST 16) (TEMP t0))) (CONST 2))
+   (MOVE (MEM (ADD (CONST 24) (TEMP t0))) (CONST 3))
+   (MOVE (TEMP t0) (ADD (TEMP t0) (CONST 8)))
+   (MOVE (TEMP x) (TEMP t0))
+   (MOVE (TEMP t1) (MEM (SUB (TEMP x) (CONST 8))))
+   (CJUMP (LT (CONST -1) (CONST 0)) l1)
+   (LABEL l0)
+   (CJUMP (LT (CONST -1) (TEMP t1)) l2)
+   (LABEL l1)
+   (EXP (CALL (NAME _I_outOfBounds_p)))
+   (LABEL l2)
+   (MOVE (TEMP temp3) (MEM (ADD (TEMP x) (MUL (CONST 8) (CONST -1)))))
+   (MOVE (TEMP temp4) (CALL (NAME _IunparseInt_aii) (TEMP temp3)))
+   (MOVE (TEMP temp5) (TEMP temp4))
+   (EXP (CALL (NAME _Iprint_pai) (TEMP temp5)))
+   (RETURN)))
+ (FUNC
+  _Ilargestprime_ii
+  (SEQ
+   (MOVE (TEMP max) (TEMP _ARG0))
+   (MOVE (TEMP a) (CONST 1))
+   (MOVE (TEMP largest) (CONST 1))
+   (MOVE (TEMP _RET0) (TEMP largest))
+   (RETURN))))

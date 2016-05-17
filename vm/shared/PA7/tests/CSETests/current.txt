@@ -1,0 +1,834 @@
+
+
+
+This is the node: (MOVE (TEMP csetemp0) (TEMP csetemp1))
+
+This is parent nodes and their out: [(MOVE (TEMP csetemp1) (TEMP csetemp2))
+]
+[]
+This is the out set: []
+This is the in set: []
+
+
+
+This is the node: (LABEL l0)
+
+This is parent nodes and their out: [(MOVE (TEMP y) (TEMP csetemp0))
+, (JUMP (NAME l0))
+]
+[]
+[]
+This is the out set: []
+This is the in set: []
+
+
+
+This is the node: (CJUMP (LT (TEMP i) (CONST 10000)) l1)
+
+This is parent nodes and their out: [(LABEL l0)
+]
+[]
+This is the out set: [(LT (TEMP i) (CONST 10000))
+]
+This is the in set: []
+
+
+
+This is the node: (MOVE (TEMP csetemp0) (TEMP csetemp1))
+
+This is parent nodes and their out: [(MOVE (TEMP csetemp1) (TEMP csetemp2))
+]
+[]
+This is the out set: []
+This is the in set: []
+
+
+
+This is the node: (MOVE
+ (TEMP csetemp2)
+ (MUL
+  (MUL (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x)) (TEMP x))
+  (TEMP x)))
+
+This is parent nodes and their out: [(MOVE (TEMP i) (CONST 0))
+]
+[]
+This is the out set: [(MUL (MUL (TEMP x) (TEMP x)) (TEMP x))
+, (MUL (TEMP x) (TEMP x))
+, (MUL (MUL (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x)) (TEMP x))
+ (TEMP x))
+, (MUL (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x)) (TEMP x))
+, (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x))
+]
+This is the in set: []
+
+
+
+This is the node: (MOVE (TEMP csetemp1) (TEMP csetemp2))
+
+This is parent nodes and their out: [(MOVE
+ (TEMP csetemp2)
+ (MUL
+  (MUL (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x)) (TEMP x))
+  (TEMP x)))
+]
+[(MUL (MUL (TEMP x) (TEMP x)) (TEMP x))
+, (MUL (TEMP x) (TEMP x))
+, (MUL (MUL (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x)) (TEMP x))
+ (TEMP x))
+, (MUL (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x)) (TEMP x))
+, (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x))
+]
+This is the out set: [(MUL (MUL (TEMP x) (TEMP x)) (TEMP x))
+, (MUL (TEMP x) (TEMP x))
+, (MUL (MUL (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x)) (TEMP x))
+ (TEMP x))
+, (MUL (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x)) (TEMP x))
+, (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x))
+]
+This is the in set: [(MUL (MUL (TEMP x) (TEMP x)) (TEMP x))
+, (MUL (TEMP x) (TEMP x))
+, (MUL (MUL (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x)) (TEMP x))
+ (TEMP x))
+, (MUL (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x)) (TEMP x))
+, (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x))
+]
+
+
+
+This is the node: (MOVE (TEMP y) (TEMP csetemp0))
+
+This is parent nodes and their out: [(MOVE (TEMP csetemp0) (TEMP csetemp1))
+]
+[]
+This is the out set: []
+This is the in set: []
+
+
+
+This is the node: (RETURN)
+
+This is parent nodes and their out: [(MOVE (TEMP z) (TEMP csetemp0))
+]
+[]
+This is the out set: []
+This is the in set: []
+
+
+
+This is the node: (MOVE (TEMP csetemp1) (TEMP csetemp2))
+
+This is parent nodes and their out: [(LABEL l1)
+]
+[]
+This is the out set: []
+This is the in set: []
+
+
+
+This is the node: (MOVE (TEMP args) (TEMP _ARG0))
+
+This is parent nodes and their out: []
+This is the out set: []
+This is the in set: []
+
+
+
+This is the node: (MOVE (TEMP z) (TEMP csetemp0))
+
+This is parent nodes and their out: [(CJUMP (LT (TEMP i) (CONST 10000)) l1)
+]
+[(LT (TEMP i) (CONST 10000))
+]
+This is the out set: [(LT (TEMP i) (CONST 10000))
+]
+This is the in set: [(LT (TEMP i) (CONST 10000))
+]
+
+
+
+This is the node: (LABEL l1)
+
+This is parent nodes and their out: [(CJUMP (LT (TEMP i) (CONST 10000)) l1)
+]
+[(LT (TEMP i) (CONST 10000))
+]
+This is the out set: [(LT (TEMP i) (CONST 10000))
+]
+This is the in set: [(LT (TEMP i) (CONST 10000))
+]
+
+
+
+This is the node: (MOVE (TEMP a) (TEMP csetemp0))
+
+This is parent nodes and their out: [(MOVE (TEMP csetemp0) (TEMP csetemp1))
+]
+[]
+This is the out set: []
+This is the in set: []
+
+
+
+This is the node: (MOVE (TEMP x) (CONST 5))
+
+This is parent nodes and their out: [(MOVE (TEMP args) (TEMP _ARG0))
+]
+[]
+This is the out set: []
+This is the in set: []
+
+
+
+This is the node: (MOVE (TEMP c) (TEMP csetemp0))
+
+This is parent nodes and their out: [(MOVE (TEMP a) (TEMP csetemp0))
+]
+[]
+This is the out set: []
+This is the in set: []
+
+
+
+This is the node: (JUMP (NAME l0))
+
+This is parent nodes and their out: [(MOVE (TEMP c) (TEMP csetemp0))
+]
+[]
+This is the out set: []
+This is the in set: []
+
+
+
+This is the node: (MOVE (TEMP i) (CONST 0))
+
+This is parent nodes and their out: [(MOVE (TEMP x) (CONST 5))
+]
+[]
+This is the out set: []
+This is the in set: []
+
+
+
+This is the node: (MOVE (TEMP csetemp0) (TEMP csetemp1))
+
+This is parent nodes and their out: [(MOVE (TEMP csetemp1) (TEMP csetemp2))
+]
+[(MUL (MUL (TEMP x) (TEMP x)) (TEMP x))
+, (MUL (TEMP x) (TEMP x))
+, (MUL (MUL (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x)) (TEMP x))
+ (TEMP x))
+, (MUL (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x)) (TEMP x))
+, (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x))
+]
+This is the out set: [(MUL (MUL (TEMP x) (TEMP x)) (TEMP x))
+, (MUL (TEMP x) (TEMP x))
+, (MUL (MUL (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x)) (TEMP x))
+ (TEMP x))
+, (MUL (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x)) (TEMP x))
+, (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x))
+]
+This is the in set: [(MUL (MUL (TEMP x) (TEMP x)) (TEMP x))
+, (MUL (TEMP x) (TEMP x))
+, (MUL (MUL (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x)) (TEMP x))
+ (TEMP x))
+, (MUL (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x)) (TEMP x))
+, (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x))
+]
+
+
+
+This is the node: (RETURN)
+
+This is parent nodes and their out: [(MOVE (TEMP z) (TEMP csetemp0))
+]
+[(LT (TEMP i) (CONST 10000))
+]
+This is the out set: [(LT (TEMP i) (CONST 10000))
+]
+This is the in set: [(LT (TEMP i) (CONST 10000))
+]
+
+
+
+This is the node: (MOVE (TEMP csetemp1) (TEMP csetemp2))
+
+This is parent nodes and their out: [(LABEL l1)
+]
+[(LT (TEMP i) (CONST 10000))
+]
+This is the out set: [(LT (TEMP i) (CONST 10000))
+]
+This is the in set: [(LT (TEMP i) (CONST 10000))
+]
+
+
+
+This is the node: (MOVE (TEMP y) (TEMP csetemp0))
+
+This is parent nodes and their out: [(MOVE (TEMP csetemp0) (TEMP csetemp1))
+]
+[(MUL (MUL (TEMP x) (TEMP x)) (TEMP x))
+, (MUL (TEMP x) (TEMP x))
+, (MUL (MUL (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x)) (TEMP x))
+ (TEMP x))
+, (MUL (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x)) (TEMP x))
+, (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x))
+]
+This is the out set: [(MUL (MUL (TEMP x) (TEMP x)) (TEMP x))
+, (MUL (TEMP x) (TEMP x))
+, (MUL (MUL (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x)) (TEMP x))
+ (TEMP x))
+, (MUL (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x)) (TEMP x))
+, (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x))
+]
+This is the in set: [(MUL (MUL (TEMP x) (TEMP x)) (TEMP x))
+, (MUL (TEMP x) (TEMP x))
+, (MUL (MUL (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x)) (TEMP x))
+ (TEMP x))
+, (MUL (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x)) (TEMP x))
+, (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x))
+]
+
+
+
+This is the node: (MOVE (TEMP csetemp0) (TEMP csetemp1))
+
+This is parent nodes and their out: [(MOVE (TEMP csetemp1) (TEMP csetemp2))
+]
+[(LT (TEMP i) (CONST 10000))
+]
+This is the out set: [(LT (TEMP i) (CONST 10000))
+]
+This is the in set: [(LT (TEMP i) (CONST 10000))
+]
+
+
+
+This is the node: (LABEL l0)
+
+This is parent nodes and their out: [(MOVE (TEMP y) (TEMP csetemp0))
+, (JUMP (NAME l0))
+]
+[(MUL (MUL (TEMP x) (TEMP x)) (TEMP x))
+, (MUL (TEMP x) (TEMP x))
+, (MUL (MUL (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x)) (TEMP x))
+ (TEMP x))
+, (MUL (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x)) (TEMP x))
+, (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x))
+]
+[]
+This is the out set: [(MUL (MUL (TEMP x) (TEMP x)) (TEMP x))
+, (MUL (TEMP x) (TEMP x))
+, (MUL (MUL (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x)) (TEMP x))
+ (TEMP x))
+, (MUL (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x)) (TEMP x))
+, (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x))
+]
+This is the in set: [(MUL (MUL (TEMP x) (TEMP x)) (TEMP x))
+, (MUL (TEMP x) (TEMP x))
+, (MUL (MUL (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x)) (TEMP x))
+ (TEMP x))
+, (MUL (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x)) (TEMP x))
+, (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x))
+]
+
+
+
+This is the node: (MOVE (TEMP a) (TEMP csetemp0))
+
+This is parent nodes and their out: [(MOVE (TEMP csetemp0) (TEMP csetemp1))
+]
+[(LT (TEMP i) (CONST 10000))
+]
+This is the out set: [(LT (TEMP i) (CONST 10000))
+]
+This is the in set: [(LT (TEMP i) (CONST 10000))
+]
+
+
+
+This is the node: (CJUMP (LT (TEMP i) (CONST 10000)) l1)
+
+This is parent nodes and their out: [(LABEL l0)
+]
+[(MUL (MUL (TEMP x) (TEMP x)) (TEMP x))
+, (MUL (TEMP x) (TEMP x))
+, (MUL (MUL (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x)) (TEMP x))
+ (TEMP x))
+, (MUL (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x)) (TEMP x))
+, (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x))
+]
+This is the out set: [(MUL (MUL (TEMP x) (TEMP x)) (TEMP x))
+, (MUL (TEMP x) (TEMP x))
+, (MUL (MUL (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x)) (TEMP x))
+ (TEMP x))
+, (MUL (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x)) (TEMP x))
+, (LT (TEMP i) (CONST 10000))
+, (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x))
+]
+This is the in set: [(MUL (MUL (TEMP x) (TEMP x)) (TEMP x))
+, (MUL (TEMP x) (TEMP x))
+, (MUL (MUL (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x)) (TEMP x))
+ (TEMP x))
+, (MUL (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x)) (TEMP x))
+, (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x))
+]
+
+
+
+This is the node: (MOVE (TEMP c) (TEMP csetemp0))
+
+This is parent nodes and their out: [(MOVE (TEMP a) (TEMP csetemp0))
+]
+[(LT (TEMP i) (CONST 10000))
+]
+This is the out set: [(LT (TEMP i) (CONST 10000))
+]
+This is the in set: [(LT (TEMP i) (CONST 10000))
+]
+
+
+
+This is the node: (MOVE (TEMP z) (TEMP csetemp0))
+
+This is parent nodes and their out: [(CJUMP (LT (TEMP i) (CONST 10000)) l1)
+]
+[(MUL (MUL (TEMP x) (TEMP x)) (TEMP x))
+, (MUL (TEMP x) (TEMP x))
+, (MUL (MUL (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x)) (TEMP x))
+ (TEMP x))
+, (MUL (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x)) (TEMP x))
+, (LT (TEMP i) (CONST 10000))
+, (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x))
+]
+This is the out set: [(MUL (MUL (TEMP x) (TEMP x)) (TEMP x))
+, (MUL (TEMP x) (TEMP x))
+, (MUL (MUL (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x)) (TEMP x))
+ (TEMP x))
+, (MUL (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x)) (TEMP x))
+, (LT (TEMP i) (CONST 10000))
+, (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x))
+]
+This is the in set: [(MUL (MUL (TEMP x) (TEMP x)) (TEMP x))
+, (MUL (TEMP x) (TEMP x))
+, (MUL (MUL (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x)) (TEMP x))
+ (TEMP x))
+, (MUL (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x)) (TEMP x))
+, (LT (TEMP i) (CONST 10000))
+, (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x))
+]
+
+
+
+This is the node: (LABEL l1)
+
+This is parent nodes and their out: [(CJUMP (LT (TEMP i) (CONST 10000)) l1)
+]
+[(MUL (MUL (TEMP x) (TEMP x)) (TEMP x))
+, (MUL (TEMP x) (TEMP x))
+, (MUL (MUL (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x)) (TEMP x))
+ (TEMP x))
+, (MUL (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x)) (TEMP x))
+, (LT (TEMP i) (CONST 10000))
+, (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x))
+]
+This is the out set: [(MUL (MUL (TEMP x) (TEMP x)) (TEMP x))
+, (MUL (TEMP x) (TEMP x))
+, (MUL (MUL (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x)) (TEMP x))
+ (TEMP x))
+, (MUL (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x)) (TEMP x))
+, (LT (TEMP i) (CONST 10000))
+, (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x))
+]
+This is the in set: [(MUL (MUL (TEMP x) (TEMP x)) (TEMP x))
+, (MUL (TEMP x) (TEMP x))
+, (MUL (MUL (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x)) (TEMP x))
+ (TEMP x))
+, (MUL (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x)) (TEMP x))
+, (LT (TEMP i) (CONST 10000))
+, (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x))
+]
+
+
+
+This is the node: (JUMP (NAME l0))
+
+This is parent nodes and their out: [(MOVE (TEMP c) (TEMP csetemp0))
+]
+[(LT (TEMP i) (CONST 10000))
+]
+This is the out set: [(LT (TEMP i) (CONST 10000))
+]
+This is the in set: [(LT (TEMP i) (CONST 10000))
+]
+
+
+
+This is the node: (RETURN)
+
+This is parent nodes and their out: [(MOVE (TEMP z) (TEMP csetemp0))
+]
+[(MUL (MUL (TEMP x) (TEMP x)) (TEMP x))
+, (MUL (TEMP x) (TEMP x))
+, (MUL (MUL (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x)) (TEMP x))
+ (TEMP x))
+, (MUL (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x)) (TEMP x))
+, (LT (TEMP i) (CONST 10000))
+, (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x))
+]
+This is the out set: [(MUL (MUL (TEMP x) (TEMP x)) (TEMP x))
+, (MUL (TEMP x) (TEMP x))
+, (MUL (MUL (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x)) (TEMP x))
+ (TEMP x))
+, (MUL (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x)) (TEMP x))
+, (LT (TEMP i) (CONST 10000))
+, (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x))
+]
+This is the in set: [(MUL (MUL (TEMP x) (TEMP x)) (TEMP x))
+, (MUL (TEMP x) (TEMP x))
+, (MUL (MUL (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x)) (TEMP x))
+ (TEMP x))
+, (MUL (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x)) (TEMP x))
+, (LT (TEMP i) (CONST 10000))
+, (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x))
+]
+
+
+
+This is the node: (MOVE (TEMP csetemp1) (TEMP csetemp2))
+
+This is parent nodes and their out: [(LABEL l1)
+]
+[(MUL (MUL (TEMP x) (TEMP x)) (TEMP x))
+, (MUL (TEMP x) (TEMP x))
+, (MUL (MUL (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x)) (TEMP x))
+ (TEMP x))
+, (MUL (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x)) (TEMP x))
+, (LT (TEMP i) (CONST 10000))
+, (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x))
+]
+This is the out set: [(MUL (MUL (TEMP x) (TEMP x)) (TEMP x))
+, (MUL (TEMP x) (TEMP x))
+, (MUL (MUL (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x)) (TEMP x))
+ (TEMP x))
+, (MUL (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x)) (TEMP x))
+, (LT (TEMP i) (CONST 10000))
+, (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x))
+]
+This is the in set: [(MUL (MUL (TEMP x) (TEMP x)) (TEMP x))
+, (MUL (TEMP x) (TEMP x))
+, (MUL (MUL (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x)) (TEMP x))
+ (TEMP x))
+, (MUL (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x)) (TEMP x))
+, (LT (TEMP i) (CONST 10000))
+, (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x))
+]
+
+
+
+This is the node: (LABEL l0)
+
+This is parent nodes and their out: [(MOVE (TEMP y) (TEMP csetemp0))
+, (JUMP (NAME l0))
+]
+[(MUL (MUL (TEMP x) (TEMP x)) (TEMP x))
+, (MUL (TEMP x) (TEMP x))
+, (MUL (MUL (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x)) (TEMP x))
+ (TEMP x))
+, (MUL (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x)) (TEMP x))
+, (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x))
+]
+[(LT (TEMP i) (CONST 10000))
+]
+This is the out set: [(MUL (MUL (TEMP x) (TEMP x)) (TEMP x))
+, (MUL (TEMP x) (TEMP x))
+, (MUL (MUL (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x)) (TEMP x))
+ (TEMP x))
+, (MUL (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x)) (TEMP x))
+, (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x))
+]
+This is the in set: [(MUL (MUL (TEMP x) (TEMP x)) (TEMP x))
+, (MUL (TEMP x) (TEMP x))
+, (MUL (MUL (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x)) (TEMP x))
+ (TEMP x))
+, (MUL (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x)) (TEMP x))
+, (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x))
+]
+
+
+
+This is the node: (MOVE (TEMP csetemp0) (TEMP csetemp1))
+
+This is parent nodes and their out: [(MOVE (TEMP csetemp1) (TEMP csetemp2))
+]
+[(MUL (MUL (TEMP x) (TEMP x)) (TEMP x))
+, (MUL (TEMP x) (TEMP x))
+, (MUL (MUL (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x)) (TEMP x))
+ (TEMP x))
+, (MUL (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x)) (TEMP x))
+, (LT (TEMP i) (CONST 10000))
+, (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x))
+]
+This is the out set: [(MUL (MUL (TEMP x) (TEMP x)) (TEMP x))
+, (MUL (TEMP x) (TEMP x))
+, (MUL (MUL (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x)) (TEMP x))
+ (TEMP x))
+, (MUL (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x)) (TEMP x))
+, (LT (TEMP i) (CONST 10000))
+, (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x))
+]
+This is the in set: [(MUL (MUL (TEMP x) (TEMP x)) (TEMP x))
+, (MUL (TEMP x) (TEMP x))
+, (MUL (MUL (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x)) (TEMP x))
+ (TEMP x))
+, (MUL (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x)) (TEMP x))
+, (LT (TEMP i) (CONST 10000))
+, (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x))
+]
+
+
+
+This is the node: (MOVE (TEMP a) (TEMP csetemp0))
+
+This is parent nodes and their out: [(MOVE (TEMP csetemp0) (TEMP csetemp1))
+]
+[(MUL (MUL (TEMP x) (TEMP x)) (TEMP x))
+, (MUL (TEMP x) (TEMP x))
+, (MUL (MUL (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x)) (TEMP x))
+ (TEMP x))
+, (MUL (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x)) (TEMP x))
+, (LT (TEMP i) (CONST 10000))
+, (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x))
+]
+This is the out set: [(MUL (MUL (TEMP x) (TEMP x)) (TEMP x))
+, (MUL (TEMP x) (TEMP x))
+, (MUL (MUL (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x)) (TEMP x))
+ (TEMP x))
+, (MUL (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x)) (TEMP x))
+, (LT (TEMP i) (CONST 10000))
+, (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x))
+]
+This is the in set: [(MUL (MUL (TEMP x) (TEMP x)) (TEMP x))
+, (MUL (TEMP x) (TEMP x))
+, (MUL (MUL (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x)) (TEMP x))
+ (TEMP x))
+, (MUL (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x)) (TEMP x))
+, (LT (TEMP i) (CONST 10000))
+, (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x))
+]
+
+
+
+This is the node: (MOVE (TEMP c) (TEMP csetemp0))
+
+This is parent nodes and their out: [(MOVE (TEMP a) (TEMP csetemp0))
+]
+[(MUL (MUL (TEMP x) (TEMP x)) (TEMP x))
+, (MUL (TEMP x) (TEMP x))
+, (MUL (MUL (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x)) (TEMP x))
+ (TEMP x))
+, (MUL (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x)) (TEMP x))
+, (LT (TEMP i) (CONST 10000))
+, (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x))
+]
+This is the out set: [(MUL (MUL (TEMP x) (TEMP x)) (TEMP x))
+, (MUL (TEMP x) (TEMP x))
+, (MUL (MUL (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x)) (TEMP x))
+ (TEMP x))
+, (MUL (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x)) (TEMP x))
+, (LT (TEMP i) (CONST 10000))
+, (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x))
+]
+This is the in set: [(MUL (MUL (TEMP x) (TEMP x)) (TEMP x))
+, (MUL (TEMP x) (TEMP x))
+, (MUL (MUL (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x)) (TEMP x))
+ (TEMP x))
+, (MUL (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x)) (TEMP x))
+, (LT (TEMP i) (CONST 10000))
+, (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x))
+]
+
+
+
+This is the node: (JUMP (NAME l0))
+
+This is parent nodes and their out: [(MOVE (TEMP c) (TEMP csetemp0))
+]
+[(MUL (MUL (TEMP x) (TEMP x)) (TEMP x))
+, (MUL (TEMP x) (TEMP x))
+, (MUL (MUL (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x)) (TEMP x))
+ (TEMP x))
+, (MUL (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x)) (TEMP x))
+, (LT (TEMP i) (CONST 10000))
+, (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x))
+]
+This is the out set: [(MUL (MUL (TEMP x) (TEMP x)) (TEMP x))
+, (MUL (TEMP x) (TEMP x))
+, (MUL (MUL (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x)) (TEMP x))
+ (TEMP x))
+, (MUL (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x)) (TEMP x))
+, (LT (TEMP i) (CONST 10000))
+, (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x))
+]
+This is the in set: [(MUL (MUL (TEMP x) (TEMP x)) (TEMP x))
+, (MUL (TEMP x) (TEMP x))
+, (MUL (MUL (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x)) (TEMP x))
+ (TEMP x))
+, (MUL (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x)) (TEMP x))
+, (LT (TEMP i) (CONST 10000))
+, (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x))
+]
+
+
+
+This is the node: (LABEL l0)
+
+This is parent nodes and their out: [(MOVE (TEMP y) (TEMP csetemp0))
+, (JUMP (NAME l0))
+]
+[(MUL (MUL (TEMP x) (TEMP x)) (TEMP x))
+, (MUL (TEMP x) (TEMP x))
+, (MUL (MUL (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x)) (TEMP x))
+ (TEMP x))
+, (MUL (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x)) (TEMP x))
+, (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x))
+]
+[(MUL (MUL (TEMP x) (TEMP x)) (TEMP x))
+, (MUL (TEMP x) (TEMP x))
+, (MUL (MUL (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x)) (TEMP x))
+ (TEMP x))
+, (MUL (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x)) (TEMP x))
+, (LT (TEMP i) (CONST 10000))
+, (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x))
+]
+This is the out set: [(MUL (MUL (TEMP x) (TEMP x)) (TEMP x))
+, (MUL (TEMP x) (TEMP x))
+, (MUL (MUL (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x)) (TEMP x))
+ (TEMP x))
+, (MUL (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x)) (TEMP x))
+, (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x))
+]
+This is the in set: [(MUL (MUL (TEMP x) (TEMP x)) (TEMP x))
+, (MUL (TEMP x) (TEMP x))
+, (MUL (MUL (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x)) (TEMP x))
+ (TEMP x))
+, (MUL (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x)) (TEMP x))
+, (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x))
+]
+This is the map of out: {(MOVE (TEMP csetemp0) (TEMP csetemp1))
+=[(MUL (MUL (TEMP x) (TEMP x)) (TEMP x))
+, (MUL (TEMP x) (TEMP x))
+, (MUL (MUL (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x)) (TEMP x))
+ (TEMP x))
+, (MUL (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x)) (TEMP x))
+, (LT (TEMP i) (CONST 10000))
+, (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x))
+], (LABEL l0)
+=[(MUL (MUL (TEMP x) (TEMP x)) (TEMP x))
+, (MUL (TEMP x) (TEMP x))
+, (MUL (MUL (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x)) (TEMP x))
+ (TEMP x))
+, (MUL (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x)) (TEMP x))
+, (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x))
+], (CJUMP (LT (TEMP i) (CONST 10000)) l1)
+=[(MUL (MUL (TEMP x) (TEMP x)) (TEMP x))
+, (MUL (TEMP x) (TEMP x))
+, (MUL (MUL (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x)) (TEMP x))
+ (TEMP x))
+, (MUL (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x)) (TEMP x))
+, (LT (TEMP i) (CONST 10000))
+, (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x))
+], (MOVE (TEMP csetemp0) (TEMP csetemp1))
+=[(MUL (MUL (TEMP x) (TEMP x)) (TEMP x))
+, (MUL (TEMP x) (TEMP x))
+, (MUL (MUL (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x)) (TEMP x))
+ (TEMP x))
+, (MUL (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x)) (TEMP x))
+, (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x))
+], (MOVE
+ (TEMP csetemp2)
+ (MUL
+  (MUL (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x)) (TEMP x))
+  (TEMP x)))
+=[(MUL (MUL (TEMP x) (TEMP x)) (TEMP x))
+, (MUL (TEMP x) (TEMP x))
+, (MUL (MUL (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x)) (TEMP x))
+ (TEMP x))
+, (MUL (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x)) (TEMP x))
+, (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x))
+], (MOVE (TEMP csetemp1) (TEMP csetemp2))
+=[(MUL (MUL (TEMP x) (TEMP x)) (TEMP x))
+, (MUL (TEMP x) (TEMP x))
+, (MUL (MUL (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x)) (TEMP x))
+ (TEMP x))
+, (MUL (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x)) (TEMP x))
+, (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x))
+], (MOVE (TEMP y) (TEMP csetemp0))
+=[(MUL (MUL (TEMP x) (TEMP x)) (TEMP x))
+, (MUL (TEMP x) (TEMP x))
+, (MUL (MUL (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x)) (TEMP x))
+ (TEMP x))
+, (MUL (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x)) (TEMP x))
+, (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x))
+], (RETURN)
+=[(MUL (MUL (TEMP x) (TEMP x)) (TEMP x))
+, (MUL (TEMP x) (TEMP x))
+, (MUL (MUL (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x)) (TEMP x))
+ (TEMP x))
+, (MUL (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x)) (TEMP x))
+, (LT (TEMP i) (CONST 10000))
+, (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x))
+], (MOVE (TEMP csetemp1) (TEMP csetemp2))
+=[(MUL (MUL (TEMP x) (TEMP x)) (TEMP x))
+, (MUL (TEMP x) (TEMP x))
+, (MUL (MUL (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x)) (TEMP x))
+ (TEMP x))
+, (MUL (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x)) (TEMP x))
+, (LT (TEMP i) (CONST 10000))
+, (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x))
+], (MOVE (TEMP args) (TEMP _ARG0))
+=[], (MOVE (TEMP z) (TEMP csetemp0))
+=[(MUL (MUL (TEMP x) (TEMP x)) (TEMP x))
+, (MUL (TEMP x) (TEMP x))
+, (MUL (MUL (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x)) (TEMP x))
+ (TEMP x))
+, (MUL (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x)) (TEMP x))
+, (LT (TEMP i) (CONST 10000))
+, (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x))
+], (LABEL l1)
+=[(MUL (MUL (TEMP x) (TEMP x)) (TEMP x))
+, (MUL (TEMP x) (TEMP x))
+, (MUL (MUL (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x)) (TEMP x))
+ (TEMP x))
+, (MUL (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x)) (TEMP x))
+, (LT (TEMP i) (CONST 10000))
+, (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x))
+], (MOVE (TEMP a) (TEMP csetemp0))
+=[(MUL (MUL (TEMP x) (TEMP x)) (TEMP x))
+, (MUL (TEMP x) (TEMP x))
+, (MUL (MUL (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x)) (TEMP x))
+ (TEMP x))
+, (MUL (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x)) (TEMP x))
+, (LT (TEMP i) (CONST 10000))
+, (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x))
+], (MOVE (TEMP x) (CONST 5))
+=[], (MOVE (TEMP c) (TEMP csetemp0))
+=[(MUL (MUL (TEMP x) (TEMP x)) (TEMP x))
+, (MUL (TEMP x) (TEMP x))
+, (MUL (MUL (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x)) (TEMP x))
+ (TEMP x))
+, (MUL (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x)) (TEMP x))
+, (LT (TEMP i) (CONST 10000))
+, (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x))
+], (JUMP (NAME l0))
+=[(MUL (MUL (TEMP x) (TEMP x)) (TEMP x))
+, (MUL (TEMP x) (TEMP x))
+, (MUL (MUL (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x)) (TEMP x))
+ (TEMP x))
+, (MUL (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x)) (TEMP x))
+, (LT (TEMP i) (CONST 10000))
+, (MUL (MUL (MUL (TEMP x) (TEMP x)) (TEMP x)) (TEMP x))
+], (MOVE (TEMP i) (CONST 0))
+=[]}
+[xic] Generating intermediate code completed

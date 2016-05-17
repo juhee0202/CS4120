@@ -1,0 +1,152 @@
+package jl2755;
+import jl2755.ast.*;
+import java.io.IOException;
+
+
+parser code  {: 
+  public void report_fatal_error(String msg, Object info) {
+    report_error(msg, info);
+  }
+
+  public void report_error(String msg, Object info) {
+    Main.setToken((java_cup.runtime.Symbol)info);
+    Main.handleSyntaxError("Syntax error: unexpected ");
+  }
+:}
+
+
+/* Terminals */
+terminal String IDENTIFIER;
+terminal String STRING_LITERAL;
+terminal String CHARACTER_LITERAL;
+terminal String INTEGER_LITERAL;
+terminal Boolean TRUE, FALSE;
+// keywords
+terminal IF, ELSE, WHILE, RETURN, USE, PLUS, MINUS, UMINUS, TIMES, HIGH_MULT, INT, BOOL,
+  DIVIDE, MODULO, NOT, LT, LEQ, GT, GEQ, AND, OR, EQUAL, NOT_EQUAL, GETS,
+  OPEN_BRACKET, CLOSE_BRACKET, OPEN_PAREN, CLOSE_PAREN, OPEN_BRACE, CLOSE_BRACE,
+  COLON, COMMA, SEMICOLON, UNDERSCORE, LENGTH, CLASS, EXTENDS;
+
+
+/* Nonterminals */
+non terminal Brackets brackets;
+// non terminal // TODO  const_var;
+non terminal InterfaceClassDecl class_decl;
+non terminal InterfaceClassBody class_body;
+non terminal EmptyArrayType empty_array_type;
+non terminal FunctionParam function_param;
+non terminal Identifier identifier;
+non terminal Interface interface;
+non terminal InterfaceFunc interface_func;
+non terminal InterfaceList interface_list;
+non terminal PrimitiveType primitive_type;
+non terminal ReturnType return_type;
+non terminal Type type;
+non terminal TypeList type_list;
+non terminal UseId use_id;
+
+
+/* Precedences */
+precedence left OR;
+precedence left AND;
+precedence left EQUAL, NOT_EQUAL;
+precedence left LT, LEQ, GT, GEQ;
+precedence left PLUS, MINUS; 
+precedence left TIMES, HIGH_MULT, DIVIDE, MODULO;
+precedence left UMINUS, NOT; // missing integer and logical negation (unary minus vs. binary minus)
+precedence left OPEN_BRACKET, OPEN_PAREN;  // missing function call, []
+precedence nonassoc ELSE;     // to avoid "dangling else" problem
+precedence nonassoc SEMICOLON;
+
+
+start with interface;
+
+/* Grammar */
+
+brackets ::= OPEN_BRACKET CLOSE_BRACKET                             {: RESULT = new Brackets(); :}
+             | 
+             OPEN_BRACKET CLOSE_BRACKET brackets:b                  {: RESULT = new Brackets(b); :}
+             ;
+
+// const_var ::= CONST var_init:vi                                     {: RESULT = new GlobalDecl(vi, false, true); :}
+//               ;
+
+class_body ::= interface_func:ifd class_body:cb                     {: RESULT = new InterfaceClassBody(ifd, cb); :}
+               |
+                                                                    {: RESULT = new InterfaceClassBody(); :}
+               ;
+
+class_decl ::= CLASS identifier:id OPEN_BRACE      
+               class_body:cb CLOSE_BRACE                            {: RESULT = new InterfaceClassDecl(id,cb); :}
+               |
+               CLASS identifier:id1 EXTENDS identifier:id2 
+               OPEN_BRACE class_body:cb CLOSE_BRACE                 {: RESULT = new InterfaceClassDecl(id1,id2,cb); :}
+               ;
+             
+empty_array_type ::= primitive_type:pt brackets:b                   {: RESULT = new EmptyArrayType(pt, b); :}
+                     ;
+
+function_param ::= identifier:id COLON type:t                       {: RESULT = new FunctionParam(id, t); :}
+                   |
+                   identifier:id COLON type:t COMMA 
+                   function_param:fp                                {: RESULT = new FunctionParam(id, t, fp); :}
+                   ;
+
+identifier ::= IDENTIFIER:id                                        {: RESULT = new Identifier(id, idleft, idright); :}
+               ; 
+
+interface ::= interface_list:il                                     {: RESULT = new Interface(il); :}
+              |
+              use_id:useidc interface_list:il                       {: RESULT = new Interface(il, useidc); :}
+              ;
+
+interface_func ::= identifier:id OPEN_PAREN 
+                   CLOSE_PAREN return_type:rt                       {: RESULT = new InterfaceFunc(id, rt); :}
+                   |
+                   identifier:id OPEN_PAREN function_param:fp 
+                   CLOSE_PAREN return_type:rt                       {: RESULT = new InterfaceFunc(id, fp, rt); :}
+                   ;
+
+interface_list ::= interface_func:ifd interface_list:il             {: RESULT = new InterfaceList(ifd, il); :}
+                   |                       
+                   interface_func:ifd                               {: RESULT = new InterfaceList(ifd); :}
+                   |
+                   class_decl:cd interface_list:il                  {: RESULT = new InterfaceList(cd,il); :}
+                   |
+                   class_decl:cd                                    {: RESULT = new InterfaceList(cd); :}
+                   // |
+                   // const_var:cv interface_list:il                   {: RESULT = new InterfaceList(cv, il); :}
+                   // |
+                   // const_var:cv                                     {: RESULT = new InterfaceList(cv); :}
+                   ;
+
+primitive_type ::= INT:i                                            {: RESULT = new PrimitiveType(0, ileft, iright); :}         
+                   | 
+                   BOOL:b                                           {: RESULT = new PrimitiveType(1, bleft, bright); :}
+                   ;
+
+return_type ::= COLON type_list:tl                                  {: RESULT = new ReturnType(tl); :}
+                |                       
+                                                                    {: RESULT = new ReturnType(); :}
+                ;
+
+type ::= primitive_type:pt                                          {: RESULT = pt; :}
+         | 
+         empty_array_type:at                                        {: RESULT = at; :}
+         |
+         identifier:id                                              {: id.setIsClassName(); RESULT = id; :}
+         ;
+
+type_list ::= type:t                                                {: RESULT = new TypeList(t); :}
+              | 
+              type:t COMMA type_list:tl                             {: RESULT = new TypeList(t, tl); :}
+              ;
+
+use_id ::= USE identifier:id                                        {: RESULT = new UseId(id, false); :}
+           |  
+           USE identifier:id SEMICOLON                              {: RESULT = new UseId(id, true); :}
+           |
+           USE identifier:id use_id:ui                              {: RESULT = new UseId(id, ui, false); :}
+           |
+           USE identifier:id SEMICOLON use_id:ui                    {: RESULT = new UseId(id, ui, true); :}
+           ;

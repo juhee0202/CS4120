@@ -1,4 +1,0 @@
-main() {
-    x: int[5];
-    length(x);
-}

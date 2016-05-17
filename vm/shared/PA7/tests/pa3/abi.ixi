@@ -1,6 +1,0 @@
-main(args: int[][])
-unparseInt(n: int): int[]
-parseInt(str: int[]): int, bool
-eof() : bool
-gcd(a:int, b:int):int
-multiple__underScores() 

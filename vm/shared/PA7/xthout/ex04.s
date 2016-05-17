@@ -1,1 +1,0 @@
-2:12 error:Expected bool, but found int

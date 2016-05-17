@@ -1,1 +1,0 @@
-3:15 error:Syntax error: unexpected [

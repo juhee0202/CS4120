@@ -1,1 +1,0 @@
-2:18 error:Mismatched types for binary operation &

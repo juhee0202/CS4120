@@ -1,5 +1,0 @@
-digraph {
-{	rankdir=LR
-	node[shape=box]
-}	"(enter	0, 0)" -> {"(pushq	rdi)"}
-}

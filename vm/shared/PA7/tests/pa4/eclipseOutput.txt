@@ -1,5 +1,0 @@
-[(LABEL tempLabel0)
-, (MOVE (TEMP c3po) (CONST 167))
-, (MOVE (TEMP r2d2) (TEMP c3po))
-]
-[xic] Generating intermediate code completed

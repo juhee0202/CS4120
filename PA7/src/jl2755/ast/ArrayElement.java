@@ -60,6 +60,7 @@ public class ArrayElement implements Expr {
 		dotableExpr = de;
 		indexedBrackets = ib;
 		index = 3;
+		
 	}
 
 	public void prettyPrintNode() {

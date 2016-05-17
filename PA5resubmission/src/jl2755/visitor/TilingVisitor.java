@@ -882,7 +882,7 @@ public class TilingVisitor implements IRTreeVisitor {
 					tempInst = new Instruction(Operation.MOVQ,tempDest,cons);
 					instructions.add(tempInst);
 					cost += tempInst.getCost();
-					tempInst = new Instruction(Operation.CMPQ,cons,tempSrc);
+					tempInst = new Instruction(Operation.CMPQ,tempSrc,cons);
 				} else {
 					tempInst = new Instruction(Operation.CMPQ,tempSrc,tempDest);
 				}
@@ -903,7 +903,7 @@ public class TilingVisitor implements IRTreeVisitor {
 					tempInst = new Instruction(Operation.MOVQ,tempDest,cons);
 					instructions.add(tempInst);
 					cost += tempInst.getCost();
-					tempInst = new Instruction(Operation.CMPQ,cons,tempSrc);
+					tempInst = new Instruction(Operation.CMPQ,tempSrc,cons);
 				} else {
 					tempInst = new Instruction(Operation.CMPQ,tempSrc,tempDest);
 				}
@@ -924,7 +924,7 @@ public class TilingVisitor implements IRTreeVisitor {
 					tempInst = new Instruction(Operation.MOVQ,tempDest,cons);
 					instructions.add(tempInst);
 					cost += tempInst.getCost();
-					tempInst = new Instruction(Operation.CMPQ,cons,tempSrc);
+					tempInst = new Instruction(Operation.CMPQ,tempSrc,cons);
 				} else {
 					tempInst = new Instruction(Operation.CMPQ,tempSrc,tempDest);
 				}

@@ -695,7 +695,6 @@ public class TypeCheckVisitor implements ASTVisitor {
 	 */
 	@Override
 	public void visit(Break b) {
-		System.out.println("visiting break!");
 		if (whileCount == 0) {
 			String s = "break cannot be used outside of a loop";
 			SemanticErrorObject seo = new SemanticErrorObject(
@@ -711,7 +710,8 @@ public class TypeCheckVisitor implements ASTVisitor {
 				Main.handleSemanticError(seo);
 			}
 		}
-		stmtType = new VoidType();
+
+		stmtType = new UnitType();
 		tempType = new UnitType();
 	}
 	
@@ -720,7 +720,6 @@ public class TypeCheckVisitor implements ASTVisitor {
 	 */
 	@Override
 	public void visit(Continue c) {
-		System.out.println("visiting continue!");
 		if (whileCount == 0) {
 			String s = "continue cannot be used outside of a loop";
 			SemanticErrorObject seo = new SemanticErrorObject(
@@ -736,8 +735,8 @@ public class TypeCheckVisitor implements ASTVisitor {
 				Main.handleSemanticError(seo);
 			}
 		}
-		
-		stmtType = new VoidType();
+
+		stmtType = new UnitType();
 		tempType = new UnitType();
 	}
 
@@ -1738,7 +1737,9 @@ public class TypeCheckVisitor implements ASTVisitor {
 				id = stack.pop();
 			}
 		}
-		
+		if (ws.hasLabel()) {
+			labelSet.remove(ws.getLabel().getName());
+		}
 		whileCount--;
 	}
 	

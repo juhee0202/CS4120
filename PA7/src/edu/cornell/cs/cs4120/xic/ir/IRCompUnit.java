@@ -19,6 +19,7 @@ public class IRCompUnit extends IRNode {
     private String name;
     private Map<String, IRFuncDecl> functions;
     private Set<IRDispatchVector> dispatchVectors;
+    private Set<IRGlobalVariable> globalVariables;
 
     public IRCompUnit(String name) {
         this.name = name;
@@ -30,10 +31,12 @@ public class IRCompUnit extends IRNode {
         this.functions = functions;
     }
     
-    public IRCompUnit(String name, Map<String, IRFuncDecl> functions, Set<IRDispatchVector> dvs) {
+    public IRCompUnit(String name, Map<String, IRFuncDecl> functions, 
+    		Set<IRDispatchVector> dvs, Set<IRGlobalVariable> gvs) {
         this.name = name;
         this.functions = functions;
         dispatchVectors = dvs;
+        globalVariables = gvs;
     }
 
     public void appendFunc(IRFuncDecl func) {
@@ -50,6 +53,14 @@ public class IRCompUnit extends IRNode {
 
     public IRFuncDecl getFunction(String name) {
         return functions.get(name);
+    }
+    
+    public Set<IRDispatchVector> getDispatchVectors() {
+    	return dispatchVectors;
+    }
+    
+    public Set<IRGlobalVariable> getGlobalVariables() {
+    	return globalVariables;
     }
 
     @Override

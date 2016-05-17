@@ -8,6 +8,7 @@ import edu.cornell.cs.cs4120.xic.ir.IRConst;
 import edu.cornell.cs.cs4120.xic.ir.IRESeq;
 import edu.cornell.cs.cs4120.xic.ir.IRExp;
 import edu.cornell.cs.cs4120.xic.ir.IRFuncDecl;
+import edu.cornell.cs.cs4120.xic.ir.IRGlobalVariable;
 import edu.cornell.cs.cs4120.xic.ir.IRJump;
 import edu.cornell.cs.cs4120.xic.ir.IRLabel;
 import edu.cornell.cs.cs4120.xic.ir.IRMem;
@@ -36,4 +37,5 @@ public interface IRTreeVisitor {	// Rest: Jonathan
 	public void visit(IRSeq seq);
 	public void visit(IRTemp temp);
 	public void visit(IRDispatchVector irMethodTable);
+	public void visit(IRGlobalVariable irGlobalVariable);
 }

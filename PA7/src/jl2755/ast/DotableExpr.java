@@ -31,8 +31,6 @@ public class DotableExpr implements Expr {
 	 * Constructor for "id" or "new id"
 	 * @param id
 	 * @param isNew
-	 * @param idleft
-	 * @param idright
 	 */
 	public DotableExpr(Identifier id, boolean isNew) {
 		if (isNew) {
@@ -75,7 +73,7 @@ public class DotableExpr implements Expr {
 	 * @param id
 	 */
 	public DotableExpr(DotableExpr de, Identifier id) {
-		type = Type.PAREN;
+		type = Type.DOT;
 		dotableExpr = de;
 		this.id = id;
 		col = de.col;
@@ -148,8 +146,10 @@ public class DotableExpr implements Expr {
 			functionCall.prettyPrintNode();
 		} else if (type == Type.NEW) {
 			CodeWriterSExpPrinter tempPrinter = GlobalPrettyPrinter.getInstance();
+			tempPrinter.startList();
 			tempPrinter.printAtom("new ");
 			id.prettyPrintNode();
+			tempPrinter.endList();
 		} else if (type == Type.DOT) {
 			CodeWriterSExpPrinter tempPrinter = GlobalPrettyPrinter.getInstance();
 			dotableExpr.prettyPrintNode();

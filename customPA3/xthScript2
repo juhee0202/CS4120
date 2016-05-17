@@ -79,22 +79,34 @@ xic ("Test --typecheck -O") ["../customPA3"] "-libpath $(testpath) --typecheck -
     assign04.xi;
     assign05.xi;
     assign06.xi;
+    assign07.xi;
     binary01.xi;
     binary02.xi;
     binary03.xi;
     binary04.xi;
     extend1.xi;
+    extend2.xi;
+    extend3.xi;
     extend4.xi;
     extend5.xi;
+    extend6.xi;
+    extend7.xi;
+    extend8.xi;
     field_decl1.xi;
     field_decl2.xi;
+    functioncall01.xi;
+    functioncall02.xi;
     global_decl1.xi;
     global_decl2.xi;
+    global_decl3.xi;
     global_decl4.xi;
     global_decl5.xi;
     global_decl6.xi;
+    global_decl7.xi;
     module1.xi;
     neighbor.xi;
+    new01.xi;
+    new02.xi;
     sameClassName1.xi;
     sameClassName2.xi;
     sameClassName3.xi;
@@ -111,5 +123,6 @@ xic ("Test --typecheck -O") ["../customPA3"] "-libpath $(testpath) --typecheck -
     superClass_ok.xi;
     superClass2_fail.xi;
     superClass2_ok.xi;
+    this01.xi;
 }
 

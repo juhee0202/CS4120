@@ -1,0 +1,21 @@
+(()
+ ((class
+   Point
+   (((p_x int) (p_y int))
+    (move ((dx int) (dy int)) () ((= p_x (+ p_x dx)) (= p_y (+ p_y dy))))
+    (coords () (int int) ((return p_x p_y)))
+    (add ((p Point)) (Point) ((return (null))))
+    (initPoint ((x0 int) (y0 int)) (Point)
+     ((= p_x x0) (= p_y y0) (return this)))
+    (clone () (Point) ((return (createPoint p_x p_y))))
+    (equals ((p Point)) (bool) ((return (== this p))))
+    ()))
+  (createPoint ((x int) (y int)) (Point)
+   ((return (((new  Point) . initPoint) x y))))
+  (foo () () ())
+  (main
+   ((args ([] ([] int))))
+   ()
+   ((= (p Point) (new  Point)) (= p (createPoint 1 1)) (foo)
+    (= (_ _) ((new  Point) . coords)) (= (_) (((new  Point) . initPoint) 1 2))
+    (= (length2 int) (length (1 2 3)))))))

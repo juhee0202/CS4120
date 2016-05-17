@@ -2806,5 +2806,11 @@ public class TilingVisitor implements IRTreeVisitor {
 		// TODO Auto-generated method stub
 		
 	}
+
+	@Override
+	public void visit(IRGlobalVariable irGlobalVariable) {
+		// TODO Auto-generated method stub
+		
+	}
 	
 }

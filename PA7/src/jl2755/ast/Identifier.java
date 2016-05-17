@@ -13,6 +13,7 @@ public class Identifier implements Expr, Type {
 	private boolean isSurroundedByParentheses = false;
 	private boolean isClassName = false;
 	private boolean isConst = false;
+	private boolean isField = false;
 	
 	public Identifier(String argValue, int idleft, int idright){
 		theValue = argValue;
@@ -109,5 +110,16 @@ public class Identifier implements Expr, Type {
 
 	public void setConst(boolean isConst) {
 		this.isConst = isConst;
+	}
+	
+	/**
+	 * @return true if the variable is a field
+	 */
+	public boolean isField() {
+		return isField;
+	}
+	
+	public void setIsField(boolean b) {
+		isField = b;
 	}
 }

@@ -21,12 +21,12 @@ import jl2755.visitor.Environment;
  */
 public class ClassType implements VType{
 
-	String className;
-	String superClassName;
-	HashMap<String, VarType> fieldEnv;
-	HashMap<String, FunType> methodEnv;		//contains methods of ONLY this class (no subclass or superclass)
-	List<String> orderedFields;
-	List<String> orderedMethods;
+	private String className;
+	private String superClassName;
+	private HashMap<String, VarType> fieldEnv;
+	private HashMap<String, FunType> methodEnv;		// contains pure method names of ONLY this class (no subclass or superclass)
+	private List<String> orderedFields;
+	private List<String> orderedMethods;			// contains ABI method names
 
 	public ClassType(InterfaceClassDecl intClassDecl) {
 		className = intClassDecl.getClassName().getTheValue();
@@ -46,9 +46,17 @@ public class ClassType implements VType{
 		for (InterfaceFunc method: methods) {
 			FunType funType = new FunType(method);
 			String name = method.getIdentifier().toString();
-			String ABIName = functionToABIName(name, funType);
-			methodEnv.put(ABIName, new FunType(method));
-			orderedMethods.add(method.getIdentifier().toString());
+			String ABIName = classMethodToABIName(className, name, funType);
+			if (methodEnv.containsKey(name)) {
+				String s = "Method " + name + " is already declared in " + className;
+				SemanticErrorObject seo = new SemanticErrorObject(
+						method.getIdentifier().getLineNumber(), 
+						method.getIdentifier().getColumnNumber(),
+						s);
+				Main.handleSemanticError(seo);
+			}
+			methodEnv.put(name, funType);
+			orderedMethods.add(ABIName);
 		}
 	}
 	
@@ -78,6 +86,14 @@ public class ClassType implements VType{
 				VarDecl varDecl = field.getVarDecl();
 				fieldName = varDecl.getIdentifier().toString();
 				fieldType = new VarType(varDecl);
+				if (fieldEnv.containsKey(fieldName)) {
+					String s = fieldName + " is already declared in " + className;
+					SemanticErrorObject seo = new SemanticErrorObject(
+							varDecl.getIdentifier().getLineNumber(), 
+							varDecl.getIdentifier().getColumnNumber(),
+							s);
+					Main.handleSemanticError(seo);
+				}
 				fieldEnv.put(fieldName, fieldType);
 				orderedFields.add(fieldName);
 				break;
@@ -86,6 +102,14 @@ public class ClassType implements VType{
 				for (Identifier id: tupleDecl.getAllIdentifiers()) {
 					fieldName = id.getTheValue();
 					fieldType = new VarType(tupleDecl.getType());
+					if (fieldEnv.containsKey(fieldName)) {
+						String s = fieldName + " is already declared in " + className;
+						SemanticErrorObject seo = new SemanticErrorObject(
+								id.getLineNumber(), 
+								id.getColumnNumber(),
+								s);
+						Main.handleSemanticError(seo);
+					}
 					fieldEnv.put(fieldName, fieldType);
 					orderedFields.add(fieldName);
 				}
@@ -99,14 +123,19 @@ public class ClassType implements VType{
 		for (FunctionDecl method: methods) {
 			FunType funType = new FunType(method);
 			String methodName = method.getIdentifier().getTheValue();
-			String ABIName = functionToABIName(methodName, funType);
+			String ABIName = classMethodToABIName(className, methodName, funType);
 			method.setABIName(ABIName);
-			methodEnv.put(ABIName, new FunType(method));
-			orderedMethods.add(methodName);
+			if (methodEnv.containsKey(methodName)) {
+				String s = "Method " + methodName + " is already declared in " + className;
+				SemanticErrorObject seo = new SemanticErrorObject(
+						method.getIdentifier().getLineNumber(), 
+						method.getIdentifier().getColumnNumber(),
+						s);
+				Main.handleSemanticError(seo);
+			}
+			methodEnv.put(methodName, funType);
+			orderedMethods.add(ABIName);
 		}
-		
-		orderedFields = new ArrayList<String>();
-		orderedMethods = new ArrayList<String>();
 	}
 	
 	/**
@@ -132,6 +161,11 @@ public class ClassType implements VType{
 		String paramTypesString = translateVTypeToABIString(paramTypes);
 		
 		return ABIName + returnTypeString + paramTypesString;
+	}
+	
+	private String classMethodToABIName(String className, String fnName, FunType fnType) {
+		String ABIName = "_" + className + "_" + functionToABIName(fnName, fnType);
+		return ABIName;
 	}
 	
 	/**
@@ -201,7 +235,7 @@ public class ClassType implements VType{
 		this.methodEnv = methodEnv;
 	}
 	
-	public List<String> getOrderedFields() {
+	private List<String> getOrderedFields() {
 		return orderedFields;
 	}
 
@@ -241,7 +275,7 @@ public class ClassType implements VType{
 		}
 	}
 
-	public List<String> getOrderedMethods() {
+	private List<String> getOrderedMethods() {
 		return orderedMethods;
 	}
 
@@ -327,8 +361,22 @@ public class ClassType implements VType{
 		
 		// if they extend different superclasses, return false
 		String argSuperClassName = argClassType.getSuperClassName();
-		if (!argSuperClassName.equals(superClassName)) {
-			return false;
+		if (argSuperClassName == null) {
+			if (superClassName != null) {
+				return false;
+			}
+		}
+		
+		if (superClassName == null) {
+			if (argSuperClassName != null) {
+				return false;
+			}
+		}
+		
+		if (!(argSuperClassName == null && superClassName == null)) {
+			if (!argSuperClassName.equals(superClassName)) {
+				return false;
+			}
 		}
 		
 		// check that all method match EXACTLY
@@ -372,11 +420,25 @@ public class ClassType implements VType{
 		if (!argClassType.getClassName().equals(className)) {
 			return false;
 		}
-		
+
 		// if they extend different superclasses, return false
 		String argSuperClassName = argClassType.getSuperClassName();
-		if (!argSuperClassName.equals(superClassName)) {
-			return false;
+		if (argSuperClassName == null) {
+			if (superClassName != null) {
+				return false;
+			}
+		}
+
+		if (superClassName == null) {
+			if (argSuperClassName != null) {
+				return false;
+			}
+		}
+
+		if (!(argSuperClassName == null && superClassName == null)) {
+			if (!argSuperClassName.equals(superClassName)) {
+				return false;
+			}
 		}
 		
 		// check that all method match EXACTLY
@@ -407,7 +469,7 @@ public class ClassType implements VType{
 	public void checkSupers(Environment env) {
 		List<ClassType> superClasses = getSuperClasses(env);
 		for (ClassType superClass : superClasses) {
-			HashMap<String, FunType> superMethodEnv = superClass.methodEnv;
+			HashMap<String, FunType> superMethodEnv = superClass.getMethodEnv();
 			for (Entry<String, FunType> f1 : methodEnv.entrySet()) {
 				for (Entry<String, FunType> f2 : superMethodEnv.entrySet()) {
 					if (f1.getKey().equals(f2.getKey()) &&
@@ -485,11 +547,30 @@ public class ClassType implements VType{
 	public List<String> getDispatchMethods(Environment env) {
 		List<String> allMethods = new ArrayList<String>();
 		List<ClassType> superclasses = getSuperClasses(env);
+		HashMap<String, Integer> methodToIndex = new HashMap<String, Integer>();
+		
 		for (int i = superclasses.size()-1; i >= 0; i--) {
 			List<String> classMethods = superclasses.get(i).getOrderedMethods();
-			allMethods.addAll(classMethods);
+			for (String abiName: classMethods) {
+				// extract function name from abi name
+				int secondUnderscore = abiName.indexOf("_", 1);
+				String methodName = abiName.substring(secondUnderscore);
+				
+				// override method
+				if (methodToIndex.containsKey(methodName)) {
+					int idx = methodToIndex.get(methodName);
+					allMethods.set(idx, abiName);
+				} else {
+					allMethods.add(abiName);
+					methodToIndex.put(methodName, allMethods.size()-1);
+				}
+			}
 		}
 		return allMethods;
 	}
 	
+	@Override
+	public String toString() {
+		return className + " extends " + superClassName;
+	}
 }

@@ -89,6 +89,8 @@ precedence left LT, LEQ, GT, GEQ;
 precedence left PLUS, MINUS; 
 precedence left TIMES, HIGH_MULT, DIVIDE, MODULO;
 precedence left UMINUS, NOT; // missing integer and logical negation (unary minus vs. binary minus)
+precedence left DOT;
+precedence left NEW;
 precedence left OPEN_BRACKET, OPEN_PAREN;  // missing function call, []
 precedence nonassoc ELSE;     // to avoid "dangling else" problem
 precedence nonassoc SEMICOLON;
@@ -115,13 +117,10 @@ array_element_list ::= expr:e                                       {: RESULT = 
 array_literal ::= OPEN_BRACE:ob array_element_list:ael CLOSE_BRACE  {: RESULT = new ArrayLiteral(ael, obleft, obright); :}
                   ;
 
-assignment_stmt ::= identifier:id GETS expr:expression              {: RESULT = new AssignmentStmt(id, expression); :}
+assignment_stmt ::= dotable_expr:de GETS expr:e                     {: RESULT = new AssignmentStmt(de, e); :}
                     |
-                    identifier:id indexed_brackets:ib GETS 
-                    expr:expression                                 {: RESULT = new AssignmentStmt(id, ib, expression); :}
-                    |
-                    function_call:fc indexed_brackets:ib GETS 
-                    expr:expression                                 {: RESULT = new AssignmentStmt(fc, ib, expression); :}
+                    dotable_expr:de indexed_brackets:ib GETS 
+                    expr:e                                          {: RESULT = new AssignmentStmt(de, ib, e); :}
                     ;
 
 block_stmt ::= OPEN_BRACE CLOSE_BRACE                               {: RESULT = new BlockStmt(); :}
@@ -139,7 +138,7 @@ brackets ::= OPEN_BRACKET CLOSE_BRACKET                             {: RESULT = 
              ;
 
 //*********************************************************************MODIF**********************************************************
-class_body ::= field_decl:fd class_body:cb                         {: RESULT = new ClassBody(fd,cb); :}
+class_body ::= field_decl:fd class_body:cb                          {: RESULT = new ClassBody(fd,cb); :}
                |
                function_decl:fd class_body:cb                       {: RESULT = new ClassBody(fd,cb); :}
                |

@@ -711,7 +711,9 @@ public class TypeCheckVisitor implements ASTVisitor {
 				Main.handleSemanticError(seo);
 			}
 		}
-		stmtType = new VoidType();	// Question: do I dirty tempType?
+//		stmtType = new VoidType();
+		stmtType = new UnitType();
+		
 	}
 	
 	/**
@@ -735,7 +737,8 @@ public class TypeCheckVisitor implements ASTVisitor {
 				Main.handleSemanticError(seo);
 			}
 		}
-		stmtType = new VoidType();
+//		stmtType = new VoidType();
+		stmtType = new UnitType();
 	}
 
 	/**

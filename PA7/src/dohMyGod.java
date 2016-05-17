@@ -322,7 +322,6 @@ public class dohMyGod {
 		private int[] x;
 		public void bark() {
 			this.x[0] =2; 
-			this = 
 		}
 	}
 	class Animal {

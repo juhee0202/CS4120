@@ -323,6 +323,7 @@ public class dohMyGod {
 		public void bark() {
 			this.x[0] =2; 
 		}
+		l2: while
 	}
 	class Animal {
 		public int[] name;

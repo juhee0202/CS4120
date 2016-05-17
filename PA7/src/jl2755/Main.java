@@ -1158,6 +1158,7 @@ public class Main {
 				}
 			}
 		}
+		// Resolve types in source file
 		for (String className : unresolved) {
 			if (!globalEnv.containsClass(className)) {
 				String s = "Unable to resolved type " + className;

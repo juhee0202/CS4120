@@ -569,4 +569,8 @@ public class ClassType implements VType{
 		return allMethods;
 	}
 	
+	@Override
+	public String toString() {
+		return className + " extends " + superClassName;
+	}
 }

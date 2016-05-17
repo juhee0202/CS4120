@@ -711,9 +711,9 @@ public class TypeCheckVisitor implements ASTVisitor {
 				Main.handleSemanticError(seo);
 			}
 		}
-//		stmtType = new VoidType();
+
 		stmtType = new UnitType();
-		
+		tempType = new UnitType();
 	}
 	
 	/**
@@ -737,8 +737,9 @@ public class TypeCheckVisitor implements ASTVisitor {
 				Main.handleSemanticError(seo);
 			}
 		}
-//		stmtType = new VoidType();
+
 		stmtType = new UnitType();
+		tempType = new UnitType();
 	}
 
 	/**
@@ -1651,14 +1652,9 @@ public class TypeCheckVisitor implements ASTVisitor {
 			} else {
 				// DO NOTHING: can always initialize array or object with null
 			}
-		} else {
-			
-			
-			
+		} else {			
 			VarType rightType = (VarType) tempType;
-			
-			
-			
+
 			// check for type hierarchy
 			boolean isSubType = false;
 			if (leftType.isObject() && rightType.isObject()) {
@@ -1743,7 +1739,9 @@ public class TypeCheckVisitor implements ASTVisitor {
 				id = stack.pop();
 			}
 		}
-		
+		if (ws.hasLabel()) {
+			labelSet.remove(ws.getLabel().getName());
+		}
 		whileCount--;
 	}
 	
@@ -1932,6 +1930,9 @@ public class TypeCheckVisitor implements ASTVisitor {
 				}
 			}
 		}
+		
+		stmtType = new UnitType();
+		tempType = new UnitType();
 	}
 
 	/**

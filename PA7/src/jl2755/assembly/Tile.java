@@ -14,6 +14,7 @@ public class Tile {
 	private Operand dest;
 	private tileEnum theEnum = tileEnum.NOTHING;
 	
+	
 	public enum tileEnum {
 		NOTHING,
 		/**(0)*/

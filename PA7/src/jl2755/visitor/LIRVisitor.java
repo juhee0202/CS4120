@@ -743,4 +743,10 @@ public class LIRVisitor implements IRTreeVisitor{
 		// TODO Auto-generated method stub
 		
 	}
+
+	@Override
+	public void visit(IRGlobalVariable irGlobalVariable) {
+		// TODO Auto-generated method stub
+		
+	}
 }

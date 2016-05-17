@@ -1,0 +1,10 @@
+(()
+ ((main
+   ((args ([] ([] int))))
+   ()
+   (((l1) while true (break))
+    ((l2)
+     while
+     true
+     (((l3) while true (break)) ((l4) while true (break))
+      ((l5) while true (break))))))))

@@ -1,7 +1,8 @@
 class Student extends Person {
 	id:int
 	getAge():int {
-		return age
+		p:Person = new Person
+		return p.age
 	}
 }
 

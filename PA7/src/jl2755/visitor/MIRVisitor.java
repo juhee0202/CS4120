@@ -1292,8 +1292,16 @@ public class MIRVisitor implements ASTVisitor{
 
 	@Override
 	public void visit(GlobalDecl gd) {
-		
-		tempNode = new IRGlobalVariable(gd.)
+		switch (gd.getType()) {
+		case SHORT_TUPLE_DECL:
+			break;
+		case SIMPLE_VAR_INIT:
+			gd.getSimpleVarInit().accept(this);
+			break;
+		case VAR_DECL:
+			break;
+		}
+//		tempNode = new IRGlobalVariable(gd.)
 		
 	}
 	

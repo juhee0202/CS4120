@@ -1292,8 +1292,8 @@ public class MIRVisitor implements ASTVisitor{
 
 	@Override
 	public void visit(GlobalDecl gd) {
-		// TODO Auto-generated method stub
 		
+		tempNode = new IRGlobalVariable(gd.)
 		
 	}
 	

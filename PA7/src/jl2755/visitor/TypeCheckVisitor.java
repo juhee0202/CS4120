@@ -711,7 +711,8 @@ public class TypeCheckVisitor implements ASTVisitor {
 				Main.handleSemanticError(seo);
 			}
 		}
-		stmtType = new VoidType();	// Question: do I dirty tempType?
+		stmtType = new VoidType();
+		tempType = new UnitType();
 	}
 	
 	/**
@@ -735,7 +736,9 @@ public class TypeCheckVisitor implements ASTVisitor {
 				Main.handleSemanticError(seo);
 			}
 		}
+		
 		stmtType = new VoidType();
+		tempType = new UnitType();
 	}
 
 	/**
@@ -829,7 +832,7 @@ public class TypeCheckVisitor implements ASTVisitor {
 				String ABIName = classMethodToABIName(classEnv.getClassName(), id, funType);
 				fc.setABIName(ABIName);
 			}
-			
+
 			paramType = funType.getParamTypes();
 		}
 		
@@ -867,8 +870,12 @@ public class TypeCheckVisitor implements ASTVisitor {
 			if (env.containsFun(methodName)) {
 				String ABIName = functionToABIName(methodName, funType);
 				fc.setABIName(ABIName);
-			} else {
+			} else if (isInClass){
 				String ABIName = classMethodToABIName(classEnv.getClassName(), methodName, funType);
+				fc.setABIName(ABIName);
+			} else {
+				ClassType thisClassEnv = env.getClassType(dotableExprType.getElementType());
+				String ABIName = classMethodToABIName(thisClassEnv.getClassName(), methodName, funType);
 				fc.setABIName(ABIName);
 			}
 			paramType = funType.getParamTypes();
@@ -1371,7 +1378,9 @@ public class TypeCheckVisitor implements ASTVisitor {
 				// make sure that id is not in the env
 				if (varDecl != null) {
 					Identifier id = varDecl.getIdentifier();
-					if (env.containsVar(id.getTheValue())) {
+					boolean declared = env.containsVar(id.getTheValue());
+					declared |= isInClass && classEnv.containsField(id.getTheValue());
+					if (declared) {
 						String s = id + " is already declared";
 						SemanticErrorObject seo = new SemanticErrorObject(
 								id.getLineNumber(), id.getColumnNumber(), s);
@@ -1523,16 +1532,20 @@ public class TypeCheckVisitor implements ASTVisitor {
 		 */
 		Identifier id = vd.getIdentifier();
 		
-		if (!isInGlobalDecl) {
-			if (env.containsVar(id.getTheValue())) {
-				// Check if the identifier is declared before
+		if (!(isInGlobalDecl)) {
+			// Check if the identifier is declared before
+			boolean declared = env.containsVar(id.getTheValue());
+			if (!isInFieldDecl) {
+				declared |= isInClass && classEnv.containsField(id.getTheValue());
+			}
+			if (declared) {
 				String s = vd.getIdentifier().toString() + " is already declared";
 				SemanticErrorObject seo = new SemanticErrorObject(
 						vd.getIdentifier().getLineNumber(), 
 						vd.getIdentifier().getColumnNumber(),
 						s);
 				Main.handleSemanticError(seo);
-			}	
+			}
 		}
 		
 		/* Typecheck the type */
@@ -1556,7 +1569,7 @@ public class TypeCheckVisitor implements ASTVisitor {
 				}
 			}
 			varType = new VarType(vd);
-		} else if (index == 1) { 					// 1: PrimitiveArrayType
+		} else if (index == 1) { 					// 1: PrimitiveType
 			varType = new VarType(vd.getPrimitiveType());
 		} else { 									// 2: ClassType
 			Identifier classId = vd.getClassType();
@@ -1594,7 +1607,9 @@ public class TypeCheckVisitor implements ASTVisitor {
 		 * ensuring that the id is never declared before
 		 */
 		Identifier id = vi.getId();
-		if (env.containsVar(id.getTheValue())){
+		boolean declared = env.containsVar(id.getTheValue());
+		declared |= isInClass && classEnv.containsField(id.getTheValue());
+		if (declared) {
 			String s = vi.getId().toString() + " is already declared";
 			SemanticErrorObject seo = new SemanticErrorObject(
 					vi.getId().getLineNumber(),vi.getId().getColumnNumber(),s);
@@ -1636,14 +1651,9 @@ public class TypeCheckVisitor implements ASTVisitor {
 			} else {
 				// DO NOTHING: can always initialize array or object with null
 			}
-		} else {
-			
-			
-			
+		} else {			
 			VarType rightType = (VarType) tempType;
-			
-			
-			
+
 			// check for type hierarchy
 			boolean isSubType = false;
 			if (leftType.isObject() && rightType.isObject()) {
@@ -1899,18 +1909,27 @@ public class TypeCheckVisitor implements ASTVisitor {
 			List<Identifier> ids = std.getAllIdentifiers();
 			for (Identifier id : ids) {
 				// make sure the variable is never declared before
-				if (env.containsVar(id.getTheValue())) {
+				boolean declared = env.containsVar(id.getTheValue());
+				if (!isInFieldDecl) {
+					declared |= isInClass && classEnv.containsField(id.getTheValue());
+				}
+				if (declared) {
 					String s = id.toString() + " is already declared";
 					SemanticErrorObject seo = new SemanticErrorObject(
 							id.getLineNumber(), id.getColumnNumber(), s);
 					Main.handleSemanticError(seo);
 				}
 				
-				// put it in the env
-				env.put(id.getTheValue(), varType);
-				stack.push(id.getTheValue());
+				if (!isInFieldDecl) {
+					// put it in the env
+					env.put(id.getTheValue(), varType);
+					stack.push(id.getTheValue());
+				}
 			}
 		}
+		
+		stmtType = new UnitType();
+		tempType = new UnitType();
 	}
 
 	/**
@@ -1938,17 +1957,6 @@ public class TypeCheckVisitor implements ASTVisitor {
 		 * ensuring that the id is never declared before
 		 */
 		Identifier id = svi.getIdentifier();
-		if (!(isInGlobalDecl || isInFieldDecl)) {
-			if (env.containsVar(id.getTheValue())){
-				String s = svi.getIdentifier().toString() + " is already declared";
-				SemanticErrorObject seo = new SemanticErrorObject(
-						svi.getIdentifier().getLineNumber(),
-						svi.getIdentifier().getColumnNumber(),
-						s);
-				Main.handleSemanticError(seo);
-			}
-		}
-
 		
 		// make sure that type is valid
 		VType leftType;
@@ -1970,13 +1978,7 @@ public class TypeCheckVisitor implements ASTVisitor {
 					s);
 			Main.handleSemanticError(seo);
 		}
-		
-		/* Update env & stack */
-		if (!(isInGlobalDecl || isInFieldDecl)) {
-			String idString = id.toString();
-			env.put(idString, leftType);
-			stack.push(idString);
-		}
+
 		
 		/* Update global variables */
 		stmtType = new UnitType();

@@ -361,8 +361,22 @@ public class ClassType implements VType{
 		
 		// if they extend different superclasses, return false
 		String argSuperClassName = argClassType.getSuperClassName();
-		if (!argSuperClassName.equals(superClassName)) {
-			return false;
+		if (argSuperClassName == null) {
+			if (superClassName != null) {
+				return false;
+			}
+		}
+		
+		if (superClassName == null) {
+			if (argSuperClassName != null) {
+				return false;
+			}
+		}
+		
+		if (!(argSuperClassName == null && superClassName == null)) {
+			if (!argSuperClassName.equals(superClassName)) {
+				return false;
+			}
 		}
 		
 		// check that all method match EXACTLY
@@ -406,11 +420,25 @@ public class ClassType implements VType{
 		if (!argClassType.getClassName().equals(className)) {
 			return false;
 		}
-		
+
 		// if they extend different superclasses, return false
 		String argSuperClassName = argClassType.getSuperClassName();
-		if (!argSuperClassName.equals(superClassName)) {
-			return false;
+		if (argSuperClassName == null) {
+			if (superClassName != null) {
+				return false;
+			}
+		}
+
+		if (superClassName == null) {
+			if (argSuperClassName != null) {
+				return false;
+			}
+		}
+
+		if (!(argSuperClassName == null && superClassName == null)) {
+			if (!argSuperClassName.equals(superClassName)) {
+				return false;
+			}
 		}
 		
 		// check that all method match EXACTLY
@@ -541,4 +569,8 @@ public class ClassType implements VType{
 		return allMethods;
 	}
 	
+	@Override
+	public String toString() {
+		return className + " extends " + superClassName;
+	}
 }

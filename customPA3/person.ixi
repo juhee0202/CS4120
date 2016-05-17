@@ -1,0 +1,5 @@
+use extend8
+
+class Person extends Object{
+	
+}

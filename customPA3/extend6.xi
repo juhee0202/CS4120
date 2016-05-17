@@ -1,4 +1,3 @@
-
 class Student extends Person {
     //globalVar:int     not allowed
     id:int
@@ -8,22 +7,26 @@ class Student extends Person {
         // id:int       not allowed
         p.name = n;
         p.age = a;
-        return this
+        return new Student
     }
 }
 
-class Person {
+class Person extends Object{
     name:int[]
     age:int
     id:int
 
-    init(n:int[], a:int):Person {
+    init(n:int[], a:int):Student {
         name = n;
         age = a;
-        return this;
+        return new Student;
     }
 }
 
-main(args:int[][]) {
-}
+class Object {
     
+}
+
+main(args:int[][]) {
+
+}

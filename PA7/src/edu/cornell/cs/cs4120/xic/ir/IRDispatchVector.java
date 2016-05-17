@@ -1,5 +1,6 @@
 package edu.cornell.cs.cs4120.xic.ir;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import edu.cornell.cs.cs4120.util.SExpPrinter;
@@ -34,17 +35,31 @@ public class IRDispatchVector extends IRNode {
 	public List<String> getFields() {
 		return fields;
 	}
+	
+	public int getNumberOfMethods() {
+		return methods.size();
+	}
+	
+	public int getNumberOfFields() {
+		return fields.size();
+	}
 
 	@Override
 	public IRNode copy() {
-		// TODO Auto-generated method stub
-		return null;
+		List<String> copyMethods = new ArrayList<String>();
+		copyMethods.addAll(methods);
+		List<String> copyFields = new ArrayList<String>();
+		copyFields.addAll(fields);
+		return new IRDispatchVector(className, copyMethods, copyFields);
 	}
 
 	@Override
 	public String label() {
-		// TODO Auto-generated method stub
-		return null;
+		String s = "DISPATCH VECTOR";
+		s += "CLASSNAME: " + className;
+		s += "METHODS: " + methods.toString();
+		s += "FIELDS: " + fields.toString();
+		return s;
 	}
 
 	@Override
@@ -54,44 +69,50 @@ public class IRDispatchVector extends IRNode {
 	
 	@Override
 	public void printSExp(SExpPrinter p) {
-		// TODO Auto-generated method stub
-
+        p.startList();
+        p.printAtom("DISPATCH VECTOR");
+        p.printAtom("CLASSNAME: " + className);
+        p.printAtom("METHODS: " + methods.toString());
+        p.printAtom("FIELDS: " + fields.toString());
+        p.endList();
 	}
 
 	@Override
 	public void addLeft(IRNode irn) {
-		// TODO Auto-generated method stub
-
+		// This should never be called for IRDispatchVector
+		assert(false);
 	}
 
 	@Override
 	public void addRight(IRNode irn) {
-		// TODO Auto-generated method stub
-
+		// This should never be called for IRDispatchVector
+		assert(false);
 	}
 
 	@Override
 	public ChildType getLeftChildEnumType() {
-		// TODO Auto-generated method stub
+		// This should never be called for IRDispatchVector
+		assert(false);
 		return null;
 	}
 
 	@Override
 	public void setLeftChildEnumType(ChildType argEnum) {
-		// TODO Auto-generated method stub
-
+		// This should never be called for IRDispatchVector
+		assert(false);
 	}
 
 	@Override
 	public ChildType getRightChildEnumType() {
-		// TODO Auto-generated method stub
+		// This should never be called for IRDispatchVector
+		assert(false);
 		return null;
 	}
 
 	@Override
 	public void setRightChildEnumType(ChildType argEnum) {
-		// TODO Auto-generated method stub
-
+		// This should never be called for IRDispatchVector
+		assert(false);
 	}
 
 }

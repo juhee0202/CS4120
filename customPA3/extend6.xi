@@ -23,6 +23,10 @@ class Person extends Object{
     }
 }
 
+class Object {
+    
+}
+
 main(args:int[][]) {
 
 }

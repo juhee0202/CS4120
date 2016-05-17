@@ -1920,9 +1920,11 @@ public class TypeCheckVisitor implements ASTVisitor {
 					Main.handleSemanticError(seo);
 				}
 				
-				// put it in the env
-				env.put(id.getTheValue(), varType);
-				stack.push(id.getTheValue());
+				if (!isInFieldDecl) {
+					// put it in the env
+					env.put(id.getTheValue(), varType);
+					stack.push(id.getTheValue());
+				}
 			}
 		}
 		
@@ -1976,13 +1978,7 @@ public class TypeCheckVisitor implements ASTVisitor {
 					s);
 			Main.handleSemanticError(seo);
 		}
-		
-		/* Update env & stack */
-		if (!(isInGlobalDecl || isInFieldDecl)) {
-			String idString = id.toString();
-			env.put(idString, leftType);
-			stack.push(idString);
-		}
+
 		
 		/* Update global variables */
 		stmtType = new UnitType();

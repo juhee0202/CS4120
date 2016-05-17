@@ -4,9 +4,7 @@ main(args:int[][]) {
     testing: int = 5;
 }
 
-class Compilers {}
-
-class Jonathan extends Compilers {
+class Jonathan extends Compilers{
     okeydokey: Jonathan
 
     initJonathan(arg: Favorite) : Jonathan {
@@ -14,4 +12,6 @@ class Jonathan extends Compilers {
     }
 }
 
-class Favorite {}
+class Favorite {
+    
+}

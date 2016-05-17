@@ -28,6 +28,7 @@ public class ArrayElement implements Expr {
 	 * 0 if identifier with indexedBrackets,
 	 * 1 if functionCall with indexedBrackets,
 	 * 2 if arrayLiteral with indexedBrackets
+	 * 3 if dotableExpr with indexedBrackets
 	 */
 	private int index;
 	

@@ -1,5 +1,0 @@
-f() {
-	while (true) {
-		break
-	}
-}

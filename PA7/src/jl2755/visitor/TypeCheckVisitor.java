@@ -735,7 +735,6 @@ public class TypeCheckVisitor implements ASTVisitor {
 				Main.handleSemanticError(seo);
 			}
 		}
-
 		stmtType = new UnitType();
 		tempType = new UnitType();
 	}

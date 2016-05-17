@@ -235,8 +235,8 @@ public class TypeCheckVisitor implements ASTVisitor {
 			}
 			for (int i = 0; i < tempTypesOfExprs.size() - 1; i++){
 				if (!(tempTypesOfExprs.get(i).equals(tempTypesOfExprs.get(i+1)))){
-					String errorDesc = "Expected " + tempTypesOfExprs.get(i).toString() + ", but found "
-							+ tempTypesOfExprs.get(i+1).toString();
+					String errorDesc = "Element " + tempTypesOfExprs.get(i+1).toString() + " is different from "
+							+ tempTypesOfExprs.get(i).toString() + " which makes this an inconsistent array literal";
 					SemanticErrorObject seo = new SemanticErrorObject(
 							tempExprs.get(i+1).getLineNumber(),
 							tempExprs.get(i+1).getColumnNumber(), 
@@ -695,7 +695,6 @@ public class TypeCheckVisitor implements ASTVisitor {
 	 */
 	@Override
 	public void visit(Break b) {
-		System.out.println("visiting break!");
 		if (whileCount == 0) {
 			String s = "break cannot be used outside of a loop";
 			SemanticErrorObject seo = new SemanticErrorObject(
@@ -711,6 +710,7 @@ public class TypeCheckVisitor implements ASTVisitor {
 				Main.handleSemanticError(seo);
 			}
 		}
+
 		stmtType = new UnitType();
 		tempType = new UnitType();
 	}
@@ -720,7 +720,6 @@ public class TypeCheckVisitor implements ASTVisitor {
 	 */
 	@Override
 	public void visit(Continue c) {
-		System.out.println("visiting continue!");
 		if (whileCount == 0) {
 			String s = "continue cannot be used outside of a loop";
 			SemanticErrorObject seo = new SemanticErrorObject(
@@ -736,7 +735,6 @@ public class TypeCheckVisitor implements ASTVisitor {
 				Main.handleSemanticError(seo);
 			}
 		}
-		
 		stmtType = new UnitType();
 		tempType = new UnitType();
 	}
@@ -1738,7 +1736,9 @@ public class TypeCheckVisitor implements ASTVisitor {
 				id = stack.pop();
 			}
 		}
-		
+		if (ws.hasLabel()) {
+			labelSet.remove(ws.getLabel().getName());
+		}
 		whileCount--;
 	}
 	

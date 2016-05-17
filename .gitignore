@@ -16,6 +16,9 @@ tmp/
 local.properties
 .settings/
 .loadpath
+vm/
+PA5resubmission/
+PA5resubmission2/
 
 # Eclipse Core
 PA1/.project

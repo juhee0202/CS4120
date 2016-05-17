@@ -1,0 +1,12 @@
+#!/bin/sh
+
+WEBSEMESTER=2016sp
+XIRT=pa7-release.zip
+
+cd $(dirname $0)/..
+wget -nv -N http://www.cs.cornell.edu/courses/cs4120/$WEBSEMESTER/pa/pa7/$XIRT
+unzip -q $XIRT "pa7_student/QtXi/*" -d QtXi
+cd QtXi
+cp -frp pa7_student/QtXi/* .
+rm -rf pa7_student
+make

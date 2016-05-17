@@ -1,5 +1,31 @@
-f() called
-lt() called: 0 < 7
-g() called
-0
-f() called
+ 1 f() called
+ 2 lt() called: 0 < 7
+ 3 g() called
+ 4 0
+ 5 f() called
+ 6 lt() called: 1 < 7
+ 7 g() called
+ 8 1
+ 9 f() called
+10 lt() called: 2 < 7
+11 g() called
+12 2
+13 f() called
+14 lt() called: 3 < 7
+15 g() called
+16 3
+17 f() called
+18 lt() called: 4 < 7
+19 g() called
+20 4
+21 f() called
+22 lt() called: 5 < 7
+23 g() called
+24 5
+25 f() called
+26 lt() called: 6 < 7
+27 g() called
+28 6
+29 f() called
+30 lt() called: 7 < 7
+31 done

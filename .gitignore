@@ -16,6 +16,7 @@ tmp/
 local.properties
 .settings/
 .loadpath
+vm/
 
 # Eclipse Core
 PA1/.project

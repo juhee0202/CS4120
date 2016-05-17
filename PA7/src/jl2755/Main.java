@@ -1076,9 +1076,6 @@ public class Main {
 							id.getLineNumber(),id.getColumnNumber(),e);
 					handleSemanticError(seo);
 				} else {
-					if (unresolved.contains(className)) {
-						unresolved.remove(className);
-					}
 					if (classType.getSuperClassName() != null) {
 						unresolved.add(classType.getSuperClassName());
 					}
@@ -1161,12 +1158,13 @@ public class Main {
 				}
 			}
 		}
-		if (!unresolved.isEmpty()) {
-			String name = unresolved.iterator().next();
-			String s = "Unable to resolved type " + name;
-			SemanticErrorObject seo = new SemanticErrorObject(
-					1, 1, s);
-			handleSemanticError(seo);
+		for (String className : unresolved) {
+			if (!globalEnv.containsClass(className)) {
+				String s = "Unable to resolved type " + className;
+				SemanticErrorObject seo = new SemanticErrorObject(
+						1, 1, s);
+				handleSemanticError(seo);
+			}
 		}
 		return globalEnv;
 	}

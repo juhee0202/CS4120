@@ -1,0 +1,5 @@
+f() {
+	while (true) {
+		break
+	}
+}

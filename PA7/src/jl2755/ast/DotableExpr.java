@@ -71,8 +71,8 @@ public class DotableExpr implements Expr {
 	public DotableExpr(ArrayElement ae) {
 		type = Type.ARRAY;
 		arrayElement = ae;
-		col = ae.getIdentifier_col();
-		line = ae.getIdentifier_line();
+		col = ae.getColumnNumber();
+		line = ae.getLineNumber();
 	}
 
 	public DotableExpr(DotableExpr de, Identifier id2, IndexedBrackets ib) {

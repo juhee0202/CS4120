@@ -77,6 +77,9 @@ xic ("Test --typecheck -O") ["customPA3"] "-libpath $(testpath) --typecheck -O" 
     array10.xi;
     array11.xi;
     array12.xi;
+    arrayelement01.xi;
+    arrayelement02.xi;
+    arrayelement03.xi;
     assign01.xi;
     assign02.xi;
     assign03.xi;
@@ -104,7 +107,6 @@ xic ("Test --typecheck -O") ["customPA3"] "-libpath $(testpath) --typecheck -O" 
     continue6.xi;
     extend1.xi;
     extend2.xi;
-    extend3.xi;
     extend4.xi;
     extend5.xi;
     extend6.xi;
@@ -138,7 +140,6 @@ xic ("Test --typecheck -O") ["customPA3"] "-libpath $(testpath) --typecheck -O" 
     juhee.xi;
     juheetest01.xi;
     label01.xi;
-    label02.xi;
     method1.xi;
     module1.xi;
     neighbor.xi;

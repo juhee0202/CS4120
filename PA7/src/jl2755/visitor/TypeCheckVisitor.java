@@ -829,7 +829,7 @@ public class TypeCheckVisitor implements ASTVisitor {
 				String ABIName = classMethodToABIName(classEnv.getClassName(), id, funType);
 				fc.setABIName(ABIName);
 			}
-			
+
 			paramType = funType.getParamTypes();
 		}
 		
@@ -867,8 +867,12 @@ public class TypeCheckVisitor implements ASTVisitor {
 			if (env.containsFun(methodName)) {
 				String ABIName = functionToABIName(methodName, funType);
 				fc.setABIName(ABIName);
-			} else {
+			} else if (isInClass){
 				String ABIName = classMethodToABIName(classEnv.getClassName(), methodName, funType);
+				fc.setABIName(ABIName);
+			} else {
+				ClassType thisClassEnv = env.getClassType(dotableExprType.getElementType());
+				String ABIName = classMethodToABIName(thisClassEnv.getClassName(), methodName, funType);
 				fc.setABIName(ABIName);
 			}
 			paramType = funType.getParamTypes();
@@ -1556,7 +1560,7 @@ public class TypeCheckVisitor implements ASTVisitor {
 				}
 			}
 			varType = new VarType(vd);
-		} else if (index == 1) { 					// 1: PrimitiveArrayType
+		} else if (index == 1) { 					// 1: PrimitiveType
 			varType = new VarType(vd.getPrimitiveType());
 		} else { 									// 2: ClassType
 			Identifier classId = vd.getClassType();

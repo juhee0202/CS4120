@@ -1055,10 +1055,12 @@ public class Main {
 		
 		// Check source file
 		Environment sourceEnv = new Environment();
+		Set<String> unresolved = new HashSet<String>();
 		for (Decl d : program.getAllDecls()) {
 			if (d instanceof ClassDecl) {
 				ClassType classType = new ClassType((ClassDecl) d);
 				String className = classType.getClassName();
+				// Duplicate class declaration in interface
 				if (globalEnv.containsClass(className) &&
 						!classType.compareClassSignatures(globalEnv.getClassType(className))) {
 					Identifier id = ((ClassDecl) d).getClassName();
@@ -1066,6 +1068,7 @@ public class Main {
 					SemanticErrorObject seo = new SemanticErrorObject(
 							id.getLineNumber(),id.getColumnNumber(),e);
 					handleSemanticError(seo);
+				// Duplicate class declaration in source file
 				} else if (sourceEnv.containsClass(className)) {
 					Identifier id = ((ClassDecl) d).getClassName();
 					String e = "Duplicate class declaration found for " + className;
@@ -1073,6 +1076,12 @@ public class Main {
 							id.getLineNumber(),id.getColumnNumber(),e);
 					handleSemanticError(seo);
 				} else {
+					if (unresolved.contains(className)) {
+						unresolved.remove(className);
+					}
+					if (classType.getSuperClassName() != null) {
+						unresolved.add(classType.getSuperClassName());
+					}
 					sourceEnv.putClass(className, classType);
 					if (globalEnv.containsClass(className)) {
 						ClassType interfaceClass = globalEnv.getClassType(className);
@@ -1151,6 +1160,13 @@ public class Main {
 					break;
 				}
 			}
+		}
+		if (!unresolved.isEmpty()) {
+			String name = unresolved.iterator().next();
+			String s = "Unable to resolved type " + name;
+			SemanticErrorObject seo = new SemanticErrorObject(
+					1, 1, s);
+			handleSemanticError(seo);
 		}
 		return globalEnv;
 	}

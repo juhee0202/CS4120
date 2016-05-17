@@ -1,4 +1,4 @@
-x:int[] = {1,2,3}
+x:int[]
 
 f():int[] {
 	return x

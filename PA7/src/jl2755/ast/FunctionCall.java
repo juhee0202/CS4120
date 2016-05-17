@@ -61,6 +61,8 @@ public class FunctionCall implements Expr,NakedStmt {
 		index = 3;
 		dotableExpr_line = de.getLineNumber();
 		dotableExpr_col = de.getColumnNumber();
+		identifier_col = id.getColumnNumber();
+        identifier_line = id.getLineNumber();
 	}
 	
 	public FunctionCall(DotableExpr de, Identifier id, FunctionArg fArg) {
@@ -70,6 +72,8 @@ public class FunctionCall implements Expr,NakedStmt {
 		index = 4;
 		dotableExpr_line = de.getLineNumber();
 		dotableExpr_col = de.getColumnNumber();
+		identifier_col = id.getColumnNumber();
+        identifier_line = id.getLineNumber();
 	}
 	
 	public FunctionCall(Expr e, int lleft, int lright) {

@@ -129,48 +129,21 @@ public class MIRVisitor implements ASTVisitor{
 	public void visit(AssignmentStmt as) {
 		int index = as.getIndex();
 		if (index == 0) {
-			// x = 0
-			as.getIdentifier().accept(this);
-			IRExpr tempID = (IRExpr) tempNode;
+			// a = 3
+			as.getDotableExpr().accept(this);
+			IRExpr dotableExpr = (IRExpr) tempNode;
 			as.getExpr().accept(this);
 			IRExpr tempExpr = (IRExpr) tempNode;
-			tempNode = new IRMove(tempID, tempExpr);
-		} else if (index == 1) {	
-			// a[i][j]...[z] = 0
-			as.getIdentifier().accept(this);
+			tempNode = new IRMove(dotableExpr, tempExpr);
+		} else {
+			// a[i] = 3
+			as.getDotableExpr().accept(this);
 			IRTemp base = (IRTemp) tempNode;
 			IndexedBrackets ib = as.getIndexedBrackets();
-			IRExpr mem = createIRExprForBrackets(base,ib);
+			IRExpr mem = createIRExprForBrackets(base, ib);
 			as.getExpr().accept(this);
 			IRExpr e = (IRExpr) tempNode;
 			tempNode = new IRMove(mem,e);
-		} else {
-			// f()[i][j]...[z] = 0
-			as.getFunctionCall().accept(this);
-			IRCall call = (IRCall) tempNode;
-			IRTemp callTemp = new IRTemp("t" + tempCount++);
-			IRMove moveCallToTemp = new IRMove(callTemp, call);
-			IRESeq arrayElem = (IRESeq)createIRExprForBrackets((IRExpr)callTemp.copy(), as.getIndexedBrackets());
-			IRStmt stmts = arrayElem.stmt();
-			if (stmts instanceof IRSeq) {
-				List<IRStmt> stmtList = ((IRSeq) stmts).stmts();
-				stmtList.add(0,moveCallToTemp);
-				stmts = new IRSeq(stmtList);
-			}
-			IRESeq updatedArrayElem = new IRESeq(stmts, arrayElem.expr());
-			as.getExpr().accept(this);
-			IRExpr e = (IRExpr) tempNode;
-			tempNode = new IRMove(updatedArrayElem, e);
-			
-			
-//			// f()[i][j]...[z] = 0
-//			as.getFunctionCall().accept(this);
-//			IRCall fCall = (IRCall) tempNode;
-//			IndexedBrackets ib = as.getIndexedBrackets();
-//			IRExpr mem = createIRExprForBrackets(fCall,ib);
-//			as.getExpr().accept(this);
-//			IRExpr e = (IRExpr) tempNode;
-//			tempNode = new IRMove(mem,e);
 		}
 	}
 
@@ -887,11 +860,12 @@ public class MIRVisitor implements ASTVisitor{
 	@Override
 	public void visit(VarDecl vd) {
 		// array declaration
-		if (vd.getIndex() == 0) {
+		int vdIndex = vd.getIndex();
+		if (vdIndex == 0) {
 			MixedArrayType mat = vd.getMixedArrayType();
 			int index = mat.getIndex();
 			// with a specified length
-			if (index == 1) {		// x:t[e1]..[en][]*
+			if (index == 1 || index == 3) {		// x:t[e1]..[en][]*
 				vd.getIdentifier().accept(this);
 				IRTemp tempOfArray = (IRTemp) tempNode;
 				
@@ -920,10 +894,16 @@ public class MIRVisitor implements ASTVisitor{
 				List<IRStmt> newList = stmt.stmts();
 				newList.add(moveAddrToTemp);
 				tempNode = new IRSeq(newList);
+			} else {
+				IRTemp temp = new IRTemp("t" + tempCount++);
+				IRMove moveDefault = new IRMove(temp, new IRConst(0));
+				tempNode = moveDefault;
 			}
 		} else {
-			// TODO: initialize values
-			tempNode = null;
+			// Primitive Type or Object Type
+			IRTemp temp = new IRTemp("t" + tempCount++);
+			IRMove moveDefault = new IRMove(temp, new IRConst(0));
+			tempNode = moveDefault;
 		}
 		
 		return;

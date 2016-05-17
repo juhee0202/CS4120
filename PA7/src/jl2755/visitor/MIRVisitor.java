@@ -750,6 +750,7 @@ public class MIRVisitor implements ASTVisitor{
 		}
 
 		Map<String, IRFuncDecl> functions = new HashMap<String, IRFuncDecl>();
+		Set<IRGlobalVariable> globalVariables = new HashSet<IRGlobalVariable>();
 		
 		// Visit all declarations: class, function, global
 		List<Decl> decls = p.getAllDecls();
@@ -757,6 +758,8 @@ public class MIRVisitor implements ASTVisitor{
 			d.accept(this);
 			if (d instanceof FunctionDecl) {
 				functions.put(((FunctionDecl) d).getABIName(), (IRFuncDecl) tempNode);
+			} else if (d instanceof GlobalDecl) {
+				globalVariables.add((IRGlobalVariable) tempNode);
 			}
 		}
 		
@@ -766,7 +769,7 @@ public class MIRVisitor implements ASTVisitor{
 //			fd.accept(this);
 //			functions.put(fd.getABIName(), (IRFuncDecl) tempNode);
 //		}
-		program = new IRCompUnit("Program", functions, dispatchVectors);
+		program = new IRCompUnit("Program", functions, dispatchVectors, globalVariables);
 	}
 
 	@Override
@@ -1294,15 +1297,79 @@ public class MIRVisitor implements ASTVisitor{
 	public void visit(GlobalDecl gd) {
 		switch (gd.getType()) {
 		case SHORT_TUPLE_DECL:
-			break;
+			ShortTupleDecl std = gd.getShortTupleDecl();
+			List<IRGlobalVariable> list = new ArrayList<IRGlobalVariable>();
+			Type type = std.getType();
+			for (Identifier i : std.getAllIdentifiers()) {
+				String name = i.toString();
+				VarType vType = env.getVarType(name);
+				IRGlobalVariable gv;
+				if (type instanceof MixedArrayType) {
+					List<Expr> exprList = ((MixedArrayType) type).getAllExprs();
+					List<IRTemp> sizes = new ArrayList<IRTemp>();
+					List<IRStmt> stmts = new ArrayList<IRStmt>();
+					for (int ii = 0; ii < exprList.size(); ii++) {
+						exprList.get(ii).accept(this);
+						IRTemp exprTemp = new IRTemp("t" + tempCount++);
+						IRMove moveExprToTemp = new IRMove(exprTemp,(IRExpr) tempNode);
+						sizes.add(exprTemp);
+						stmts.add(moveExprToTemp);
+					}
+					IRESeq array = (IRESeq) createArray(0, sizes);
+					stmts.addAll(0, ((IRSeq) array.stmt()).stmts());
+					gv = new IRGlobalVariable(name,
+							translateVarTypeToABI(vType), 
+							((IRConst) array.expr()).value());
+				} else {
+					gv = new IRGlobalVariable(name, 
+							translateVarTypeToABI(vType), 0);
+				}
+				list.add(gv);
+			}
+			tempNode = new IRGVList(list);
+			return;
 		case SIMPLE_VAR_INIT:
-			gd.getSimpleVarInit().accept(this);
-			break;
+			SimpleVarInit svi = gd.getSimpleVarInit();
+			String name = svi.getIdentifier().toString();
+			VarType vType = env.getVarType(name);
+			svi.getLiteral().accept(this);
+			long value;
+			if (tempNode instanceof IRBinOp) {
+				value = Long.MIN_VALUE;
+			} else {
+				assert(tempNode instanceof IRConst);
+				value = ((IRConst) tempNode).value();
+			}
+			tempNode = new IRGlobalVariable(name, 
+						translateVarTypeToABI(vType), value);
+			return;
 		case VAR_DECL:
-			break;
-		}
-//		tempNode = new IRGlobalVariable(gd.)
-		
+			VarDecl vd = gd.getVarDecl();
+			int index = vd.getIndex();
+			String id = vd.getIdentifier().toString();
+			VarType type1 = env.getVarType(id);
+			if (index == 0) {
+				List<Expr> exprList = vd.getMixedArrayType().getAllExprs();
+				List<IRTemp> sizes = new ArrayList<IRTemp>();
+				List<IRStmt> stmts = new ArrayList<IRStmt>();
+				for (int ii = 0; ii < exprList.size(); ii++) {
+					exprList.get(ii).accept(this);
+					IRTemp exprTemp = new IRTemp("t" + tempCount++);
+					IRMove moveExprToTemp = new IRMove(exprTemp,(IRExpr) tempNode);
+					sizes.add(exprTemp);
+					stmts.add(moveExprToTemp);
+				}
+				IRESeq array = (IRESeq) createArray(0, sizes);
+				stmts.addAll(0, ((IRSeq) array.stmt()).stmts());
+				tempNode = new IRGlobalVariable(id,
+						translateVarTypeToABI(type1), 
+						((IRConst) array.expr()).value());
+			} else {
+				tempNode = new IRGlobalVariable(id, 
+						translateVarTypeToABI(type1), 0);
+			}
+			return;
+		}		
 	}
 	
 	public String translateVarTypeToABI(VarType t) {
@@ -1345,14 +1412,14 @@ public class MIRVisitor implements ASTVisitor{
 	// Probably don't need
 	@Override
 	public void visit(FieldDecl fieldDecl) {
-		switch (fieldDecl.getType()) {
-		case SHORT_TUPLE_DECL:
-			fieldDecl.getShortTupleDecl().accept(this);
-			break;
-		case VAR_DECL:
-			fieldDecl.getVarDecl().accept(this);
-			break;
-		}
+//		switch (fieldDecl.getType()) {
+//		case SHORT_TUPLE_DECL:
+//			fieldDecl.getShortTupleDecl().accept(this);
+//			break;
+//		case VAR_DECL:
+//			fieldDecl.getVarDecl().accept(this);
+//			break;
+//		}
 	}
 	
 	@Override
@@ -1360,16 +1427,17 @@ public class MIRVisitor implements ASTVisitor{
 		tempNode = new IRConst(0);
 	}
 
+	// Probably don't need
 	@Override
 	public void visit(SimpleVarInit svi) {
-		Identifier id = svi.getIdentifier();
-		
-		id.accept(this);
-		IRExpr dest = (IRExpr) tempNode;
-		
-		svi.getLiteral().accept(this);
-		IRExpr e = (IRExpr) tempNode;
-		
-		tempNode = new IRMove(dest,e);
+//		Identifier id = svi.getIdentifier();
+//		
+//		id.accept(this);
+//		IRExpr dest = (IRExpr) tempNode;
+//		
+//		svi.getLiteral().accept(this);
+//		IRExpr e = (IRExpr) tempNode;
+//		
+//		tempNode = new IRMove(dest,e);
 	}
 }

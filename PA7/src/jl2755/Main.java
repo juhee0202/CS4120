@@ -1211,8 +1211,10 @@ public class Main {
 					SemanticErrorObject seo = new SemanticErrorObject(0,0,errorDesc);
 					handleSemanticError(seo);
 				}
+				
 				linkedClasses.add(superType);
 				visited.add(superType);
+				classType = superType;
 			}
 		}
 	}

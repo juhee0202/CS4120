@@ -1,0 +1,46 @@
+1:1 use
+1:5 id io
+3:1 id main
+3:5 (
+3:6 id args
+3:10 :
+3:11 int
+3:14 [
+3:15 ]
+3:16 [
+3:17 ]
+3:18 )
+3:20 {
+4:5 id x
+4:6 :
+4:7 int
+4:11 =
+4:13 integer 5
+4:14 ;
+5:5 id y
+5:6 :
+5:7 int
+5:11 =
+5:13 integer 3
+5:14 ;
+6:1 }
+8:1 class
+8:7 id Jonathan
+8:16 {
+9:5 id okeydokey
+9:14 :
+9:16 id Jonathan
+11:5 id initJonathan
+11:17 (
+11:18 id arg
+11:21 :
+11:23 id Jonathan
+11:31 )
+11:32 :
+11:34 id Jonathan
+11:43 {
+12:9 return
+12:16 this
+12:20 ;
+13:5 }
+14:1 }

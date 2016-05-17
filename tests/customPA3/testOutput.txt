@@ -1,0 +1,421 @@
+Testpath "/home/vagrant/xth/tests/customPA3/" specified.
+Test script: xthScript2
+  xic-build: OK
+  Test collection: xic (Test --help)
+    []: OK
+    [Compiler's standard output:
+    usage: xic [options] <source files>
+ -h,--help            Print a synopsis of options.
+ -r,--report-opts     Output a list of optimizations supported by this compiler.
+ -l,--lex             Generate output from lexical analysis.
+ -p,--parse           Generate output from syntactic analysis.
+ -t,--typecheck       Generate output from semantic analysis.
+    --irgen           Generate intermediate code.
+    --irrun           Generate and interpret intermediate code.
+    --optir <phase>   Report the intermediate code at the specified phase of
+                      optimization
+    --optcfg <arg>    Report the control-flow graph at the specified phase of
+                      optimization
+ -sourcepath <path>   Specify where to find input source files.
+ -libpath <path>      Specify where to find library interface files. The default
+                      is the current directory in which xic is run.
+ -D <path>            Specify where to place generated diagnostic files.
+ -d <path>            Specify where to place generated assembly output files.
+ -O                   Disable all optimizations
+    --Ocf             Enable only optimization <cf>.
+    --O-no-cf         Disable only optimization <cf>.
+    --Oreg            Enable only optimization <reg>.
+    --O-no-reg        Disable only optimization <reg>.
+    --O-no-mc         Disable only optimization <mc>.
+    --Omc             Enable only optimization <mc>.
+    --O-no-uce        Disable only optimization <uce>.
+    --Ouce            Enable only optimization <uce>.
+    --Ocse            Enable only optimization <cse>.
+    --O-no-cse        Disable only optimization <cse>.
+    --O-no-copy       Disable only optimization <copy>.
+    --Ocopy           Enable only optimization <copy>.
+    --Odce            Enable only optimization <dce>.
+    --O-no-dce        Disable only optimization <dce>.
+ -target <OS>         Specify the operating system for which to generate code.
+                      The default is linux.
+]
+  xic (Test --help): 1 out of 1 tests succeeded.
+  Test collection: xic (Test --typecheck -O)
+    ex01.xi: OK
+    [Compiler's standard output:
+    [xic] Typechecking
+[xic] Typechecking completed
+]
+    ex02.xi: OK
+    [Compiler's standard output:
+    [xic] Typechecking
+[xic] Typechecking completed
+]
+    ex03.xi: OK
+    [Compiler's standard output:
+    [xic] Typechecking
+[xic] Typechecking completed
+]
+    ex04.xi: OK
+    [Compiler's standard output:
+    [xic] Typechecking
+	Semantic error at ex04.xi:2:12: Expected bool, but found int
+[xic] Typechecking failed
+]
+    ex05.xi: OK
+    [Compiler's standard output:
+    [xic] Typechecking
+	Semantic error at ex05.xi:2:18: Mismatched types for binary operation &
+[xic] Typechecking failed
+]
+    ex06.xi: OK
+    [Compiler's standard output:
+    [xic] Typechecking
+	Semantic error at ex06.xi:1:22: Name baz cannot be resolved
+[xic] Typechecking failed
+]
+    ex07.xi: OK
+    [Compiler's standard output:
+    [xic] Typechecking
+	Semantic error at ex07.xi:4:3: Expected bool[], but found int[]
+[xic] Typechecking failed
+]
+    ex08.xi: OK
+    [Compiler's standard output:
+    [xic] Typechecking
+	Semantic error at ex08.xi:1:1: Expected bool, but found unit
+[xic] Typechecking failed
+]
+    ex09.xi: OK
+    [Compiler's standard output:
+    [xic] Typechecking
+	Syntactic error at ex09.xi:1:13: Syntax error: unexpected 2
+[xic] Typechecking failed
+]
+    ex10.xi: OK
+    [Compiler's standard output:
+    [xic] Typechecking
+	Semantic error at ex10.xi:2:20: Mismatched type
+[xic] Typechecking failed
+]
+    ex11.xi: OK
+    [Compiler's standard output:
+    [xic] Typechecking
+	Semantic error at ex11.xi:2:28: Mismatched type
+[xic] Typechecking failed
+]
+    ex12.xi: OK
+    [Compiler's standard output:
+    [xic] Typechecking
+	Semantic error at ex12.xi:2:11: Cannot initialize a variable with a procedural call
+[xic] Typechecking failed
+]
+    spec1-full.xi: OK
+    [Compiler's standard output:
+    [xic] Typechecking
+[xic] Typechecking completed
+]
+    spec1.xi: OK
+    [Compiler's standard output:
+    [xic] Typechecking
+	Semantic error at spec1.xi:4:22: Name f cannot be resolved
+[xic] Typechecking failed
+]
+    spec2.xi: OK
+    [Compiler's standard output:
+    [xic] Typechecking
+	Semantic error at spec2.xi:2:3: Name x cannot be resolved
+[xic] Typechecking failed
+]
+    spec3.xi: OK
+    [Compiler's standard output:
+    [xic] Typechecking
+[xic] Typechecking completed
+]
+    gcd.xi: OK
+    [Compiler's standard output:
+    [xic] Typechecking
+[xic] Typechecking completed
+]
+    ratadd-full.xi: OK
+    [Compiler's standard output:
+    [xic] Typechecking
+[xic] Typechecking completed
+]
+    ratadd.xi: OK
+    [Compiler's standard output:
+    [xic] Typechecking
+	Semantic error at ratadd.xi:4:13: Name gcd cannot be resolved
+[xic] Typechecking failed
+]
+    ratadduse-full.xi: OK
+    [Compiler's standard output:
+    [xic] Typechecking
+[xic] Typechecking completed
+]
+    ratadduse.xi: OK
+    [Compiler's standard output:
+    [xic] Typechecking
+	Semantic error at ratadduse.xi:2:20: Name ratadd cannot be resolved
+[xic] Typechecking failed
+]
+    insertionsort.xi: OK
+    [Compiler's standard output:
+    [xic] Typechecking
+[xic] Typechecking completed
+]
+    arrayinit.xi: OK
+    [Compiler's standard output:
+    [xic] Typechecking
+	Semantic error at arrayinit.xi:3:5: a is already declared
+[xic] Typechecking failed
+]
+    arrayinit2-full.xi: OK
+    [Compiler's standard output:
+    [xic] Typechecking
+[xic] Typechecking completed
+]
+    arrayinit2.xi: OK
+    [Compiler's standard output:
+    [xic] Typechecking
+	Semantic error at arrayinit2.xi:2:14: Name gcd cannot be resolved
+[xic] Typechecking failed
+]
+    mdarrays.xi: OK
+    [Compiler's standard output:
+    [xic] Typechecking
+[xic] Typechecking completed
+]
+  xic (Test --typecheck -O): 26 out of 26 tests succeeded.
+  Test collection: xic (Test --typecheck -O)
+    array02.xi: OK
+    [Compiler's standard output:
+    [xic] Typechecking
+[xic] Typechecking completed
+]
+    array03.xi: OK
+    [Compiler's standard output:
+    [xic] Typechecking
+[xic] Typechecking completed
+]
+    array04.xi: OK
+    [Compiler's standard output:
+    [xic] Typechecking
+[xic] Typechecking completed
+]
+    array05.xi: OK
+    [Compiler's standard output:
+    [xic] Typechecking
+	Semantic error at array05.xi:5:20: Expected a subtype of Jonathan, but found Jeff
+[xic] Typechecking failed
+]
+    array06.xi: OK
+    [Compiler's standard output:
+    [xic] Typechecking
+	Semantic error at array06.xi:5:20: Expected type Jonathan, but found Jonathan[]
+[xic] Typechecking failed
+]
+    array07.xi: OK
+    [Compiler's standard output:
+    [xic] Typechecking
+[xic] Typechecking completed
+]
+    array08.xi: OK
+    [Compiler's standard output:
+    [xic] Typechecking
+[xic] Typechecking completed
+]
+    array09.xi: OK
+    [Compiler's standard output:
+    [xic] Typechecking
+	Semantic error at array09.xi:7:19: Expected Animal[], but found Dog[]
+[xic] Typechecking failed
+]
+    assign01.xi: OK
+    [Compiler's standard output:
+    [xic] Typechecking
+	Semantic error at assign01.xi:5:13: Expected int, but found null
+[xic] Typechecking failed
+]
+    assign02.xi: OK
+    [Compiler's standard output:
+    [xic] Typechecking
+[xic] Typechecking completed
+]
+    assign03.xi: OK
+    [Compiler's standard output:
+    [xic] Typechecking
+	Semantic error at assign03.xi:5:18: Expected Jonathan, but found int
+[xic] Typechecking failed
+]
+    assign04.xi: OK
+    [Compiler's standard output:
+    [xic] Typechecking
+[xic] Typechecking completed
+]
+    assign05.xi: OK
+    [Compiler's standard output:
+    [xic] Typechecking
+[xic] Typechecking completed
+]
+    assign06.xi: OK
+    [Compiler's standard output:
+    [xic] Typechecking
+[xic] Typechecking completed
+]
+    extend1.xi: OK
+    [Compiler's standard output:
+    [xic] Typechecking
+	Semantic error at extend1.xi:4:3: Name name cannot be resolved
+[xic] Typechecking failed
+]
+    extend4.xi: OK
+    [Compiler's standard output:
+    [xic] Typechecking
+[xic] Typechecking completed
+]
+    extend5.xi: OK
+    [Compiler's standard output:
+    [xic] Typechecking
+	Semantic error at extend5.xi:15:5: x is already declared
+[xic] Typechecking failed
+]
+    field_decl1.xi: OK
+    [Compiler's standard output:
+    [xic] Typechecking
+[xic] Typechecking completed
+]
+    field_decl2.xi: OK
+    [Compiler's standard output:
+    [xic] Typechecking
+	Semantic error at field_decl2.xi:4:5: x is already declared
+[xic] Typechecking failed
+]
+    global_decl1.xi: OK
+    [Compiler's standard output:
+    [xic] Typechecking
+[xic] Typechecking completed
+]
+    global_decl2.xi: OK
+    [Compiler's standard output:
+    [xic] Typechecking
+[xic] Typechecking completed
+]
+    global_decl4.xi: OK
+    [Compiler's standard output:
+    [xic] Typechecking
+[xic] Typechecking completed
+]
+    global_decl5.xi: OK
+    [Compiler's standard output:
+    [xic] Typechecking
+	Semantic error at global_decl5.xi:5:5: x is already declared
+[xic] Typechecking failed
+]
+    global_decl6.xi: OK
+    [Compiler's standard output:
+    [xic] Typechecking
+[xic] Typechecking completed
+]
+    module1.xi: OK
+    [Compiler's standard output:
+    [xic] Typechecking
+[xic] Typechecking completed
+]
+    neighbor.xi: OK
+    [Compiler's standard output:
+    [xic] Typechecking
+[xic] Typechecking completed
+]
+    sameClassName1.xi: OK
+    [Compiler's standard output:
+    [xic] Typechecking
+	Semantic error at xth/tests/customPA3/sameClassName1.ixi:9:7: Duplicate class declaration found for Jeffrey
+[xic] Typechecking failed
+]
+    sameClassName2.xi: OK
+    [Compiler's standard output:
+    [xic] Typechecking
+	Semantic error at sameClassName2.xi:20:7: Duplicate class declaration found for Jeffrey
+[xic] Typechecking failed
+]
+    sameClassName3.xi: OK
+    [Compiler's standard output:
+    [xic] Typechecking
+	Semantic error at xth/tests/customPA3/sameClassName3.ixi:1:7: Mismatched class declaration found Jeffrey
+[xic] Typechecking failed
+]
+    sameClassName4.xi: OK
+    [Compiler's standard output:
+    [xic] Typechecking
+[xic] Typechecking completed
+]
+    sameClassName_bothfail.xi: OK
+    [Compiler's standard output:
+    [xic] Typechecking
+	Semantic error at sameClassName_bothfail.xi:3:7: Mismatched class declaration found for Jeffrey
+[xic] Typechecking failed
+]
+    sameClassName_bothok.xi: OK
+    [Compiler's standard output:
+    [xic] Typechecking
+[xic] Typechecking completed
+]
+    sameFunctionName1.xi: OK
+    [Compiler's standard output:
+    [xic] Typechecking
+	Semantic error at xth/tests/customPA3/sameFunctionName1.ixi:3:1: Duplicate function declaration found for goo
+[xic] Typechecking failed
+]
+    sameFunctionName2.xi: OK
+    [Compiler's standard output:
+    [xic] Typechecking
+	Semantic error at sameFunctionName2.xi:5:1: Mismatched function declaration found for goo
+[xic] Typechecking failed
+]
+    sameFunctionName3.xi: OK
+    [Compiler's standard output:
+    [xic] Typechecking
+	Semantic error at xth/tests/customPA3/sameFunctionName3.ixi:1:1: Mismatched function declaration found foo
+[xic] Typechecking failed
+]
+    sameFunctionName4.xi: OK
+    [Compiler's standard output:
+    [xic] Typechecking
+[xic] Typechecking completed
+]
+    sameFunctionName_bothfail.xi: OK
+    [Compiler's standard output:
+    [xic] Typechecking
+	Semantic error at sameFunctionName_bothfail.xi:1:1: Mismatched function declaration found for foo
+[xic] Typechecking failed
+]
+    sameFunctionName_bothok.xi: OK
+    [Compiler's standard output:
+    [xic] Typechecking
+[xic] Typechecking completed
+]
+    superClass_fail.xi: OK
+    [Compiler's standard output:
+    [xic] Typechecking
+	Semantic error at superClass_fail.xi:4:2: initJeffrey's signature does not match super class(es)' signature(s).
+[xic] Typechecking failed
+]
+    superClass_ok.xi: OK
+    [Compiler's standard output:
+    [xic] Typechecking
+[xic] Typechecking completed
+]
+    superClass2_fail.xi: OK
+    [Compiler's standard output:
+    [xic] Typechecking
+	Semantic error at superClass2_fail.xi:1:1: Function signature does not match super class
+[xic] Typechecking failed
+]
+    superClass2_ok.xi: OK
+    [Compiler's standard output:
+    [xic] Typechecking
+[xic] Typechecking completed
+]
+  xic (Test --typecheck -O): 42 out of 42 tests succeeded.
+xthScript2: 70 out of 70 tests succeeded.

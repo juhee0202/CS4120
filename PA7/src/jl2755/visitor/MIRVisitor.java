@@ -1097,8 +1097,16 @@ public class MIRVisitor implements ASTVisitor{
 
 	@Override
 	public void visit(GlobalDecl gd) {
-		// TODO Auto-generated method stub
-		
+		GlobalDecl.Type type = gd.getType();
+		if (type == GlobalDecl.Type.VAR_DECL) {
+			gd.getVarDecl().accept(this);
+		}
+		else if (type == GlobalDecl.Type.SHORT_TUPLE_DECL) {
+			gd.getShortTupleDecl().accept(this);
+		}
+		else if (type == GlobalDecl.Type.SIMPLE_VAR_INIT) {
+			gd.getSimpleVarInit().accept(this);
+		}
 	}
 
 	// TODO: check later

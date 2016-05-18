@@ -1135,7 +1135,10 @@ public class MIRVisitor implements ASTVisitor{
 	private IRExpr createArray(int index, List<IRTemp> sizes) {		
 		// Base case
 		if (index == sizes.size()) {
-			return new IRConst(0);
+			IRMove move0IntoTemp = new IRMove(new IRTemp("t" + tempCount++), new IRConst(0));
+			IRSeq tempSeq = new IRSeq(move0IntoTemp);
+			IRESeq tempESeq = new IRESeq(tempSeq,new IRConst(0));
+			return tempESeq;
 		}
 		List<IRStmt> stmts = new ArrayList<IRStmt>();
 		

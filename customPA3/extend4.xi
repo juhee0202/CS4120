@@ -1,5 +1,7 @@
 use io
 
+x, y, z: int;
+
 class Animal {
 	sleep() {
 		println("I'm gonna sleep")

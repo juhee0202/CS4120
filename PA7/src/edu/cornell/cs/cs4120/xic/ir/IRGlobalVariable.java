@@ -82,8 +82,9 @@ public class IRGlobalVariable extends IRNode {
 	
 	@Override
 	public void printSExp(SExpPrinter p) {
-		// TODO Auto-generated method stub
-
+		p.startList();
+		p.printAtom(name);
+		p.endList();
 	}
 
 	@Override

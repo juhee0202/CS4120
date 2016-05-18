@@ -730,8 +730,25 @@ public class MIRVisitor implements ASTVisitor{
 			d.accept(this);
 			if (d instanceof FunctionDecl) {
 				functions.put(((FunctionDecl) d).getABIName(), (IRFuncDecl) tempNode);
-			} else if (d instanceof GlobalDecl) {
-				globalVariables.add((IRGlobalVariable) tempNode);
+			} 
+			else if (d instanceof GlobalDecl) {
+				if (tempNode instanceof IRGVList) {
+					IRGVList varView = (IRGVList) tempNode;
+					globalVariables.addAll(varView.getGlobalVariables());
+				}
+				else if (tempNode instanceof IRGlobalVariable) {
+					globalVariables.add((IRGlobalVariable) tempNode);
+				}
+				else {
+					assert(false);
+				}
+			}
+			else if (d instanceof ClassDecl) {
+				IRFuncDeclList classBodyFuncDeclList = (IRFuncDeclList) tempNode;
+				List<IRFuncDecl> funcDecls = classBodyFuncDeclList.getDecls();
+				for (IRFuncDecl irfd : funcDecls) {
+					functions.put(irfd.getABIName(), irfd);
+				}
 			}
 		}
 		
@@ -1161,9 +1178,14 @@ public class MIRVisitor implements ASTVisitor{
 		// Don't need to visit fields
 		
 		// Visit method declarations
+		
+		IRFuncDeclList tempListNode = new IRFuncDeclList();
+		
 		for (FunctionDecl fd : cb.getMethods()) {
 			fd.accept(this);
+			tempListNode.addDecl((IRFuncDecl) tempNode);
 		}
+		tempNode = tempListNode;
 	}
 
 	@Override

@@ -97,8 +97,12 @@ public class IRCompUnit extends IRNode {
         p.startList();
         p.printAtom("COMPUNIT");
         p.printAtom(name);
-        for (IRFuncDecl func : functions.values())
-            func.printSExp(p);
+        for (IRFuncDecl func : functions.values()) {
+        	func.printSExp(p);
+        }
+        for (IRGlobalVariable irgv : globalVariables) {
+        	irgv.printSExp(p);
+        }
         p.endList();
     }
     

@@ -16,6 +16,7 @@ import edu.cornell.cs.cs4120.xic.ir.IRESeq;
 import edu.cornell.cs.cs4120.xic.ir.IRExp;
 import edu.cornell.cs.cs4120.xic.ir.IRExpr;
 import edu.cornell.cs.cs4120.xic.ir.IRFuncDecl;
+import edu.cornell.cs.cs4120.xic.ir.IRGlobalReference;
 import edu.cornell.cs.cs4120.xic.ir.IRGlobalVariable;
 import edu.cornell.cs.cs4120.xic.ir.IRJump;
 import edu.cornell.cs.cs4120.xic.ir.IRLabel;
@@ -1418,12 +1419,12 @@ public class TilingVisitor implements IRTreeVisitor {
 		}		
 		
 		// Register/Stack allocation
-//		if (Oreg) {
-//			regAllocation(cu);
-//		} else {
-//			stackAllocation(cu);
-//		}
-		stackAllocation(cu);
+		if (Oreg) {
+			regAllocation(cu);
+		} else {
+			stackAllocation(cu);
+		}
+//		stackAllocation(cu);
 		
 		Tile superTile = new Tile(new ArrayList<Instruction>());
 		
@@ -2452,12 +2453,15 @@ public class TilingVisitor implements IRTreeVisitor {
 			functionTile.setInstructions(newInsts);
 			
 			// complete "enter 8*l, 0"
-			Instruction enter = newInsts.get(1);
-			int counter = rAlloc.getStackCounter();
-			int numSpace = counter % 2 == 1 ? counter + 1 : counter;
-			Constant space = new Constant(8*numSpace);
-			enter.setSrc(space);
+//			Instruction enter = newInsts.get(1);
+//			int counter = rAlloc.getStackCounter();
+//			int numSpace = counter % 2 == 1 ? counter + 1 : counter;
+//			Constant space = new Constant(8*numSpace);
+//			enter.setSrc(space);
 		}
+		
+		// Call stackAllocation to allocate rest on stack
+		stackAllocation(headNode);
 	}
 	
 	/**
@@ -2477,7 +2481,9 @@ public class TilingVisitor implements IRTreeVisitor {
 			
 			// complete "enter 8*l, 0"
 			Instruction enter = newInsts.get(1);
+			long existingSpace = ((Constant) enter.getSrc()).getValue();
 			int numSpace = stackCounter % 2 == 1 ? stackCounter + 1 : stackCounter;
+			numSpace += existingSpace;
 			Constant space = new Constant(8*numSpace);
 			enter.setSrc(space);
 		}
@@ -2935,6 +2941,23 @@ public class TilingVisitor implements IRTreeVisitor {
 	public void visit(IRGlobalVariable irGlobalVariable) {
 		// TODO Auto-generated method stub
 		
+	}
+
+	/**
+	 * Creates an empty tile with dest set to label(%rip)
+	 * @param irGlobalReference
+	 */
+	@Override
+	public void visit(IRGlobalReference irGlobalReference) {
+		if (tileMap.containsKey(irGlobalReference)) {
+			return;
+		}
+		String globalLabelName = irGlobalReference.getABIName();
+		Label globalLabel = new Label(globalLabelName);
+		Memory tempMemory = new Memory(globalLabel, new Register(RegisterName.RIP));		
+		Tile tempTile = new Tile(new ArrayList<Instruction>(), 0, tempMemory);
+		tempTile.setDest(tempMemory);
+		tileMap.put(irGlobalReference, tempTile);
 	}
 	
 }

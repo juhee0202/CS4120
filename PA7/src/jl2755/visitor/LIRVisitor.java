@@ -747,7 +747,8 @@ public class LIRVisitor implements IRTreeVisitor{
 	// Translate createArray into LIR
 	@Override
 	public void visit(IRGlobalVariable irGlobalVariable) {
-		// TODO Auto-generated method stub
-		
+		IRStmt createArrayStmt = irGlobalVariable.getCreateArray();
+		createArrayStmt.accept(this);
+		irGlobalVariable.setCreateArray(tempSeq.part1());
 	}
 }

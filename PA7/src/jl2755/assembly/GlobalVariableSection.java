@@ -18,7 +18,7 @@ public class GlobalVariableSection {
 	}
 	
 	private String abiVariableName;
-	private int variableValue;
+	private long variableValue;
 	private String className;
 	private int classSize;
 	private GlobalVarType type;
@@ -30,7 +30,7 @@ public class GlobalVariableSection {
 		valueType = GlobalVarValueType.PRIMITIVE;
 	}
 	
-	public GlobalVariableSection(String argABIVariableName, int value) {
+	public GlobalVariableSection(String argABIVariableName, long value) {
 		abiVariableName = argABIVariableName;
 		type = GlobalVarType.REGULAR;
 		variableValue = value;

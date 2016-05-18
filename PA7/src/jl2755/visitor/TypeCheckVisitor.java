@@ -1838,6 +1838,16 @@ public class TypeCheckVisitor implements ASTVisitor {
 		switch(fieldDecl.getType()) {
 		case SHORT_TUPLE_DECL:
 			ShortTupleDecl std = fieldDecl.getShortTupleDecl();
+			Type t = std.getType();
+			if (t instanceof MixedArrayType) {
+				int index = ((MixedArrayType)t).getIndex();
+				if (index == 1 || index == 3) {
+					String s = "Field variables cannot be initialized with values";
+					SemanticErrorObject seo = new SemanticErrorObject(
+							t.getLineNumber(), t.getColumnNumber(), s);
+					Main.handleSemanticError(seo);
+				}
+			}
 			std.accept(this);
 			// decorate identifiers with isField
 			List<Identifier> ids = std.getAllIdentifiers();
@@ -1847,6 +1857,16 @@ public class TypeCheckVisitor implements ASTVisitor {
 			break;
 		case VAR_DECL:
 			VarDecl vd = fieldDecl.getVarDecl();
+			MixedArrayType mat = vd.getMixedArrayType();
+			if (mat != null) {
+				int index = mat.getIndex();
+				if (index == 1 || index == 3) {
+					String s = "Field variables cannot be initialized with values";
+					SemanticErrorObject seo = new SemanticErrorObject(
+							mat.getLineNumber(), mat.getColumnNumber(), s);
+					Main.handleSemanticError(seo);
+				}
+			}
 			vd.accept(this);
 			// decorate identifiers with isField
 			vd.getIdentifier().setIsField(true);

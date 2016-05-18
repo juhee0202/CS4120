@@ -1437,16 +1437,19 @@ public class TilingVisitor implements IRTreeVisitor {
 		}
 		Set<IRGlobalVariable> globalVars = cu.getGlobalVariables();
 		
-		for (IRGlobalVariable irgv : globalVars) {
-			GlobalVariableSection gvs;
-			if (irgv.isInitialized()) {
-				gvs = new GlobalVariableSection(irgv.getABIName(),irgv.getValue());
+		if (globalVars != null) {
+			for (IRGlobalVariable irgv : globalVars) {
+				GlobalVariableSection gvs;
+				if (irgv.isInitialized()) {
+					gvs = new GlobalVariableSection(irgv.getABIName(),irgv.getValue());
+				}
+				else {
+					gvs = new GlobalVariableSection(irgv.getABIName());
+				}
+				superTile.addGlobalParts(gvs);
 			}
-			else {
-				gvs = new GlobalVariableSection(irgv.getABIName());
-			}
-			superTile.addGlobalParts(gvs);
 		}
+
 		
 		for (IRDispatchVector irdv : cu.getDispatchVectors()) {
 			GlobalVariableSection gvs = new GlobalVariableSection(irdv,GlobalVariableSection.GlobalVarType.DISPATCHVECTOR);
@@ -1454,9 +1457,7 @@ public class TilingVisitor implements IRTreeVisitor {
 			gvs = new GlobalVariableSection(irdv,GlobalVariableSection.GlobalVarType.SIZE);
 			superTile.addGlobalParts(gvs);
 		}
-		
-		
-		
+				
 		tileMap.put(cu, superTile);
 	}
 

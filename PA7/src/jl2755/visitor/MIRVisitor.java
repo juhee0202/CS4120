@@ -1310,10 +1310,11 @@ public class MIRVisitor implements ASTVisitor{
 						stmts.add(moveExprToTemp);
 					}
 					IRESeq array = (IRESeq) createArray(0, sizes);
-					stmts.addAll(0, ((IRSeq) array.stmt()).stmts());
+					stmts.addAll(((IRSeq) array.stmt()).stmts());
 					ABIName = translateVarTypeToABI(vType);
 					gv = new IRGlobalVariable(name, ABIName, 
-											((IRConst) array.expr()).value());
+											((IRConst) array.expr()).value(),
+											new IRSeq(stmts));
 				} else {
 					ABIName = translateVarTypeToABI(vType);
 					gv = new IRGlobalVariable(name, ABIName, 0);

@@ -398,8 +398,6 @@ public class TilingVisitor implements IRTreeVisitor {
         case XOR:
         	tileOp = Operation.XORQ;
             break;
-        default:
-        	// TODO
 		}
 		
 		// Visit left & right children to get current node's operands
@@ -493,7 +491,6 @@ public class TilingVisitor implements IRTreeVisitor {
 		 * 		movq %rax, %freshTemp
 		 */
 		else if (op == OpType.HMUL) {
-			// TODO
 			Register rax = new Register(RegisterName.RAX);
 			Operand operand = rightOperand;
 
@@ -1262,7 +1259,6 @@ public class TilingVisitor implements IRTreeVisitor {
 		instructions.add(new Instruction(Operation.LABEL, fnLabel));
 		
 		/* Prologue */
-		// TODO: replace enter with push/mov/sub for optimization
 		// "enter 8*l, 0" 8*l will be filled in later
 		Instruction enter = new Instruction(Operation.ENTER, new Constant(0), new Constant(0));
 		instructions.add(enter);
@@ -1295,12 +1291,24 @@ public class TilingVisitor implements IRTreeVisitor {
 			instructions.add(moveArgToParam);
 		}
 		Register rbp = new Register(RegisterName.RBP);
+		
+		// Determine if there is extra 8 byte of space
+		int extraSpace = Math.max(0, fd.getNumReturns() - 2);
+		if (extraSpace != 0) {
+			extraSpace ++;
+		}
+		extraSpace += Math.max(0, fd.getNumArgs() - ARG_REG_LIST.length);
+		extraSpace += CALLER_REG_LIST.length;
+		int extraOff = 0;
+		if (extraSpace%2 == 1) {
+			extraOff++;
+		}
+		// Move arguments from stack into local variables
 		for (int i = numRegParams; i < numArgs; i++) {
-			int off = numArgs%2 == 0 ? 3+i-numRegParams : 2+i-numRegParams;
-			Memory arg = new Memory(new Constant(8*off), rbp);
+			int off = 2+i-numRegParams;
+			Memory arg = new Memory(new Constant(8*(off+extraOff)), rbp);
 			Register param = new Register(paramList.get(i));
-			Instruction moveArgtoParam = new Instruction(Operation.MOVQ, arg, 
-					 param);
+			Instruction moveArgtoParam = new Instruction(Operation.MOVQ, arg, param);
 			instructions.add(moveArgtoParam);
 		}
 		// Body 
@@ -1309,7 +1317,6 @@ public class TilingVisitor implements IRTreeVisitor {
 			List<IRStmt> bodyStmtList = ((IRSeq) body).stmts();
 			// precondition: first n stmts are moving n arg stmts
 			// remove duplicate move(%ARG, %arg) instructions
-			// TODO fix
 			for (int i = 0; i < numArgs; i++) {
 				bodyStmtList.remove(0);
 			}	
@@ -1914,6 +1921,7 @@ public class TilingVisitor implements IRTreeVisitor {
 						continue;
 					}
 					IRMove move = (IRMove) stmtList.get(i+j+1-numSkips);
+					System.out.println(j + "" + move);
 					IRExpr target = move.target();
 					target.accept(this);
 					Tile exprTile = tileMap.get(target);
@@ -2432,7 +2440,7 @@ public class TilingVisitor implements IRTreeVisitor {
 					
 					Operand destOperand = instr.getSrc();
 					if (destOperand instanceof Memory) {
-						Register r11 = new Register(RegisterName.R11);
+						Register r11 = new Register("tileRegister" + registerCount++);
 						shuttleInstruction = new Instruction(Operation.MOVQ, returnOperand, r11);
 						returnOperand = r11;
 					}
@@ -2464,7 +2472,7 @@ public class TilingVisitor implements IRTreeVisitor {
 					
 					Operand srcOperand = instr.getSrc();
 					if (srcOperand instanceof Memory) {
-						Register r11 = new Register(RegisterName.R11);
+						Register r11 = new Register("tileRegister" + registerCount++);
 						shuttleInstruction = new Instruction(Operation.MOVQ, srcOperand, r11);
 						instr.setSrc(r11);
 					}

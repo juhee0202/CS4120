@@ -1014,15 +1014,16 @@ public class MIRVisitor implements ASTVisitor{
 			IRBinOp offset = new IRBinOp(OpType.MUL, (IRConst) WORD_SIZE.copy(), (IRExpr)tempForExprInBrackets.copy());
 			IRBinOp arrayElemAddr = new IRBinOp(OpType.ADD, (IRExpr) baseTemp.copy(), offset);
 			arrayElem = new IRMem(arrayElemAddr);
-			baseTemp = new IRTemp("t" + tempCount++);
-			IRMove moveToNewBaseTemp = new IRMove(baseTemp, arrayElem);
-			stmtList.add(moveToNewBaseTemp);
+			if (i < exprList.size()-1) {
+				baseTemp = new IRTemp("t" + tempCount++);
+				IRMove moveToNewBaseTemp = new IRMove(baseTemp, arrayElem);
+				stmtList.add(moveToNewBaseTemp);
+			}
 		}
-		
 		IRSeq stmtSeq = new IRSeq(stmtList);
 		return new IRESeq(stmtSeq, (IRExpr) arrayElem.copy());	
 	}
-	
+
 	/**
 	 * Creates an IRStmt that performs array index out of bound check
 	 * 
@@ -1067,7 +1068,6 @@ public class MIRVisitor implements ASTVisitor{
 		IRReturn ret = new IRReturn();
 		stmtList.add(ret);
 		stmtList.add(label3);
-		
 		return new IRSeq(stmtList);
 	}
 	

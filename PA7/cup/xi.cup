@@ -223,9 +223,9 @@ global_decl ::= var_decl:vd SEMICOLON                               {: RESULT = 
                 |
                 short_tuple_decl:std                                {: RESULT = new GlobalDecl(std, false); :}
                 |
-                simple_var_init:svi SEMICOLON                        {: RESULT = new GlobalDecl(svi, true); :}
+                simple_var_init:svi SEMICOLON                       {: RESULT = new GlobalDecl(svi, true); :}
                 |
-                simple_var_init:svi                                  {: RESULT = new GlobalDecl(svi, false); :}
+                simple_var_init:svi                                 {: RESULT = new GlobalDecl(svi, false); :}
                 ;
 
 identifier ::= IDENTIFIER:id                                        {: RESULT = new Identifier(id, idleft, idright); :}

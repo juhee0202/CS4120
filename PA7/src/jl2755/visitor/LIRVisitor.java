@@ -740,8 +740,7 @@ public class LIRVisitor implements IRTreeVisitor{
 
 	@Override
 	public void visit(IRDispatchVector irMethodTable) {
-		// TODO Auto-generated method stub
-		
+		return;
 	}
 
 	// Translate createArray into LIR

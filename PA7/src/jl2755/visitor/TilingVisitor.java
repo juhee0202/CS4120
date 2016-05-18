@@ -16,6 +16,7 @@ import edu.cornell.cs.cs4120.xic.ir.IRESeq;
 import edu.cornell.cs.cs4120.xic.ir.IRExp;
 import edu.cornell.cs.cs4120.xic.ir.IRExpr;
 import edu.cornell.cs.cs4120.xic.ir.IRFuncDecl;
+import edu.cornell.cs.cs4120.xic.ir.IRGlobalReference;
 import edu.cornell.cs.cs4120.xic.ir.IRGlobalVariable;
 import edu.cornell.cs.cs4120.xic.ir.IRJump;
 import edu.cornell.cs.cs4120.xic.ir.IRLabel;
@@ -2935,6 +2936,23 @@ public class TilingVisitor implements IRTreeVisitor {
 	public void visit(IRGlobalVariable irGlobalVariable) {
 		// TODO Auto-generated method stub
 		
+	}
+
+	/**
+	 * Creates an empty tile with dest set to label(%rip)
+	 * @param irGlobalReference
+	 */
+	@Override
+	public void visit(IRGlobalReference irGlobalReference) {
+		if (tileMap.containsKey(irGlobalReference)) {
+			return;
+		}
+		String globalLabelName = irGlobalReference.getABIName();
+		Label globalLabel = new Label(globalLabelName);
+		Memory tempMemory = new Memory(globalLabel, new Register(RegisterName.RIP));		
+		Tile tempTile = new Tile(new ArrayList<Instruction>(), 0, tempMemory);
+		tempTile.setDest(tempMemory);
+		tileMap.put(irGlobalReference, tempTile);
 	}
 	
 }

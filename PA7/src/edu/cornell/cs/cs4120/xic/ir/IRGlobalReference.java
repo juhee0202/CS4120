@@ -15,7 +15,7 @@ public class IRGlobalReference extends IRExpr {
 	private GlobalType typeOfGlobal;
 	
 	public IRGlobalReference(String argClassName, GlobalType type) {
-		typeOfGlobal = type;
+		setTypeOfGlobal(type);
 		className = argClassName;
 		if (type == GlobalType.SIZE) {
 			ABIName = "_I_size_" + className;
@@ -25,6 +25,10 @@ public class IRGlobalReference extends IRExpr {
 		}
 	}
 	
+	private void setTypeOfGlobal(GlobalType type) {
+		typeOfGlobal = type;
+	}
+
 	@Override
 	public IRNode copy() {
 		// TODO Auto-generated method stub
@@ -41,6 +45,18 @@ public class IRGlobalReference extends IRExpr {
 	public String label() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	public GlobalType getTypeOfGlobal() {
+		return typeOfGlobal;
+	}
+	
+	public String getClassName() {
+		return className;
+	}
+
+	public String getABIName() {
+		return ABIName;
 	}
 
 	@Override

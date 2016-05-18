@@ -18,7 +18,7 @@ public class Register implements Operand {
 		AH, BH, CH, DH,
 		AL, BL, CL, DL, SIL, DIL, BPL, SPL,
 		R8B, R9B, R10B, R11B, R12B, R13B, R14B, R15B,
-		TEMP;
+		TEMP, RIP;
 
 		public static RegisterName convertToName(String name) {
 			switch(name) {
@@ -158,6 +158,8 @@ public class Register implements Operand {
 				return SP;
 			case "spl":
 				return SPL;
+			case "rip":
+				return RIP;
 			default:
 				return TEMP;
 			}
@@ -304,6 +306,8 @@ public class Register implements Operand {
 				return "spl";
 			case TEMP:
 				return "temp";
+			case RIP:
+				return "rip";
 			}
 			System.out.println("Invalid register name!");
 			return null;

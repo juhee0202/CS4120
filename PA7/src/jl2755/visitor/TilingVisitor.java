@@ -1398,27 +1398,27 @@ public class TilingVisitor implements IRTreeVisitor {
 	public void visit(IRCompUnit cu) {
 		// Visit all function decls
 		
-//		for (IRFuncDecl fd : cu.functions().values()) {
-//			fd.accept(this);
-//		}		
+		for (IRFuncDecl fd : cu.functions().values()) {
+			fd.accept(this);
+		}		
 		
 		// Register/Stack allocation
-//		if (Oreg) {
-//			regAllocation(cu);
-//		} else {
-//			stackAllocation(cu);
-//		}
+		if (Oreg) {
+			regAllocation(cu);
+		} else {
+			stackAllocation(cu);
+		}
 //		stackAllocation(cu);
 		
 		Tile superTile = new Tile(new ArrayList<Instruction>());
 		
-//		for (IRFuncDecl fd : cu.functions().values()) {
-//			if (superTile == null) {
-//				superTile = tileMap.get(fd);
-//			} else {
-//				superTile = Tile.mergeTiles(superTile, tileMap.get(fd));
-//			}
-//		}
+		for (IRFuncDecl fd : cu.functions().values()) {
+			if (superTile == null) {
+				superTile = tileMap.get(fd);
+			} else {
+				superTile = Tile.mergeTiles(superTile, tileMap.get(fd));
+			}
+		}
 		Set<IRGlobalVariable> globalVars = cu.getGlobalVariables();
 		
 		for (IRGlobalVariable irgv : globalVars) {

@@ -973,6 +973,10 @@ public class MIRVisitor implements ASTVisitor{
 		// mem(mem(a + 8*i0) + 8*i1) +... 
 		List<Expr> exprList = ib.getAllExprInIndexedBrackets();
 		IRExpr arrayElem = base;
+		IRTemp baseTemp = new IRTemp("t" + tempCount++);
+		IRMove moveBaseToTemp = new IRMove(baseTemp, arrayElem);
+		stmtList.add(moveBaseToTemp);
+		
 		for (int i = 0; i < exprList.size(); i++) {
 			exprList.get(i).accept(this);
 			IRExpr exprInBrackets = (IRExpr)tempNode;
@@ -981,15 +985,19 @@ public class MIRVisitor implements ASTVisitor{
 			IRMove moveToTemp = new IRMove(tempForExprInBrackets, exprInBrackets);
 			stmtList.add(moveToTemp);
 			// create array index out of bounds check stmts
-			IRStmt boundsCheck = createIRStmtForArrayBoundCheck((IRExpr)arrayElem.copy(), (IRExpr)tempForExprInBrackets.copy());
+			IRStmt boundsCheck = createIRStmtForArrayBoundCheck((IRTemp) baseTemp.copy(), 
+					(IRExpr)tempForExprInBrackets.copy());
 			stmtList.add(boundsCheck);
 			IRBinOp offset = new IRBinOp(OpType.MUL, (IRConst) WORD_SIZE.copy(), (IRExpr)tempForExprInBrackets.copy());
-			IRBinOp arrayElemAddr = new IRBinOp(OpType.ADD, arrayElem, offset);
+			IRBinOp arrayElemAddr = new IRBinOp(OpType.ADD, (IRExpr) baseTemp.copy(), offset);
 			arrayElem = new IRMem(arrayElemAddr);
+			baseTemp = new IRTemp("t" + tempCount++);
+			IRMove moveToNewBaseTemp = new IRMove(baseTemp, arrayElem);
+			stmtList.add(moveToNewBaseTemp);
 		}
 		
 		IRSeq stmtSeq = new IRSeq(stmtList);
-		return new IRESeq(stmtSeq, arrayElem);	
+		return new IRESeq(stmtSeq, (IRExpr) arrayElem.copy());	
 	}
 	
 	/**
@@ -1000,7 +1008,7 @@ public class MIRVisitor implements ASTVisitor{
 	 * @param arrayIndex(i) is the index of the array in which you are trying to access 
 	 * @return IRStmt that performs array index out of bound check
 	 */
-	private IRStmt createIRStmtForArrayBoundCheck(IRExpr baseAddr, IRExpr arrayIndex) {
+	private IRStmt createIRStmtForArrayBoundCheck(IRTemp baseAddr, IRExpr arrayIndex) {
 		// master stmt list
 		List<IRStmt> stmtList = new ArrayList<IRStmt>();
 		

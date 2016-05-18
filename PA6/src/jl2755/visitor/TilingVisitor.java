@@ -2416,8 +2416,7 @@ public class TilingVisitor implements IRTreeVisitor {
 		for (int i = 0; i < instructions.size(); i++) {
 			Instruction instr = instructions.get(i);
 			// TODO we can probably optimize this
-			// currently i'm looking for any instruction that has 
-			// _RETi registers as dest
+			// currently i'm looking for any instruction that has _RETi registers
 
 			Operand dest = instr.getDest();
 			Operand src = instr.getSrc();

@@ -1,0 +1,29 @@
+(COMPUNIT
+ Program
+ (FUNC
+  _Imain_paai
+  (SEQ
+   (MOVE (TEMP args) (TEMP _ARG0))
+   (MOVE (TEMP lo) (SUB (CONST 0) (ADD (CONST 9223372036854775807) (CONST 1))))
+   (MOVE (TEMP hi) (HMUL (TEMP lo) (CONST 4)))
+   (MOVE (TEMP c) (HMUL (CONST 9223372036854775807) (CONST 4)))
+   (EXP (CALL (NAME _Iprintln_pai) (CALL (NAME _IunparseInt_aii) (TEMP c))))
+   (EXP (CALL (NAME _Iprintln_pai) (CALL (NAME _IunparseInt_aii) (TEMP hi)))))))
+(COMPUNIT
+ Program
+ (FUNC
+  _Imain_paai
+  (SEQ
+   (MOVE (TEMP args) (TEMP _ARG0))
+   (MOVE (TEMP lo) (SUB (CONST 0) (ADD (CONST 9223372036854775807) (CONST 1))))
+   (MOVE (TEMP hi) (HMUL (TEMP lo) (CONST 4)))
+   (MOVE (TEMP c) (HMUL (CONST 9223372036854775807) (CONST 4)))
+   (MOVE (TEMP temp0) (TEMP c))
+   (MOVE (TEMP temp1) (CALL (NAME _IunparseInt_aii) (TEMP temp0)))
+   (MOVE (TEMP temp2) (TEMP temp1))
+   (EXP (CALL (NAME _Iprintln_pai) (TEMP temp2)))
+   (MOVE (TEMP temp4) (TEMP hi))
+   (MOVE (TEMP temp5) (CALL (NAME _IunparseInt_aii) (TEMP temp4)))
+   (MOVE (TEMP temp6) (TEMP temp5))
+   (EXP (CALL (NAME _Iprintln_pai) (TEMP temp6)))
+   (RETURN))))

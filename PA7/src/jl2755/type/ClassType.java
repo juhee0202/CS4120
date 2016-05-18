@@ -533,6 +533,7 @@ public class ClassType implements VType{
 	public List<String> getDispatchFields(Environment env) {
 		List<String> allFields = new ArrayList<String>();
 		List<ClassType> superclasses = getSuperClasses(env);
+		superclasses.add(0,this);
 		for (int i = superclasses.size()-1; i >= 0; i--) {
 			List<String> classFields = superclasses.get(i).getOrderedFields();
 			allFields.addAll(classFields);
@@ -548,6 +549,8 @@ public class ClassType implements VType{
 		List<String> allMethods = new ArrayList<String>();
 		List<ClassType> superclasses = getSuperClasses(env);
 		HashMap<String, Integer> methodToIndex = new HashMap<String, Integer>();
+		
+		superclasses.add(0, this);
 		
 		for (int i = superclasses.size()-1; i >= 0; i--) {
 			List<String> classMethods = superclasses.get(i).getOrderedMethods();
@@ -566,6 +569,9 @@ public class ClassType implements VType{
 				}
 			}
 		}
+		
+		
+		
 		return allMethods;
 	}
 	

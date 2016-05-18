@@ -1,0 +1,90 @@
+(COMPUNIT
+ Program
+ (FUNC
+  _Dog__Ibark_ai
+  (SEQ
+   (MOVE (TEMP i) (CONST 1))
+   (SEQ
+    (LABEL l2)
+    (CJUMP (LT (TEMP i) (CONST 5)) l3 l4)
+    (LABEL l3)
+    (SEQ (MOVE (TEMP n) (CONST 5)) (MOVE (TEMP i) (ADD (TEMP i) (CONST 1))))
+    (JUMP (NAME l2))
+    (LABEL l4))
+   (MOVE
+    (TEMP _RET0)
+    (ESEQ
+     (SEQ
+      (MOVE (TEMP t3) (CALL (NAME _I_alloc_i) (CONST 40)))
+      (MOVE (MEM (TEMP t3)) (CONST 4))
+      (MOVE (MEM (ADD (CONST 8) (TEMP t3))) (CONST 87))
+      (MOVE (MEM (ADD (CONST 16) (TEMP t3))) (CONST 111))
+      (MOVE (MEM (ADD (CONST 24) (TEMP t3))) (CONST 111))
+      (MOVE (MEM (ADD (CONST 32) (TEMP t3))) (CONST 102))
+      (MOVE (TEMP t3) (ADD (TEMP t3) (CONST 8))))
+     (TEMP t3)))
+   (RETURN)))
+ (FUNC
+  _I_init_Animal
+  (SEQ
+   (CJUMP (EQ (CONST 0) (GLOBAL VARIABLE _I_size_Animal)) l0 l1)
+   (MOVE (GLOBAL VARIABLE _I_size_Animal) (CONST 2))
+   (MOVE (TEMP t2) (CALL (NAME _I_alloc_i) (CONST 8)))
+   (MOVE (MEM (ADD (TEMP t2) (CONST 0))) (METHOD _I_vt__Animal__Isleep_p))
+   (MOVE (GLOBAL VARIABLE _I_vt_Animal) (TEMP t2))
+   (LABEL l1)
+   (RETURN)))
+ (FUNC
+  _Animal__Isleep_p
+  (SEQ
+   (EXP
+    (CALL
+     (NAME _Iprintln_pai)
+     (ESEQ
+      (SEQ
+       (MOVE (TEMP t1) (CALL (NAME _I_alloc_i) (CONST 128)))
+       (MOVE (MEM (TEMP t1)) (CONST 15))
+       (MOVE (MEM (ADD (CONST 8) (TEMP t1))) (CONST 73))
+       (MOVE (MEM (ADD (CONST 16) (TEMP t1))) (CONST 39))
+       (MOVE (MEM (ADD (CONST 24) (TEMP t1))) (CONST 109))
+       (MOVE (MEM (ADD (CONST 32) (TEMP t1))) (CONST 32))
+       (MOVE (MEM (ADD (CONST 40) (TEMP t1))) (CONST 103))
+       (MOVE (MEM (ADD (CONST 48) (TEMP t1))) (CONST 111))
+       (MOVE (MEM (ADD (CONST 56) (TEMP t1))) (CONST 110))
+       (MOVE (MEM (ADD (CONST 64) (TEMP t1))) (CONST 110))
+       (MOVE (MEM (ADD (CONST 72) (TEMP t1))) (CONST 97))
+       (MOVE (MEM (ADD (CONST 80) (TEMP t1))) (CONST 32))
+       (MOVE (MEM (ADD (CONST 88) (TEMP t1))) (CONST 115))
+       (MOVE (MEM (ADD (CONST 96) (TEMP t1))) (CONST 108))
+       (MOVE (MEM (ADD (CONST 104) (TEMP t1))) (CONST 101))
+       (MOVE (MEM (ADD (CONST 112) (TEMP t1))) (CONST 101))
+       (MOVE (MEM (ADD (CONST 120) (TEMP t1))) (CONST 112))
+       (MOVE (TEMP t1) (ADD (TEMP t1) (CONST 8))))
+      (TEMP t1))))))
+ (FUNC
+  _Dog__Isleep_p
+  (SEQ
+   (EXP
+    (CALL (NAME _Iprintln_pai)
+     (CALL (MEM (ADD (MEM (TEMP _ARG0)) (CONST 8))) (TEMP _ARG0))))))
+ (FUNC
+  _I_init_Dog
+  (SEQ
+   (CJUMP (EQ (CONST 0) (GLOBAL VARIABLE _I_size_Dog)) l5 l6)
+   (LABEL l5)
+   (EXP (CALL (NAME _I_init_Animal)))
+   (MOVE (GLOBAL VARIABLE _I_size_Dog)
+    (ADD (GLOBAL VARIABLE _I_size_Animal) (CONST 0)))
+   (MOVE (TEMP t4) (CALL (NAME _I_alloc_i) (CONST 16)))
+   (MOVE (MEM (ADD (TEMP t4) (CONST 0))) (METHOD _I_vt__Dog__Isleep_p))
+   (MOVE (MEM (ADD (TEMP t4) (CONST 8))) (METHOD _I_vt__Dog__Ibark_ai))
+   (MOVE (GLOBAL VARIABLE _I_vt_Dog) (TEMP t4))
+   (LABEL l6)
+   (RETURN)))
+ (_I_g_y_i)
+ (_I_g_c_ai)
+ (_I_g_x_i)
+ (_I_g_z_i)
+ (DISPATCH VECTOR CLASSNAME: Dog METHODS: [_Dog__Isleep_p, _Dog__Ibark_ai]
+  FIELDS: [a])
+ (DISPATCH VECTOR CLASSNAME: Animal METHODS: [_Animal__Isleep_p] FIELDS: [a]))

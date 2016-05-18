@@ -236,17 +236,25 @@ public class ConstantFolderVisitor implements ASTVisitor{
 		if (caseIndex == 2) {
 			fa.setExpr(tempArray);
 		}
+		caseIndex = 3;
 		if (fa.getIndex() == 1) {
 			fa.getFunctionArg().accept(this);
 		}
+		caseIndex = 3;
 	}
 
 	@Override
 	public void visit(FunctionCall fc) {
-		if (fc.getIndex() == 1) {
+		int fcIndex = fc.getIndex();
+		// id(...)
+		if (fcIndex == 1) {
 			fc.getFunctionArg().accept(this);
+			caseIndex = 3;
 		}
-		if (fc.getIndex() == 2) {
+		 // length(e)
+		else if (fcIndex == 2) {
+//			DotableExpr dot = (DotableExpr) fc.getExpr();
+//			System.out.println(dot.getId());
 			fc.getExpr().accept(this);
 			if (caseIndex == 0) {
 				fc.setExpr(new Literal(tempLong + "", 0));
@@ -257,6 +265,10 @@ public class ConstantFolderVisitor implements ASTVisitor{
 			if (caseIndex == 2) {
 				fc.setExpr(tempArray);
 			}
+		}
+		
+		else if (fcIndex == 4) {
+			// TODO
 		}
 		caseIndex = 3;
 	}
@@ -480,6 +492,17 @@ public class ConstantFolderVisitor implements ASTVisitor{
 
 	@Override
 	public void visit(DotableExpr de) {
+		DotableExpr.Type type = de.getType();
+		if (type == DotableExpr.Type.FUNCTION_CALL) {
+			de.getFunctionCall().accept(this);
+		}
+		else if (type == DotableExpr.Type.DOT) {
+			de.getDotableExpr().accept(this);
+		}
+		else if (type == DotableExpr.Type.ARRAY) {
+			de.getArrayElement().accept(this);
+		}
+		caseIndex = 3;
 	}
 
 	@Override

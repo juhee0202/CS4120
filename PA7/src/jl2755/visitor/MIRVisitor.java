@@ -867,8 +867,9 @@ public class MIRVisitor implements ASTVisitor{
 
 	@Override
 	public void visit(VarDecl vd) {
-		// array declaration
 		int vdIndex = vd.getIndex();
+		
+		// array declaration
 		if (vdIndex == 0) {
 			MixedArrayType mat = vd.getMixedArrayType();
 			int index = mat.getIndex();

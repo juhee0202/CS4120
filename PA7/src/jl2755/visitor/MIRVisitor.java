@@ -17,8 +17,6 @@ import jl2755.type.VarType;
 public class MIRVisitor implements ASTVisitor{
 	
 	private IRNode tempNode;
-//	private static final int TRUE = 1;
-//	private static final int FALSE = 0;
 	private int labelCount = 0;
 	private int tempCount = 0;
 	private static final IRConst WORD_SIZE = new IRConst(Configuration.WORD_SIZE);
@@ -33,8 +31,11 @@ public class MIRVisitor implements ASTVisitor{
 	private ClassType classType;
 	private IRTemp thisNode;
 	
-	// Globals for Method Dispatch
+	// Global for Method Dispatch
 	private Map<String, IRDispatchVector> classToDispatch =  new HashMap<String, IRDispatchVector>();
+	
+	// Global Variable name to its ABIName to be used for labels
+	private Map<String, String> globalNameToABI = new HashMap<String, String>();
 	
 	// Global Environment
 	private Environment env;
@@ -316,7 +317,16 @@ public class MIRVisitor implements ASTVisitor{
 		
 		switch(op){
 		case PLUS: 
-			tempOp = OpType.ADD; 	break;
+			tempOp = OpType.ADD; 	
+			if (rightNode instanceof IRConst &&
+					((IRConst) rightNode).value() > 2147483647) {
+				IRTemp reg = new IRTemp("t" + tempCount++);
+				IRMove moveConstToReg = new IRMove(reg, rightNode);
+				IRBinOp result = new IRBinOp(tempOp, leftNode, (IRExpr) reg.copy());
+				tempNode = new IRESeq(moveConstToReg, result);
+				return;
+			}
+									break;
 		case MINUS:
 			tempOp = OpType.SUB; 	break;
 		case TIMES:
@@ -429,18 +439,17 @@ public class MIRVisitor implements ASTVisitor{
 	/**
 	 * f(a1,...,an) --IR--> CALL(NAME(f), e1,...,en)
 	 */
-	// TODO: emit symbol names following convention 
 	@Override
 	public void visit(FunctionCall fc) {
 		int index = fc.getIndex();
 		boolean inEnv = env.containsFun(fc.getIdentifier().toString());
 		if (index == 0) {									// f()
 			IRCall call;
-			if (inEnv) {
+			if (inEnv) { 	// global function call with no args
 				String id = fc.getABIName();
 				IRName lf = new IRName(id);
 				call = new IRCall(lf);
-			} else {
+			} else {		// method call without dot with no args
 				// Use this as the first argument
 				IRMem dispatch = new IRMem(thisNode);
 				IRDispatchVector dv = classToDispatch.get(classType.getClassName());
@@ -469,12 +478,12 @@ public class MIRVisitor implements ASTVisitor{
 				irArgs.add((IRExpr) tempNode);
 			}
 			IRCall call;
-			if (inEnv) {
+			if (inEnv) {	// global function call with args
 				// get function label
 				String id = fc.getABIName();
 				IRName lf = new IRName(id);
 				call = new IRCall(lf, irArgs);
-			} else {
+			} else {		// method call without dot with args
 				// Use this as the first argument
 				irArgs.add(0, thisNode);
 				IRMem dispatch = new IRMem(thisNode);
@@ -499,7 +508,7 @@ public class MIRVisitor implements ASTVisitor{
 			IRExpr array = (IRExpr) tempNode;
 			IRBinOp lengthAddr = new IRBinOp(OpType.SUB, array, (IRConst) WORD_SIZE.copy());
 			tempNode = new IRMem(lengthAddr);
-		} else if (index == 3) {
+		} else if (index == 3) {										// method call with dot with no args
 			// get function label
 			String id = fc.getABIName();
 			IRName lf = new IRName(id);
@@ -508,7 +517,7 @@ public class MIRVisitor implements ASTVisitor{
 			IRCall call = new IRCall(lf, (IRTemp) tempNode);
 			call.setNumReturns(fc.getNumReturns());
 			tempNode = call;
-		} else {
+		} else {														// method call with dot with args
 			assert(index == 4);
 			// get function label
 			String id = fc.getABIName();
@@ -579,31 +588,32 @@ public class MIRVisitor implements ASTVisitor{
 	public void visit(Identifier id) {
 		String name = id.toString();
 		if (env.containsVar(name)) {
-//			VarType type = env.getVarType(name);
-//			if (type.isObject()) {
-//				
-//			} else {
-//				tempNode = new IRTemp(id.toString());
-//			}
-			tempNode = new IRTemp(id.toString());
+			// id is a global variable, return a mem pointing to the global variable
+			IRName irName = new IRName(globalNameToABI.get(name));
+			tempNode = new IRMem(irName);
 		} else {
-			// Variable must be a field
-			String object = thisNode.name();
-			IRDispatchVector dv = classToDispatch.get(object);
-			List<String> fields = dv.getFields();
-			// Find the field index (looking from back to front to get closest)
-			VarType varType = classType.getFieldType(name);
-			int i;
-			for (i = fields.size()-1; i >= 0; i--) {
-				VarType fieldType = classType.getFieldType(fields.get(i));
-				if (fieldType.equals(varType)) {
-					break;
+			// Variable must be a field or local
+			if (id.isField()) {
+				String object = thisNode.name();
+				IRDispatchVector dv = classToDispatch.get(object);
+				List<String> fields = dv.getFields();
+				// Find the field index (looking from back to front to get closest)
+				VarType varType = classType.getFieldType(name);
+				int i;
+				for (i = fields.size()-1; i >= 0; i--) {
+					VarType fieldType = classType.getFieldType(fields.get(i));
+					if (fieldType.equals(varType)) {
+						break;
+					}
 				}
+				// Offset from object pointer to get field
+				IRConst offset = new IRConst((i+1)*8);
+				IRBinOp offsetFromObject = new IRBinOp(OpType.ADD, thisNode, offset);
+				tempNode = new IRMem(offsetFromObject);
+			} else {
+				tempNode = new IRTemp(name);
 			}
-			// Offset from object pointer to get field
-			IRConst offset = new IRConst((i+1)*8);
-			IRBinOp offsetFromObject = new IRBinOp(OpType.ADD, thisNode, offset);
-			tempNode = new IRMem(offsetFromObject);
+			
 		}
 	}
 
@@ -1098,7 +1108,6 @@ public class MIRVisitor implements ASTVisitor{
 	private IRExpr createArray(int index, List<IRTemp> sizes) {		
 		// Base case
 		if (index == sizes.size()) {
-			// ask jeff if this is correct base case... He says its ok
 			return new IRConst(0);
 		}
 		List<IRStmt> stmts = new ArrayList<IRStmt>();
@@ -1283,6 +1292,7 @@ public class MIRVisitor implements ASTVisitor{
 				String name = i.toString();
 				VarType vType = env.getVarType(name);
 				IRGlobalVariable gv;
+				String ABIName;
 				if (type instanceof MixedArrayType) {
 					List<Expr> exprList = ((MixedArrayType) type).getAllExprs();
 					List<IRTemp> sizes = new ArrayList<IRTemp>();
@@ -1296,13 +1306,14 @@ public class MIRVisitor implements ASTVisitor{
 					}
 					IRESeq array = (IRESeq) createArray(0, sizes);
 					stmts.addAll(0, ((IRSeq) array.stmt()).stmts());
-					gv = new IRGlobalVariable(name,
-							translateVarTypeToABI(vType), 
-							((IRConst) array.expr()).value());
+					ABIName = translateVarTypeToABI(vType);
+					gv = new IRGlobalVariable(name, ABIName, 
+											((IRConst) array.expr()).value());
 				} else {
-					gv = new IRGlobalVariable(name, 
-							translateVarTypeToABI(vType), 0);
+					ABIName = translateVarTypeToABI(vType);
+					gv = new IRGlobalVariable(name, ABIName, 0);
 				}
+				globalNameToABI.put(name, ABIName);
 				list.add(gv);
 			}
 			tempNode = new IRGVList(list);
@@ -1319,15 +1330,18 @@ public class MIRVisitor implements ASTVisitor{
 				assert(tempNode instanceof IRConst);
 				value = ((IRConst) tempNode).value();
 			}
-			tempNode = new IRGlobalVariable(name, 
-						translateVarTypeToABI(vType), value);
+			String ABIName = translateVarTypeToABI(vType);
+			tempNode = new IRGlobalVariable(name, ABIName, value);
+			globalNameToABI.put(name, ABIName);
 			return;
 		case VAR_DECL:
 			VarDecl vd = gd.getVarDecl();
 			int index = vd.getIndex();
 			String id = vd.getIdentifier().toString();
 			VarType type1 = env.getVarType(id);
+			String ABIName1;
 			if (index == 0) {
+				// vd is mixed array type (x[5][])
 				List<Expr> exprList = vd.getMixedArrayType().getAllExprs();
 				List<IRTemp> sizes = new ArrayList<IRTemp>();
 				List<IRStmt> stmts = new ArrayList<IRStmt>();
@@ -1340,13 +1354,15 @@ public class MIRVisitor implements ASTVisitor{
 				}
 				IRESeq array = (IRESeq) createArray(0, sizes);
 				stmts.addAll(0, ((IRSeq) array.stmt()).stmts());
-				tempNode = new IRGlobalVariable(id,
-						translateVarTypeToABI(type1), 
-						((IRConst) array.expr()).value());
+				ABIName1 = translateVarTypeToABI(type1);
+				tempNode = new IRGlobalVariable(id, ABIName1, 
+											((IRConst) array.expr()).value());
 			} else {
-				tempNode = new IRGlobalVariable(id, 
-						translateVarTypeToABI(type1), 0);
+				// vd is primitive or class type
+				ABIName1 = translateVarTypeToABI(type1);
+				tempNode = new IRGlobalVariable(id, ABIName1, 0);
 			}
+			globalNameToABI.put(id, ABIName1);
 			return;
 		}		
 	}

@@ -552,13 +552,19 @@ public class TilingVisitor implements IRTreeVisitor {
 			
 			Register t = new Register("tileRegister" + registerCount++);
 			Instruction movToFreshTemp = new Instruction(Operation.MOVQ, leftOperand, t);
-			Instruction binopInstr = new Instruction(tileOp, rightOperand, t);
 			instrList.add(movToFreshTemp);
+			Instruction binopInstr;
+			if (rightOperand instanceof Constant && op == OpType.MUL) {
+				Register rightOperand2 = new Register("tileRegister" + registerCount++);
+				Instruction movToFreshTemp2 = new Instruction(Operation.MOVQ, rightOperand, rightOperand2);
+				binopInstr = new Instruction(tileOp, rightOperand2, t);
+				instrList.add(movToFreshTemp2);
+			} else {
+				binopInstr = new Instruction(tileOp, rightOperand, t);
+			}
 			instrList.add(binopInstr);
 			cost = 2;
 			argDest = t;
-			
-//			Instruction lea = createLeaInstruction(bo);
 		
 		}
 		/*

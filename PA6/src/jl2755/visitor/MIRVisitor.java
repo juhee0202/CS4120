@@ -319,7 +319,16 @@ public class MIRVisitor implements ASTVisitor{
 		
 		switch(op){
 		case PLUS: 
-			tempOp = OpType.ADD; 	break;
+			tempOp = OpType.ADD; 
+			if (rightNode instanceof IRConst &&
+					((IRConst) rightNode).value() > 2147483647) {
+				IRTemp reg = new IRTemp("t" + tempCount++);
+				IRMove moveConstToReg = new IRMove(reg, rightNode);
+				IRBinOp result = new IRBinOp(tempOp, leftNode, (IRExpr) reg.copy());
+				tempNode = new IRESeq(moveConstToReg, result);
+				return;
+			}
+									break;
 		case MINUS:
 			tempOp = OpType.SUB; 	break;
 		case TIMES:
@@ -960,7 +969,7 @@ public class MIRVisitor implements ASTVisitor{
 		// Base case
 		if (index == exprList.size()) {
 			// ask jeff if this is correct base case... He says its ok
-			return new IRConst(97);
+			return new IRConst(0);
 		}
 		List<IRStmt> stmts = new ArrayList<IRStmt>();
 		

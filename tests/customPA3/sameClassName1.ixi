@@ -1,0 +1,23 @@
+class Jeffrey {
+	initJeffrey()
+
+	walk(x:int):bool
+
+	talk(x:int[]):bool
+}
+
+class Jeffrey {
+	initJeffrey()
+
+	walk(x:int):bool
+
+	talk(x:int[]):bool
+}
+
+class Jeffrey {
+	initJeffrey(x:int)
+
+	walk(x:int):bool
+
+	talk(x:int[]):bool
+}

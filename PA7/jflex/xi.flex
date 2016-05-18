@@ -83,7 +83,7 @@ HexLiteral = ( ([0-9]|[A-F]) ([0-9]|[A-F]) )
 PrintableHexLiteral = ( [2-6]([0-9]|[A-F]) ) | ( "7"([0-9]|[A-E]) )
 
 /* string and character literals */
-SingleCharacter = [^\n\'\\\"]
+SingleCharacter = [^\'\\\"\b\t\f\n\r]
 
 %state STRING, CHARLITERAL
 
@@ -172,7 +172,11 @@ SingleCharacter = [^\n\'\\\"]
   
   /* escape sequences */
   "'"                            { string.append( "'" ); currCol++; }
+  "\\b"                          { string.append( "\\b" ); currCol++; }
+  "\\t"                          { string.append( "\\t" ); currCol++; }
+  "\\f"                          { string.append( "\\f" ); currCol++; }
   "\\n"                          { string.append( "\\n" ); currCol++; }
+  "\\r"                          { string.append( "\\r" ); currCol++; }
   "\\'"                          { string.append( "\\'" ); currCol++; }
   "\\\\"                         { string.append( "\\\\" ); currCol++; }
   "\\\""                         { string.append( "\\\"" ); currCol++; }

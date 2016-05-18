@@ -100,9 +100,7 @@ start with program;
 
 /* Grammar */
 
-array_element ::= identifier:id indexed_brackets:ib                 {: RESULT = new ArrayElement(id, ib); :}
-                  |
-                  function_call:fc indexed_brackets:ib              {: RESULT = new ArrayElement(fc, ib); :}
+array_element ::= dotable_expr:de indexed_brackets:ib               {: RESULT = new ArrayElement(de,ib); :}
                   ;
 
 array_element_list ::= expr:e                                       {: RESULT = new ArrayElementList(e); :}
@@ -158,9 +156,6 @@ dotable_expr ::= identifier:id                                      {: RESULT = 
                  function_call:fc                                   {: RESULT = new DotableExpr(fc); :}
                  |
                  dotable_expr:de DOT identifier:id                  {: RESULT = new DotableExpr(de,id); :}
-                 |
-                 dotable_expr:de DOT identifier:id 
-                 indexed_brackets:ib                                {: RESULT = new DotableExpr(de,id,ib); :}
                  |
                  NEW identifier:id                                  {: RESULT = new DotableExpr(id,true); :}
                  |

@@ -26,6 +26,9 @@ public class Memory implements Operand {
 	/** (%r1,%r2,w): Multiply r2 and w, add to r1. */
 	private Constant constantFactor;
 	
+	/** l(%r): ex) _I_g_N(%rip) */
+	private Label label;
+	
 //	/** 
 //	 * 0: (%r)
 //	 * 1: constantOffset(%base)
@@ -56,6 +59,11 @@ public class Memory implements Operand {
 	
 	public Memory(Register rb, Register ro, Constant cf) {
 		this(null,rb,ro,cf);
+	}
+	
+	public Memory(Label l, Register base) {
+		label = l;
+		registerBase = base;
 	}
 	
 	public Memory(Constant co, Register base, Register ro, Constant cf) {
@@ -104,6 +112,10 @@ public class Memory implements Operand {
 	public void setConstantFactor(Constant constantFactor) {
 		this.constantFactor = constantFactor;
 	}
+	
+	public Label getLabel() {
+		return label;
+	}
 
 //	/** 
 //	 * 0: (%r)
@@ -142,6 +154,9 @@ public class Memory implements Operand {
 		if (constantOffset != null && constantOffset.getValue() != 0) {
 			s = constantOffset.getValue() + s;
 		}
+		if (label != null) {
+			s = label.toString() + s;
+		}
 		if (registerBase != null) {
 			s += registerBase.toString();
 		}
@@ -174,6 +189,9 @@ public class Memory implements Operand {
 		}
 		if (constantFactor != null) {
 			temp.constantFactor = (Constant) constantFactor.getNewOperand();
+		}
+		if (label != null) {
+			temp.label = (Label) label.getNewOperand();
 		}
 //		temp.index = index;
 		return temp;

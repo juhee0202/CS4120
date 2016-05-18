@@ -29,7 +29,7 @@ public class MIRVisitor implements ASTVisitor{
 	// Tracking inside of a class declaration
 	private boolean inClass = false;
 	private ClassType classType;
-	private IRTemp thisNode;
+	private IRExpr thisNode;
 	
 	// Global for Method Dispatch
 	private Map<String, IRDispatchVector> classToDispatch =  new HashMap<String, IRDispatchVector>();
@@ -590,7 +590,15 @@ public class MIRVisitor implements ASTVisitor{
 		} else {
 			// Variable must be a field or local
 			if (id.isField()) {
-				String object = thisNode.name();
+				String object;
+				assert (thisNode instanceof IRTemp || thisNode instanceof IRESeq);
+				if (thisNode instanceof IRTemp) {
+					object = ((IRTemp) thisNode).name();
+				} else {
+					IRExpr temp = ((IRESeq)thisNode).expr();
+					object = ((IRTemp) temp).name();
+				}
+				
 				IRDispatchVector dv = classToDispatch.get(object);
 				List<String> fields = dv.getFields();
 				// Find the field index (looking from back to front to get closest)
@@ -761,13 +769,6 @@ public class MIRVisitor implements ASTVisitor{
 				assert(false);
 			}
 		}
-		
-		/***********WHAT WE USED TO HAVE******************/
-//		List<FunctionDecl> funcs = p.getFunctionDecls();
-//		for (FunctionDecl fd: funcs) {
-//			fd.accept(this);
-//			functions.put(fd.getABIName(), (IRFuncDecl) tempNode);
-//		}
 		program = new IRCompUnit("Program", functions, dispatchVectors, globalVariables);
 	}
 
@@ -1134,7 +1135,10 @@ public class MIRVisitor implements ASTVisitor{
 	private IRExpr createArray(int index, List<IRTemp> sizes) {		
 		// Base case
 		if (index == sizes.size()) {
-			return new IRConst(0);
+			IRMove move0IntoTemp = new IRMove(new IRTemp("t" + tempCount++), new IRConst(0));
+			IRSeq tempSeq = new IRSeq(move0IntoTemp);
+			IRESeq tempESeq = new IRESeq(tempSeq,new IRConst(0));
+			return tempESeq;
 		}
 		List<IRStmt> stmts = new ArrayList<IRStmt>();
 		
@@ -1231,7 +1235,7 @@ public class MIRVisitor implements ASTVisitor{
 		switch (de.getType()) {
 		case DOT:
 			de.getDotableExpr().accept(this);
-			thisNode = (IRTemp) tempNode;
+			thisNode = (IRExpr) tempNode;
 			de.getId().accept(this);
 			break;
 		case FUNCTION_CALL:

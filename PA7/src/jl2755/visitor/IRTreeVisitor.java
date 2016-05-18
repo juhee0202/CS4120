@@ -5,14 +5,15 @@ import edu.cornell.cs.cs4120.xic.ir.IRCJump;
 import edu.cornell.cs.cs4120.xic.ir.IRCall;
 import edu.cornell.cs.cs4120.xic.ir.IRCompUnit;
 import edu.cornell.cs.cs4120.xic.ir.IRConst;
+import edu.cornell.cs.cs4120.xic.ir.IRDispatchVector;
 import edu.cornell.cs.cs4120.xic.ir.IRESeq;
 import edu.cornell.cs.cs4120.xic.ir.IRExp;
 import edu.cornell.cs.cs4120.xic.ir.IRFuncDecl;
+import edu.cornell.cs.cs4120.xic.ir.IRGlobalReference;
 import edu.cornell.cs.cs4120.xic.ir.IRGlobalVariable;
 import edu.cornell.cs.cs4120.xic.ir.IRJump;
 import edu.cornell.cs.cs4120.xic.ir.IRLabel;
 import edu.cornell.cs.cs4120.xic.ir.IRMem;
-import edu.cornell.cs.cs4120.xic.ir.IRDispatchVector;
 import edu.cornell.cs.cs4120.xic.ir.IRMove;
 import edu.cornell.cs.cs4120.xic.ir.IRName;
 import edu.cornell.cs.cs4120.xic.ir.IRReturn;
@@ -38,4 +39,5 @@ public interface IRTreeVisitor {	// Rest: Jonathan
 	public void visit(IRTemp temp);
 	public void visit(IRDispatchVector irMethodTable);
 	public void visit(IRGlobalVariable irGlobalVariable);
+	public void visit(IRGlobalReference irGlobalReference);
 }

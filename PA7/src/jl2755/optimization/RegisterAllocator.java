@@ -95,7 +95,7 @@ public class RegisterAllocator {
 	private static final Register R15 = new Register(RegisterName.R15);
 	
 	private static final Register[] availableRegs = 
-		{RAX,RBX,RCX,RDX,RSI,RDI,R8,R9,R10,R11,R12,R13,R14,R15};
+		{RAX,RBX,RCX,RDX,RSI,RDI,R8,R9,R10,R11,R15};
 	
 	// Built-in registers off-limits for allocation
 	private static final Register RSP = new Register(RegisterName.RSP);
@@ -106,6 +106,8 @@ public class RegisterAllocator {
 	private int stackCounter;
 	
 	private boolean Omc;
+	
+	private boolean spill;
 	
 	public RegisterAllocator(boolean omc) {
 		// Initialize globals
@@ -158,7 +160,7 @@ public class RegisterAllocator {
 			didActuallySpill = select();
 			extraSpace |= didActuallySpill;
 		}
-		cleanUp();
+//		cleanUp();
 		if (extraSpace) {
 			stackCounter++;
 		}
@@ -185,7 +187,6 @@ public class RegisterAllocator {
 		
 		// Create interference graph
 		graph = new InterferenceGraph(nodeToLiveRegs);
-		
 		// If there is a register in the def of a node that is not live coming out, remove it
 		boolean result = false;
 //		Set<CFGNode> nodes = new HashSet<CFGNode>();
@@ -473,7 +474,7 @@ public class RegisterAllocator {
 			} else {
 				replacedReg = removeReg2;
 				replacingReg = removeReg1;
-			}			
+			}
 			
 			// Replace replacedReg of all related instructions with replacingReg
 			replace(replacedReg, replacingReg, true);
@@ -635,8 +636,9 @@ public class RegisterAllocator {
 			Register color = color(reg, edges.get(reg));
 			if (color == null) {
 				// Spill reg to stack
-				actuallySpill(reg);
-				result = true;
+//				actuallySpill(reg);
+//				result = true;
+				spill = true;
 			} else {
 				// Set all related instruction to use color
 				usedRegs.add(color);

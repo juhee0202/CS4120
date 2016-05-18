@@ -696,7 +696,7 @@ public class Main {
 
 			IRCompUnit result;
 			if (fileToIR.containsKey(filename)) {
-				result = (IRCompUnit) fileToIR.get(filename).copy();
+				result = fileToIR.get(filename);
 			} else {
 				Program program;
 				Environment env;

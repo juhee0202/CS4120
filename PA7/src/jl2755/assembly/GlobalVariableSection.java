@@ -38,6 +38,7 @@ public class GlobalVariableSection {
 	}
 	
 	public GlobalVariableSection(IRDispatchVector argDV, GlobalVarType argType) {
+		type = argType;
 		if (argType == GlobalVarType.DISPATCHVECTOR) {
 			className = argDV.getClassName();
 			valueType = GlobalVarValueType.NONE;
@@ -54,7 +55,7 @@ public class GlobalVariableSection {
 	}
 	
 	public String generateInitialization() {
-		String s = "\n";
+		String s = "\n\n";
 		if (type == GlobalVarType.DISPATCHVECTOR) {
 			s += "\t.bss\n";
 			s += "\t.align 8\n";

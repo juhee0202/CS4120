@@ -16,6 +16,7 @@ import edu.cornell.cs.cs4120.xic.ir.IRESeq;
 import edu.cornell.cs.cs4120.xic.ir.IRExp;
 import edu.cornell.cs.cs4120.xic.ir.IRExpr;
 import edu.cornell.cs.cs4120.xic.ir.IRFuncDecl;
+import edu.cornell.cs.cs4120.xic.ir.IRGlobalReference;
 import edu.cornell.cs.cs4120.xic.ir.IRGlobalVariable;
 import edu.cornell.cs.cs4120.xic.ir.IRJump;
 import edu.cornell.cs.cs4120.xic.ir.IRLabel;
@@ -37,6 +38,7 @@ import jl2755.assembly.Memory;
 import jl2755.assembly.Operand;
 import jl2755.assembly.Register;
 import jl2755.assembly.Register.RegisterName;
+import jl2755.assembly.Star;
 import jl2755.assembly.Tile;
 import jl2755.optimization.RegisterAllocator;
 
@@ -1025,12 +1027,26 @@ public class TilingVisitor implements IRTreeVisitor {
 		}
 		call.setNum8ByteSpace(num8ByteSpace);
 		
+		System.out.println("+++++++++++++++++++++++");
+		System.out.println(targetTile);
+		System.out.println(targetTile.getDest());
+		
+		Instruction callInstruction = null;
+		
+		if (targetTile.getDest() instanceof Memory) {
+			callInstruction = new Instruction(Operation.CALLQ, new Star((Memory) targetTile.getDest()));
+		}
+		
 		// "callq targetDest"
-		Label targetDest = (Label)targetTile.getDest();
-		targetDest.setLabelName(targetDest.toString());
-		Instruction callInstruction = new Instruction(Operation.CALLQ, targetDest);
-		tempInstructions.add(callInstruction);
+		else {
+			assert(targetTile.getDest() instanceof Label);
+			Label targetDest = (Label)targetTile.getDest();
+			targetDest.setLabelName(targetDest.toString());
+			callInstruction = new Instruction(Operation.CALLQ, targetDest);
+		}
 	
+		tempInstructions.add(callInstruction);
+		
 		// append tempInstructions to instructions
 		instructions.addAll(tempInstructions);
 		
@@ -1434,6 +1450,14 @@ public class TilingVisitor implements IRTreeVisitor {
 			}
 		}
 
+		
+		for (IRDispatchVector irdv : cu.getDispatchVectors()) {
+			GlobalVariableSection gvs = new GlobalVariableSection(irdv,GlobalVariableSection.GlobalVarType.DISPATCHVECTOR);
+			superTile.addGlobalParts(gvs);
+			gvs = new GlobalVariableSection(irdv,GlobalVariableSection.GlobalVarType.SIZE);
+			superTile.addGlobalParts(gvs);
+		}
+				
 		tileMap.put(cu, superTile);
 	}
 
@@ -2430,12 +2454,15 @@ public class TilingVisitor implements IRTreeVisitor {
 			functionTile.setInstructions(newInsts);
 			
 			// complete "enter 8*l, 0"
-			Instruction enter = newInsts.get(1);
-			int counter = rAlloc.getStackCounter();
-			int numSpace = counter % 2 == 1 ? counter + 1 : counter;
-			Constant space = new Constant(8*numSpace);
-			enter.setSrc(space);
+//			Instruction enter = newInsts.get(1);
+//			int counter = rAlloc.getStackCounter();
+//			int numSpace = counter % 2 == 1 ? counter + 1 : counter;
+//			Constant space = new Constant(8*numSpace);
+//			enter.setSrc(space);
 		}
+		
+		// Call stackAllocation to allocate rest on stack
+		stackAllocation(headNode);
 	}
 	
 	/**
@@ -2455,7 +2482,9 @@ public class TilingVisitor implements IRTreeVisitor {
 			
 			// complete "enter 8*l, 0"
 			Instruction enter = newInsts.get(1);
+			long existingSpace = ((Constant) enter.getSrc()).getValue();
 			int numSpace = stackCounter % 2 == 1 ? stackCounter + 1 : stackCounter;
+			numSpace += existingSpace;
 			Constant space = new Constant(8*numSpace);
 			enter.setSrc(space);
 		}
@@ -2913,6 +2942,23 @@ public class TilingVisitor implements IRTreeVisitor {
 	public void visit(IRGlobalVariable irGlobalVariable) {
 		// TODO Auto-generated method stub
 		
+	}
+
+	/**
+	 * Creates an empty tile with dest set to label(%rip)
+	 * @param irGlobalReference
+	 */
+	@Override
+	public void visit(IRGlobalReference irGlobalReference) {
+		if (tileMap.containsKey(irGlobalReference)) {
+			return;
+		}
+		String globalLabelName = irGlobalReference.getABIName();
+		Label globalLabel = new Label(globalLabelName);
+		Memory tempMemory = new Memory(globalLabel, new Register(RegisterName.RIP));		
+		Tile tempTile = new Tile(new ArrayList<Instruction>(), 0, tempMemory);
+		tempTile.setDest(tempMemory);
+		tileMap.put(irGlobalReference, tempTile);
 	}
 	
 }

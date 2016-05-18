@@ -37,6 +37,7 @@ import jl2755.assembly.Memory;
 import jl2755.assembly.Operand;
 import jl2755.assembly.Register;
 import jl2755.assembly.Register.RegisterName;
+import jl2755.assembly.Star;
 import jl2755.assembly.Tile;
 import jl2755.optimization.RegisterAllocator;
 
@@ -1025,12 +1026,26 @@ public class TilingVisitor implements IRTreeVisitor {
 		}
 		call.setNum8ByteSpace(num8ByteSpace);
 		
+		System.out.println("+++++++++++++++++++++++");
+		System.out.println(targetTile);
+		System.out.println(targetTile.getDest());
+		
+		Instruction callInstruction = null;
+		
+		if (targetTile.getDest() instanceof Memory) {
+			callInstruction = new Instruction(Operation.CALLQ, new Star((Memory) targetTile.getDest()));
+		}
+		
 		// "callq targetDest"
-		Label targetDest = (Label)targetTile.getDest();
-		targetDest.setLabelName(targetDest.toString());
-		Instruction callInstruction = new Instruction(Operation.CALLQ, targetDest);
-		tempInstructions.add(callInstruction);
+		else {
+			assert(targetTile.getDest() instanceof Label);
+			Label targetDest = (Label)targetTile.getDest();
+			targetDest.setLabelName(targetDest.toString());
+			callInstruction = new Instruction(Operation.CALLQ, targetDest);
+		}
 	
+		tempInstructions.add(callInstruction);
+		
 		// append tempInstructions to instructions
 		instructions.addAll(tempInstructions);
 		
@@ -1398,9 +1413,9 @@ public class TilingVisitor implements IRTreeVisitor {
 	public void visit(IRCompUnit cu) {
 		// Visit all function decls
 		
-//		for (IRFuncDecl fd : cu.functions().values()) {
-//			fd.accept(this);
-//		}		
+		for (IRFuncDecl fd : cu.functions().values()) {
+			fd.accept(this);
+		}		
 		
 		// Register/Stack allocation
 //		if (Oreg) {
@@ -1408,17 +1423,17 @@ public class TilingVisitor implements IRTreeVisitor {
 //		} else {
 //			stackAllocation(cu);
 //		}
-//		stackAllocation(cu);
+		stackAllocation(cu);
 		
 		Tile superTile = new Tile(new ArrayList<Instruction>());
 		
-//		for (IRFuncDecl fd : cu.functions().values()) {
-//			if (superTile == null) {
-//				superTile = tileMap.get(fd);
-//			} else {
-//				superTile = Tile.mergeTiles(superTile, tileMap.get(fd));
-//			}
-//		}
+		for (IRFuncDecl fd : cu.functions().values()) {
+			if (superTile == null) {
+				superTile = tileMap.get(fd);
+			} else {
+				superTile = Tile.mergeTiles(superTile, tileMap.get(fd));
+			}
+		}
 		Set<IRGlobalVariable> globalVars = cu.getGlobalVariables();
 		
 		for (IRGlobalVariable irgv : globalVars) {
@@ -1431,6 +1446,15 @@ public class TilingVisitor implements IRTreeVisitor {
 			}
 			superTile.addGlobalParts(gvs);
 		}
+		
+		for (IRDispatchVector irdv : cu.getDispatchVectors()) {
+			GlobalVariableSection gvs = new GlobalVariableSection(irdv,GlobalVariableSection.GlobalVarType.DISPATCHVECTOR);
+			superTile.addGlobalParts(gvs);
+			gvs = new GlobalVariableSection(irdv,GlobalVariableSection.GlobalVarType.SIZE);
+			superTile.addGlobalParts(gvs);
+		}
+		
+		
 		
 		tileMap.put(cu, superTile);
 	}

@@ -35,10 +35,10 @@ public class CtorsSection {
 	 * initialization 
 	 */
 	public String generateInitialization() {
-		String s = "";
+		String s = "\n\n";
 		s += ".section .ctors\n";
-		s += "\t.align 8";
-		s += "\t.quad _I_init_" + className;
+		s += "\t.align 8\n";
+		s += "\t.quad _I_init_" + className + "\n";
 		s += ".text";
 		return s;
 	}

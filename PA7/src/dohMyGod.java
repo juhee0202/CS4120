@@ -346,10 +346,7 @@ public class dohMyGod {
 	class Dog extends Animal{
 		private int[][] x;
 		
-		int x = new Dog()[0];
-		public void bark() {
-			this.x[0] =2; 
-		}
+
 		
 	}
 	class Animal {

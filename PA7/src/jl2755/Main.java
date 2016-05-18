@@ -122,7 +122,6 @@ public class Main {
 	 * and deleting their own leading forward-slash
 	 */
 	public static void main(String[] args) {
-		
 		// Initialize globals
 		fileToSymbol = new HashMap<String, Symbol>();
 		fileToAST = new HashMap<String, Program>();
@@ -1167,9 +1166,58 @@ public class Main {
 				handleSemanticError(seo);
 			}
 		}
+		
+		checkCyclicDependency(globalEnv);
+		
 		return globalEnv;
 	}
 	
+	/**
+	 * Check to see if there is a cyclic extend 
+	 * ex) A extends B & B extends A
+	 * 
+	 * @param globalEnv		the env containing all declared classes/funs/vars
+	 */
+	private static void checkCyclicDependency(Environment globalEnv) {
+		Set<ClassType> classTypes = globalEnv.getClassTypes();
+		Set<ClassType> visited = new HashSet<ClassType>();
+		Queue<ClassType> queue = new LinkedList<ClassType>();
+		queue.addAll(classTypes);
+		while(!queue.isEmpty()) {
+			ClassType classType = queue.poll();
+			if (visited.contains(classType)) {
+				continue;
+			}
+			visited.add(classType);
+			
+			/*
+			 * Search for cycles in the extend hierarchy
+			 */
+			Set<ClassType> linkedClasses = new HashSet<ClassType>();
+			linkedClasses.add(classType);
+			while(classType.hasSuper()) {
+				ClassType superType = globalEnv.getClassType(classType.getSuperClassName());
+				if (linkedClasses.contains(superType)) {
+					String errorDesc = "Cyclic dependency found for the following clases: ";
+					int count = 0;
+					int n = linkedClasses.size();
+					for (ClassType linkedClass : linkedClasses) {
+						errorDesc += linkedClass.getClassName();
+						if (++count < n) {
+							errorDesc += ", ";
+						}
+					}
+					SemanticErrorObject seo = new SemanticErrorObject(0,0,errorDesc);
+					handleSemanticError(seo);
+				}
+				
+				linkedClasses.add(superType);
+				visited.add(superType);
+				classType = superType;
+			}
+		}
+	}
+
 	/**
 	 * Resolves all unresolved types in interfaces
 	 * 

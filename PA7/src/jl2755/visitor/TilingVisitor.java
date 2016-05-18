@@ -878,7 +878,6 @@ public class TilingVisitor implements IRTreeVisitor {
 			// set rdi to ret3's address in stack frame
 			Register rdi = new Register(RegisterName.RDI);
 			Register rsp = new Register(RegisterName.RSP);
-			Register temp = new Register(RegisterName.R11);
 			
 			// create (m-2) words space 
 			Constant c = new Constant(8*(numReturns - 2));
@@ -891,12 +890,6 @@ public class TilingVisitor implements IRTreeVisitor {
 			// "movq rsp rdi"
 			Instruction makeTempForRsp = new Instruction(Operation.MOVQ, rsp, rdi);
 			tempInstructions.add(makeTempForRsp);
-			// "addq 8*(m-2)-8 rdi"
-			Constant offsetFromRsp = new Constant(8*(numReturns-2) - 8);
-			if (offsetFromRsp.getValue() != 0) {
-				Instruction computeRet3MemAddr = new Instruction(Operation.ADDQ, offsetFromRsp, rdi);
-				tempInstructions.add(computeRet3MemAddr);
-			}
 		}
 		
 		/* Push argn...arg7 (or arg6 if m > 2) */
@@ -2684,37 +2677,33 @@ public class TilingVisitor implements IRTreeVisitor {
 	
 	private Tile createEndCallTile(IRCall call) {
 		List<Instruction> instructions = new ArrayList<Instruction>();
-		
-		int numArgs = call.args().size();
 
 		// restore caller-save registers 
-		int argOffset = Math.max(0, numArgs-6);
-		int extraSpaceOffset = call.hasExtra8ByteSpace() ? 1 : 0;
-		int retOffset = call.getNumReturns() > 2 ? 1 : 0;
 		int numCallerReg = CALLER_REG_LIST.length;
-//		int totalOffset = argOffset + extraSpaceOffset + retOffset;
 		Register rsp = new Register(RegisterName.RSP);
+		int totalSpaceToPop = 0;
 		if (call.hasExtra8ByteSpace()) {
-			Instruction extraPop = new Instruction(Operation.ADDQ, new Constant(8), rsp);
-			instructions.add(extraPop);
+			totalSpaceToPop++;
 		}
+		int end = 0;
+		int retSpace = call.getNumReturns() - 2;
+		if (retSpace > 0) {
+			totalSpaceToPop += retSpace;
+			end++;
+		}
+		totalSpaceToPop += Math.max(0, call.args().size() - (ARG_REG_LIST.length - end));
+		if (totalSpaceToPop != 0) {
+			Instruction restoreRSP = new Instruction(Operation.ADDQ, 
+					new Constant(8*totalSpaceToPop), rsp);
+			instructions.add(restoreRSP);
+		}
+		
 		for (int i = numCallerReg-1; i >= 0; i--) {
-//			Constant offset = new Constant(8*(numCallerReg + totalOffset - 1 - i));
-//			Memory mem = new Memory(offset, rsp);
-//			// "movq offset(rsp) caller_saved_reg"
-//			Instruction instr = new Instruction(Operation.MOVQ, mem, new Register(CALLER_REG_LIST[i]));
-//			instructions.add(instr);
 			Register reg = new Register(CALLER_REG_LIST[i]);
-			// "pushq reg"
+			// "popq reg"
 			Instruction instr = new Instruction(Operation.POPQ, reg);
 			instructions.add(instr);
 		}
-		
-		// back to original rsp
-//		Constant offset = new Constant(8*call.getNum8ByteSpace());
-//		// "addq offset rsp" 
-//		Instruction instr = new Instruction(Operation.ADDQ, offset, rsp);
-//		instructions.add(instr);
 		
 		// calculate total cost
 		int totalCost = 0;

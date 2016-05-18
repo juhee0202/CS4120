@@ -122,7 +122,6 @@ public class Main {
 	 * and deleting their own leading forward-slash
 	 */
 	public static void main(String[] args) {
-		
 		// Initialize globals
 		fileToSymbol = new HashMap<String, Symbol>();
 		fileToAST = new HashMap<String, Program>();

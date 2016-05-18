@@ -113,24 +113,30 @@ public class MIRVisitor implements ASTVisitor{
 	// ADD LOGIC FOR CLASSES
 	@Override
 	public void visit(AssignmentStmt as) {
-		int index = as.getIndex();
-		if (index == 0) {
-			// a = 3
-			as.getDotableExpr().accept(this);
-			IRExpr dotableExpr = (IRExpr) tempNode;
-			as.getExpr().accept(this);
-			IRExpr tempExpr = (IRExpr) tempNode;
-			tempNode = new IRMove(dotableExpr, tempExpr);
-		} else {
-			// a[i] = 3
-			as.getDotableExpr().accept(this);
-			IRTemp base = (IRTemp) tempNode;
-			IndexedBrackets ib = as.getIndexedBrackets();
-			IRExpr mem = createIRExprForBrackets(base, ib);
-			as.getExpr().accept(this);
-			IRExpr e = (IRExpr) tempNode;
-			tempNode = new IRMove(mem,e);
-		}
+		as.getDotableExpr().accept(this);
+		IRExpr de = (IRExpr) tempNode;
+		as.getExpr().accept(this);
+		IRExpr e = (IRExpr) tempNode;
+		tempNode = new IRMove(de,e);
+		
+//		int index = as.getIndex();
+//		if (index == 0) {
+//			// a = 3
+//			as.getDotableExpr().accept(this);
+//			IRExpr dotableExpr = (IRExpr) tempNode;
+//			as.getExpr().accept(this);
+//			IRExpr tempExpr = (IRExpr) tempNode;
+//			tempNode = new IRMove(dotableExpr, tempExpr);
+//		} else {
+//			// a[i] = 3
+//			as.getDotableExpr().accept(this);
+//			IRTemp base = (IRTemp) tempNode;
+//			IndexedBrackets ib = as.getIndexedBrackets();
+//			IRExpr mem = createIRExprForBrackets(base, ib);
+//			as.getExpr().accept(this);
+//			IRExpr e = (IRExpr) tempNode;
+//			tempNode = new IRMove(mem,e);
+//		}
 	}
 
 	@Override
@@ -427,7 +433,12 @@ public class MIRVisitor implements ASTVisitor{
 	@Override
 	public void visit(FunctionCall fc) {
 		int index = fc.getIndex();
-		boolean inEnv = env.containsFun(fc.getIdentifier().toString());
+		
+		boolean inEnv = false;
+		if (index != 2) {
+			inEnv = env.containsFun(fc.getIdentifier().toString());
+		}
+
 		if (index == 0) {									// f()
 			IRCall call;
 			if (inEnv) { 	// global function call with no args

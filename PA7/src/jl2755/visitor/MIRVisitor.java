@@ -769,13 +769,6 @@ public class MIRVisitor implements ASTVisitor{
 				assert(false);
 			}
 		}
-		
-		/***********WHAT WE USED TO HAVE******************/
-//		List<FunctionDecl> funcs = p.getFunctionDecls();
-//		for (FunctionDecl fd: funcs) {
-//			fd.accept(this);
-//			functions.put(fd.getABIName(), (IRFuncDecl) tempNode);
-//		}
 		program = new IRCompUnit("Program", functions, dispatchVectors, globalVariables);
 	}
 

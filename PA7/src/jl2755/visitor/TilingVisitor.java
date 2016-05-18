@@ -1403,11 +1403,11 @@ public class TilingVisitor implements IRTreeVisitor {
 		}		
 		
 		// Register/Stack allocation
-		if (Oreg) {
-			regAllocation(cu);
-		} else {
-			stackAllocation(cu);
-		}
+//		if (Oreg) {
+//			regAllocation(cu);
+//		} else {
+//			stackAllocation(cu);
+//		}
 //		stackAllocation(cu);
 		
 		Tile superTile = new Tile(new ArrayList<Instruction>());

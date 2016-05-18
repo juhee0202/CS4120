@@ -8,6 +8,6 @@ main(args:int[][]) {
 		while(true) {
 			break;
 		}
-		break to l2;
+		break _to_ l2;
 	}
 }

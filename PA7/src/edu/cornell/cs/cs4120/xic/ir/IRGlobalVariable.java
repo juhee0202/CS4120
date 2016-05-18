@@ -16,6 +16,8 @@ public class IRGlobalVariable extends IRNode {
 	/** The value of this global variable if not an array. */
 	private long value;
 	
+	private boolean isInitialized;
+	
 	/** Whether this variable is an array or not. */
 	private boolean isArray;
 	
@@ -29,6 +31,7 @@ public class IRGlobalVariable extends IRNode {
 		name = n;
 		ABIName = abi;
 		value = v;
+		isInitialized = true;
 		isArray = false;
 	}
 
@@ -53,6 +56,10 @@ public class IRGlobalVariable extends IRNode {
 	
 	public void setCreateArray(IRSeq translated) {
 		createArray = translated;
+	}
+	
+	public boolean isInitialized() {
+		return isInitialized;
 	}
 	
 	public boolean isArray() {
@@ -83,7 +90,7 @@ public class IRGlobalVariable extends IRNode {
 	@Override
 	public void printSExp(SExpPrinter p) {
 		p.startList();
-		p.printAtom(name);
+		p.printAtom(ABIName);
 		p.endList();
 	}
 

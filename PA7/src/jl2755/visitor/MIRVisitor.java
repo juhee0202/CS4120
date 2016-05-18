@@ -745,6 +745,10 @@ public class MIRVisitor implements ASTVisitor{
 					functions.put(irfd.getABIName(), irfd);
 				}
 			}
+			else {
+				// Should have fallen through to another case previously
+				assert(false);
+			}
 		}
 		
 		/***********WHAT WE USED TO HAVE******************/
@@ -1313,11 +1317,11 @@ public class MIRVisitor implements ASTVisitor{
 					}
 					IRESeq array = (IRESeq) createArray(0, sizes);
 					stmts.addAll(0, ((IRSeq) array.stmt()).stmts());
-					ABIName = translateVarTypeToABI(vType);
+					ABIName = translateVarTypeToABI(vType, name);
 					gv = new IRGlobalVariable(name, ABIName, 
 											((IRConst) array.expr()).value());
 				} else {
-					ABIName = translateVarTypeToABI(vType);
+					ABIName = translateVarTypeToABI(vType, name);
 					gv = new IRGlobalVariable(name, ABIName, 0);
 				}
 				globalNameToABI.put(name, ABIName);
@@ -1337,7 +1341,7 @@ public class MIRVisitor implements ASTVisitor{
 				assert(tempNode instanceof IRConst);
 				value = ((IRConst) tempNode).value();
 			}
-			String ABIName = translateVarTypeToABI(vType);
+			String ABIName = translateVarTypeToABI(vType, name);
 			tempNode = new IRGlobalVariable(name, ABIName, value);
 			globalNameToABI.put(name, ABIName);
 			return;
@@ -1361,12 +1365,12 @@ public class MIRVisitor implements ASTVisitor{
 				}
 				IRESeq array = (IRESeq) createArray(0, sizes);
 				stmts.addAll(0, ((IRSeq) array.stmt()).stmts());
-				ABIName1 = translateVarTypeToABI(type1);
+				ABIName1 = translateVarTypeToABI(type1, id);
 				tempNode = new IRGlobalVariable(id, ABIName1, 
 											((IRConst) array.expr()).value());
 			} else {
 				// vd is primitive or class type
-				ABIName1 = translateVarTypeToABI(type1);
+				ABIName1 = translateVarTypeToABI(type1, id);
 				tempNode = new IRGlobalVariable(id, ABIName1, 0);
 			}
 			globalNameToABI.put(id, ABIName1);
@@ -1374,22 +1378,22 @@ public class MIRVisitor implements ASTVisitor{
 		}		
 	}
 	
-	public String translateVarTypeToABI(VarType t) {
-		String ABIString = "";
+	public String translateVarTypeToABI(VarType t, String globalName) {
+		String ABIString = "_I_g_" + globalName + "_";
 		if (t.isArray()) {							// array
 			int numBrackets = t.getNumBrackets();
 			for (int i = 0; i < numBrackets; i++) {
 				ABIString += "a";
 			}
 			ABIString += t.getIsBool() ? "b" : "i";
-		} else if (t.isInt()) {						// int
-			ABIString = "i";
-		} else if (t.isBool())  {					// bool
-			ABIString = "b";
+		} else if (t.getIsInt()) {						// int
+			ABIString += "i";
+		} else if (t.getIsBool())  {					// bool
+			ABIString += "b";
 		} else {
 			String className = t.getElementType();
 			int len =  className.length();
-			ABIString = "o" + len + className;
+			ABIString += "o" + len + className;
 		}
 		return ABIString;
 	}

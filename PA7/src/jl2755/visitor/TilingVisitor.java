@@ -1,17 +1,43 @@
 package jl2755.visitor;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Set;
 
-import edu.cornell.cs.cs4120.xic.ir.*;
-import jl2755.assembly.*;
+import edu.cornell.cs.cs4120.xic.ir.IRBinOp;
+import edu.cornell.cs.cs4120.xic.ir.IRCJump;
+import edu.cornell.cs.cs4120.xic.ir.IRCall;
+import edu.cornell.cs.cs4120.xic.ir.IRCompUnit;
+import edu.cornell.cs.cs4120.xic.ir.IRConst;
+import edu.cornell.cs.cs4120.xic.ir.IRDispatchVector;
+import edu.cornell.cs.cs4120.xic.ir.IRESeq;
+import edu.cornell.cs.cs4120.xic.ir.IRExp;
+import edu.cornell.cs.cs4120.xic.ir.IRExpr;
+import edu.cornell.cs.cs4120.xic.ir.IRFuncDecl;
+import edu.cornell.cs.cs4120.xic.ir.IRGlobalVariable;
+import edu.cornell.cs.cs4120.xic.ir.IRJump;
+import edu.cornell.cs.cs4120.xic.ir.IRLabel;
+import edu.cornell.cs.cs4120.xic.ir.IRMem;
+import edu.cornell.cs.cs4120.xic.ir.IRMove;
+import edu.cornell.cs.cs4120.xic.ir.IRName;
+import edu.cornell.cs.cs4120.xic.ir.IRNode;
+import edu.cornell.cs.cs4120.xic.ir.IRReturn;
+import edu.cornell.cs.cs4120.xic.ir.IRSeq;
+import edu.cornell.cs.cs4120.xic.ir.IRStmt;
+import edu.cornell.cs.cs4120.xic.ir.IRTemp;
+import edu.cornell.cs.cs4120.xic.ir.OpType;
+import jl2755.assembly.Constant;
+import jl2755.assembly.GlobalVariableSection;
+import jl2755.assembly.Instruction;
 import jl2755.assembly.Instruction.Operation;
+import jl2755.assembly.Label;
+import jl2755.assembly.Memory;
+import jl2755.assembly.Operand;
+import jl2755.assembly.Register;
 import jl2755.assembly.Register.RegisterName;
-import jl2755.assembly.Tile.tileEnum;
+import jl2755.assembly.Tile;
 import jl2755.optimization.RegisterAllocator;
 
 public class TilingVisitor implements IRTreeVisitor {
@@ -80,6 +106,10 @@ public class TilingVisitor implements IRTreeVisitor {
 			} else {
 				assemblyString += "\t" + instr.toString() + "\n";
 			}
+		}
+		
+		for (GlobalVariableSection gvs : temp.getGlobalParts()) {
+			assemblyString += gvs.generateInitialization();
 		}
 		
 		return assemblyString;
@@ -1326,9 +1356,9 @@ public class TilingVisitor implements IRTreeVisitor {
 	public void visit(IRCompUnit cu) {
 		// Visit all function decls
 		
-		for (IRFuncDecl fd : cu.functions().values()) {
-			fd.accept(this);
-		}		
+//		for (IRFuncDecl fd : cu.functions().values()) {
+//			fd.accept(this);
+//		}		
 		
 		// Register/Stack allocation
 //		if (Oreg) {
@@ -1336,17 +1366,30 @@ public class TilingVisitor implements IRTreeVisitor {
 //		} else {
 //			stackAllocation(cu);
 //		}
-		stackAllocation(cu);
+//		stackAllocation(cu);
 		
-		Tile superTile = null;
+		Tile superTile = new Tile(new ArrayList<Instruction>());
 		
-		for (IRFuncDecl fd : cu.functions().values()) {
-			if (superTile == null) {
-				superTile = tileMap.get(fd);
-			} else {
-				superTile = Tile.mergeTiles(superTile, tileMap.get(fd));
+//		for (IRFuncDecl fd : cu.functions().values()) {
+//			if (superTile == null) {
+//				superTile = tileMap.get(fd);
+//			} else {
+//				superTile = Tile.mergeTiles(superTile, tileMap.get(fd));
+//			}
+//		}
+		Set<IRGlobalVariable> globalVars = cu.getGlobalVariables();
+		
+		for (IRGlobalVariable irgv : globalVars) {
+			GlobalVariableSection gvs;
+			if (irgv.isInitialized()) {
+				gvs = new GlobalVariableSection(irgv.getABIName(),irgv.getValue());
 			}
-		}		
+			else {
+				gvs = new GlobalVariableSection(irgv.getABIName());
+			}
+			superTile.addGlobalParts(gvs);
+		}
+		
 		tileMap.put(cu, superTile);
 	}
 

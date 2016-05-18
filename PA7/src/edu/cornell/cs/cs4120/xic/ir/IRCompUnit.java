@@ -103,6 +103,9 @@ public class IRCompUnit extends IRNode {
         for (IRGlobalVariable irgv : globalVariables) {
         	irgv.printSExp(p);
         }
+        for (IRDispatchVector irdv : dispatchVectors) {
+        	irdv.printSExp(p);
+        }
         p.endList();
     }
     

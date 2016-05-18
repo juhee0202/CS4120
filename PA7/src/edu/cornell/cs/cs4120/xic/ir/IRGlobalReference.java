@@ -7,7 +7,7 @@ import jl2755.visitor.IRTreeVisitor;
 public class IRGlobalReference extends IRExpr {
 
 	public enum GlobalType {
-		SIZE, DISPATCHVECTOR
+		SIZE, DISPATCHVECTOR, REGULAR, FUNCTION;
 	}
 	
 	private String className;
@@ -31,19 +31,16 @@ public class IRGlobalReference extends IRExpr {
 
 	@Override
 	public IRNode copy() {
-		// TODO Auto-generated method stub
-		return null;
+		return new IRGlobalReference(className,typeOfGlobal);
 	}
 
 	@Override
 	public int hashCode() {
-		// TODO Auto-generated method stub
-		return 0;
+		return ABIName.hashCode();
 	}
 
 	@Override
 	public String label() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
@@ -62,7 +59,13 @@ public class IRGlobalReference extends IRExpr {
 	@Override
 	public void printSExp(SExpPrinter p) {
 		p.startList();
-		p.printAtom("GLOBAL VARIABLE " + ABIName);
+		if (typeOfGlobal == GlobalType.FUNCTION) {
+			p.printAtom("METHOD " + ABIName);
+		}
+		else {
+			p.printAtom("GLOBAL VARIABLE " + ABIName);
+		}
+		p.endList();
 	}
 
 	@Override
@@ -72,38 +75,28 @@ public class IRGlobalReference extends IRExpr {
 
 	@Override
 	public void addLeft(IRNode irn) {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
 	public void addRight(IRNode irn) {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
 	public ChildType getLeftChildEnumType() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public void setLeftChildEnumType(ChildType argEnum) {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
 	public ChildType getRightChildEnumType() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public void setRightChildEnumType(ChildType argEnum) {
-		// TODO Auto-generated method stub
-		
 	}
 
 }

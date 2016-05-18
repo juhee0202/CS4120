@@ -16,6 +16,8 @@ public class IRGlobalVariable extends IRNode {
 	/** The value of this global variable if not an array. */
 	private long value;
 	
+	private IRExpr expr;
+	
 	private boolean isInitialized;
 	
 	/** Whether this variable is an array or not. */
@@ -35,10 +37,10 @@ public class IRGlobalVariable extends IRNode {
 		isArray = false;
 	}
 
-	public IRGlobalVariable(String n, String abi, long v, IRSeq s) {
+	public IRGlobalVariable(String n, String abi, IRExpr v, IRSeq s) {
 		name = n;
 		ABIName = abi;
-		value = v;
+		expr = v;
 		createArray = s;
 		isArray = true;
 	}

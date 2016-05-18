@@ -549,13 +549,13 @@ public class Main {
 			program.accept(mir);
 
 			// Output MIR
-//			StringWriter sww = new StringWriter();
-//			try (PrintWriter pw = new PrintWriter(sww);
-//					SExpPrinter sp = new CodeWriterSExpPrinter(pw)) {
-//				mir.program.printSExp(sp);
-//			}
-//			bw.write(sww.toString());
-//			bw.close();
+			StringWriter sww = new StringWriter();
+			try (PrintWriter pw = new PrintWriter(sww);
+					SExpPrinter sp = new CodeWriterSExpPrinter(pw)) {
+				mir.program.printSExp(sp);
+			}
+			bw.write(sww.toString());
+			bw.close();
 
 			/* Lower to LIR */
 			LIRVisitor lir = new LIRVisitor();
@@ -1365,6 +1365,7 @@ public class Main {
 			// Add classes to environment
 			List<InterfaceClassDecl> classDecls = result.getInterfaceClasses();
 			for (InterfaceClassDecl classDecl: classDecls) {
+				System.out.println(srcFileName);
 				ClassType tempType = new ClassType(classDecl);
 				String name = classDecl.toString();
 				// Duplicate class in file

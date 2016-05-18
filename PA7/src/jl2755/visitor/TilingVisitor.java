@@ -637,13 +637,22 @@ public class TilingVisitor implements IRTreeVisitor {
 		 * 		movq %x,%rax     #Store x into %rax
 		 * 		imulq %y           #multiplies %y to %rax
 		 * 		#mulq stores high and low values into rax and rdx.
-		 * 		movq %rax, %freshTemp
+		 * 		movq %rdx, %freshTemp
 		 */
 		else if (op == OpType.HMUL) {
-			// TODO
 			Register rax = new Register(RegisterName.RAX);
+			Register rdx = new Register(RegisterName.RDX);
 			Operand operand = rightOperand;
 
+			// Save rax and rdx elsewhere
+			Register temp1 = new Register("tileRegister" + registerCount++);
+			Register temp2 = new Register("tileRegister" + registerCount++);
+			Instruction saveRax = new Instruction(Operation.MOVQ, rax, temp1);
+			Instruction saveRdx = new Instruction(Operation.MOVQ, rdx, temp2);
+			instrList.add(saveRax);
+			instrList.add(saveRdx);
+			cost += 2;
+			
 			Instruction movToRax = new Instruction(Operation.MOVQ, leftOperand, rax);
 			instrList.add(movToRax);
 			cost++;
@@ -660,8 +669,21 @@ public class TilingVisitor implements IRTreeVisitor {
 			instrList.add(multiply);
 			cost++;
 			
-			// imulq stores high and low values into rax and rdx
-			argDest = new Register(RegisterName.RDX);
+			// Move rdx into freshtemp
+			Register freshTemp = new Register("tileRegister" + registerCount++);
+			Instruction moveRDX = new Instruction(Operation.MOVQ, rdx, freshTemp);
+			instrList.add(moveRDX);
+			cost++;
+			
+			// Move temps back to rax and rdx
+			Instruction restoreRax = new Instruction(Operation.MOVQ, temp1, rax);
+			Instruction restoreRdx = new Instruction(Operation.MOVQ, temp2, rdx);
+			instrList.add(restoreRax);
+			instrList.add(restoreRdx);
+			cost += 2;
+			
+			// imulq stores low and high values into rax and rdx, respectively
+			argDest = freshTemp;
 		}
 		
 		/* 
@@ -681,6 +703,15 @@ public class TilingVisitor implements IRTreeVisitor {
 			Register rax = new Register(RegisterName.RAX);
 			Operand divisor = null;
 			
+			// Save rax and rdx elsewhere
+			Register temp1 = new Register("tileRegister" + registerCount++);
+			Register temp2 = new Register("tileRegister" + registerCount++);
+			Instruction saveRax = new Instruction(Operation.MOVQ, rax, temp1);
+			Instruction saveRdx = new Instruction(Operation.MOVQ, rdx, temp2);
+			instrList.add(saveRax);
+			instrList.add(saveRdx);
+			cost += 2;
+			
 			Instruction moveZeroToRdx = new Instruction(Operation.MOVQ, new Constant(0), rdx);
 			Instruction moveDividendToRax = new Instruction(Operation.MOVQ, leftOperand, rax);
 			instrList.add(moveZeroToRdx);
@@ -699,11 +730,29 @@ public class TilingVisitor implements IRTreeVisitor {
 				instrList.add(moveDivisorToReg);
 				cost++;
 			}
-
+			
 			Instruction divide = new Instruction(Operation.IDIVQ, null , divisor);
 			instrList.add(divide);
 			cost++;
-			argDest = (op == OpType.DIV)? rax : rdx;
+			
+			Register freshTemp = new Register("tileRegister" + registerCount++);
+			Instruction moveIntoTemp;
+			if (op == OpType.DIV) {
+				moveIntoTemp = new Instruction(Operation.MOVQ, rax, freshTemp);
+			} else {
+				moveIntoTemp = new Instruction(Operation.MOVQ, rdx, freshTemp);
+			}
+			instrList.add(moveIntoTemp);
+			cost++;
+			
+			// Move temps back to rax and rdx
+			Instruction restoreRax = new Instruction(Operation.MOVQ, temp1, rax);
+			Instruction restoreRdx = new Instruction(Operation.MOVQ, temp2, rdx);
+			instrList.add(restoreRax);
+			instrList.add(restoreRdx);
+			cost += 2;
+
+			argDest = freshTemp;
 		}
 		
 		/* 
@@ -908,7 +957,6 @@ public class TilingVisitor implements IRTreeVisitor {
 			// set rdi to ret3's address in stack frame
 			Register rdi = new Register(RegisterName.RDI);
 			Register rsp = new Register(RegisterName.RSP);
-			Register temp = new Register(RegisterName.R11);
 			
 			// create (m-2) words space 
 			Constant c = new Constant(8*(numReturns - 2));
@@ -921,12 +969,6 @@ public class TilingVisitor implements IRTreeVisitor {
 			// "movq rsp rdi"
 			Instruction makeTempForRsp = new Instruction(Operation.MOVQ, rsp, rdi);
 			tempInstructions.add(makeTempForRsp);
-			// "addq 8*(m-2)-8 rdi"
-			Constant offsetFromRsp = new Constant(8*(numReturns-2) - 8);
-			if (offsetFromRsp.getValue() != 0) {
-				Instruction computeRet3MemAddr = new Instruction(Operation.ADDQ, offsetFromRsp, rdi);
-				tempInstructions.add(computeRet3MemAddr);
-			}
 		}
 		
 		/* Push argn...arg7 (or arg6 if m > 2) */
@@ -1462,14 +1504,27 @@ public class TilingVisitor implements IRTreeVisitor {
 			instructions.add(moveArgToParam);
 		}
 		Register rbp = new Register(RegisterName.RBP);
+		
+		// Determine if there is extra 8 byte of space
+		int extraSpace = Math.max(0, fd.getNumReturns() - 2);
+		if (extraSpace != 0) {
+			extraSpace ++;
+		}
+		extraSpace += Math.max(0, fd.getNumArgs() - ARG_REG_LIST.length);
+		extraSpace += CALLER_REG_LIST.length;
+		int extraOff = 0;
+		if (extraSpace%2 == 1) {
+			extraOff++;
+		}
+		// Move arguments from stack into local variables
 		for (int i = numRegParams; i < numArgs; i++) {
-			int off = numArgs%2 == 0 ? 3+i-numRegParams : 2+i-numRegParams;
-			Memory arg = new Memory(new Constant(8*off), rbp);
+			int off = 2+i-numRegParams;
+			Memory arg = new Memory(new Constant(8*(off+extraOff)), rbp);
 			Register param = new Register(paramList.get(i));
-			Instruction moveArgtoParam = new Instruction(Operation.MOVQ, arg, 
-					 param);
+			Instruction moveArgtoParam = new Instruction(Operation.MOVQ, arg, param);
 			instructions.add(moveArgtoParam);
 		}
+		
 		// Body 
 		IRStmt body = fd.body();
 		if (body instanceof IRSeq) {
@@ -2727,37 +2782,33 @@ public class TilingVisitor implements IRTreeVisitor {
 	
 	private Tile createEndCallTile(IRCall call) {
 		List<Instruction> instructions = new ArrayList<Instruction>();
-		
-		int numArgs = call.args().size();
 
 		// restore caller-save registers 
-		int argOffset = Math.max(0, numArgs-6);
-		int extraSpaceOffset = call.hasExtra8ByteSpace() ? 1 : 0;
-		int retOffset = call.getNumReturns() > 2 ? 1 : 0;
 		int numCallerReg = CALLER_REG_LIST.length;
-//		int totalOffset = argOffset + extraSpaceOffset + retOffset;
 		Register rsp = new Register(RegisterName.RSP);
+		int totalSpaceToPop = 0;
 		if (call.hasExtra8ByteSpace()) {
-			Instruction extraPop = new Instruction(Operation.ADDQ, new Constant(8), rsp);
-			instructions.add(extraPop);
+			totalSpaceToPop++;
 		}
+		int end = 0;
+		int retSpace = call.getNumReturns() - 2;
+		if (retSpace > 0) {
+			totalSpaceToPop += retSpace;
+			end++;
+		}
+		totalSpaceToPop += Math.max(0, call.args().size() - (ARG_REG_LIST.length - end));
+		if (totalSpaceToPop != 0) {
+			Instruction restoreRSP = new Instruction(Operation.ADDQ, 
+					new Constant(8*totalSpaceToPop), rsp);
+			instructions.add(restoreRSP);
+		}
+		
 		for (int i = numCallerReg-1; i >= 0; i--) {
-//			Constant offset = new Constant(8*(numCallerReg + totalOffset - 1 - i));
-//			Memory mem = new Memory(offset, rsp);
-//			// "movq offset(rsp) caller_saved_reg"
-//			Instruction instr = new Instruction(Operation.MOVQ, mem, new Register(CALLER_REG_LIST[i]));
-//			instructions.add(instr);
 			Register reg = new Register(CALLER_REG_LIST[i]);
-			// "pushq reg"
+			// "popq reg"
 			Instruction instr = new Instruction(Operation.POPQ, reg);
 			instructions.add(instr);
 		}
-		
-		// back to original rsp
-//		Constant offset = new Constant(8*call.getNum8ByteSpace());
-//		// "addq offset rsp" 
-//		Instruction instr = new Instruction(Operation.ADDQ, offset, rsp);
-//		instructions.add(instr);
 		
 		// calculate total cost
 		int totalCost = 0;

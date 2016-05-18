@@ -2073,7 +2073,7 @@ class CUP$parser$actions {
             return CUP$parser$result;
 
         /*. . . . . . . . . . . . . . . . . . . .*/
-        case 87: // naked_stmt ::= BREAK TO IDENTIFIER 
+        case 87: // naked_stmt ::= BREAK TO_LABEL IDENTIFIER 
             {
                 NakedStmt RESULT = null;
                 int bleft = CUP$parser$stack.elementAt(CUP$parser$top-2).left;
@@ -2100,7 +2100,7 @@ class CUP$parser$actions {
             return CUP$parser$result;
 
         /*. . . . . . . . . . . . . . . . . . . .*/
-        case 89: // naked_stmt ::= CONTINUE TO IDENTIFIER 
+        case 89: // naked_stmt ::= CONTINUE TO_LABEL IDENTIFIER 
             {
                 NakedStmt RESULT = null;
                 int cleft = CUP$parser$stack.elementAt(CUP$parser$top-2).left;

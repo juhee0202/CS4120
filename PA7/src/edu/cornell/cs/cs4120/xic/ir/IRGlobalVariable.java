@@ -35,9 +35,10 @@ public class IRGlobalVariable extends IRNode {
 		isArray = false;
 	}
 
-	public IRGlobalVariable(String n, String abi, IRSeq s) {
+	public IRGlobalVariable(String n, String abi, long v, IRSeq s) {
 		name = n;
 		ABIName = abi;
+		value = v;
 		createArray = s;
 		isArray = true;
 	}

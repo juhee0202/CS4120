@@ -750,4 +750,8 @@ public class LIRVisitor implements IRTreeVisitor{
 		createArrayStmt.accept(this);
 		irGlobalVariable.setCreateArray(tempSeq.part1());
 	}
+
+	@Override
+	public void visit(IRGlobalReference irGlobalReference) {
+	}
 }

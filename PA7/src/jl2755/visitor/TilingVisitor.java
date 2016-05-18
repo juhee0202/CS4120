@@ -1027,9 +1027,9 @@ public class TilingVisitor implements IRTreeVisitor {
 		}
 		call.setNum8ByteSpace(num8ByteSpace);
 		
-		System.out.println("+++++++++++++++++++++++");
-		System.out.println(targetTile);
-		System.out.println(targetTile.getDest());
+//		System.out.println("+++++++++++++++++++++++");
+//		System.out.println(targetTile);
+//		System.out.println(targetTile.getDest());
 		
 		Instruction callInstruction = null;
 		

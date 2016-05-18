@@ -10,6 +10,7 @@ import java.util.Set;
 
 import edu.cornell.cs.cs4120.xic.ir.*;
 import edu.cornell.cs.cs4120.xic.ir.interpret.Configuration;
+import jl2755.assembly.Instruction.Operation;
 import jl2755.ast.*;
 import jl2755.type.ClassType;
 import jl2755.type.VarType;
@@ -1135,9 +1136,10 @@ public class MIRVisitor implements ASTVisitor{
 	private IRExpr createArray(int index, List<IRTemp> sizes) {		
 		// Base case
 		if (index == sizes.size()) {
-			IRMove move0IntoTemp = new IRMove(new IRTemp("t" + tempCount++), new IRConst(0));
+			IRTemp tempTemp = new IRTemp("t" + tempCount++);
+			IRMove move0IntoTemp = new IRMove(tempTemp, new IRConst(0));
 			IRSeq tempSeq = new IRSeq(move0IntoTemp);
-			IRESeq tempESeq = new IRESeq(tempSeq,new IRConst(0));
+			IRESeq tempESeq = new IRESeq(tempSeq,(IRExpr) tempTemp.copy());
 			return tempESeq;
 		}
 		List<IRStmt> stmts = new ArrayList<IRStmt>();
@@ -1216,6 +1218,74 @@ public class MIRVisitor implements ASTVisitor{
 		classType = env.getClassType(cd.getClassName().toString());
 		cd.getClassBody().accept(this);
 		inClass = false;
+		
+		List<IRStmt> list = new ArrayList<IRStmt>();
+		
+		// TODO: finalize rsp stuff
+		
+		// Check if size is 0
+		String className = cd.getClassName().toString();
+		IRDispatchVector dv = classToDispatch.get(className);
+		IRGlobalReference classSize = new IRGlobalReference(className, 
+				IRGlobalReference.GlobalType.SIZE);
+		IRBinOp compareSizeTo0 = new IRBinOp(OpType.EQ, new IRConst(0), classSize);
+		IRLabel trueLabel = new IRLabel("l" + labelCount++);
+		IRLabel falseLabel = new IRLabel("l" + labelCount++);
+		IRCJump jumpToTrue = new IRCJump(compareSizeTo0, trueLabel.name(), falseLabel.name());
+		list.add(jumpToTrue);
+		
+		// True part
+		if (cd.hasExtends()) {
+			String superClassName = cd.getSuperclassName().toString();
+			String initName = "_I_init_" + superClassName;
+			IRCall callToSuperInit = new IRCall(new IRName(initName));
+			IRExp wrapCall = new IRExp(callToSuperInit);
+			IRGlobalReference superClassSize = new IRGlobalReference(superClassName, 
+					IRGlobalReference.GlobalType.SIZE);
+			IRBinOp addToSize = new IRBinOp(OpType.ADD, superClassSize, 
+					new IRConst(classType.getFieldEnv().size()));
+			IRMove moveSumToSize = new IRMove(classSize, addToSize);
+			list.add(trueLabel);
+			list.add(wrapCall);
+			list.add(moveSumToSize);
+		}
+		else {
+			IRMove moveSumToSize = new IRMove(classSize, new IRConst(dv.getFieldSize() + 1));
+			list.add(moveSumToSize);
+		}
+		
+		// Create DV
+		IRGlobalReference dispatch = new IRGlobalReference(className,
+				IRGlobalReference.GlobalType.DISPATCHVECTOR);
+		IRName nameOfAlloc = new IRName("_I_alloc_i");
+		IRCall callToAlloc = new IRCall(nameOfAlloc, new IRConst(dv.getMethodSize()*8));
+		IRTemp dispatchPointer = new IRTemp("t" + tempCount++);
+		IRMove moveResultToTemp = new IRMove(dispatchPointer, callToAlloc);
+		list.add(moveResultToTemp);
+		int i = 0;
+		for (String s : dv.getMethods()) {
+			IRGlobalReference function = new IRGlobalReference(s,
+					IRGlobalReference.GlobalType.FUNCTION);
+			IRBinOp offsetFromPointer = new IRBinOp(OpType.ADD, dispatchPointer, new IRConst(i*8));
+			IRMem nextMem = new IRMem(offsetFromPointer);
+			IRMove moveFuncIntoPointer = new IRMove(nextMem, function);
+			list.add(moveFuncIntoPointer);
+			i++;
+		}
+		IRMove moveToDispatch = new IRMove(dispatch, dispatchPointer);
+		list.add(moveToDispatch);
+		
+		// False Part
+		IRReturn ret = new IRReturn();
+		list.add(falseLabel);
+		list.add(ret);
+		
+		// Create new IRFuncDecl
+		IRSeq seq = new IRSeq(list);
+		IRFuncDecl initClass = new IRFuncDecl(className, "_I_init_"+className, seq);
+		
+		// Combine with class body
+		((IRFuncDeclList) tempNode).addDecl(initClass);
 		classType = null;
 	}
 
@@ -1251,10 +1321,10 @@ public class MIRVisitor implements ASTVisitor{
 			IRName nameOfAlloc = new IRName("_I_alloc_i");
 			String id = de.getId().toString();
 			IRDispatchVector dv = classToDispatch.get(id);
-			List<String> fields = dv.getFields();
-			long size = fields.size() + 1;
-			IRConst sizeOfObject = new IRConst(size*8);
-			IRCall callToAlloc = new IRCall(nameOfAlloc, sizeOfObject);
+			IRGlobalReference sizeVariable = new IRGlobalReference(de.getId().toString(),
+					IRGlobalReference.GlobalType.SIZE);
+			
+			IRCall callToAlloc = new IRCall(nameOfAlloc, sizeVariable);
 			
 			// Move result to temp
 			IRTemp object = new IRTemp("t"+tempCount++);
@@ -1264,45 +1334,47 @@ public class MIRVisitor implements ASTVisitor{
 			// Initialize pointers
 				// 0: points to dispatch vector
 				// primitives & uninitialized arrays & objects: 0/null
-				// initialized arrays: points to array with null values
-			IRName dvName = new IRName("_I_vt_" + id);
-			IRMove moveDVToObject = new IRMove(new IRMem(object), dvName);
-			list.add(moveDVToObject);
-			ClassType type = env.getClassType(id);
-			for (int i = 0; i < fields.size(); i++) {
-				VarType vtype = type.getFieldType(fields.get(i));
-				if (vtype.isPrimitive() || vtype.isObject()) {
-					// Do nothing if alloc initializes to 0
-					continue;
-				} else if (vtype.isArray()) {
-					List<Expr> exprList = vtype.getExprs();
-					if (exprList.size() == 0) {
-						// Do nothing if alloc initializes to 0
-						continue;
-					}
-					// Initialize array with length
-					List<IRTemp> sizes = new ArrayList<IRTemp>();
-					for (Expr e : exprList) {
-						e.accept(this);
-						IRTemp exprTemp = new IRTemp("t" + tempCount++);
-						IRMove moveExprToTemp = new IRMove(exprTemp,(IRExpr) tempNode);
-						sizes.add(exprTemp);
-						list.add(moveExprToTemp);
-					}
-					IRESeq arrayGenesis = (IRESeq) createArray(0, sizes);
-					list.addAll(((IRSeq) arrayGenesis.stmt()).stmts());
-					
-					// Move array pointer into object table at field offset
-					IRExpr array = arrayGenesis.expr();
-					IRBinOp offset = new IRBinOp(OpType.ADD, object, new IRConst((i+1)*8));
-					IRMem fieldAddr = new IRMem(offset);
-					IRMove moveArrayToFieldAddr = new IRMove(fieldAddr, array);
-					list.add(moveArrayToFieldAddr);
-				} else {
-					System.out.println("VarType has a weird type");
-					assert(false);
-				}
-			}
+			IRGlobalReference vtVariable = new IRGlobalReference(de.getId().toString(),
+					IRGlobalReference.GlobalType.DISPATCHVECTOR);
+			IRMove moveDVToObject = new IRMove(new IRMem(object), vtVariable);
+			list.add(moveDVToObject);			
+			
+//			List<String> fields = dv.getFields();
+//			for (int i = 0; i < fields.size(); i++) {
+//				VarType vtype = type.getFieldType(fields.get(i));
+//				if (vtype.isPrimitive() || vtype.isObject()) {
+//					// Do nothing if alloc initializes to 0
+//					continue;
+//				} else if (vtype.isArray()) {
+//					List<Expr> exprList = vtype.getExprs();
+//					if (exprList.size() == 0) {
+//						// Do nothing if alloc initializes to 0
+//						continue;
+//					}
+//					// Initialize array with length
+//					List<IRTemp> sizes = new ArrayList<IRTemp>();
+//					for (Expr e : exprList) {
+//						e.accept(this);
+//						IRTemp exprTemp = new IRTemp("t" + tempCount++);
+//						IRMove moveExprToTemp = new IRMove(exprTemp,(IRExpr) tempNode);
+//						sizes.add(exprTemp);
+//						list.add(moveExprToTemp);
+//					}
+//					IRESeq arrayGenesis = (IRESeq) createArray(0, sizes);
+//					list.addAll(((IRSeq) arrayGenesis.stmt()).stmts());
+//					
+//					// Move array pointer into object table at field offset
+//					IRExpr array = arrayGenesis.expr();
+//					IRBinOp offset = new IRBinOp(OpType.ADD, object, new IRConst((i+1)*8));
+//					IRMem fieldAddr = new IRMem(offset);
+//					IRMove moveArrayToFieldAddr = new IRMove(fieldAddr, array);
+//					list.add(moveArrayToFieldAddr);
+//				} else {
+//					System.out.println("VarType has a weird type");
+//					assert(false);
+//				}
+//			}
+			
 			IRSeq seq = new IRSeq(list);
 			IRESeq creatingObject = new IRESeq(seq, object);
 			tempNode = creatingObject;
@@ -1343,7 +1415,7 @@ public class MIRVisitor implements ASTVisitor{
 					stmts.addAll(0, ((IRSeq) array.stmt()).stmts());
 					ABIName = translateVarTypeToABI(vType, name);
 					gv = new IRGlobalVariable(name, ABIName, 
-											((IRConst) array.expr()).value(),
+											array.expr(),
 											new IRSeq(stmts));
 				} else {
 					ABIName = translateVarTypeToABI(vType, name);
@@ -1392,7 +1464,7 @@ public class MIRVisitor implements ASTVisitor{
 				stmts.addAll(0, ((IRSeq) array.stmt()).stmts());
 				ABIName1 = translateVarTypeToABI(type1, id);
 				tempNode = new IRGlobalVariable(id, ABIName1, 
-											((IRConst) array.expr()).value());
+											array.expr(), new IRSeq(stmts));
 			} else {
 				// vd is primitive or class type
 				ABIName1 = translateVarTypeToABI(type1, id);

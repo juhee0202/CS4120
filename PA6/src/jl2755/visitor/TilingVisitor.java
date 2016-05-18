@@ -488,12 +488,22 @@ public class TilingVisitor implements IRTreeVisitor {
 		 * 		movq %x,%rax     #Store x into %rax
 		 * 		imulq %y           #multiplies %y to %rax
 		 * 		#mulq stores high and low values into rax and rdx.
-		 * 		movq %rax, %freshTemp
+		 * 		movq %rdx, %freshTemp
 		 */
 		else if (op == OpType.HMUL) {
 			Register rax = new Register(RegisterName.RAX);
+			Register rdx = new Register(RegisterName.RDX);
 			Operand operand = rightOperand;
 
+			// Save rax and rdx elsewhere
+			Register temp = new Register("tileRegister" + registerCount++);
+			Register temp2 = new Register("tileRegister" + registerCount++);
+			Instruction saveRax = new Instruction(Operation.MOVQ, rax, temp);
+			Instruction saveRdx = new Instruction(Operation.MOVQ, rdx, temp2);
+			instrList.add(saveRax);
+			instrList.add(saveRdx);
+			cost += 2;
+			
 			Instruction movToRax = new Instruction(Operation.MOVQ, leftOperand, rax);
 			instrList.add(movToRax);
 			cost++;
@@ -510,8 +520,21 @@ public class TilingVisitor implements IRTreeVisitor {
 			instrList.add(multiply);
 			cost++;
 			
-			// imulq stores high and low values into rax and rdx
-			argDest = new Register(RegisterName.RDX);
+			// Move rdx into freshtemp
+			Register freshTemp = new Register("tileRegister" + registerCount++);
+			Instruction moveRDX = new Instruction(Operation.MOVQ, rdx, freshTemp);
+			instrList.add(moveRDX);
+			cost++;
+			
+			// Move temps back to rax and rdx
+			Instruction restoreRax = new Instruction(Operation.MOVQ, temp, rax);
+			Instruction restoreRdx = new Instruction(Operation.MOVQ, temp2, rdx);
+			instrList.add(restoreRax);
+			instrList.add(restoreRdx);
+			cost += 2;
+			
+			// imulq stores low and high values into rax and rdx, respectively
+			argDest = freshTemp;
 		}
 		
 		/* 
@@ -531,6 +554,15 @@ public class TilingVisitor implements IRTreeVisitor {
 			Register rax = new Register(RegisterName.RAX);
 			Operand divisor = null;
 			
+			// Save rax and rdx elsewhere
+			Register temp = new Register("tileRegister" + registerCount++);
+			Register temp2 = new Register("tileRegister" + registerCount++);
+			Instruction saveRax = new Instruction(Operation.MOVQ, rax, temp);
+			Instruction saveRdx = new Instruction(Operation.MOVQ, rdx, temp2);
+			instrList.add(saveRax);
+			instrList.add(saveRdx);
+			cost += 2;
+			
 			Instruction moveZeroToRdx = new Instruction(Operation.MOVQ, new Constant(0), rdx);
 			Instruction moveDividendToRax = new Instruction(Operation.MOVQ, leftOperand, rax);
 			instrList.add(moveZeroToRdx);
@@ -549,11 +581,29 @@ public class TilingVisitor implements IRTreeVisitor {
 				instrList.add(moveDivisorToReg);
 				cost++;
 			}
-
+			
 			Instruction divide = new Instruction(Operation.IDIVQ, null , divisor);
 			instrList.add(divide);
 			cost++;
-			argDest = (op == OpType.DIV)? rax : rdx;
+			
+			Register freshTemp = new Register("tileRegister" + registerCount++);
+			Instruction moveIntoTemp;
+			if (op == OpType.DIV) {
+				moveIntoTemp = new Instruction(Operation.MOVQ, rax, freshTemp);
+			} else {
+				moveIntoTemp = new Instruction(Operation.MOVQ, rdx, freshTemp);
+			}
+			instrList.add(moveIntoTemp);
+			cost++;
+			
+			// Move temps back to rax and rdx
+			Instruction restoreRax = new Instruction(Operation.MOVQ, temp, rax);
+			Instruction restoreRdx = new Instruction(Operation.MOVQ, temp2, rdx);
+			instrList.add(restoreRax);
+			instrList.add(restoreRdx);
+			cost += 2;
+
+			argDest = freshTemp;
 		}
 		
 		/* 
@@ -1921,7 +1971,6 @@ public class TilingVisitor implements IRTreeVisitor {
 						continue;
 					}
 					IRMove move = (IRMove) stmtList.get(i+j+1-numSkips);
-					System.out.println(j + "" + move);
 					IRExpr target = move.target();
 					target.accept(this);
 					Tile exprTile = tileMap.get(target);

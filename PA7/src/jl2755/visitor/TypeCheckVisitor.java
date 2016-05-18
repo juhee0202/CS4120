@@ -114,95 +114,62 @@ public class TypeCheckVisitor implements ASTVisitor {
 				Main.handleSemanticError(seo);
 			}
 		}
-		
+
 		int index = ae.getIndex();
-		if (index == 0){
-			if (!(env.containsVar(ae.getIdentifier().toString()))){
-				String errorDesc = "Name " + ae.getIdentifier().toString() +
-						" cannot be resolved.";
-				SemanticErrorObject seo = new SemanticErrorObject(
-						ae.getIdentifier_line(),
-						ae.getIdentifier_col(), 
-						errorDesc
-						);
-				Main.handleSemanticError(seo);
-			}
-			VType tempScopeType = env.getVarType(ae.getIdentifier().toString());
-			if (!(tempScopeType instanceof VarType)){
-				String s = "The type of the expression must be VarType "
-						+ "but it resolved to " + tempScopeType.toString();
-				SemanticErrorObject seo = new SemanticErrorObject(
-						ae.getIdentifier_line(),
-						ae.getIdentifier_col(), 
-						s
-						);
-				Main.handleSemanticError(seo);
-			}
-			VarType varTypeView = (VarType) tempScopeType;
-			int numberOfBrackets = ae.getIndexedBrackets().getNumBrackets();
-			if (numberOfBrackets > varTypeView.getNumBrackets()){
-				String errorDesc = "Array dimensions don't match.";
-				SemanticErrorObject seo = new SemanticErrorObject(
-						ae.getIdentifier_line(),
-						ae.getIdentifier_col(), 
-						errorDesc
-						);
-				Main.handleSemanticError(seo);
-			}
-			tempType = new VarType(varTypeView.getElementType(), varTypeView.getNumBrackets() - numberOfBrackets);
-		}
-		else if (index == 1){
-			ae.getFunctionCall().accept(this);
-			int numberOfBrackets = ae.getIndexedBrackets().getNumBrackets();
-			if (!(tempType instanceof VarType)){
-				String errorDesc = "Name " + ae.getIdentifier().toString() +
-						" is not of variable type.";
-				SemanticErrorObject seo = new SemanticErrorObject(
-						ae.getFunctionCall_line(),
-						ae.getFunctionCall_col(), 
-						errorDesc
-						);
-				Main.handleSemanticError(seo);
-			}
-			VarType arrayTypeAfterVisit = (VarType) tempType;
-			if (numberOfBrackets > arrayTypeAfterVisit.getNumBrackets()){
-				String errorDesc = "Array dimensions don't match.";
-				SemanticErrorObject seo = new SemanticErrorObject(
-						ae.getFunctionCall_line(),
-						ae.getFunctionCall_col(), 
-						errorDesc
-						);
-				Main.handleSemanticError(seo);
-			}
-			int oldNumBrackets = arrayTypeAfterVisit.getNumBrackets();
-			tempType = new VarType(arrayTypeAfterVisit.getElementType(), oldNumBrackets - numberOfBrackets);
-		}
-		else if (index == 2){
+		VType ogExprType = null;
+		if (index == 2) {
 			ae.getArrayLiteral().accept(this);
-			if (!(tempType instanceof VarType)){
-				String errorDesc = "Name " + ae.getIdentifier().toString() +
-						" is not of variable type.";
+			ogExprType = tempType;
+		} else if (index == 3) {
+			DotableExpr de = ae.getDotableExpr();
+			ae.getDotableExpr().accept(this);
+			ogExprType = tempType;
+
+			if (de.getType() == DotableExpr.Type.NEW ||
+					de.getType() == DotableExpr.Type.THIS) 
+			{
+				String s = "The type of the expression must be an array type "
+						+ "but it resolved to " + ogExprType.toString();
 				SemanticErrorObject seo = new SemanticErrorObject(
-						ae.getArrayLiteral_line(),
-						ae.getArrayLiteral_col(), 
-						errorDesc
-						);
+						ae.getLineNumber(), 
+						ae.getColumnNumber(),
+						s);
 				Main.handleSemanticError(seo);
 			}
-			VarType arrayTypeAfterVisit = (VarType) tempType;
-			int numberOfBrackets = ae.getIndexedBrackets().getNumBrackets();
-			if (numberOfBrackets > arrayTypeAfterVisit.getNumBrackets()){
-				String errorDesc = "Array dimensions don't match.";
-				SemanticErrorObject seo = new SemanticErrorObject(
-						ae.getArrayLiteral_line(),
-						ae.getArrayLiteral_col(), 
-						errorDesc
-						);
-				Main.handleSemanticError(seo);
-			}
-			int oldNumBrackets = arrayTypeAfterVisit.getNumBrackets();
-			tempType = new VarType(arrayTypeAfterVisit.getElementType(), oldNumBrackets - numberOfBrackets);
 		}
+
+		if (!(ogExprType instanceof VarType)) {
+			String s = "The type of the expression must be an array type "
+					+ "but it resolved to " + ogExprType.toString();
+			SemanticErrorObject seo = new SemanticErrorObject(
+					ae.getLineNumber(), 
+					ae.getColumnNumber(),
+					s);
+			Main.handleSemanticError(seo);
+		}
+
+		VarType idType = (VarType) ogExprType;
+
+		// check that the idType is of ARRAY type
+		if (!idType.isArray()) {
+			String s = "The type of the expression must be an array type "
+					+ "but it resolved to " + idType.toString();
+			SemanticErrorObject seo = new SemanticErrorObject(
+					ae.getLineNumber(), ae.getColumnNumber(), s);
+			Main.handleSemanticError(seo);
+		}
+
+		// Check that the dimensions are valid
+		if (idType.getNumBrackets() < ae.getIndexedBrackets().getNumBrackets()){
+			String msg = "The type of the expression must "
+					+ "be an array type but it resolved to int";
+			SemanticErrorObject seo = new SemanticErrorObject(
+					ae.getLineNumber(), ae.getColumnNumber(), msg);
+			Main.handleSemanticError(seo);
+		}
+		
+		int newDimensions = idType.getNumBrackets() - ae.getIndexedBrackets().getNumBrackets();
+		tempType = new VarType(idType.getElementType(), newDimensions);
 	}
 
 	/**
@@ -1870,12 +1837,22 @@ public class TypeCheckVisitor implements ASTVisitor {
 		isInFieldDecl = true;
 		switch(fieldDecl.getType()) {
 		case SHORT_TUPLE_DECL:
-			fieldDecl.getShortTupleDecl().accept(this);
+			ShortTupleDecl std = fieldDecl.getShortTupleDecl();
+			std.accept(this);
+			// decorate identifiers with isField
+			List<Identifier> ids = std.getAllIdentifiers();
+			for (Identifier id : ids) {
+				id.setIsField(true);
+			}
 			break;
 		case VAR_DECL:
-			fieldDecl.getVarDecl().accept(this);
+			VarDecl vd = fieldDecl.getVarDecl();
+			vd.accept(this);
+			// decorate identifiers with isField
+			vd.getIdentifier().setIsField(true);
 			break;
 		}
+		
 		isInFieldDecl = false;
 	}
 

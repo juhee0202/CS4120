@@ -49,30 +49,15 @@ public class MIRVisitor implements ASTVisitor{
 	@Override
 	public void visit(ArrayElement ae) {
 		int index = ae.getIndex();
-
-		// 0: identifier with indexedBrackets
-		if (index == 0) {
-			ae.getIdentifier().accept(this);
-			tempNode = createIRExprForBrackets((IRExpr) tempNode, ae.getIndexedBrackets());
-		}
-		// 1: functionCall with indexedBrackets
-		else if (index == 1) {
-			ae.getFunctionCall().accept(this);
-			IRExpr call = (IRExpr) tempNode;
-			IRTemp callTemp = new IRTemp("t" + tempCount++);
-			IRMove moveCallToTemp = new IRMove(callTemp, call);
-			IRESeq arrayElem = (IRESeq)createIRExprForBrackets((IRExpr)callTemp.copy(), ae.getIndexedBrackets());
-			IRStmt stmts = arrayElem.stmt();
-			if (stmts instanceof IRSeq) {
-				List<IRStmt> stmtList = ((IRSeq) stmts).stmts();
-				stmtList.add(0,moveCallToTemp);
-				stmts = new IRSeq(stmtList);
-			}
-			tempNode = new IRESeq(stmts, arrayElem.expr());
-		}
-		// 2: arrayLiteral with IndexedBrackets
-		else {
+		
+		// arrayLiteral[i]
+		if (index == 2) {
 			ae.getArrayLiteral().accept(this);
+			tempNode = createIRExprForBrackets((IRExpr) tempNode, ae.getIndexedBrackets());
+			
+		// dotableExpr[i]
+		} else if (index == 3) {
+			ae.getDotableExpr().accept(this);
 			tempNode = createIRExprForBrackets((IRExpr) tempNode, ae.getIndexedBrackets());
 		}
 	}

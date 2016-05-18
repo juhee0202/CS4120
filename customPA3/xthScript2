@@ -35,7 +35,7 @@ xic ("Test --help") "--help" {
     ;
 }
 
-xic ("Test --typecheck -O") ["../pa3"] "-libpath $(testpath) --typecheck -O" {
+xic ("Test --typecheck -O") ["pa3"] "-libpath $(testpath) --typecheck -O" {
     ex01.xi;
     ex02.xi;
     ex03.xi;
@@ -64,7 +64,8 @@ xic ("Test --typecheck -O") ["../pa3"] "-libpath $(testpath) --typecheck -O" {
     mdarrays.xi;
 }
 
-xic ("Test --typecheck -O") ["../customPA3"] "-libpath $(testpath) --typecheck -O" {
+xic ("Test --typecheck -O") ["customPA3"] "-libpath $(testpath) --typecheck -O" {
+    array01.xi;
     array02.xi;
     array03.xi;
     array04.xi;
@@ -73,6 +74,9 @@ xic ("Test --typecheck -O") ["../customPA3"] "-libpath $(testpath) --typecheck -
     array07.xi;
     array08.xi;
     array09.xi;
+    array10.xi;
+    array11.xi;
+    array12.xi;
     assign01.xi;
     assign02.xi;
     assign03.xi;
@@ -84,18 +88,41 @@ xic ("Test --typecheck -O") ["../customPA3"] "-libpath $(testpath) --typecheck -
     binary02.xi;
     binary03.xi;
     binary04.xi;
+    break01.xi;
+    break02.xi;
+    break03.xi;
+    break04.xi;
+    break05.xi;
+    break06.xi;
+    break07.xi;
+    concert1.xi;
+    continue1.xi;
+    continue2.xi;
+    continue3.xi;
+    continue4.xi;
+    continue5.xi;
+    continue6.xi;
     extend1.xi;
     extend2.xi;
-    extend3.xi;
     extend4.xi;
     extend5.xi;
     extend6.xi;
     extend7.xi;
     extend8.xi;
+    field1.xi;
+    field2.xi;
+    field3.xi;
+    field4.xi;
     field_decl1.xi;
     field_decl2.xi;
     functioncall01.xi;
     functioncall02.xi;
+    global1.xi;
+    global2.xi;
+    global3.xi;
+    global4.xi;
+    global5.xi;
+    global6.xi;
     global_decl1.xi;
     global_decl2.xi;
     global_decl3.xi;
@@ -103,10 +130,22 @@ xic ("Test --typecheck -O") ["../customPA3"] "-libpath $(testpath) --typecheck -
     global_decl5.xi;
     global_decl6.xi;
     global_decl7.xi;
+    inheritance1.xi;
+    inheritance2.xi;
+    inheritance3.xi;
+    jonathantests01.xi;
+    juhee.xi;
+    juheetest01.xi;
+    label01.xi;
+    label02.xi;
+    method1.xi;
     module1.xi;
     neighbor.xi;
     new01.xi;
     new02.xi;
+    precedence1.xi;
+    returnType1.xi;
+    returnType2.xi;
     sameClassName1.xi;
     sameClassName2.xi;
     sameClassName3.xi;
@@ -119,10 +158,27 @@ xic ("Test --typecheck -O") ["../customPA3"] "-libpath $(testpath) --typecheck -
     sameFunctionName4.xi;
     sameFunctionName_bothfail.xi;
     sameFunctionName_bothok.xi;
-    superClass_fail.xi;
-    superClass_ok.xi;
+    short_tuple_decl1.xi;
+    short_tuple_decl2.xi;
+    subtyping1.xi;
+    subtyping2.xi;
+    subtyping3.xi;
+    subtyping4.xi;
+    subtyping5.xi;
+    subtyping6.xi;
+    subtyping7.xi;
+    subtyping8.xi;
     superClass2_fail.xi;
     superClass2_ok.xi;
+    superClass_fail.xi;
+    superClass_ok.xi;
     this01.xi;
+    this1.xi;
+    this2.xi;
+    visibility1.xi;
+    visibility2.xi;
+    visibility3.xi;
+    visibility4.xi;
+    visibility5.xi;
 }
 

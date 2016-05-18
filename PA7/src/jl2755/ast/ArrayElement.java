@@ -13,89 +13,33 @@ import jl2755.visitor.ASTVisitor;
  */
 public class ArrayElement implements Expr {
 	private Identifier identifier;
-	private int identifier_col;
-	private int identifier_line;
-	private FunctionCall functionCall;
-	private int functionCall_col;
-	private int functionCall_line;
+	private int lineNumber;
+	private int columnNumber;
 	private IndexedBrackets indexedBrackets;
+	private DotableExpr dotableExpr;
 	private ArrayLiteral arrayLiteral;
-	private int arrayLiteral_col;
-	private int arrayLiteral_line;
 	private boolean isSurroundedByParentheses = false;
 	/**
-	 * 0 if identifier with indexedBrackets,
-	 * 1 if functionCall with indexedBrackets,
 	 * 2 if arrayLiteral with indexedBrackets
+	 * 3 if dotableExpr with indexedBrackets
 	 */
 	private int index;
-	
-	public ArrayElement(Identifier id, IndexedBrackets ib) {
-		identifier = id;
-		identifier_col = id.getColumnNumber();
-		identifier_line = id.getLineNumber();
-		indexedBrackets = ib;
-		index = 0;
-	}
-	
-	public ArrayElement(FunctionCall fc, IndexedBrackets ib) {
-		functionCall = fc;
-		functionCall_col = fc.getColumnNumber();
-		functionCall_line = fc.getLineNumber();
-		indexedBrackets = ib;
-		index = 1;
-	}		
-	
+
 	public ArrayElement(ArrayLiteral al, IndexedBrackets ib) {
 		arrayLiteral = al;
-		arrayLiteral_col = al.getColumnNumber();
-		arrayLiteral_line = al.getLineNumber();
+		lineNumber = al.getColumnNumber();
+		columnNumber = al.getLineNumber();
 		indexedBrackets = ib;
 		index = 2;
 	}
-	
-	public void prettyPrintNode() {
-		CodeWriterSExpPrinter tempPrinter = GlobalPrettyPrinter.getInstance();
-		if (index == 0){
-			List<Expr> list = indexedBrackets.getContent();
-			for (int i = 0; i < indexedBrackets.getNumBrackets(); i++){
-				tempPrinter.startList();
-				tempPrinter.printAtom("[]");
-			}
-			tempPrinter.printAtom(identifier.toString());
-			for (int i = 0; i < list.size(); i++){
-				list.get(i).prettyPrintNode();
-				tempPrinter.endList();
-			}
-		}
-		if (index == 1){
-			List<Expr> list = indexedBrackets.getContent();
-			for (int i = 0; i < indexedBrackets.getNumBrackets(); i++){
-				tempPrinter.startList();
-				tempPrinter.printAtom("[]");
-			}
-			functionCall.prettyPrintNode();
-			for (int i = 0; i < list.size(); i++){
-				list.get(i).prettyPrintNode();
-				tempPrinter.endList();
-			}
-		}
-		if (index == 2){
-			List<Expr> list = indexedBrackets.getContent();
-			for (int i = 0; i < indexedBrackets.getNumBrackets(); i++){
-				tempPrinter.startList();
-				tempPrinter.printAtom("[]");
-			}
-			arrayLiteral.prettyPrintNode();
-			for (int i = 0; i < list.size(); i++){
-				list.get(i).prettyPrintNode();
-				tempPrinter.endList();
-			}
-		}
-	}
-	
-	public void accept(ASTVisitor v){
-		v.visit(this);
+
+	public ArrayElement(DotableExpr de, IndexedBrackets ib) {
+		dotableExpr = de;
+		lineNumber = de.getLineNumber();
+		columnNumber = de.getColumnNumber();
+		indexedBrackets = ib;
+		index = 3;
+		
 	}
 
 	public Identifier getIdentifier() {
@@ -106,12 +50,20 @@ public class ArrayElement implements Expr {
 		this.identifier = identifier;
 	}
 
-	public FunctionCall getFunctionCall() {
-		return functionCall;
+	public int getLineNumber() {
+		return lineNumber;
 	}
 
-	public void setFunctionCall(FunctionCall functionCall) {
-		this.functionCall = functionCall;
+	public void setLineNumber(int lineNumber) {
+		this.lineNumber = lineNumber;
+	}
+
+	public int getColumnNumber() {
+		return columnNumber;
+	}
+
+	public void setColumnNumber(int columnNumber) {
+		this.columnNumber = columnNumber;
 	}
 
 	public IndexedBrackets getIndexedBrackets() {
@@ -120,6 +72,14 @@ public class ArrayElement implements Expr {
 
 	public void setIndexedBrackets(IndexedBrackets indexedBrackets) {
 		this.indexedBrackets = indexedBrackets;
+	}
+
+	public DotableExpr getDotableExpr() {
+		return dotableExpr;
+	}
+
+	public void setDotableExpr(DotableExpr dotableExpr) {
+		this.dotableExpr = dotableExpr;
 	}
 
 	public ArrayLiteral getArrayLiteral() {
@@ -138,78 +98,36 @@ public class ArrayElement implements Expr {
 		this.index = index;
 	}
 
-	public int getIdentifier_col() {
-		return identifier_col;
-	}
-
-	public void setIdentifier_col(int identifier_col) {
-		this.identifier_col = identifier_col;
-	}
-
-	public int getIdentifier_line() {
-		return identifier_line;
-	}
-
-	public void setIdentifier_line(int identifier_line) {
-		this.identifier_line = identifier_line;
-	}
-
-	public int getFunctionCall_col() {
-		return functionCall_col;
-	}
-
-	public void setFunctionCall_col(int functionCall_col) {
-		this.functionCall_col = functionCall_col;
-	}
-
-	public int getFunctionCall_line() {
-		return functionCall_line;
-	}
-
-	public void setFunctionCall_line(int functionCall_line) {
-		this.functionCall_line = functionCall_line;
-	}
-
-	public int getArrayLiteral_col() {
-		return arrayLiteral_col;
-	}
-
-	public void setArrayLiteral_col(int arrayLiteral_col) {
-		this.arrayLiteral_col = arrayLiteral_col;
-	}
-
-	public int getArrayLiteral_line() {
-		return arrayLiteral_line;
-	}
-
-	public void setArrayLiteral_line(int arrayLiteral_line) {
-		this.arrayLiteral_line = arrayLiteral_line;
-	}
-
-	@Override
-	public int getColumnNumber() {
-		if (index == 0) {
-			return identifier_col;
-		}
-		if (index == 1) {
-			return functionCall_col;
-		}
-		else {
-			return arrayLiteral_col;
+	public void prettyPrintNode() {
+		CodeWriterSExpPrinter tempPrinter = GlobalPrettyPrinter.getInstance();
+		if (index == 2){
+			List<Expr> list = indexedBrackets.getContent();
+			for (int i = 0; i < indexedBrackets.getNumBrackets(); i++){
+				tempPrinter.startList();
+				tempPrinter.printAtom("[]");
+			}
+			arrayLiteral.prettyPrintNode();
+			for (int i = 0; i < list.size(); i++){
+				list.get(i).prettyPrintNode();
+				tempPrinter.endList();
+			}
+		} else if (index == 3) {
+			// TODO
+			List<Expr> list = indexedBrackets.getContent();
+			for (int i = 0; i < indexedBrackets.getNumBrackets(); i++){
+				tempPrinter.startList();
+				tempPrinter.printAtom("[]");
+			}
+			dotableExpr.prettyPrintNode();
+			for (int i = 0; i < list.size(); i++){
+				list.get(i).prettyPrintNode();
+				tempPrinter.endList();
+			}
 		}
 	}
-
-	@Override
-	public int getLineNumber() {
-		if (index == 0) {
-			return identifier_line;
-		}
-		if (index == 1) {
-			return functionCall_line;
-		}
-		else {
-			return arrayLiteral_line;
-		}
+	
+	public void accept(ASTVisitor v){
+		v.visit(this);
 	}
 
 	@Override

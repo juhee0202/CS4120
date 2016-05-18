@@ -1412,26 +1412,28 @@ public class TilingVisitor implements IRTreeVisitor {
 		
 		Tile superTile = new Tile(new ArrayList<Instruction>());
 		
-//		for (IRFuncDecl fd : cu.functions().values()) {
-//			if (superTile == null) {
-//				superTile = tileMap.get(fd);
-//			} else {
-//				superTile = Tile.mergeTiles(superTile, tileMap.get(fd));
-//			}
-//		}
+		for (IRFuncDecl fd : cu.functions().values()) {
+			if (superTile == null) {
+				superTile = tileMap.get(fd);
+			} else {
+				superTile = Tile.mergeTiles(superTile, tileMap.get(fd));
+			}
+		}
 		Set<IRGlobalVariable> globalVars = cu.getGlobalVariables();
 		
-		for (IRGlobalVariable irgv : globalVars) {
-			GlobalVariableSection gvs;
-			if (irgv.isInitialized()) {
-				gvs = new GlobalVariableSection(irgv.getABIName(),irgv.getValue());
+		if (globalVars != null) {
+			for (IRGlobalVariable irgv : globalVars) {
+				GlobalVariableSection gvs;
+				if (irgv.isInitialized()) {
+					gvs = new GlobalVariableSection(irgv.getABIName(),irgv.getValue());
+				}
+				else {
+					gvs = new GlobalVariableSection(irgv.getABIName());
+				}
+				superTile.addGlobalParts(gvs);
 			}
-			else {
-				gvs = new GlobalVariableSection(irgv.getABIName());
-			}
-			superTile.addGlobalParts(gvs);
 		}
-		
+
 		tileMap.put(cu, superTile);
 	}
 

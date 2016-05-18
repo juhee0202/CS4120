@@ -1235,6 +1235,7 @@ public class MIRVisitor implements ASTVisitor{
 		list.add(jumpToTrue);
 		
 		// True part
+		list.add(trueLabel);
 		if (cd.hasExtends()) {
 			String superClassName = cd.getSuperclassName().toString();
 			String initName = "_I_init_" + superClassName;
@@ -1245,7 +1246,6 @@ public class MIRVisitor implements ASTVisitor{
 			IRBinOp addToSize = new IRBinOp(OpType.ADD, superClassSize, 
 					new IRConst(classType.getFieldEnv().size()));
 			IRMove moveSumToSize = new IRMove(classSize, addToSize);
-			list.add(trueLabel);
 			list.add(wrapCall);
 			list.add(moveSumToSize);
 		}
@@ -1255,10 +1255,12 @@ public class MIRVisitor implements ASTVisitor{
 		}
 		
 		// Create DV
+		list.add(falseLabel);
 		IRGlobalReference dispatch = new IRGlobalReference(className,
 				IRGlobalReference.GlobalType.DISPATCHVECTOR);
 		IRName nameOfAlloc = new IRName("_I_alloc_i");
-		IRCall callToAlloc = new IRCall(nameOfAlloc, new IRConst(dv.getMethodSize()*8));
+		IRConst DVSize = new IRConst(dv.getMethodSize()*8);
+		IRCall callToAlloc = new IRCall(nameOfAlloc, DVSize);
 		IRTemp dispatchPointer = new IRTemp("t" + tempCount++);
 		IRMove moveResultToTemp = new IRMove(dispatchPointer, callToAlloc);
 		list.add(moveResultToTemp);

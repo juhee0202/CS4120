@@ -102,6 +102,7 @@ public class LIRVisitor implements IRTreeVisitor{
 	
 	public void visit(IRCompUnit cu) {
 		List<IRFuncDecl> allFuncDecls = new ArrayList<IRFuncDecl>(cu.functions().values());
+		
 		List<IRFuncDecl> newFuncDecls = new ArrayList<IRFuncDecl>();
 		
 		for (int i = 0; i < allFuncDecls.size(); i++) {
@@ -524,12 +525,7 @@ public class LIRVisitor implements IRTreeVisitor{
 	 * @param Sequence of Statements
 	 * @return a List of basic blocks (IRSeq)
 	 */
-	private List<BasicBlock> createBasicBlocks(IRSeq stmts) {	
-//		System.out.println("*****Start*****");
-//		for (IRStmt s : stmts.stmts()) {
-//			System.out.println(s);
-//		}
-//		System.out.println("******End******");
+	private List<BasicBlock> createBasicBlocks(IRSeq stmts) {
 		
 		// return this at the end
 		List<BasicBlock> basicBlockList = new ArrayList<BasicBlock>();
@@ -753,5 +749,8 @@ public class LIRVisitor implements IRTreeVisitor{
 
 	@Override
 	public void visit(IRGlobalReference irGlobalReference) {
+		List<IRStmt> emptyIRStmt = new ArrayList<IRStmt>();
+		IRSeq emptySeq = new IRSeq(emptyIRStmt);
+		tempSeq = new Pair<IRSeq, IRNode>(emptySeq, irGlobalReference);
 	}
 }

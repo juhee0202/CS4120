@@ -555,7 +555,6 @@ public class Main {
 				mir.program.printSExp(sp);
 			}
 			bw.write(sww.toString());
-			bw.close();
 
 			/* Lower to LIR */
 			LIRVisitor lir = new LIRVisitor();

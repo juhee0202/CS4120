@@ -18,6 +18,7 @@ public class IRDispatchVector extends IRNode {
 	/** The list of field names for the class of this dispatch vector. */
 	private List<String> fields;
 	
+	
 	public IRDispatchVector(String name, List<String> dispatch, List<String> fs) {
 		className = name;
 		methods = dispatch;

@@ -1,9 +1,26 @@
 package jl2755.assembly;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
-import edu.cornell.cs.cs4120.xic.ir.*;
+import edu.cornell.cs.cs4120.xic.ir.IRBinOp;
+import edu.cornell.cs.cs4120.xic.ir.IRCJump;
+import edu.cornell.cs.cs4120.xic.ir.IRCall;
+import edu.cornell.cs.cs4120.xic.ir.IRConst;
+import edu.cornell.cs.cs4120.xic.ir.IRExp;
+import edu.cornell.cs.cs4120.xic.ir.IRExpr;
+import edu.cornell.cs.cs4120.xic.ir.IRJump;
+import edu.cornell.cs.cs4120.xic.ir.IRLabel;
+import edu.cornell.cs.cs4120.xic.ir.IRMem;
+import edu.cornell.cs.cs4120.xic.ir.IRMove;
+import edu.cornell.cs.cs4120.xic.ir.IRName;
+import edu.cornell.cs.cs4120.xic.ir.IRNode;
+import edu.cornell.cs.cs4120.xic.ir.IRReturn;
+import edu.cornell.cs.cs4120.xic.ir.IRSeq;
+import edu.cornell.cs.cs4120.xic.ir.IRTemp;
+import edu.cornell.cs.cs4120.xic.ir.OpType;
 import jl2755.assembly.Instruction.Operation;
 
 public class Tile {
@@ -13,6 +30,10 @@ public class Tile {
 	private List<Instruction> instructions;
 	private Operand dest;
 	private tileEnum theEnum = tileEnum.NOTHING;
+	
+	private Set<CtorsSection> ctorsParts = new HashSet<CtorsSection>();
+	
+	private Set<GlobalVariableSection> globalParts = new HashSet<GlobalVariableSection>();
 	
 	
 	public enum tileEnum {
@@ -91,6 +112,22 @@ public class Tile {
 		instructions = i;
 		cost = argCost;
 		dest = argDest;
+	}
+	
+	public void addCtorsParts(CtorsSection ctors) {
+		ctorsParts.add(ctors);
+	}
+	
+	public void addGlobalParts(GlobalVariableSection gvars) {
+		globalParts.add(gvars);
+	}
+	
+	public Set<CtorsSection> getCtorsParts() {
+		return ctorsParts;
+	}
+	
+	public Set<GlobalVariableSection> getGlobalParts() {
+		return globalParts;
 	}
 	
 	/**

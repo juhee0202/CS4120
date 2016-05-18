@@ -1,6 +1,7 @@
 use io
 
 x, y, z: int;
+c: int[];
 
 class Animal {
     a: int;

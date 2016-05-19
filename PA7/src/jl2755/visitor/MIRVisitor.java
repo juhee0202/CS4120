@@ -522,9 +522,9 @@ public class MIRVisitor implements ASTVisitor{
 			// get function label
 			
 			fc.getDotableExpr().accept(this);
-			IRTemp freshTemp = new IRTemp("t" + tempCount++);
+			IRTemp freshTemp = new IRTemp("_t" + tempCount++);
 			IRMove tempClean = new IRMove(freshTemp, (IRExpr) tempNode);
-			IRTemp dvPointer = new IRTemp("t" + tempCount++);
+			IRTemp dvPointer = new IRTemp("_t" + tempCount++);
 			IRMove getDV = new IRMove(dvPointer, new IRMem((IRTemp) freshTemp.copy()));
 			VType compileTimeTypeOfDotable = fc.getDotableExpr().getCompileTimeType();
 			assert(compileTimeTypeOfDotable instanceof VarType);
@@ -536,7 +536,7 @@ public class MIRVisitor implements ASTVisitor{
 			int indexOfMethod = methodList.indexOf(fc.getABIName());
 			IRBinOp dvOffsetPointer = new IRBinOp(OpType.ADD, dvPointer, new IRConst(indexOfMethod));
 			IRMem offsetMem = new IRMem(dvOffsetPointer);
-			IRTemp callThisTemp = new IRTemp("t" + tempCount++);
+			IRTemp callThisTemp = new IRTemp("_t" + tempCount++);
 			IRMove movePCIntoTemp = new IRMove(callThisTemp, offsetMem);
 			
 			// Use this as the first argument
@@ -553,9 +553,9 @@ public class MIRVisitor implements ASTVisitor{
 			assert(index == 4);
 			// get function label
 			fc.getDotableExpr().accept(this);
-			IRTemp freshTemp = new IRTemp("t" + tempCount++);
+			IRTemp freshTemp = new IRTemp("_t" + tempCount++);
 			IRMove tempClean = new IRMove(freshTemp, (IRExpr) tempNode);
-			IRTemp dvPointer = new IRTemp("t" + tempCount++);
+			IRTemp dvPointer = new IRTemp("_t" + tempCount++);
 			IRMove getDV = new IRMove(dvPointer, new IRMem((IRTemp) freshTemp.copy()));
 			VType compileTimeTypeOfDotable = fc.getDotableExpr().getCompileTimeType();
 			assert(compileTimeTypeOfDotable instanceof VarType);
@@ -565,9 +565,9 @@ public class MIRVisitor implements ASTVisitor{
 			List<String> methodList = dotableExprClassType.getDispatchMethods(env);
 			assert(methodList.contains(fc.getABIName()));
 			int indexOfMethod = methodList.indexOf(fc.getABIName());
-			IRBinOp dvOffsetPointer = new IRBinOp(OpType.ADD, dvPointer, new IRConst(indexOfMethod));
+			IRBinOp dvOffsetPointer = new IRBinOp(OpType.ADD, dvPointer, new IRConst(indexOfMethod*8));
 			IRMem offsetMem = new IRMem(dvOffsetPointer);
-			IRTemp callThisTemp = new IRTemp("t" + tempCount++);
+			IRTemp callThisTemp = new IRTemp("_t" + tempCount++);
 			IRMove movePCIntoTemp = new IRMove(callThisTemp, offsetMem);
 			
 			// Use this as the first argument
@@ -1373,7 +1373,7 @@ public class MIRVisitor implements ASTVisitor{
 			}
 			de.getDotableExpr().accept(this);
 			List<IRStmt> stmts = new ArrayList<IRStmt>();
-			IRTemp freshTemp = new IRTemp("t" + tempCount++);
+			IRTemp freshTemp = new IRTemp("_t" + tempCount++);
 			IRMove tempClean = new IRMove(freshTemp, (IRExpr) tempNode);
 			stmts.add(tempClean);
 			VType compileTimeTypeOfDotable = de.getDotableExpr().getCompileTimeType();
@@ -1398,7 +1398,7 @@ public class MIRVisitor implements ASTVisitor{
             	
             // return temp(mem(field))
             } else {
-            	result = new IRTemp("t" + tempCount++);
+            	result = new IRTemp("_t" + tempCount++);
                 IRMove moveResult = new IRMove(result, offsetMem);
                 stmts.add(moveResult);
             }

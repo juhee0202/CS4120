@@ -13,6 +13,7 @@ import edu.cornell.cs.cs4120.xic.ir.interpret.Configuration;
 import jl2755.assembly.Instruction.Operation;
 import jl2755.ast.*;
 import jl2755.type.ClassType;
+import jl2755.type.VType;
 import jl2755.type.VarType;
 
 public class MIRVisitor implements ASTVisitor{
@@ -507,34 +508,72 @@ public class MIRVisitor implements ASTVisitor{
 			tempNode = new IRMem(lengthAddr);
 		} else if (index == 3) {										// method call with dot with no args
 			// get function label
-			String id = fc.getABIName();
-			IRName lf = new IRName(id);
-			// Use this as the first argument
+			
 			fc.getDotableExpr().accept(this);
-			IRCall call = new IRCall(lf, (IRTemp) tempNode);
+			IRTemp freshTemp = new IRTemp("t" + tempCount++);
+			IRMove tempClean = new IRMove(freshTemp, (IRExpr) tempNode);
+			IRTemp dvPointer = new IRTemp("t" + tempCount++);
+			IRMove getDV = new IRMove(dvPointer, new IRMem((IRTemp) freshTemp.copy()));
+			VType compileTimeTypeOfDotable = fc.getDotableExpr().getCompileTimeType();
+			assert(compileTimeTypeOfDotable instanceof VarType);
+			VarType compileVType = (VarType) compileTimeTypeOfDotable;
+			assert(compileVType.isObject());
+			ClassType dotableExprClassType = env.getClassType(compileVType.getElementType());
+			List<String> methodList = dotableExprClassType.getDispatchMethods(env);
+			assert(methodList.contains(fc.getABIName()));
+			int indexOfMethod = methodList.indexOf(fc.getABIName());
+			IRBinOp dvOffsetPointer = new IRBinOp(OpType.ADD, dvPointer, new IRConst(indexOfMethod));
+			IRMem offsetMem = new IRMem(dvOffsetPointer);
+			IRTemp callThisTemp = new IRTemp("t" + tempCount++);
+			IRMove movePCIntoTemp = new IRMove(callThisTemp, offsetMem);
+			
+			// Use this as the first argument
+			IRCall call = new IRCall(callThisTemp, freshTemp);
 			call.setNumReturns(fc.getNumReturns());
-			tempNode = call;
+			List<IRStmt> stmts = new ArrayList<IRStmt>();
+			stmts.add(tempClean);
+			stmts.add(getDV);
+			stmts.add(movePCIntoTemp);
+			IRESeq resultESeq = new IRESeq(new IRSeq(stmts), call);
+			tempNode = resultESeq;
 		} else {														// method call with dot with args
 			assert(index == 4);
 			// get function label
-			String id = fc.getABIName();
-			IRName lf = new IRName(id);
+			fc.getDotableExpr().accept(this);
+			IRTemp freshTemp = new IRTemp("t" + tempCount++);
+			IRMove tempClean = new IRMove(freshTemp, (IRExpr) tempNode);
+			IRTemp dvPointer = new IRTemp("t" + tempCount++);
+			IRMove getDV = new IRMove(dvPointer, new IRMem((IRTemp) freshTemp.copy()));
+			VType compileTimeTypeOfDotable = fc.getDotableExpr().getCompileTimeType();
+			assert(compileTimeTypeOfDotable instanceof VarType);
+			VarType compileVType = (VarType) compileTimeTypeOfDotable;
+			assert(compileVType.isObject());
+			ClassType dotableExprClassType = env.getClassType(compileVType.getElementType());
+			List<String> methodList = dotableExprClassType.getDispatchMethods(env);
+			assert(methodList.contains(fc.getABIName()));
+			int indexOfMethod = methodList.indexOf(fc.getABIName());
+			IRBinOp dvOffsetPointer = new IRBinOp(OpType.ADD, dvPointer, new IRConst(indexOfMethod));
+			IRMem offsetMem = new IRMem(dvOffsetPointer);
+			IRTemp callThisTemp = new IRTemp("t" + tempCount++);
+			IRMove movePCIntoTemp = new IRMove(callThisTemp, offsetMem);
 			
-			// get function args
+			// Use this as the first argument
 			FunctionArg functionArg = fc.getFunctionArg();
 			List<Expr> args = functionArg.getArgExprs();
 			List<IRExpr> irArgs = new ArrayList<IRExpr>();	
-			// Use this as the first argument
-			fc.getDotableExpr().accept(this);
-			irArgs.add((IRTemp) tempNode);
+			irArgs.add((IRTemp) freshTemp);
 			for (Expr arg : args) {
 				arg.accept(this);
 				irArgs.add((IRExpr) tempNode);
 			}
-			
-			IRCall call = new IRCall(lf, irArgs);
+			IRCall call = new IRCall(callThisTemp, irArgs);
 			call.setNumReturns(fc.getNumReturns());
-			tempNode = call;
+			List<IRStmt> stmts = new ArrayList<IRStmt>();
+			stmts.add(tempClean);
+			stmts.add(getDV);
+			stmts.add(movePCIntoTemp);
+			IRESeq resultESeq = new IRESeq(new IRSeq(stmts), call);
+			tempNode = resultESeq;
 		}
 	}
 	
@@ -1305,8 +1344,26 @@ public class MIRVisitor implements ASTVisitor{
 		switch (de.getType()) {
 		case DOT:
 			de.getDotableExpr().accept(this);
-			thisNode = (IRExpr) tempNode;
-			de.getId().accept(this);
+			IRTemp freshTemp = new IRTemp("t" + tempCount++);
+			IRMove tempClean = new IRMove(freshTemp, (IRExpr) tempNode);
+			VType compileTimeTypeOfDotable = de.getDotableExpr().getCompileTimeType();
+            assert(compileTimeTypeOfDotable instanceof VarType);
+            VarType compileVType = (VarType) compileTimeTypeOfDotable;
+            assert(compileVType.isObject());
+            ClassType dotableExprClassType = env.getClassType(compileVType.getElementType());
+            List<String> fieldList = dotableExprClassType.getDispatchFields(env);
+            assert(fieldList.contains(de.getId().toString()));
+            int indexOfFieldInObjectLayout = fieldList.indexOf(de.getId().toString()) + 1;
+            IRBinOp getFieldElement = new IRBinOp(OpType.ADD, freshTemp, new IRConst(indexOfFieldInObjectLayout));
+            IRMem offsetMem = new IRMem(getFieldElement);
+            IRTemp resultTemp = new IRTemp("t" + tempCount++);
+            IRMove moveResult = new IRMove(resultTemp, offsetMem);
+            List<IRStmt> stmts = new ArrayList<IRStmt>();
+            stmts.add(tempClean);
+            stmts.add(moveResult);
+            IRSeq seqResult = new IRSeq(stmts);
+            IRESeq wholeResult = new IRESeq(seqResult, resultTemp);
+            tempNode = wholeResult;
 			break;
 		case FUNCTION_CALL:
 			de.getFunctionCall().accept(this);
@@ -1323,8 +1380,9 @@ public class MIRVisitor implements ASTVisitor{
 			IRDispatchVector dv = classToDispatch.get(id);
 			IRGlobalReference sizeVariable = new IRGlobalReference(de.getId().toString(),
 					IRGlobalReference.GlobalType.SIZE);
+			IRBinOp byteMultiplier = new IRBinOp(OpType.MUL, sizeVariable, new IRConst(8));
 			
-			IRCall callToAlloc = new IRCall(nameOfAlloc, sizeVariable);
+			IRCall callToAlloc = new IRCall(nameOfAlloc, byteMultiplier);
 			
 			// Move result to temp
 			IRTemp object = new IRTemp("t"+tempCount++);

@@ -595,6 +595,7 @@ public class MIRVisitor implements ASTVisitor{
 		if (inClass) {
 			// THIS is implicitly the first argument
 			thisNode = new IRTemp(Configuration.ABSTRACT_ARG_PREFIX + 0);
+			holyParamList.add(((IRTemp) thisNode).name());
 			start = 1;
 		}
 		for (int i = start; i < holyParamList.size(); i++) {

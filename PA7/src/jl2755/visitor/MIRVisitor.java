@@ -41,7 +41,7 @@ public class MIRVisitor implements ASTVisitor{
 	private Map<String, IRDispatchVector> classToDispatch =  new HashMap<String, IRDispatchVector>();
 	
 	// Global Variable name to its ABIName to be used for labels
-	private Map<String, String> globalNameToABI = new HashMap<String, String>();
+//	private Map<String, String> globalNameToABI = new HashMap<String, String>();
 	
 	// Global Environment
 	private Environment env;
@@ -633,8 +633,8 @@ public class MIRVisitor implements ASTVisitor{
 		String name = id.toString();
 		if (env.containsVar(name)) {
 			// id is a global variable, return a mem pointing to the global variable
-//			IRName irName = new IRName(globalNameToABI.get(name));
-			tempNode = new IRGlobalReference(name, globalNameToABI.get(name), GlobalType.REGULAR);
+			String abiName = translateVarTypeToABI(env.getVarType(name), name);
+			tempNode = new IRGlobalReference(name, abiName, GlobalType.REGULAR);
 		} else {
 			// must be a local variable
 			tempNode = new IRTemp(name);
@@ -1456,7 +1456,7 @@ public class MIRVisitor implements ASTVisitor{
 					ABIName = translateVarTypeToABI(vType, name);
 					gv = new IRGlobalVariable(name, ABIName, 0);
 				}
-				globalNameToABI.put(name, ABIName);
+//				globalNameToABI.put(name, ABIName);
 				list.add(gv);
 			}
 			tempNode = new IRGVList(list);
@@ -1475,7 +1475,7 @@ public class MIRVisitor implements ASTVisitor{
 			}
 			String ABIName = translateVarTypeToABI(vType, name);
 			tempNode = new IRGlobalVariable(name, ABIName, value);
-			globalNameToABI.put(name, ABIName);
+//			globalNameToABI.put(name, ABIName);
 			return;
 		case VAR_DECL:
 			VarDecl vd = gd.getVarDecl();
@@ -1508,7 +1508,7 @@ public class MIRVisitor implements ASTVisitor{
 				ABIName1 = translateVarTypeToABI(type1, id);
 				tempNode = new IRGlobalVariable(id, ABIName1, 0);
 			}
-			globalNameToABI.put(id, ABIName1);
+//			globalNameToABI.put(id, ABIName1);
 			return;
 		}		
 	}

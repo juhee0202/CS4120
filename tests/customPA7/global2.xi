@@ -7,5 +7,5 @@ z:int[x]
 
 main(args:int[][]) {
 	println(y)
-	println(z)
+	println(unparseInt(length(z)))
 }

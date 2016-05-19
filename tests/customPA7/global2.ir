@@ -4,11 +4,104 @@
   _Imain_paai
   (SEQ
    (MOVE (TEMP args) (TEMP _ARG0))
+   (EXP (CALL (NAME _Iprintln_pai) (GLOBAL VARIABLE _I_g_y_ai)))
+   (EXP
+    (CALL
+     (NAME _Iprintln_pai)
+     (CALL (NAME _IunparseInt_aii)
+      (MEM (SUB (GLOBAL VARIABLE _I_g_z_ai) (CONST 8))))))))
+ (FUNC
+  _I_init_y_ai
+  (SEQ
+   (MOVE (TEMP _t0) (GLOBAL VARIABLE _I_g_x_i))
+   (MOVE (TEMP _t1)
+    (CALL (NAME _I_alloc_i) (MUL (ADD (TEMP _t0) (CONST 1)) (CONST 8))))
+   (MOVE (MEM (TEMP _t1)) (TEMP _t0))
+   (MOVE (TEMP _t1) (ADD (TEMP _t1) (CONST 8)))
+   (MOVE (TEMP _t2) (CONST 0))
+   (LABEL l0)
+   (CJUMP (LT (TEMP _t2) (TEMP _t0)) l1 l2)
+   (LABEL l1)
+   (MOVE (MEM (ADD (TEMP _t1) (MUL (TEMP _t2) (CONST 8))))
+    (ESEQ (SEQ (MOVE (TEMP _t3) (CONST 0))) (TEMP _t3)))
+   (MOVE (TEMP _t2) (ADD (TEMP _t2) (CONST 1)))
+   (JUMP (NAME l0))
+   (LABEL l2)
+   (MOVE (GLOBAL VARIABLE _I_g_y_ai) (TEMP _t1))))
+ (FUNC
+  _I_init_z_ai
+  (SEQ
+   (MOVE (TEMP _t4) (GLOBAL VARIABLE _I_g_x_i))
+   (MOVE (TEMP _t5)
+    (CALL (NAME _I_alloc_i) (MUL (ADD (TEMP _t4) (CONST 1)) (CONST 8))))
+   (MOVE (MEM (TEMP _t5)) (TEMP _t4))
+   (MOVE (TEMP _t5) (ADD (TEMP _t5) (CONST 8)))
+   (MOVE (TEMP _t6) (CONST 0))
+   (LABEL l3)
+   (CJUMP (LT (TEMP _t6) (TEMP _t4)) l4 l5)
+   (LABEL l4)
+   (MOVE (MEM (ADD (TEMP _t5) (MUL (TEMP _t6) (CONST 8))))
+    (ESEQ (SEQ (MOVE (TEMP _t7) (CONST 0))) (TEMP _t7)))
+   (MOVE (TEMP _t6) (ADD (TEMP _t6) (CONST 1)))
+   (JUMP (NAME l3))
+   (LABEL l5)
+   (MOVE (GLOBAL VARIABLE _I_g_z_ai) (TEMP _t5))))
+ (_I_g_y_ai = 0)
+ (_I_g_z_ai = 0)
+ (_I_g_x_i = 5))
+(COMPUNIT
+ Program
+ (FUNC
+  _Imain_paai
+  (SEQ
+   (MOVE (TEMP args) (TEMP _ARG0))
    (MOVE (TEMP _temp0) (GLOBAL VARIABLE _I_g_y_ai))
    (EXP (CALL (NAME _Iprintln_pai) (TEMP _temp0)))
-   (MOVE (TEMP _temp2) (GLOBAL VARIABLE _I_g_z_ai))
-   (EXP (CALL (NAME _Iprintln_pai) (TEMP _temp2)))
+   (MOVE (TEMP _temp2) (MEM (SUB (GLOBAL VARIABLE _I_g_z_ai) (CONST 8))))
+   (MOVE (TEMP _temp3) (CALL (NAME _IunparseInt_aii) (TEMP _temp2)))
+   (MOVE (TEMP _temp4) (TEMP _temp3))
+   (EXP (CALL (NAME _Iprintln_pai) (TEMP _temp4)))
    (RETURN)))
+ (FUNC
+  _I_init_y_ai
+  (SEQ
+   (MOVE (TEMP _t0) (GLOBAL VARIABLE _I_g_x_i))
+   (MOVE (TEMP _temp6) (MUL (ADD (TEMP _t0) (CONST 1)) (CONST 8)))
+   (MOVE (TEMP _temp7) (CALL (NAME _I_alloc_i) (TEMP _temp6)))
+   (MOVE (TEMP _t1) (TEMP _temp7))
+   (MOVE (MEM (TEMP _t1)) (TEMP _t0))
+   (MOVE (TEMP _t1) (ADD (TEMP _t1) (CONST 8)))
+   (MOVE (TEMP _t2) (CONST 0))
+   (LABEL l0)
+   (CJUMP (LT (TEMP _t2) (TEMP _t0)) l1)
+   (MOVE (GLOBAL VARIABLE _I_g_y_ai) (TEMP _t1))
+   (RETURN)
+   (LABEL l1)
+   (MOVE (TEMP _temp8) (ADD (TEMP _t1) (MUL (TEMP _t2) (CONST 8))))
+   (MOVE (TEMP _t3) (CONST 0))
+   (MOVE (MEM (TEMP _temp8)) (TEMP _t3))
+   (MOVE (TEMP _t2) (ADD (TEMP _t2) (CONST 1)))
+   (JUMP (NAME l0))))
+ (FUNC
+  _I_init_z_ai
+  (SEQ
+   (MOVE (TEMP _t4) (GLOBAL VARIABLE _I_g_x_i))
+   (MOVE (TEMP _temp9) (MUL (ADD (TEMP _t4) (CONST 1)) (CONST 8)))
+   (MOVE (TEMP _temp10) (CALL (NAME _I_alloc_i) (TEMP _temp9)))
+   (MOVE (TEMP _t5) (TEMP _temp10))
+   (MOVE (MEM (TEMP _t5)) (TEMP _t4))
+   (MOVE (TEMP _t5) (ADD (TEMP _t5) (CONST 8)))
+   (MOVE (TEMP _t6) (CONST 0))
+   (LABEL l3)
+   (CJUMP (LT (TEMP _t6) (TEMP _t4)) l4)
+   (MOVE (GLOBAL VARIABLE _I_g_z_ai) (TEMP _t5))
+   (RETURN)
+   (LABEL l4)
+   (MOVE (TEMP _temp11) (ADD (TEMP _t5) (MUL (TEMP _t6) (CONST 8))))
+   (MOVE (TEMP _t7) (CONST 0))
+   (MOVE (MEM (TEMP _temp11)) (TEMP _t7))
+   (MOVE (TEMP _t6) (ADD (TEMP _t6) (CONST 1)))
+   (JUMP (NAME l3))))
  (_I_g_y_ai = 0)
  (_I_g_z_ai = 0)
  (_I_g_x_i = 5))

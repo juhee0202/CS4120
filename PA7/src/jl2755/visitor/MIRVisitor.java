@@ -1338,7 +1338,7 @@ public class MIRVisitor implements ASTVisitor{
             List<String> fieldList = dotableExprClassType.getDispatchFields(env);
             assert(fieldList.contains(de.getId().toString()));
             int indexOfFieldInObjectLayout = fieldList.indexOf(de.getId().toString()) + 1;
-            IRBinOp getFieldElement = new IRBinOp(OpType.ADD, freshTemp, new IRConst(indexOfFieldInObjectLayout));
+            IRBinOp getFieldElement = new IRBinOp(OpType.ADD, freshTemp, new IRConst(indexOfFieldInObjectLayout*8));
             IRMem offsetMem = new IRMem(getFieldElement);
             IRTemp resultTemp = new IRTemp("t" + tempCount++);
             IRMove moveResult = new IRMove(resultTemp, offsetMem);

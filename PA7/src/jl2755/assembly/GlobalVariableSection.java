@@ -41,7 +41,7 @@ public class GlobalVariableSection {
 		type = argType;
 		if (argType == GlobalVarType.DISPATCHVECTOR) {
 			className = argDV.getClassName();
-			classSize = 8*(1+argDV.getNumberOfFields());
+			classSize = 8*(argDV.getMethodSize());
 			valueType = GlobalVarValueType.NONE;
 			return;
 		}

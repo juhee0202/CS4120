@@ -522,9 +522,9 @@ public class MIRVisitor implements ASTVisitor{
 			// get function label
 			
 			fc.getDotableExpr().accept(this);
-			IRTemp freshTemp = new IRTemp("t" + tempCount++);
+			IRTemp freshTemp = new IRTemp("_t" + tempCount++);
 			IRMove tempClean = new IRMove(freshTemp, (IRExpr) tempNode);
-			IRTemp dvPointer = new IRTemp("t" + tempCount++);
+			IRTemp dvPointer = new IRTemp("_t" + tempCount++);
 			IRMove getDV = new IRMove(dvPointer, new IRMem((IRTemp) freshTemp.copy()));
 			VType compileTimeTypeOfDotable = fc.getDotableExpr().getCompileTimeType();
 			assert(compileTimeTypeOfDotable instanceof VarType);
@@ -536,7 +536,7 @@ public class MIRVisitor implements ASTVisitor{
 			int indexOfMethod = methodList.indexOf(fc.getABIName());
 			IRBinOp dvOffsetPointer = new IRBinOp(OpType.ADD, dvPointer, new IRConst(indexOfMethod));
 			IRMem offsetMem = new IRMem(dvOffsetPointer);
-			IRTemp callThisTemp = new IRTemp("t" + tempCount++);
+			IRTemp callThisTemp = new IRTemp("_t" + tempCount++);
 			IRMove movePCIntoTemp = new IRMove(callThisTemp, offsetMem);
 			
 			// Use this as the first argument
@@ -553,9 +553,9 @@ public class MIRVisitor implements ASTVisitor{
 			assert(index == 4);
 			// get function label
 			fc.getDotableExpr().accept(this);
-			IRTemp freshTemp = new IRTemp("t" + tempCount++);
+			IRTemp freshTemp = new IRTemp("_t" + tempCount++);
 			IRMove tempClean = new IRMove(freshTemp, (IRExpr) tempNode);
-			IRTemp dvPointer = new IRTemp("t" + tempCount++);
+			IRTemp dvPointer = new IRTemp("_t" + tempCount++);
 			IRMove getDV = new IRMove(dvPointer, new IRMem((IRTemp) freshTemp.copy()));
 			VType compileTimeTypeOfDotable = fc.getDotableExpr().getCompileTimeType();
 			assert(compileTimeTypeOfDotable instanceof VarType);
@@ -567,9 +567,9 @@ public class MIRVisitor implements ASTVisitor{
 			System.out.println(fc.getABIName());
 			assert(methodList.contains(fc.getABIName()));
 			int indexOfMethod = methodList.indexOf(fc.getABIName());
-			IRBinOp dvOffsetPointer = new IRBinOp(OpType.ADD, dvPointer, new IRConst(indexOfMethod));
+			IRBinOp dvOffsetPointer = new IRBinOp(OpType.ADD, dvPointer, new IRConst(indexOfMethod*8));
 			IRMem offsetMem = new IRMem(dvOffsetPointer);
-			IRTemp callThisTemp = new IRTemp("t" + tempCount++);
+			IRTemp callThisTemp = new IRTemp("_t" + tempCount++);
 			IRMove movePCIntoTemp = new IRMove(callThisTemp, offsetMem);
 			
 			// Use this as the first argument

@@ -1993,7 +1993,7 @@ public class TypeCheckVisitor implements ASTVisitor {
 	}
 	
 	private String classMethodToABIName(String className, String fnName, FunType fnType) {
-		String ABIName = "_" + className + "_" + functionToABIName(fnName, fnType);
+		String ABIName = "_" + className + functionToABIName(fnName, fnType);
 		return ABIName;
 	}
 	

@@ -412,8 +412,6 @@ public class LIRVisitor implements IRTreeVisitor{
 		IRSeq s1 = tempSeq.part1();
 		IRExpr e1 = (IRExpr) tempSeq.part2();
 		// s2, e2 = target
-		System.out.println("HERE: "+mov.target());
-		System.out.println("HERE2: "+mov.expr());
 		mov.target().accept(this);
 		IRSeq s2 = tempSeq.part1();
 		IRExpr e2 = (IRExpr) tempSeq.part2();

@@ -2,54 +2,52 @@ use io
 
 x, y, z: int;
 
-<<<<<<< HEAD
 class Organism {
 	size: int;
 	evolve() {
-	size = 10;
-		println("WOP WOP");
+		size = 2*size;
 	}
 }
 
 class Animal extends Organism {
     species: int;
+    strength: int;
 	sleep(c: int) {
-		println("HELLO");
 	}
 	wake() {
-		println(unparseInt(species));
-		println("WORLD");
 	}
 }
 
 class Dog extends Animal {
 	weight: int;
 	eat() {
-		println("DOG IS EAT");
+		weight = weight + 1;
 	}
-=======
-class Animal {
-    a: int;
->>>>>>> 697c94971bd9ea32e9fa8a0572c4c48413cc0095
-	sleep(c: int) {
-		
+
+	init(initWeight: int, initStrength: int) {
+		weight = initWeight;
+		animalView: Animal = this;
+		animalView.strength = initStrength;
+	}
+}
+
+class Human extends Animal {
+	intelligence: int;
+	history: int[];
+	learn(info: int) {
+		intelligence = int;
+	}
+
+	init(lifecycle: int, iq: int, power: int): Human {
+		temp: int[lifecycle];
+		history = temp;
+		intelligence = iq;
+		animalView: Animal = this;
+		animalView.strength = power;
+		return this;
 	}
 }
 
 main(args: int[][]) {
-<<<<<<< HEAD
-	doggie: Dog = new Dog;
-	a: Animal = doggie;
-	a.sleep(2755);
-	a.wake();
-	doggie.eat();
-	println(unparseInt(doggie.weight));
-	o:Organism = doggie;
-	o.evolve();
-	println(unparseInt(o.size));
-=======
-	a: Animal = new Animal;
-	m: int = 10;
-	a.sleep(m);
->>>>>>> 697c94971bd9ea32e9fa8a0572c4c48413cc0095
+
 }

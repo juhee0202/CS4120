@@ -279,5 +279,6 @@ xic ("Test -target -O") ["customPA7"] "-libpath $(testpath) -target -O" {
     break03.xi;
     break04.xi;
     break05.xi;
+    new1.xi;
 }
 

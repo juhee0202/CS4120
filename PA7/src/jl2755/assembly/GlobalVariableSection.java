@@ -47,7 +47,6 @@ public class GlobalVariableSection {
 		}
 		if (argType == GlobalVarType.SIZE) {
 			className = argDV.getClassName();
-			classSize = 8*(1+argDV.getNumberOfFields());
 			valueType = GlobalVarValueType.NONE;
 			return;
 		}

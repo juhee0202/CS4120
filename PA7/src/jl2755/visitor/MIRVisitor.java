@@ -1329,6 +1329,7 @@ public class MIRVisitor implements ASTVisitor{
 			IRBinOp offsetFromPointer = new IRBinOp(OpType.ADD, dispatchPointer, new IRConst(i*8));
 			IRMem nextMem = new IRMem(offsetFromPointer);
 			IRMove moveFuncIntoPointer = new IRMove(nextMem, function);
+			moveFuncIntoPointer.setSetLea(true);
 			list.add(moveFuncIntoPointer);
 			i++;
 		}

@@ -933,6 +933,8 @@ public class MIRVisitor implements ASTVisitor{
 	@Override
 	public void visit(VarDecl vd) {
 		int vdIndex = vd.getIndex();
+		vd.getIdentifier().accept(this);
+		IRTemp tempOfArray = (IRTemp) tempNode;
 		
 		// array declaration
 		if (vdIndex == 0) {
@@ -940,9 +942,6 @@ public class MIRVisitor implements ASTVisitor{
 			int index = mat.getIndex();
 			// with a specified length
 			if (index == 1 || index == 3) {		// x:t[e1]..[en][]*
-				vd.getIdentifier().accept(this);
-				IRTemp tempOfArray = (IRTemp) tempNode;
-				
 				List<Expr> exprList = mat.getMixedBrackets().getContent();
 				// (stmt, expr) 
 				// stmt: allocating,moving,assigning value stuff
@@ -969,14 +968,12 @@ public class MIRVisitor implements ASTVisitor{
 				newList.add(moveAddrToTemp);
 				tempNode = new IRSeq(newList);
 			} else {
-				IRTemp temp = new IRTemp("_t" + tempCount++);
-				IRMove moveDefault = new IRMove(temp, new IRConst(0));
+				IRMove moveDefault = new IRMove(tempOfArray, new IRConst(0));
 				tempNode = moveDefault;
 			}
 		} else {
 			// Primitive Type or Object Type
-			IRTemp temp = new IRTemp("_t" + tempCount++);
-			IRMove moveDefault = new IRMove(temp, new IRConst(0));
+			IRMove moveDefault = new IRMove(tempOfArray, new IRConst(0));
 			tempNode = moveDefault;
 		}
 		

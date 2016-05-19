@@ -10,18 +10,45 @@ public class IRGlobalReference extends IRExpr {
 		SIZE, DISPATCHVECTOR, REGULAR, FUNCTION;
 	}
 	
-	private String className;
+	private String name;
 	private String ABIName;
 	private GlobalType typeOfGlobal;
 	
-	public IRGlobalReference(String argClassName, GlobalType type) {
+	public IRGlobalReference(String argName, GlobalType type) {
 		setTypeOfGlobal(type);
-		className = argClassName;
-		if (type == GlobalType.SIZE) {
-			ABIName = "_I_size_" + className;
+		name = argName;
+		switch (type) {
+		case DISPATCHVECTOR:
+			ABIName = "_I_vt_" + name;
+			break;
+		case FUNCTION:
+			ABIName = argName;
+			break;
+		case REGULAR:
+			ABIName = argName;
+			break;
+		case SIZE:
+			ABIName = "_I_size_" + name;
+			break;
 		}
-		else {
-			ABIName = "_I_vt_" + className;
+	}
+	
+	public IRGlobalReference(String argName, String ABI, GlobalType type) {
+		setTypeOfGlobal(type);
+		name = argName;
+		switch (type) {
+		case DISPATCHVECTOR:
+			ABIName = ABI;
+			break;
+		case FUNCTION:
+			ABIName = ABI;
+			break;
+		case REGULAR:
+			ABIName = ABI;
+			break;
+		case SIZE:
+			ABIName = ABI;
+			break;
 		}
 	}
 	
@@ -31,7 +58,7 @@ public class IRGlobalReference extends IRExpr {
 
 	@Override
 	public IRNode copy() {
-		return new IRGlobalReference(className,typeOfGlobal);
+		return new IRGlobalReference(name,typeOfGlobal);
 	}
 
 	@Override
@@ -49,7 +76,7 @@ public class IRGlobalReference extends IRExpr {
 	}
 	
 	public String getClassName() {
-		return className;
+		return name;
 	}
 
 	public String getABIName() {

@@ -1699,13 +1699,15 @@ public class TypeCheckVisitor implements ASTVisitor {
 											);
 				Main.handleSemanticError(seo);
 			}
+			Identifier field = de.getId();
+			field.setIsField(true);
 			ClassType classView = env.getClassType(((VarType) childType).getElementType());
-			tempType = classView.getFieldType(de.getId().toString());
+			tempType = classView.getFieldType(field.toString());
 			if (tempType == null) {
-				String s = "Class " + classView.getClassName() + " does not have field " + de.getId().toString();
+				String s = "Class " + classView.getClassName() + " does not have field " + field.toString();
 				SemanticErrorObject seo = new SemanticErrorObject(
-											de.getId().getLineNumber(), 
-											de.getId().getColumnNumber(),
+											field.getLineNumber(), 
+											field.getColumnNumber(),
 											s
 											);
 				Main.handleSemanticError(seo);

@@ -114,6 +114,9 @@ public class TilingVisitor implements IRTreeVisitor {
 			assemblyString += gvs.generateInitialization();
 		}
 		
+		// newline at eof
+		assemblyString += "\n";
+		
 		return assemblyString;
 	}
 	

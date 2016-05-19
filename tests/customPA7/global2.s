@@ -11,7 +11,7 @@ _Imain_paai:
 	movq	%r15, -48(%rbp)
 	movq	%rdi, %r12
 	movq	%r12, -56(%rbp)
-	movq	_I_g_x_i(%rip), %r14
+	movq	_I_g_y_ai(%rip), %r14
 	movq	%r14, -64(%rbp)
 	pushq	%rax
 	pushq	%rcx
@@ -25,9 +25,7 @@ _Imain_paai:
 	movq	-64(%rbp), %r14
 	movq	%r14, %rdi
 	subq	$8, %rsp
-	callq	_IunparseInt_aii
-	movq	%rax, %r12
-	movq	%r12, -72(%rbp)
+	callq	_Iprintln_pai
 	addq	$8, %rsp
 	popq	%rsi
 	popq	%rdi
@@ -38,9 +36,8 @@ _Imain_paai:
 	popq	%rdx
 	popq	%rcx
 	popq	%rax
-	movq	-72(%rbp), %r14
-	movq	%r14, %r12
-	movq	%r12, -80(%rbp)
+	movq	_I_g_z_ai(%rip), %r14
+	movq	%r14, -72(%rbp)
 	pushq	%rax
 	pushq	%rcx
 	pushq	%rdx
@@ -50,7 +47,7 @@ _Imain_paai:
 	pushq	%r11
 	pushq	%rdi
 	pushq	%rsi
-	movq	-80(%rbp), %r14
+	movq	-72(%rbp), %r14
 	movq	%r14, %rdi
 	subq	$8, %rsp
 	callq	_Iprintln_pai
@@ -76,7 +73,21 @@ _Imain_paai:
 
 	.section .data
 	.align 8
+.globl _I_g_z_ai
+_I_g_z_ai:
+	.zero 8
+	.text
+
+	.section .data
+	.align 8
 .globl _I_g_x_i
 _I_g_x_i:
 	.quad 5
+	.text
+
+	.section .data
+	.align 8
+.globl _I_g_y_ai
+_I_g_y_ai:
+	.zero 8
 	.text

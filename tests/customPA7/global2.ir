@@ -1,0 +1,14 @@
+(COMPUNIT
+ Program
+ (FUNC
+  _Imain_paai
+  (SEQ
+   (MOVE (TEMP args) (TEMP _ARG0))
+   (MOVE (TEMP _temp0) (GLOBAL VARIABLE _I_g_y_ai))
+   (EXP (CALL (NAME _Iprintln_pai) (TEMP _temp0)))
+   (MOVE (TEMP _temp2) (GLOBAL VARIABLE _I_g_z_ai))
+   (EXP (CALL (NAME _Iprintln_pai) (TEMP _temp2)))
+   (RETURN)))
+ (_I_g_y_ai = 0)
+ (_I_g_z_ai = 0)
+ (_I_g_x_i = 5))

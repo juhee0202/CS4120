@@ -1,0 +1,146 @@
+(COMPUNIT
+ Program
+ (FUNC
+  _Imain_paai
+  (SEQ
+   (MOVE (TEMP args) (TEMP _ARG0))
+   (MOVE
+    (TEMP student)
+    (ESEQ
+     (SEQ
+      (MOVE
+       (TEMP _t0)
+       (CALL (NAME _I_alloc_i)
+        (MUL (GLOBAL VARIABLE _I_size_Student) (CONST 8))))
+      (MOVE (MEM (TEMP _t0)) (GLOBAL VARIABLE _I_vt_Student)))
+     (TEMP _t0)))
+   (MOVE
+    (ESEQ (SEQ (MOVE (TEMP t1) (TEMP student))) (MEM (ADD (TEMP t1) (CONST 8))))
+    (ESEQ
+     (SEQ
+      (MOVE (TEMP _t2) (CALL (NAME _I_alloc_i) (CONST 56)))
+      (MOVE (MEM (TEMP _t2)) (CONST 6))
+      (MOVE (MEM (ADD (CONST 8) (TEMP _t2))) (CONST 84))
+      (MOVE (MEM (ADD (CONST 16) (TEMP _t2))) (CONST 104))
+      (MOVE (MEM (ADD (CONST 24) (TEMP _t2))) (CONST 111))
+      (MOVE (MEM (ADD (CONST 32) (TEMP _t2))) (CONST 109))
+      (MOVE (MEM (ADD (CONST 40) (TEMP _t2))) (CONST 97))
+      (MOVE (MEM (ADD (CONST 48) (TEMP _t2))) (CONST 115))
+      (MOVE (TEMP _t2) (ADD (TEMP _t2) (CONST 8))))
+     (TEMP _t2)))
+   (MOVE
+    (ESEQ (SEQ (MOVE (TEMP t3) (TEMP student)))
+     (MEM (ADD (TEMP t3) (CONST 24))))
+    (CONST 8))
+   (EXP
+    (CALL
+     (NAME _Iprintln_pai)
+     (ESEQ
+      (SEQ
+       (MOVE (TEMP t4) (TEMP student))
+       (MOVE (TEMP t5) (MEM (ADD (TEMP t4) (CONST 8)))))
+      (TEMP t5))))
+   (EXP
+    (CALL
+     (NAME _Iprintln_pai)
+     (CALL
+      (NAME _IunparseInt_aii)
+      (ESEQ
+       (SEQ
+        (MOVE (TEMP t6) (TEMP student))
+        (MOVE (TEMP t7) (MEM (ADD (TEMP t6) (CONST 24)))))
+       (TEMP t7)))))))
+ (FUNC
+  _I_init_Student
+  (SEQ
+   (CJUMP (EQ (CONST 0) (GLOBAL VARIABLE _I_size_Student)) l2 l3)
+   (LABEL l2)
+   (EXP (CALL (NAME _I_init_Person)))
+   (MOVE (GLOBAL VARIABLE _I_size_Student)
+    (ADD (GLOBAL VARIABLE _I_size_Person) (CONST 2)))
+   (LABEL l3)
+   (MOVE (TEMP _t9) (CALL (NAME _I_alloc_i) (CONST 0)))
+   (MOVE (GLOBAL VARIABLE _I_vt_Student) (TEMP _t9))
+   (LABEL l3)
+   (RETURN)))
+ (FUNC
+  _I_init_Person
+  (SEQ
+   (CJUMP (EQ (CONST 0) (GLOBAL VARIABLE _I_size_Person)) l0 l1)
+   (LABEL l0)
+   (MOVE (GLOBAL VARIABLE _I_size_Person) (CONST 2))
+   (LABEL l1)
+   (MOVE (TEMP _t8) (CALL (NAME _I_alloc_i) (CONST 0)))
+   (MOVE (GLOBAL VARIABLE _I_vt_Person) (TEMP _t8))
+   (LABEL l1)
+   (RETURN)))
+ (DISPATCH VECTOR CLASSNAME: Person METHODS: [] FIELDS: [name])
+ (DISPATCH VECTOR CLASSNAME: Student METHODS: [] FIELDS: [name, name, id]))
+(COMPUNIT
+ Program
+ (FUNC
+  _Imain_paai
+  (SEQ
+   (MOVE (TEMP args) (TEMP _ARG0))
+   (MOVE (TEMP _temp0) (MUL (GLOBAL VARIABLE _I_size_Student) (CONST 8)))
+   (MOVE (TEMP _temp1) (CALL (NAME _I_alloc_i) (TEMP _temp0)))
+   (MOVE (TEMP _t0) (TEMP _temp1))
+   (MOVE (MEM (TEMP _t0)) (GLOBAL VARIABLE _I_vt_Student))
+   (MOVE (TEMP student) (TEMP _t0))
+   (MOVE (TEMP t1) (TEMP student))
+   (MOVE (TEMP _temp4) (ADD (TEMP t1) (CONST 8)))
+   (MOVE (TEMP _temp2) (CONST 56))
+   (MOVE (TEMP _temp3) (CALL (NAME _I_alloc_i) (TEMP _temp2)))
+   (MOVE (TEMP _t2) (TEMP _temp3))
+   (MOVE (MEM (TEMP _t2)) (CONST 6))
+   (MOVE (MEM (ADD (CONST 8) (TEMP _t2))) (CONST 84))
+   (MOVE (MEM (ADD (CONST 16) (TEMP _t2))) (CONST 104))
+   (MOVE (MEM (ADD (CONST 24) (TEMP _t2))) (CONST 111))
+   (MOVE (MEM (ADD (CONST 32) (TEMP _t2))) (CONST 109))
+   (MOVE (MEM (ADD (CONST 40) (TEMP _t2))) (CONST 97))
+   (MOVE (MEM (ADD (CONST 48) (TEMP _t2))) (CONST 115))
+   (MOVE (TEMP _t2) (ADD (TEMP _t2) (CONST 8)))
+   (MOVE (MEM (TEMP _temp4)) (TEMP _t2))
+   (MOVE (TEMP t3) (TEMP student))
+   (MOVE (MEM (ADD (TEMP t3) (CONST 24))) (CONST 8))
+   (MOVE (TEMP t4) (TEMP student))
+   (MOVE (TEMP t5) (MEM (ADD (TEMP t4) (CONST 8))))
+   (MOVE (TEMP _temp5) (TEMP t5))
+   (EXP (CALL (NAME _Iprintln_pai) (TEMP _temp5)))
+   (MOVE (TEMP t6) (TEMP student))
+   (MOVE (TEMP t7) (MEM (ADD (TEMP t6) (CONST 24))))
+   (MOVE (TEMP _temp7) (TEMP t7))
+   (MOVE (TEMP _temp8) (CALL (NAME _IunparseInt_aii) (TEMP _temp7)))
+   (MOVE (TEMP _temp9) (TEMP _temp8))
+   (EXP (CALL (NAME _Iprintln_pai) (TEMP _temp9)))
+   (RETURN)))
+ (FUNC
+  _I_init_Student
+  (SEQ
+   (CJUMP (EQ (CONST 0) (GLOBAL VARIABLE _I_size_Student)) l2)
+   (LABEL l3)
+   (RETURN)
+   (LABEL l2)
+   (EXP (CALL (NAME _I_init_Person)))
+   (MOVE (GLOBAL VARIABLE _I_size_Student)
+    (ADD (GLOBAL VARIABLE _I_size_Person) (CONST 2)))
+   (MOVE (TEMP _temp12) (CONST 0))
+   (MOVE (TEMP _temp13) (CALL (NAME _I_alloc_i) (TEMP _temp12)))
+   (MOVE (TEMP _t9) (TEMP _temp13))
+   (MOVE (GLOBAL VARIABLE _I_vt_Student) (TEMP _t9))
+   (JUMP (NAME l3))))
+ (FUNC
+  _I_init_Person
+  (SEQ
+   (CJUMP (EQ (CONST 0) (GLOBAL VARIABLE _I_size_Person)) l0)
+   (LABEL l1)
+   (RETURN)
+   (LABEL l0)
+   (MOVE (GLOBAL VARIABLE _I_size_Person) (CONST 2))
+   (MOVE (TEMP _temp14) (CONST 0))
+   (MOVE (TEMP _temp15) (CALL (NAME _I_alloc_i) (TEMP _temp14)))
+   (MOVE (TEMP _t8) (TEMP _temp15))
+   (MOVE (GLOBAL VARIABLE _I_vt_Person) (TEMP _t8))
+   (JUMP (NAME l1))))
+ (DISPATCH VECTOR CLASSNAME: Person METHODS: [] FIELDS: [name])
+ (DISPATCH VECTOR CLASSNAME: Student METHODS: [] FIELDS: [name, name, id]))

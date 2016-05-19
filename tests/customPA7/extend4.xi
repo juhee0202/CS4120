@@ -1,43 +1,16 @@
 use io
-use conv
 
 x, y, z: int;
 
-class Organism {
-	size: int;
-	evolve() {
-		println("WOP WOP");
-	}
-}
-
-class Animal extends Organism {
-    species: int;
+class Animal {
+    a: int;
 	sleep(c: int) {
-		println("HELLO");
-	}
-	wake() {
-		println(unparseInt(species));
-		println("WORLD");
-	}
-}
-
-class Dog extends Animal {
-	weight: int;
-	eat() {
-		println("DOG IS EAT");
-	}
-	sleep(c: int) {
-		println("NO HELLO");
+		
 	}
 }
 
 main(args: int[][]) {
-	doggie: Dog = new Dog;
-	a: Animal = doggie;
-	a.sleep(2755);
-	a.wake();
-	doggie.eat();
-	println(unparseInt(doggie.weight));
-	o:Organism = doggie;
-	o.evolve();
+	a: Animal = new Animal;
+	m: int = 10;
+	a.sleep(m);
 }

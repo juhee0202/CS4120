@@ -2,6 +2,7 @@ package jl2755.ast;
 
 import edu.cornell.cs.cs4120.util.CodeWriterSExpPrinter;
 import jl2755.GlobalPrettyPrinter;
+import jl2755.type.VType;
 import jl2755.visitor.ASTVisitor;
 
 public class DotableExpr implements Expr {
@@ -18,6 +19,7 @@ public class DotableExpr implements Expr {
 	private int col;
 	private int line;
 	private boolean isSurroundedByParentheses = false;
+	private VType compileTimeType;
 	
 	/**
 	 * Constructor for "this"
@@ -77,6 +79,14 @@ public class DotableExpr implements Expr {
 
 	public DotableExpr(DotableExpr de, Identifier id2, IndexedBrackets ib) {
 		// TODO Auto-generated constructor stub
+	}
+
+	public VType getCompileTimeType() {
+		return compileTimeType;
+	}
+
+	public void setCompileTimeType(VType compileTimeType) {
+		this.compileTimeType = compileTimeType;
 	}
 
 	public Type getType() {

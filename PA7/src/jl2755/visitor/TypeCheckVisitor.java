@@ -1699,24 +1699,29 @@ public class TypeCheckVisitor implements ASTVisitor {
 											);
 				Main.handleSemanticError(seo);
 			}
+			Identifier field = de.getId();
+			field.setIsField(true);
 			ClassType classView = env.getClassType(((VarType) childType).getElementType());
-			tempType = classView.getFieldType(de.getId().toString());
+			tempType = classView.getFieldType(field.toString());
 			if (tempType == null) {
-				String s = "Class " + classView.getClassName() + " does not have field " + de.getId().toString();
+				String s = "Class " + classView.getClassName() + " does not have field " + field.toString();
 				SemanticErrorObject seo = new SemanticErrorObject(
-											de.getId().getLineNumber(), 
-											de.getId().getColumnNumber(),
+											field.getLineNumber(), 
+											field.getColumnNumber(),
 											s
 											);
 				Main.handleSemanticError(seo);
 			}
+			de.setCompileTimeType(tempType);
 			break;
 		case FUNCTION_CALL:
 			de.getFunctionCall().accept(this);
+			de.setCompileTimeType(tempType);
 			break;
 		case IDENTIFIER:
 			Identifier id = de.getId();
 			id.accept(this);
+			de.setCompileTimeType(tempType);
 			break;
 		case NEW:
 			// make sure that the className is a valid class name
@@ -1732,9 +1737,11 @@ public class TypeCheckVisitor implements ASTVisitor {
 			}
 			ClassType tempClass = env.getClassType(de.getId().toString());
 			tempType = new VarType(tempClass.getClassName(),0);
+			de.setCompileTimeType(tempType);
 			break;
 		case ARRAY:
 			de.getArrayElement().accept(this);
+			de.setCompileTimeType(tempType);
 			break;
 		case THIS:
 			if (!(isInClass && isInFunctionDecl)) {
@@ -1747,6 +1754,7 @@ public class TypeCheckVisitor implements ASTVisitor {
 				Main.handleSemanticError(seo);
 			}
 			tempType = new VarType(classEnv.getClassName(),0);
+			de.setCompileTimeType(tempType);
 			break;
 		}
 	}

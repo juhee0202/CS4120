@@ -72,7 +72,7 @@ public class MIRVisitor implements ASTVisitor{
 		// Allocate memory for array and length "field"
 		IRName addrOfAllocFunc = new IRName("_I_alloc_i");
 		IRCall theIRCall = new IRCall(addrOfAllocFunc, new IRConst((length + 1)*Configuration.WORD_SIZE));
-		IRTemp tempOfArray = new IRTemp("t"+tempCount++);
+		IRTemp tempOfArray = new IRTemp("_t"+tempCount++);
 		
 		// Move allocated space pointer into tempOfArray
 		IRMove moveCallIntoTemp = new IRMove(tempOfArray, theIRCall);
@@ -156,14 +156,14 @@ public class MIRVisitor implements ASTVisitor{
 			/* Store calls into temps */
 			if (leftNode instanceof IRCall) {
 				IRCall leftCall = (IRCall) leftNode;
-				IRTemp tempLeftCall = new IRTemp("t" + tempCount++);
+				IRTemp tempLeftCall = new IRTemp("_t" + tempCount++);
 				IRMove moveLeftToTemp = new IRMove(tempLeftCall, leftCall);
 				masterStmtList.add(moveLeftToTemp);
 				leftNode = (IRExpr) tempLeftCall.copy();
 			}
 			if (rightNode instanceof IRCall) {
 				IRCall rightCall = (IRCall) rightNode;
-				IRTemp tempRightCall = new IRTemp("t" + tempCount++);
+				IRTemp tempRightCall = new IRTemp("_t" + tempCount++);
 				IRMove moveRightToTemp = new IRMove(tempRightCall, rightCall);
 				masterStmtList.add(moveRightToTemp);
 				rightNode = (IRExpr) tempRightCall.copy();
@@ -193,7 +193,7 @@ public class MIRVisitor implements ASTVisitor{
 			IRMem leftMem = new IRMem(leftLengthCell);
 			IRMem rightMem = new IRMem(rightLengthCell);
 			IRBinOp newLength = new IRBinOp(OpType.ADD, leftMem, rightMem);
-			IRTemp numEl = new IRTemp("t" + tempCount++);
+			IRTemp numEl = new IRTemp("_t" + tempCount++);
 			IRMove moveLengthToTemp = new IRMove(numEl, newLength);
 			stmtList.add(moveLengthToTemp);
 			
@@ -205,7 +205,7 @@ public class MIRVisitor implements ASTVisitor{
 			// allocate space for the concatenated array
 			IRName nameOfAlloc = new IRName("_I_alloc_i");
 			IRCall mallocCall = new IRCall(nameOfAlloc, realrealNewLength); // base address
-			IRTemp tempOfArray = new IRTemp("t" + tempCount++);
+			IRTemp tempOfArray = new IRTemp("_t" + tempCount++);
 			IRMove moveCallToArray = new IRMove(tempOfArray, mallocCall);
 			stmtList.add(moveCallToArray);
 			
@@ -220,13 +220,13 @@ public class MIRVisitor implements ASTVisitor{
 			
 			/* first while loop */
 			// i:int = 0
-			IRTemp firstLoopCounter = new IRTemp("t" + tempCount++);
+			IRTemp firstLoopCounter = new IRTemp("_t" + tempCount++);
 			IRMove initializeFirstCounter = new IRMove(firstLoopCounter,new IRConst(0));
-			IRLabel startOfLoop1 = new IRLabel("l"+labelCount++);
+			IRLabel startOfLoop1 = new IRLabel("_l"+labelCount++);
 
 			IRBinOp loopCondition1 = new IRBinOp(OpType.LT, (IRTemp) firstLoopCounter.copy(), (IRMem) leftMem.copy());
-			IRLabel trueLabel1 = new IRLabel("l"+labelCount++);
-			IRLabel falseLabel1 = new IRLabel("l"+labelCount++);
+			IRLabel trueLabel1 = new IRLabel("_l"+labelCount++);
+			IRLabel falseLabel1 = new IRLabel("_l"+labelCount++);
 			
 			// while(i < length(e1))
 			IRCJump firstWhileJump = new IRCJump(loopCondition1,trueLabel1.name(),falseLabel1.name());
@@ -255,17 +255,17 @@ public class MIRVisitor implements ASTVisitor{
 			
 			/* second while loop */
 			// i = 0
-			IRTemp secondLoopCounter = new IRTemp("t" + tempCount++);
+			IRTemp secondLoopCounter = new IRTemp("_t" + tempCount++);
 			IRMove initializeSecondCounter = new IRMove(secondLoopCounter,new IRConst(0));
-			IRLabel startOfLoop2 = new IRLabel("l"+labelCount++);
+			IRLabel startOfLoop2 = new IRLabel("_l"+labelCount++);
 
 			IRBinOp loopCondition2 = new IRBinOp(OpType.LT, (IRTemp) secondLoopCounter.copy(), (IRMem) rightMem.copy());
-			IRLabel trueLabel2 = new IRLabel("l"+labelCount++);
-			IRLabel falseLabel2 = new IRLabel("l"+labelCount++);
+			IRLabel trueLabel2 = new IRLabel("_l"+labelCount++);
+			IRLabel falseLabel2 = new IRLabel("_l"+labelCount++);
 			
 			// while(i < length(e2))
 			IRCJump secondWhileJump = new IRCJump(loopCondition2,trueLabel2.name(),falseLabel2.name());
-			IRTemp arrayBaseOffset = new IRTemp("t" + tempCount++);
+			IRTemp arrayBaseOffset = new IRTemp("_t" + tempCount++);
 
 			IRMove assignArrayBaseOffset = new IRMove(arrayBaseOffset, (IRMem) leftMem.copy()); // length(e1)
 			arrayOffset = new IRBinOp(OpType.ADD, (IRTemp) secondLoopCounter.copy(), (IRTemp) arrayBaseOffset.copy());	// i + length(e1)
@@ -313,7 +313,7 @@ public class MIRVisitor implements ASTVisitor{
 			tempOp = OpType.ADD; 	
 			if (rightNode instanceof IRConst &&
 					((IRConst) rightNode).value() > 2147483647) {
-				IRTemp reg = new IRTemp("t" + tempCount++);
+				IRTemp reg = new IRTemp("_t" + tempCount++);
 				IRMove moveConstToReg = new IRMove(reg, rightNode);
 				IRBinOp result = new IRBinOp(tempOp, leftNode, (IRExpr) reg.copy());
 				tempNode = new IRESeq(moveConstToReg, result);
@@ -341,12 +341,12 @@ public class MIRVisitor implements ASTVisitor{
 		case AND:
 			tempOp = OpType.AND;
 			List<IRStmt> stmts1 = new ArrayList<IRStmt>();
-			IRTemp temp1 = new IRTemp("t" + tempCount++);
+			IRTemp temp1 = new IRTemp("_t" + tempCount++);
 			IRMove moveFalseToTemp = new IRMove(temp1, new IRConst(0));
 			stmts1.add(moveFalseToTemp);
 			
-			IRLabel tL = new IRLabel("l" + labelCount++);
-			IRLabel fL = new IRLabel("l" + labelCount++);
+			IRLabel tL = new IRLabel("_l" + labelCount++);
+			IRLabel fL = new IRLabel("_l" + labelCount++);
 			IRCJump jump = new IRCJump(leftNode, tL.name(), fL.name());
 			stmts1.add(jump);
 			stmts1.add(tL);
@@ -362,12 +362,12 @@ public class MIRVisitor implements ASTVisitor{
 			tempOp = OpType.OR;
 
 			List<IRStmt> stmts2 = new ArrayList<IRStmt>();
-			IRTemp temp2 = new IRTemp("t" + tempCount++);
+			IRTemp temp2 = new IRTemp("_t" + tempCount++);
 			IRMove moveTrueToTemp = new IRMove(temp2, new IRConst(1));
 			stmts2.add(moveTrueToTemp);
 			
-			IRLabel tL2 = new IRLabel("l" + labelCount++);
-			IRLabel fL2 = new IRLabel("l" + labelCount++);
+			IRLabel tL2 = new IRLabel("_l" + labelCount++);
+			IRLabel fL2 = new IRLabel("_l" + labelCount++);
 			IRCJump jump2 = new IRCJump(leftNode, tL2.name(), fL2.name());
 			stmts2.add(jump2);
 			stmts2.add(fL2);
@@ -663,8 +663,8 @@ public class MIRVisitor implements ASTVisitor{
 
 	@Override
 	public void visit(IfStmt is) {
-		IRLabel trueLabel = new IRLabel("l"+labelCount++);
-		IRLabel falseLabel = new IRLabel("l"+labelCount++);
+		IRLabel trueLabel = new IRLabel("_l"+labelCount++);
+		IRLabel falseLabel = new IRLabel("_l"+labelCount++);
 		IRStmt ifJump = controlFlow(is.getExpr(),trueLabel,falseLabel);
 		if (is.getIndex() == 0) {
 			// Only if
@@ -673,7 +673,7 @@ public class MIRVisitor implements ASTVisitor{
 			tempNode = new IRSeq(ifJump,trueLabel,stmt,falseLabel);
 		} else {
 			// If, else
-			String end = "l"+labelCount++;
+			String end = "_l"+labelCount++;
 			IRLabel endLabel = new IRLabel(end);
 			IRJump endJump = new IRJump(new IRName(end));
 			is.getStmt1().accept(this);
@@ -715,7 +715,7 @@ public class MIRVisitor implements ASTVisitor{
 			IRName addrOfAllocFunc = new IRName("_I_alloc_i");
 			int length = stringLit.length();
 			IRCall theIRCall = new IRCall(addrOfAllocFunc, new IRConst((length+1)*Configuration.WORD_SIZE));
-			IRTemp tempOfArray = new IRTemp("t" + tempCount++);
+			IRTemp tempOfArray = new IRTemp("_t" + tempCount++);
 			
 			// Move allocated space pointer into tempOfArray
 			IRMove moveCallIntoTemp = new IRMove(tempOfArray, theIRCall);
@@ -949,7 +949,7 @@ public class MIRVisitor implements ASTVisitor{
 				List<IRTemp> sizes = new ArrayList<IRTemp>();
 				for (int i = 0; i < exprList.size(); i++) {
 					exprList.get(i).accept(this);
-					IRTemp exprTemp = new IRTemp("t" + tempCount++);
+					IRTemp exprTemp = new IRTemp("_t" + tempCount++);
 					IRMove moveExprToTemp = new IRMove(exprTemp,(IRExpr) tempNode);
 					sizes.add(exprTemp);
 					preamble.add(moveExprToTemp);
@@ -966,13 +966,13 @@ public class MIRVisitor implements ASTVisitor{
 				newList.add(moveAddrToTemp);
 				tempNode = new IRSeq(newList);
 			} else {
-				IRTemp temp = new IRTemp("t" + tempCount++);
+				IRTemp temp = new IRTemp("_t" + tempCount++);
 				IRMove moveDefault = new IRMove(temp, new IRConst(0));
 				tempNode = moveDefault;
 			}
 		} else {
 			// Primitive Type or Object Type
-			IRTemp temp = new IRTemp("t" + tempCount++);
+			IRTemp temp = new IRTemp("_t" + tempCount++);
 			IRMove moveDefault = new IRMove(temp, new IRConst(0));
 			tempNode = moveDefault;
 		}
@@ -998,16 +998,22 @@ public class MIRVisitor implements ASTVisitor{
 
 	@Override
 	public void visit(WhileStmt ws) {
-		String start = "l"+labelCount++;
-		IRLabel startOfLoop = new IRLabel(start);
-		IRLabel trueLabel = new IRLabel("l"+labelCount++);
-		IRLabel falseLabel = new IRLabel("l"+labelCount++);
+		IRLabel startOfLoop;
+		if (ws.hasLabel()) {
+			startOfLoop = new IRLabel(ws.getLabel().getName());
+		} else {
+			String start = "_l"+labelCount++;
+			startOfLoop = new IRLabel(start);
+		}
+		
+		IRLabel trueLabel = new IRLabel("_l"+labelCount++);
+		IRLabel falseLabel = new IRLabel("_l"+labelCount++);
 		IRStmt cJumpNode = controlFlow(ws.getExpr(),trueLabel,falseLabel);
 		
 		// Update currentWhile as you enter and leave a while loop
 		String oldWhileStart = currentWhileStart;
 		String oldWhileEnd = currentWhileEnd;
-		currentWhileStart = start;
+		currentWhileStart = startOfLoop.name();
 		currentWhileEnd = falseLabel.name();
 		startToEnd.put(currentWhileStart, currentWhileEnd);
 		ws.getStmt().accept(this);
@@ -1015,7 +1021,7 @@ public class MIRVisitor implements ASTVisitor{
 		currentWhileEnd = oldWhileEnd;
 		
 		IRStmt loopStmts = (IRStmt) tempNode;
-		IRJump jumpToStart = new IRJump(new IRName(start));
+		IRJump jumpToStart = new IRJump(new IRName(startOfLoop.name()));
 		tempNode = new IRSeq(startOfLoop, cJumpNode, trueLabel, 
 				loopStmts, jumpToStart, falseLabel);
 	}
@@ -1036,14 +1042,14 @@ public class MIRVisitor implements ASTVisitor{
 		// mem(mem(a + 8*i0) + 8*i1) +... 
 		List<Expr> exprList = ib.getAllExprInIndexedBrackets();
 		IRExpr arrayElem = base;
-		IRTemp baseTemp = new IRTemp("t" + tempCount++);
+		IRTemp baseTemp = new IRTemp("_t" + tempCount++);
 		IRMove moveBaseToTemp = new IRMove(baseTemp, arrayElem);
 		stmtList.add(moveBaseToTemp);
 		
 		for (int i = 0; i < exprList.size(); i++) {
 			exprList.get(i).accept(this);
 			IRExpr exprInBrackets = (IRExpr)tempNode;
-			IRTemp tempForExprInBrackets = new IRTemp("t" + tempCount++);
+			IRTemp tempForExprInBrackets = new IRTemp("_t" + tempCount++);
 			// move expr in brackets to a temp register
 			IRMove moveToTemp = new IRMove(tempForExprInBrackets, exprInBrackets);
 			stmtList.add(moveToTemp);
@@ -1055,7 +1061,7 @@ public class MIRVisitor implements ASTVisitor{
 			IRBinOp arrayElemAddr = new IRBinOp(OpType.ADD, (IRExpr) baseTemp.copy(), offset);
 			arrayElem = new IRMem(arrayElemAddr);
 			if (i < exprList.size()-1) {
-				baseTemp = new IRTemp("t" + tempCount++);
+				baseTemp = new IRTemp("_t" + tempCount++);
 				IRMove moveToNewBaseTemp = new IRMove(baseTemp, arrayElem);
 				stmtList.add(moveToNewBaseTemp);
 			}
@@ -1077,7 +1083,7 @@ public class MIRVisitor implements ASTVisitor{
 		List<IRStmt> stmtList = new ArrayList<IRStmt>();
 		
 		/* Get array length */
-		IRTemp length = new IRTemp("t" + tempCount++);
+		IRTemp length = new IRTemp("_t" + tempCount++);
 		IRBinOp arrayLengthAddr = new IRBinOp(OpType.SUB, baseAddr, (IRConst) WORD_SIZE.copy());
 		IRMem arrayLength = new IRMem(arrayLengthAddr);
 		IRMove moveLength = new IRMove(length, arrayLength);
@@ -1085,15 +1091,15 @@ public class MIRVisitor implements ASTVisitor{
 
 		/* Check bounds */
 		// i < 0
-		IRLabel label1 = new IRLabel("l"+labelCount++);
-		IRLabel label2 = new IRLabel("l"+labelCount++);
+		IRLabel label1 = new IRLabel("_l"+labelCount++);
+		IRLabel label2 = new IRLabel("_l"+labelCount++);
 		IRConst zero = new IRConst(0);
 		IRBinOp lessThanZero = new IRBinOp(OpType.LT, arrayIndex, zero);
 		IRCJump cond1 = new IRCJump(lessThanZero, label2.name(), label1.name()); 
 		stmtList.add(cond1);
 		stmtList.add(label1);
 		// i < length
-		IRLabel label3 = new IRLabel("l"+labelCount++);
+		IRLabel label3 = new IRLabel("_l"+labelCount++);
 		arrayIndex = (IRExpr)arrayIndex.copy();
 		IRBinOp lessThanLength = new IRBinOp(OpType.LT, arrayIndex, (IRTemp) length.copy());
 		IRCJump cond2 = new IRCJump(lessThanLength, label3.name(), label2.name());
@@ -1140,12 +1146,12 @@ public class MIRVisitor implements ASTVisitor{
 			BinaryExpr e1 = (BinaryExpr) e;
 			BinaryOp op = e1.getBinaryOp();
 			if (op == BinaryOp.AND) {
-				IRLabel trueLabel = new IRLabel("l"+labelCount++);
+				IRLabel trueLabel = new IRLabel("_l"+labelCount++);
 				IRStmt c1 = controlFlow(e1.getLeftExpr(),trueLabel,f);
 				IRStmt c2 = controlFlow(e1.getRightExpr(),t,f);
 				return new IRSeq(c1,trueLabel,c2);
 			} else if (op == BinaryOp.OR) {
-				IRLabel falseLabel = new IRLabel("l"+labelCount++);
+				IRLabel falseLabel = new IRLabel("_l"+labelCount++);
 				IRStmt c1 = controlFlow(e1.getLeftExpr(),t,falseLabel);
 				IRStmt c2 = controlFlow(e1.getRightExpr(),t,f);
 				return new IRSeq(c1,falseLabel,c2);
@@ -1175,7 +1181,7 @@ public class MIRVisitor implements ASTVisitor{
 	private IRExpr createArray(int index, List<IRTemp> sizes) {		
 		// Base case
 		if (index == sizes.size()) {
-			IRTemp tempTemp = new IRTemp("t" + tempCount++);
+			IRTemp tempTemp = new IRTemp("_t" + tempCount++);
 			IRMove move0IntoTemp = new IRMove(tempTemp, new IRConst(0));
 			IRSeq tempSeq = new IRSeq(move0IntoTemp);
 			IRESeq tempESeq = new IRESeq(tempSeq,(IRExpr) tempTemp.copy());
@@ -1190,7 +1196,7 @@ public class MIRVisitor implements ASTVisitor{
 		sizeOfArray = new IRBinOp(OpType.MUL, sizeOfArray, (IRConst) WORD_SIZE.copy());
 	
 		IRCall callToAlloc = new IRCall(nameOfAlloc,sizeOfArray);
-		IRTemp freshArray = new IRTemp("t"+tempCount++);
+		IRTemp freshArray = new IRTemp("_t"+tempCount++);
 		IRMove moveAddrToTemp = new IRMove(freshArray,callToAlloc);
 		stmts.add(moveAddrToTemp);
 		
@@ -1204,14 +1210,14 @@ public class MIRVisitor implements ASTVisitor{
 		stmts.add(moveBaseUp);
 		
 		// while loop
-		IRTemp loopCounter = new IRTemp("t" + tempCount++);
+		IRTemp loopCounter = new IRTemp("_t" + tempCount++);
 		IRMove initializeCounter = new IRMove(loopCounter, new IRConst(0));
 	
-		IRLabel startOfLoop = new IRLabel("l" + labelCount++);
+		IRLabel startOfLoop = new IRLabel("_l" + labelCount++);
 		
 		IRBinOp loopCondition = new IRBinOp(OpType.LT, (IRTemp) loopCounter.copy(), (IRTemp) lengthTemp.copy());
-		IRLabel trueLabel = new IRLabel("l" + labelCount++);
-		IRLabel falseLabel = new IRLabel("l" + labelCount++);
+		IRLabel trueLabel = new IRLabel("_l" + labelCount++);
+		IRLabel falseLabel = new IRLabel("_l" + labelCount++);
 		IRCJump whileJump = new IRCJump(loopCondition, trueLabel.name(), falseLabel.name());
 		IRBinOp baseOffset = new IRBinOp(OpType.MUL, (IRTemp) loopCounter.copy(), (IRConst) WORD_SIZE.copy());
 		IRBinOp currAddr = new IRBinOp(OpType.ADD, (IRTemp) freshArray.copy(), baseOffset);
@@ -1268,12 +1274,13 @@ public class MIRVisitor implements ASTVisitor{
 		IRGlobalReference classSize = new IRGlobalReference(className, 
 				IRGlobalReference.GlobalType.SIZE);
 		IRBinOp compareSizeTo0 = new IRBinOp(OpType.EQ, new IRConst(0), classSize);
-		IRLabel trueLabel = new IRLabel("l" + labelCount++);
-		IRLabel falseLabel = new IRLabel("l" + labelCount++);
+		IRLabel trueLabel = new IRLabel("_l" + labelCount++);
+		IRLabel falseLabel = new IRLabel("_l" + labelCount++);
 		IRCJump jumpToTrue = new IRCJump(compareSizeTo0, trueLabel.name(), falseLabel.name());
 		list.add(jumpToTrue);
 		
 		// True part
+		list.add(trueLabel);
 		if (cd.hasExtends()) {
 			String superClassName = cd.getSuperclassName().toString();
 			String initName = "_I_init_" + superClassName;
@@ -1284,7 +1291,6 @@ public class MIRVisitor implements ASTVisitor{
 			IRBinOp addToSize = new IRBinOp(OpType.ADD, superClassSize, 
 					new IRConst(classType.getFieldEnv().size()));
 			IRMove moveSumToSize = new IRMove(classSize, addToSize);
-			list.add(trueLabel);
 			list.add(wrapCall);
 			list.add(moveSumToSize);
 		}
@@ -1294,11 +1300,13 @@ public class MIRVisitor implements ASTVisitor{
 		}
 		
 		// Create DV
+		list.add(falseLabel);
 		IRGlobalReference dispatch = new IRGlobalReference(className,
 				IRGlobalReference.GlobalType.DISPATCHVECTOR);
 		IRName nameOfAlloc = new IRName("_I_alloc_i");
-		IRCall callToAlloc = new IRCall(nameOfAlloc, new IRConst(dv.getMethodSize()*8));
-		IRTemp dispatchPointer = new IRTemp("t" + tempCount++);
+		IRConst DVSize = new IRConst(dv.getMethodSize()*8);
+		IRCall callToAlloc = new IRCall(nameOfAlloc, DVSize);
+		IRTemp dispatchPointer = new IRTemp("_t" + tempCount++);
 		IRMove moveResultToTemp = new IRMove(dispatchPointer, callToAlloc);
 		list.add(moveResultToTemp);
 		int i = 0;
@@ -1385,7 +1393,7 @@ public class MIRVisitor implements ASTVisitor{
 			IRCall callToAlloc = new IRCall(nameOfAlloc, byteMultiplier);
 			
 			// Move result to temp
-			IRTemp object = new IRTemp("t"+tempCount++);
+			IRTemp object = new IRTemp("_t"+tempCount++);
 			IRMove moveResultToObject = new IRMove(object, callToAlloc);
 			list.add(moveResultToObject);
 			
@@ -1396,42 +1404,6 @@ public class MIRVisitor implements ASTVisitor{
 					IRGlobalReference.GlobalType.DISPATCHVECTOR);
 			IRMove moveDVToObject = new IRMove(new IRMem(object), vtVariable);
 			list.add(moveDVToObject);			
-			
-//			List<String> fields = dv.getFields();
-//			for (int i = 0; i < fields.size(); i++) {
-//				VarType vtype = type.getFieldType(fields.get(i));
-//				if (vtype.isPrimitive() || vtype.isObject()) {
-//					// Do nothing if alloc initializes to 0
-//					continue;
-//				} else if (vtype.isArray()) {
-//					List<Expr> exprList = vtype.getExprs();
-//					if (exprList.size() == 0) {
-//						// Do nothing if alloc initializes to 0
-//						continue;
-//					}
-//					// Initialize array with length
-//					List<IRTemp> sizes = new ArrayList<IRTemp>();
-//					for (Expr e : exprList) {
-//						e.accept(this);
-//						IRTemp exprTemp = new IRTemp("t" + tempCount++);
-//						IRMove moveExprToTemp = new IRMove(exprTemp,(IRExpr) tempNode);
-//						sizes.add(exprTemp);
-//						list.add(moveExprToTemp);
-//					}
-//					IRESeq arrayGenesis = (IRESeq) createArray(0, sizes);
-//					list.addAll(((IRSeq) arrayGenesis.stmt()).stmts());
-//					
-//					// Move array pointer into object table at field offset
-//					IRExpr array = arrayGenesis.expr();
-//					IRBinOp offset = new IRBinOp(OpType.ADD, object, new IRConst((i+1)*8));
-//					IRMem fieldAddr = new IRMem(offset);
-//					IRMove moveArrayToFieldAddr = new IRMove(fieldAddr, array);
-//					list.add(moveArrayToFieldAddr);
-//				} else {
-//					System.out.println("VarType has a weird type");
-//					assert(false);
-//				}
-//			}
 			
 			IRSeq seq = new IRSeq(list);
 			IRESeq creatingObject = new IRESeq(seq, object);
@@ -1464,7 +1436,7 @@ public class MIRVisitor implements ASTVisitor{
 					List<IRStmt> stmts = new ArrayList<IRStmt>();
 					for (int ii = 0; ii < exprList.size(); ii++) {
 						exprList.get(ii).accept(this);
-						IRTemp exprTemp = new IRTemp("t" + tempCount++);
+						IRTemp exprTemp = new IRTemp("_t" + tempCount++);
 						IRMove moveExprToTemp = new IRMove(exprTemp,(IRExpr) tempNode);
 						sizes.add(exprTemp);
 						stmts.add(moveExprToTemp);
@@ -1513,7 +1485,7 @@ public class MIRVisitor implements ASTVisitor{
 				List<IRStmt> stmts = new ArrayList<IRStmt>();
 				for (int ii = 0; ii < exprList.size(); ii++) {
 					exprList.get(ii).accept(this);
-					IRTemp exprTemp = new IRTemp("t" + tempCount++);
+					IRTemp exprTemp = new IRTemp("_t" + tempCount++);
 					IRMove moveExprToTemp = new IRMove(exprTemp,(IRExpr) tempNode);
 					sizes.add(exprTemp);
 					stmts.add(moveExprToTemp);

@@ -4,9 +4,9 @@ main(args:int[][]) {
 
     }
     l0: while(true) {
-        break to l0;
+        break _to_ l0;
         while (true) {
-            break to l1
+            break _to_ l1
         }
     }
 }

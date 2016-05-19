@@ -1,5 +1,5 @@
 main(args:int[][]) {
 	while(true) {
-		break to l0;
+		break _to_ l0;
 	}
 }

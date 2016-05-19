@@ -184,3 +184,97 @@ xic ("Test --typecheck -O") ["customPA3"] "-libpath $(testpath) --typecheck -O" 
     visibility5.xi;
 }
 
+xic ("Test -target linux") ["customPA5"] "-libpath $(testpath) -target linux" {
+    ack.xi;
+    arracc01.xi;
+    arracc02.xi;
+    arracc03.xi;
+    arracc04.xi;
+    arracc05.xi;
+    arracc06.xi;
+    arracc07.xi;
+    arracc08.xi;
+    array05.xi;
+    arrinit05.xi;
+    arrinit06.xi;
+    assign01.xi;
+    assign02.xi;
+    assign03.xi;
+    assign04.xi;
+    assign05.xi;
+    assign06.xi;
+    assign07.xi;
+    assign08.xi;
+    assign09.xi;
+    assign10.xi;
+    binary02.xi;
+    binary04.xi;
+    binary06.xi;
+    binary07.xi;
+    binary08.xi;
+    binary09.xi;
+    binary10.xi;
+    binary11.xi;
+    binary12.xi;
+    ex01.xi;
+    functioncall03.xi;
+    functioncall04.xi;
+    group_of_anonymous01_side_effect.xi;
+    group_of_anonymous02_dimensions.xi;
+    group_of_anonymous02_euler.xi;
+    group_of_anonymous02_sieve.xi;
+    group_of_anonymous03_concat.xi;
+    group_of_anonymous03_mult_call.xi;
+    group_of_anonymous03_wildcard.xi;
+    group_of_anonymous04_multipleReturns.xi;
+    group_of_anonymous04_recursiveCalls.xi;
+    group_of_anonymous05_ir_big_function.xi;
+    group_of_anonymous05_ir_hi_mult.xi;
+    group_of_anonymous06_func_inside_array_inside_func.xi;
+    group_of_anonymous06_hard.xi;
+    group_of_anonymous06_matrix.xi;
+    group_of_anonymous06_multiassign4.xi;
+    group_of_anonymous06_short_circuit_test.xi;
+    group_of_anonymous07_attack_arith.xi;
+    group_of_anonymous08_easytest.xi;
+    group_of_anonymous08_trivialtest.xi;
+    group_of_anonymous09_divideext.xi;
+    group_of_anonymous09_fastSquareRoot.xi;
+    group_of_anonymous09_hanoi.xi;
+    group_of_anonymous09_poison.xi;
+    if05.xi;
+    if06.xi;
+    if07.xi;
+    if08.xi;
+    if09.xi;
+    if10.xi;
+    localdecl01.xi;
+    localdecl03.xi;
+    localdecl04.xi;
+    localdecl05.xi;
+    localdecl06.xi;
+    localdecl09.xi;
+    localdecl10.xi;
+    localdecl11.xi;
+    localdecl12.xi;
+    localdecl13.xi;
+    localdecl14.xi;
+    medley01.xi;
+    primes.xi;
+    procedurecall02.xi;
+    procedurecall04.xi;
+    procedurecall05.xi;
+    procedurecall06.xi;
+    unary02.xi;
+    unary04.xi;
+    while02.xi;
+    while03.xi;
+    while04.xi;
+}
+
+xic ("Test -target linux -O") ["customPA5"] "-libpath $(testpath) -target linux -O" {
+    break01.xi;
+    break02.xi;
+    break03.xi;
+}
+

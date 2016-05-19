@@ -105,7 +105,7 @@ SingleCharacter = [^\'\\\"\b\t\f\n\r]
   "null"                         { return symbol(sym.NULL,"null"); }
   "return"                       { return symbol(sym.RETURN,"return"); }
   "this"                         { return symbol(sym.THIS,"this"); }
-  "to_label"                     { return symbol(sym.TO_LABEL,"to_label"); }
+  "_to_"                         { return symbol(sym.TO,"_to_"); }
   "use"                          { return symbol(sym.USE,"use"); }
   "while"                        { return symbol(sym.WHILE,"while"); }
 

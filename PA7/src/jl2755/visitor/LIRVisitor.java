@@ -41,7 +41,7 @@ public class LIRVisitor implements IRTreeVisitor{
 		}
 		else {			
 			// S(s1), MOV(TEMP(T), e1'), S(s2), BINOP(TEMP(T), e2')
-			IRTemp holyTemp = new IRTemp("temp" + globalTempCount++);
+			IRTemp holyTemp = new IRTemp("_temp" + globalTempCount++);
 			IRMove storeExpr = new IRMove(holyTemp, (IRExpr) e1);
 			IRSeq combinedSeq = combineTwoStmt(s1, storeExpr);
 			combinedSeq = combineTwoStmt(combinedSeq, s2);
@@ -69,7 +69,7 @@ public class LIRVisitor implements IRTreeVisitor{
 			dirtyExprList.get(i).accept(this);
 			holySideEffects = combineTwoStmt(holySideEffects,tempSeq.part1());
 			IRExpr holyExpr = (IRExpr) tempSeq.part2();
-			IRTemp holyTemp = new IRTemp("temp" + globalTempCount++);
+			IRTemp holyTemp = new IRTemp("_temp" + globalTempCount++);
 			holyTemps.add(holyTemp);
 			IRMove holyArgMove = new IRMove(holyTemp, holyExpr);
 			holySideEffects = combineTwoStmt(holySideEffects, holyArgMove);
@@ -81,7 +81,7 @@ public class LIRVisitor implements IRTreeVisitor{
 			holyTemps.set(i, temp);
 		}
 		
-		IRTemp returnRegister = new IRTemp("temp" + globalTempCount++);
+		IRTemp returnRegister = new IRTemp("_temp" + globalTempCount++);
 		IRCall holyCall = new IRCall(holyTarget, holyTemps);
 		holyCall.setNumReturns(call.getNumReturns());
 		holyCall.setReturnBoolList(call.getReturnBoolList());
@@ -102,6 +102,7 @@ public class LIRVisitor implements IRTreeVisitor{
 	
 	public void visit(IRCompUnit cu) {
 		List<IRFuncDecl> allFuncDecls = new ArrayList<IRFuncDecl>(cu.functions().values());
+		
 		List<IRFuncDecl> newFuncDecls = new ArrayList<IRFuncDecl>();
 		
 		for (int i = 0; i < allFuncDecls.size(); i++) {
@@ -315,7 +316,7 @@ public class LIRVisitor implements IRTreeVisitor{
 					if (prev instanceof IRLabel) {
 						returnLabel = ((IRLabel)prev).name();
 					} else {
-						returnLabel = "label" + globalLabelCount++;
+						returnLabel = "_label" + globalLabelCount++;
 						first_return_index = i;
 					}
 				}
@@ -412,7 +413,7 @@ public class LIRVisitor implements IRTreeVisitor{
 		}
 		else {
 			// S(dest), save expr in dest=IRMem(expr), S(src), MOV(IRMem(savedExpr), e')
-			IRTemp holyTemp = new IRTemp("temp" + globalTempCount++);
+			IRTemp holyTemp = new IRTemp("_temp" + globalTempCount++);
 			if (e2 instanceof IRMem) {
 				IRExpr memExpr = ((IRMem) e2).expr();
 				IRMove storeExpr = new IRMove(holyTemp, (IRExpr) memExpr);
@@ -524,12 +525,7 @@ public class LIRVisitor implements IRTreeVisitor{
 	 * @param Sequence of Statements
 	 * @return a List of basic blocks (IRSeq)
 	 */
-	private List<BasicBlock> createBasicBlocks(IRSeq stmts) {	
-//		System.out.println("*****Start*****");
-//		for (IRStmt s : stmts.stmts()) {
-//			System.out.println(s);
-//		}
-//		System.out.println("******End******");
+	private List<BasicBlock> createBasicBlocks(IRSeq stmts) {
 		
 		// return this at the end
 		List<BasicBlock> basicBlockList = new ArrayList<BasicBlock>();
@@ -556,7 +552,7 @@ public class LIRVisitor implements IRTreeVisitor{
 			} else if (stmt instanceof IRJump) {
 				// make sure that a basic block starts with a label
 				if (basicBlock == null) {
-					IRLabel startLabel = new IRLabel("label" + globalLabelCount++);
+					IRLabel startLabel = new IRLabel("_label" + globalLabelCount++);
 					basicBlock = new BasicBlock(startLabel);
 				}
 				
@@ -567,7 +563,7 @@ public class LIRVisitor implements IRTreeVisitor{
 			} else if (stmt instanceof IRCJump) {
 				// make sure that a basic block starts with a label
 				if (basicBlock == null) {
-					IRLabel startLabel = new IRLabel("label" + globalLabelCount++);
+					IRLabel startLabel = new IRLabel("_label" + globalLabelCount++);
 					basicBlock = new BasicBlock(startLabel);
 				}
 				basicBlock.addIRStmt(stmt);
@@ -577,7 +573,7 @@ public class LIRVisitor implements IRTreeVisitor{
 			} else if (stmt instanceof IRReturn) {
 				// make sure that a basic block starts with a label
 				if (basicBlock == null) {
-					IRLabel startLabel = new IRLabel("label" + globalLabelCount++);
+					IRLabel startLabel = new IRLabel("_label" + globalLabelCount++);
 					basicBlock = new BasicBlock(startLabel);
 				}
 				basicBlock.addIRStmt(stmt);
@@ -587,7 +583,7 @@ public class LIRVisitor implements IRTreeVisitor{
 			} else {
 				// make sure that a basic block starts with a label
 				if (basicBlock == null) {
-					IRLabel startLabel = new IRLabel("label" + globalLabelCount++);
+					IRLabel startLabel = new IRLabel("_label" + globalLabelCount++);
 					basicBlock = new BasicBlock(startLabel);
 				}
 				basicBlock.addIRStmt(stmt);
@@ -753,5 +749,8 @@ public class LIRVisitor implements IRTreeVisitor{
 
 	@Override
 	public void visit(IRGlobalReference irGlobalReference) {
+		List<IRStmt> emptyIRStmt = new ArrayList<IRStmt>();
+		IRSeq emptySeq = new IRSeq(emptyIRStmt);
+		tempSeq = new Pair<IRSeq, IRNode>(emptySeq, irGlobalReference);
 	}
 }

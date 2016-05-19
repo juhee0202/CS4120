@@ -179,4 +179,30 @@ public class DotableExpr implements Expr {
 			tempPrinter.endList();
 		}
 	}
+	
+	@Override
+	public String toString() {
+		String s = "";
+		switch(type) {
+		case ARRAY:
+			s = arrayElement.toString();
+			break;
+		case DOT:
+			s += dotableExpr.toString() + "." + id.toString();
+			break;
+		case FUNCTION_CALL:
+			s += functionCall.toString();
+			break;
+		case IDENTIFIER:
+			s += id.toString();
+			break;
+		case NEW:
+			s += "new " + id.toString();
+			break;
+		case THIS:
+			s += "this";
+			break;
+		}
+		return s;
+	}
 }

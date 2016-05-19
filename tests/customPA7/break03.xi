@@ -8,7 +8,7 @@ main(args:int[][]) {
     	while (j < 3) {
     		println("b")
     		if (j == 0) {
-    			break _to_ l0
+    			break _from_ l0
     		}
     	}
     }

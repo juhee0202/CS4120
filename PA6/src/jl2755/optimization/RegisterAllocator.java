@@ -659,6 +659,7 @@ public class RegisterAllocator {
 			colors.addAll(Arrays.asList(availableRegs));
 			colors.removeAll(uses.get(inst));
 			Register spillingReg = colors.iterator().next();
+			uses.get(inst).add(spillingReg);
 			
 			// Set up shuttling instructions
 			Instruction saveToStack = new Instruction(Operation.PUSHQ,spillingReg);

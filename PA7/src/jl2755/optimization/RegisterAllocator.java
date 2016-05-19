@@ -95,7 +95,7 @@ public class RegisterAllocator {
 	private static final Register R15 = new Register(RegisterName.R15);
 	
 	private static final Register[] availableRegs = 
-		{RAX,RBX,RCX,RDX,RSI,RDI,R8,R9,R10,R11,R15};
+		{RAX,RBX,RCX,RDX,RSI,RDI,R8,R9,R10,R11,R12,R13,R14,R15};
 	
 	// Built-in registers off-limits for allocation
 	private static final Register RSP = new Register(RegisterName.RSP);
@@ -106,8 +106,6 @@ public class RegisterAllocator {
 	private int stackCounter;
 	
 	private boolean Omc;
-	
-	private boolean spill;
 	
 	public RegisterAllocator(boolean omc) {
 		// Initialize globals
@@ -160,7 +158,7 @@ public class RegisterAllocator {
 			didActuallySpill = select();
 			extraSpace |= didActuallySpill;
 		}
-//		cleanUp();
+		cleanUp();
 		if (extraSpace) {
 			stackCounter++;
 		}
@@ -187,6 +185,7 @@ public class RegisterAllocator {
 		
 		// Create interference graph
 		graph = new InterferenceGraph(nodeToLiveRegs);
+		
 		// If there is a register in the def of a node that is not live coming out, remove it
 		boolean result = false;
 //		Set<CFGNode> nodes = new HashSet<CFGNode>();
@@ -474,7 +473,7 @@ public class RegisterAllocator {
 			} else {
 				replacedReg = removeReg2;
 				replacingReg = removeReg1;
-			}
+			}			
 			
 			// Replace replacedReg of all related instructions with replacingReg
 			replace(replacedReg, replacingReg, true);
@@ -624,6 +623,7 @@ public class RegisterAllocator {
 			assert(preColored.getType() != RegisterName.TEMP);
 			usedRegs.add(preColored);
 		}
+		List<Register> toSpill = new ArrayList<Register>();
 		while (!regStack.empty()) {
 			// Pop from stack
 			Register reg = regStack.pop();
@@ -636,9 +636,9 @@ public class RegisterAllocator {
 			Register color = color(reg, edges.get(reg));
 			if (color == null) {
 				// Spill reg to stack
-//				actuallySpill(reg);
-//				result = true;
-				spill = true;
+				actuallySpill(reg);
+//				toSpill.add(reg);
+				result = true;
 			} else {
 				// Set all related instruction to use color
 				usedRegs.add(color);
@@ -646,9 +646,123 @@ public class RegisterAllocator {
 			}
 		}
 		funcToRegsUsed.put(currentFunction, usedRegs);
+//		spillAnalysis(toSpill);
 		return result;
 	}
+	
+	private void spillAnalysis(List<Register> list) {
+		Set<Register> nodes = graph.getNodes();
+		Map<Register, Set<Register>> edges = graph.getEdges();
+		
+		// Coalesce registers connected by a move that don't interfere
+		List<Register> regsToRemove = new ArrayList<Register>();
+		for (Register r : list) {
+			if (regToMovInstructions.containsKey(r)) {
+				Register temp = spillCoalesce(r);
+				if (temp != null) {
+					regsToRemove.add(temp);
+				}
+			}
+		}
+		list.removeAll(regsToRemove);
+//		spillSimplify(list);
+		
+		Set<Instruction> allInsts = new HashSet<Instruction>();
+		for (Register r : list) {
+			allInsts.addAll(regToInstructions.get(r));
+		}
+		actuallySpill(allInsts);
+	}
+	
+//	private void spillSimplify(List<Register> nodes) {
+//		Set<Register> remove = new HashSet<Register>();
+//		for (Register reg : nodes) {
+//			Map<Register,Set<Register>> edges = graph.getEdges();
+//			if (!regToMovInstructions.containsKey(reg) && !reg.isBuiltIn()
+//					&& edges.get(reg).size() < NUM_COLORS) {
+//				// Push reg onto stack
+//				regStack.push(reg);
+//				neighborStack.push(edges.get(reg));
+//
+//				// Remove reg from interference graph
+//				remove.add(reg);
+//			}
+//		}
+//		for (Register r : remove) {
+//			graph.remove(r);
+//		}
+//	}
+	
+	private Register spillCoalesce(Register r) {
+		Map<Register, Set<Register>> edges = graph.getEdges();
+		Register replacedReg = null;
+		Register replacingReg = null;
+		Instruction removeMove = null;
+		for (Instruction i : regToMovInstructions.get(r)) {
+			if (i.getDest().equals(r)) {
+				if (!(i.getSrc() instanceof Register)) continue;
+				replacedReg = (Register) i.getDest();
+				replacingReg = (Register) i.getSrc();
+				if (edges.get(replacedReg).contains(replacingReg)) continue;
+			} else {
+				assert(i.getSrc().equals(r));
+				if (!(i.getDest() instanceof Register)) continue;
+				replacedReg = (Register) i.getSrc();
+				replacingReg = (Register) i.getDest();
+				if (edges.get(replacedReg).contains(replacingReg)) continue;
+			}
+			removeMove = i;
+			break;
+		}
+		
+		if (replacedReg != null && replacingReg != null) {
+			// Replace replacedReg of all related instructions with replacingReg
+			replace(replacedReg, replacingReg, true);
+			
+			// Converge instruction lists
+			regToInstructions.get(replacingReg).addAll(regToInstructions.get(replacedReg));
+			regToInstructions.remove(replacedReg);
+			// Converge move lists
+			regToMovInstructions.get(replacingReg).addAll(regToMovInstructions.get(replacedReg));
+			regToMovInstructions.remove(replacedReg);
+			
+			// Remove move from program
+			remove.add(removeMove);
+			// Remove move from replacing move list
+			regToMovInstructions.get(replacingReg).remove(removeMove);
+			// Remove move from replacingS instruction list
+			regToInstructions.get(replacingReg).remove(removeMove);
+			
+			// Check for moves to itself and remove
+			List<Instruction> removes = new ArrayList<Instruction>();
+			for (Instruction move : regToMovInstructions.get(replacingReg)) {
+				if (move.getDest().equals(move.getSrc())) {
+					remove.add(move);
+					regToInstructions.get(replacingReg).remove(move);
+					removes.add(move);
+				}
+			}
+			for (Instruction m : removes) {
+				regToMovInstructions.get(replacingReg).remove(m);
+			}
+			
+			// Check if replacingReg is still move-related
+			if (regToMovInstructions.get(replacingReg).size() == 0) {
+				regToMovInstructions.remove(replacingReg);
+			}
+		}
+		return replacedReg;
+	}
 
+	private void actuallySpill(Set<Instruction> insts) {
+//		for (Instruction i : insts) {
+//			// Identify registers to spill
+//			Register spill1 = null;
+//			Register spill2 = null;
+//			if (i.getDest() instanceof )
+//		}
+	}
+	
 	private void actuallySpill(Register reg) {
 		// Choose stack location
 		int add = -8*++stackCounter;
@@ -661,6 +775,7 @@ public class RegisterAllocator {
 			colors.addAll(Arrays.asList(availableRegs));
 			colors.removeAll(uses.get(inst));
 			Register spillingReg = colors.iterator().next();
+			uses.get(inst).add(spillingReg);
 			
 			// Set up shuttling instructions
 			Instruction saveToStack = new Instruction(Operation.PUSHQ,spillingReg);
@@ -719,7 +834,7 @@ public class RegisterAllocator {
 			program.remove(inst);
 			program.addAll(index, list);
 			list.clear();
-		}		
+		}
 		graph.remove(reg);
 //		int i = 0;
 //		while (i < program.size() - 1) {

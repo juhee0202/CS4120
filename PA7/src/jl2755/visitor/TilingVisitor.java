@@ -519,11 +519,11 @@ public class TilingVisitor implements IRTreeVisitor {
 	public void visit(IRBinOp bo) {
 		// TODO: REMOVE IF CAUSING ERRORS
 		/**********************************************************************/
-		Tile temp = computeTile(bo);
-		if (temp != null) {
-			tileMap.put(bo, temp);
-			return;
-		}
+//		Tile temp = computeTile(bo);
+//		if (temp != null) {
+//			tileMap.put(bo, temp);
+//			return;
+//		}
 		/**********************************************************************/
 		
 		OpType op = bo.opType();
@@ -1435,14 +1435,14 @@ public class TilingVisitor implements IRTreeVisitor {
 		}		
 		
 		// Register/Stack allocation
-//		if (Oreg) {
-//			regAllocation(cu);
-//		} else {
-//			stackAllocation(cu);
-//		}
-		stackAllocation(cu);
+		if (Oreg) {
+			regAllocation(cu);
+		} else {
+			stackAllocation(cu);
+		}
+//		stackAllocation(cu);
 		
-		Tile superTile = new Tile(new ArrayList<Instruction>());
+		Tile superTile = null;
 		
 		for (IRFuncDecl fd : cu.functions().values()) {
 			if (superTile == null) {
@@ -1469,12 +1469,13 @@ public class TilingVisitor implements IRTreeVisitor {
 			}
 		}
 
-		
-		for (IRDispatchVector irdv : cu.getDispatchVectors()) {
-			GlobalVariableSection gvs = new GlobalVariableSection(irdv,GlobalVariableSection.GlobalVarType.DISPATCHVECTOR);
-			superTile.addGlobalParts(gvs);
-			gvs = new GlobalVariableSection(irdv,GlobalVariableSection.GlobalVarType.SIZE);
-			superTile.addGlobalParts(gvs);
+		if (cu.getDispatchVectors() != null) {
+			for (IRDispatchVector irdv : cu.getDispatchVectors()) {
+				GlobalVariableSection gvs = new GlobalVariableSection(irdv,GlobalVariableSection.GlobalVarType.DISPATCHVECTOR);
+				superTile.addGlobalParts(gvs);
+				gvs = new GlobalVariableSection(irdv,GlobalVariableSection.GlobalVarType.SIZE);
+				superTile.addGlobalParts(gvs);
+			}
 		}
 				
 		tileMap.put(cu, superTile);
@@ -1665,23 +1666,23 @@ public class TilingVisitor implements IRTreeVisitor {
 		
 		if (mem.expr() instanceof IRBinOp) {
 			//OPTIMIZE TILING: addressing mode
-//			Memory memory = createEffectiveMemory(mem);
-//			if (memory != null) {
-//				// TODO: memory should never be null if we're done implementing createEffectiveMemory
-//
-//				List<Instruction> emptyInstr = new ArrayList<Instruction>();
-//				Tile dummyTile = new Tile(emptyInstr, 0, memory);
-//				tileMap.put(mem, dummyTile);		//merged with children in IRMove
-//				return;
-//			}
+			Memory memory = createEffectiveMemory(mem);
+			if (memory != null) {
+				// TODO: memory should never be null if we're done implementing createEffectiveMemory
+
+				List<Instruction> emptyInstr = new ArrayList<Instruction>();
+				Tile dummyTile = new Tile(emptyInstr, 0, memory);
+				tileMap.put(mem, dummyTile);		//merged with children in IRMove
+				return;
+			}
 			
 			// TODO: REMOVE IF ERRORS
 			/******************************************************************/
-			Tile temp = computeTile(mem);
-			if (temp != null) {
-				tileMap.put(mem, temp);
-				return;
-			}
+//			Tile temp = computeTile(mem);
+//			if (temp != null) {
+//				tileMap.put(mem, temp);
+//				return;
+//			}
 			/******************************************************************/
 			
 		}
@@ -2503,15 +2504,15 @@ public class TilingVisitor implements IRTreeVisitor {
 			functionTile.setInstructions(newInsts);
 			
 			// complete "enter 8*l, 0"
-//			Instruction enter = newInsts.get(1);
-//			int counter = rAlloc.getStackCounter();
-//			int numSpace = counter % 2 == 1 ? counter + 1 : counter;
-//			Constant space = new Constant(8*numSpace);
-//			enter.setSrc(space);
+			Instruction enter = newInsts.get(1);
+			int counter = rAlloc.getStackCounter();
+			int numSpace = counter % 2 == 1 ? counter + 1 : counter;
+			Constant space = new Constant(8*numSpace);
+			enter.setSrc(space);
 		}
 		
 		// Call stackAllocation to allocate rest on stack
-		stackAllocation(headNode);
+//		stackAllocation(headNode);
 	}
 	
 	/**

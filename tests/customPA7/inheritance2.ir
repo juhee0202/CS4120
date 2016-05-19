@@ -1,6 +1,7 @@
 (COMPUNIT
  Program
  (FUNC
+<<<<<<< HEAD
   _Dog_Iinit_pi
   (SEQ
    (MOVE (TEMP _t4) (TEMP _ARG0))
@@ -37,10 +38,13 @@
    (LABEL l1)
    (RETURN)))
  (FUNC
+=======
+>>>>>>> 63975eb232c1731a40c69fb2eced1c497145ee20
   _Imain_paai
   (SEQ
    (MOVE (TEMP args) (TEMP _ARG0))
    (MOVE
+<<<<<<< HEAD
     (TEMP d)
     (ESEQ
      (SEQ
@@ -83,6 +87,35 @@
       (MOVE (TEMP _t18) (MEM (ADD (TEMP _t17) (CONST 0)))))
      (CALL (TEMP _t18) (TEMP _t16) (CONST 99))))
    (MOVE (TEMP ad) (TEMP d))
+=======
+    (TEMP student)
+    (ESEQ
+     (SEQ
+      (MOVE
+       (TEMP _t0)
+       (CALL (NAME _I_alloc_i)
+        (MUL (GLOBAL VARIABLE _I_size_Student) (CONST 8))))
+      (MOVE (MEM (TEMP _t0)) (GLOBAL VARIABLE _I_vt_Student)))
+     (TEMP _t0)))
+   (MOVE (TEMP jona) (TEMP student))
+   (MOVE
+    (ESEQ (SEQ (MOVE (TEMP t1) (TEMP jona))) (MEM (ADD (TEMP t1) (CONST 8))))
+    (ESEQ
+     (SEQ
+      (MOVE (TEMP _t2) (CALL (NAME _I_alloc_i) (CONST 40)))
+      (MOVE (MEM (TEMP _t2)) (CONST 4))
+      (MOVE (MEM (ADD (CONST 8) (TEMP _t2))) (CONST 74))
+      (MOVE (MEM (ADD (CONST 16) (TEMP _t2))) (CONST 111))
+      (MOVE (MEM (ADD (CONST 24) (TEMP _t2))) (CONST 110))
+      (MOVE (MEM (ADD (CONST 32) (TEMP _t2))) (CONST 97))
+      (MOVE (TEMP _t2) (ADD (TEMP _t2) (CONST 8))))
+     (TEMP _t2)))
+   (MOVE (TEMP jonathan) (TEMP student))
+   (MOVE
+    (ESEQ (SEQ (MOVE (TEMP t3) (TEMP jonathan)))
+     (MEM (ADD (TEMP t3) (CONST 16))))
+    (CONST 1))
+>>>>>>> 63975eb232c1731a40c69fb2eced1c497145ee20
    (EXP
     (CALL
      (NAME _Iprintln_pai)
@@ -90,6 +123,7 @@
       (NAME _IunparseInt_aii)
       (ESEQ
        (SEQ
+<<<<<<< HEAD
         (MOVE (TEMP _t19) (TEMP ad))
         (MOVE (TEMP _t20) (MEM (ADD (TEMP _t19) (CONST 8)))))
        (TEMP _t20)))))))
@@ -178,10 +212,44 @@
    (MOVE (MEM (ADD (TEMP _t3) (CONST 8))) (METHOD _Animal_Iwalk_p))
    (MOVE (GLOBAL VARIABLE _I_vt_Animal) (TEMP _t3))
    (JUMP (NAME l1))))
+=======
+        (MOVE (TEMP t4) (TEMP jonathan))
+        (MOVE (TEMP t5) (MEM (ADD (TEMP t4) (CONST 16)))))
+       (TEMP t5)))))))
+ (FUNC
+  _I_init_Student
+  (SEQ
+   (CJUMP (EQ (CONST 0) (GLOBAL VARIABLE _I_size_Student)) l2 l3)
+   (LABEL l2)
+   (EXP (CALL (NAME _I_init_Person)))
+   (MOVE (GLOBAL VARIABLE _I_size_Student)
+    (ADD (GLOBAL VARIABLE _I_size_Person) (CONST 1)))
+   (LABEL l3)
+   (MOVE (TEMP _t7) (CALL (NAME _I_alloc_i) (CONST 0)))
+   (MOVE (GLOBAL VARIABLE _I_vt_Student) (TEMP _t7))
+   (LABEL l3)
+   (RETURN)))
+ (FUNC
+  _I_init_Person
+  (SEQ
+   (CJUMP (EQ (CONST 0) (GLOBAL VARIABLE _I_size_Person)) l0 l1)
+   (LABEL l0)
+   (MOVE (GLOBAL VARIABLE _I_size_Person) (CONST 2))
+   (LABEL l1)
+   (MOVE (TEMP _t6) (CALL (NAME _I_alloc_i) (CONST 0)))
+   (MOVE (GLOBAL VARIABLE _I_vt_Person) (TEMP _t6))
+   (LABEL l1)
+   (RETURN)))
+ (DISPATCH VECTOR CLASSNAME: Person METHODS: [] FIELDS: [name])
+ (DISPATCH VECTOR CLASSNAME: Student METHODS: [] FIELDS: [name, id]))
+(COMPUNIT
+ Program
+>>>>>>> 63975eb232c1731a40c69fb2eced1c497145ee20
  (FUNC
   _Imain_paai
   (SEQ
    (MOVE (TEMP args) (TEMP _ARG0))
+<<<<<<< HEAD
    (MOVE (TEMP _temp10) (MUL (GLOBAL VARIABLE _I_size_Dog) (CONST 8)))
    (MOVE (TEMP _temp11) (CALL (NAME _I_alloc_i) (TEMP _temp10)))
    (MOVE (TEMP _t9) (TEMP _temp11))
@@ -266,3 +334,63 @@
   FIELDS: [age, size, age])
  (DISPATCH VECTOR CLASSNAME: Animal METHODS: [_Animal_Iinit_pi, _Animal_Iwalk_p]
   FIELDS: [age]))
+=======
+   (MOVE (TEMP _temp0) (MUL (GLOBAL VARIABLE _I_size_Student) (CONST 8)))
+   (MOVE (TEMP _temp1) (CALL (NAME _I_alloc_i) (TEMP _temp0)))
+   (MOVE (TEMP _t0) (TEMP _temp1))
+   (MOVE (MEM (TEMP _t0)) (GLOBAL VARIABLE _I_vt_Student))
+   (MOVE (TEMP student) (TEMP _t0))
+   (MOVE (TEMP jona) (TEMP student))
+   (MOVE (TEMP t1) (TEMP jona))
+   (MOVE (TEMP _temp4) (ADD (TEMP t1) (CONST 8)))
+   (MOVE (TEMP _temp2) (CONST 40))
+   (MOVE (TEMP _temp3) (CALL (NAME _I_alloc_i) (TEMP _temp2)))
+   (MOVE (TEMP _t2) (TEMP _temp3))
+   (MOVE (MEM (TEMP _t2)) (CONST 4))
+   (MOVE (MEM (ADD (CONST 8) (TEMP _t2))) (CONST 74))
+   (MOVE (MEM (ADD (CONST 16) (TEMP _t2))) (CONST 111))
+   (MOVE (MEM (ADD (CONST 24) (TEMP _t2))) (CONST 110))
+   (MOVE (MEM (ADD (CONST 32) (TEMP _t2))) (CONST 97))
+   (MOVE (TEMP _t2) (ADD (TEMP _t2) (CONST 8)))
+   (MOVE (MEM (TEMP _temp4)) (TEMP _t2))
+   (MOVE (TEMP jonathan) (TEMP student))
+   (MOVE (TEMP t3) (TEMP jonathan))
+   (MOVE (MEM (ADD (TEMP t3) (CONST 16))) (CONST 1))
+   (MOVE (TEMP t4) (TEMP jonathan))
+   (MOVE (TEMP t5) (MEM (ADD (TEMP t4) (CONST 16))))
+   (MOVE (TEMP _temp5) (TEMP t5))
+   (MOVE (TEMP _temp6) (CALL (NAME _IunparseInt_aii) (TEMP _temp5)))
+   (MOVE (TEMP _temp7) (TEMP _temp6))
+   (EXP (CALL (NAME _Iprintln_pai) (TEMP _temp7)))
+   (RETURN)))
+ (FUNC
+  _I_init_Student
+  (SEQ
+   (CJUMP (EQ (CONST 0) (GLOBAL VARIABLE _I_size_Student)) l2)
+   (LABEL l3)
+   (RETURN)
+   (LABEL l2)
+   (EXP (CALL (NAME _I_init_Person)))
+   (MOVE (GLOBAL VARIABLE _I_size_Student)
+    (ADD (GLOBAL VARIABLE _I_size_Person) (CONST 1)))
+   (MOVE (TEMP _temp10) (CONST 0))
+   (MOVE (TEMP _temp11) (CALL (NAME _I_alloc_i) (TEMP _temp10)))
+   (MOVE (TEMP _t7) (TEMP _temp11))
+   (MOVE (GLOBAL VARIABLE _I_vt_Student) (TEMP _t7))
+   (JUMP (NAME l3))))
+ (FUNC
+  _I_init_Person
+  (SEQ
+   (CJUMP (EQ (CONST 0) (GLOBAL VARIABLE _I_size_Person)) l0)
+   (LABEL l1)
+   (RETURN)
+   (LABEL l0)
+   (MOVE (GLOBAL VARIABLE _I_size_Person) (CONST 2))
+   (MOVE (TEMP _temp12) (CONST 0))
+   (MOVE (TEMP _temp13) (CALL (NAME _I_alloc_i) (TEMP _temp12)))
+   (MOVE (TEMP _t6) (TEMP _temp13))
+   (MOVE (GLOBAL VARIABLE _I_vt_Person) (TEMP _t6))
+   (JUMP (NAME l1))))
+ (DISPATCH VECTOR CLASSNAME: Person METHODS: [] FIELDS: [name])
+ (DISPATCH VECTOR CLASSNAME: Student METHODS: [] FIELDS: [name, id]))
+>>>>>>> 63975eb232c1731a40c69fb2eced1c497145ee20

@@ -283,5 +283,10 @@ xic ("Test -target -O") ["customPA7"] "-libpath $(testpath) -target -O" {
     // global2.xi;
     global3.xi;
     new1.xi;
+    new2.xi;
+    new3.xi;
+    inheritance1.xi;
+    inheritance2.xi;
+    inheritance3.xi;
 }
 

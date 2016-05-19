@@ -3,12 +3,11 @@ use conv
 
 main(args: int[][]) {
 	student:Student = new Student
-	jona:Person = student
-	jona.name = "Jona"
+	student.name = "Thomas"
+	student.id = 8
 
-	jonathan:Student = student
-	jonathan.id = 1
-	println(unparseInt(jonathan.id))
+	println(student.name)
+	println(unparseInt(student.id))
 }
 
 class Person {
@@ -16,5 +15,6 @@ class Person {
 }
 
 class Student extends Person {
+	name:int[]
 	id:int
 }

@@ -34,6 +34,7 @@ public class sym {
   public static final int THIS = 46;
   public static final int CLOSE_PAREN = 35;
   public static final int PLUS = 13;
+  public static final int INC = 53;
   public static final int LENGTH = 42;
   public static final int CLOSE_BRACKET = 33;
   public static final int error = 1;
@@ -45,6 +46,7 @@ public class sym {
   public static final int EOF = 0;
   public static final int COMMA = 39;
   public static final int OR = 28;
+  public static final int DEC = 54;
   public static final int TIMES = 16;
   public static final int USE = 12;
   public static final int EQUAL = 29;
@@ -114,7 +116,9 @@ public class sym {
   "NULL",
   "DOT",
   "TO",
-  "FROM"
+  "FROM",
+  "INC",
+  "DEC"
   };
 }
 

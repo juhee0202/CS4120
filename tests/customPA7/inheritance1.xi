@@ -1,18 +1,17 @@
 use io
 use conv
 
-class Dog {
-	size:int
-	age:int
+main(args: int[][]) {
+	jona:Person = new Student
+	jona.name = "Jona"
 
-	init(x:int) {
-		println("sub")
-		println(unparseInt(x))
-	}
+	println(jona.name)
 }
 
-main(args:int[][]) {
-	d:Dog = new Dog
-	println("hello")
-	d.init(98)
+class Person {
+	name:int[]
+}
+
+class Student extends Person {
+	id:int
 }

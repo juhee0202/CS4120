@@ -138,6 +138,8 @@ SingleCharacter = [^\'\\\"\b\t\f\n\r]
   ">="                           { return symbol(sym.GEQ,">="); }
   "!="                           { return symbol(sym.NOT_EQUAL,"!="); }
   "+"                            { return symbol(sym.PLUS,"+"); }
+  "++"                           { return symbol(sym.INC,"++"); }
+  "--"                           { return symbol(sym.DEC,"--"); }
   "-"                            { return symbol(sym.MINUS,"-"); }
   "*"                            { return symbol(sym.TIMES,"*"); }
   "/"                            { return symbol(sym.DIVIDE,"/"); }

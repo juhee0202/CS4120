@@ -1114,8 +1114,14 @@ public class Main {
 				case SHORT_TUPLE_DECL:
 					ShortTupleDecl std = gdView.getShortTupleDecl();
 					List<Identifier> list = std.getAllIdentifiers();
-					Type t = std.getType();
-					type = new VarType(t);
+					ShortTupleDecl.Type t = std.getType();
+					if (t == ShortTupleDecl.Type.PRIMITIVE) {
+						type = new VarType(std.getPrimitiveType());
+					} else if (t == ShortTupleDecl.Type.MIXEDARRAY) {
+						type = new VarType(std.getMixedArrayType());
+					} else {
+						type = new VarType(std.getObjectId());
+					}
 					for (Identifier i : list) {
 						varName = i.toString();
 						if (globalEnv.containsVar(varName)) {

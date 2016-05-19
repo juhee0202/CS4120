@@ -16,15 +16,36 @@ import jl2755.visitor.ASTVisitor;
  */
 public class ShortTupleDecl implements NakedStmt {
 
-	private Identifier id;
-	private IdentifierList identifierList;
-	private Type type;
+	public enum Type {
+		PRIMITIVE, OBJECT, MIXEDARRAY;
+	}
 	
-	public ShortTupleDecl(Identifier id, IdentifierList idl, Type t) {
-		this.id = id;
-		identifierList = idl;
-		identifierList.setType(t);
-		type = t;
+	private Identifier identifier;
+	private IdentifierList identifierList;
+	private ShortTupleDecl.Type type;
+	private PrimitiveType primitiveType;
+	private Identifier objectId;
+	private MixedArrayType mixedArrayType;
+	
+	public ShortTupleDecl(Identifier id, IdentifierList idl, PrimitiveType pt) {
+		this.identifier = id;
+		this.identifierList = idl;
+		this.type = Type.PRIMITIVE;
+		primitiveType = pt;
+	}
+	
+	public ShortTupleDecl(Identifier id, IdentifierList idl, Identifier objectId) {
+		this.identifier = id;
+		this.identifierList = idl;
+		this.type = Type.OBJECT;
+		this.objectId = objectId;
+	}
+	
+	public ShortTupleDecl(Identifier id, IdentifierList idl, MixedArrayType mat) {
+		this.identifier = id;
+		this.identifierList = idl;
+		this.type = Type.MIXEDARRAY;
+		mixedArrayType = mat;
 	}
 	
 	/**
@@ -32,17 +53,59 @@ public class ShortTupleDecl implements NakedStmt {
 	 */
 	public List<Identifier> getAllIdentifiers() {
 		List<Identifier> identifiers = new ArrayList<Identifier>();
-		identifiers.add(id);
+		identifiers.add(identifier);
 		identifiers.addAll(identifierList.getAllIdentifiers());
 		return identifiers;
 	}
 	
-	public Type getType() {
+	
+
+	public Identifier getIdentifier() {
+		return identifier;
+	}
+
+	public void setIdentifier(Identifier id) {
+		this.identifier = id;
+	}
+
+	public IdentifierList getIdentifierList() {
+		return identifierList;
+	}
+
+	public void setIdentifierList(IdentifierList identifierList) {
+		this.identifierList = identifierList;
+	}
+
+	public ShortTupleDecl.Type getType() {
 		return type;
 	}
 
-	public void setType(Type type) {
+	public void setType(ShortTupleDecl.Type type) {
 		this.type = type;
+	}
+
+	public PrimitiveType getPrimitiveType() {
+		return primitiveType;
+	}
+
+	public void setPrimitiveType(PrimitiveType primitiveType) {
+		this.primitiveType = primitiveType;
+	}
+
+	public Identifier getObjectId() {
+		return objectId;
+	}
+
+	public void setObjectId(Identifier objectId) {
+		this.objectId = objectId;
+	}
+
+	public MixedArrayType getMixedArrayType() {
+		return mixedArrayType;
+	}
+
+	public void setMixedArrayType(MixedArrayType mixedArrayType) {
+		this.mixedArrayType = mixedArrayType;
 	}
 
 	@Override
@@ -54,10 +117,15 @@ public class ShortTupleDecl implements NakedStmt {
 	public void prettyPrintNode() {
 		CodeWriterSExpPrinter tempPrinter = GlobalPrettyPrinter.getInstance();
 		tempPrinter.startList();
-		id.prettyPrintNode();
-		type.prettyPrintNode();
+		identifier.prettyPrintNode();
+		if (type == Type.PRIMITIVE) {
+			primitiveType.prettyPrintNode();
+		} else if (type == Type.MIXEDARRAY) {
+			mixedArrayType.prettyPrintNode();
+		} else {
+			objectId.prettyPrintNode();
+		}
 		tempPrinter.endList();
-		
 		identifierList.prettyPrintNode();
 	}
 }

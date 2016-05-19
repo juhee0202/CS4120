@@ -1426,14 +1426,14 @@ public class MIRVisitor implements ASTVisitor{
 		case SHORT_TUPLE_DECL:
 			ShortTupleDecl std = gd.getShortTupleDecl();
 			List<IRGlobalVariable> list = new ArrayList<IRGlobalVariable>();
-			Type type = std.getType();
+			ShortTupleDecl.Type type = std.getType();
 			for (Identifier i : std.getAllIdentifiers()) {
 				String name = i.toString();
 				VarType vType = env.getVarType(name);
 				IRGlobalVariable gv;
 				String ABIName;
-				if (type instanceof MixedArrayType) {
-					List<Expr> exprList = ((MixedArrayType) type).getAllExprs();
+				if (type == ShortTupleDecl.Type.MIXEDARRAY) {
+					List<Expr> exprList = std.getMixedArrayType().getAllExprs();
 					List<IRTemp> sizes = new ArrayList<IRTemp>();
 					List<IRStmt> stmts = new ArrayList<IRStmt>();
 					for (int ii = 0; ii < exprList.size(); ii++) {
@@ -1535,18 +1535,32 @@ public class MIRVisitor implements ASTVisitor{
 
 	@Override
 	public void visit(ShortTupleDecl std) {
-		Type type = std.getType();
 		IRExpr src = null;
-		if (type instanceof PrimitiveType) {
-			src = new IRConst(0);
-		} else if (type instanceof Identifier) {
-			src = new IRConst(0);	// null = 0?
-		}
+		ShortTupleDecl.Type type = std.getType();
+		List<IRStmt> stmts = new ArrayList<IRStmt>();
 		for (Identifier id : std.getAllIdentifiers()) {	
+			if (type == ShortTupleDecl.Type.PRIMITIVE || type == ShortTupleDecl.Type.OBJECT) {
+				src = new IRConst(0);
+			} else {
+				MixedArrayType mat = std.getMixedArrayType();
+				List<Expr> bracketContents = mat.getAllExprs();
+				List<IRTemp> indices = new ArrayList<IRTemp>();
+				for (Expr index: bracketContents) {
+					index.accept(this);
+					IRTemp freshTemp = new IRTemp("_t" + tempCount++);
+					IRMove moveToTemp = new IRMove(freshTemp, (IRExpr) tempNode);
+					indices.add(freshTemp);
+					stmts.add(moveToTemp);
+				}
+				IRESeq array = (IRESeq) createArray(0, indices);
+				src = array;
+			}
 			id.accept(this);
 			IRExpr dest = (IRExpr) tempNode;
-			tempNode = new IRMove(dest, src);
+			IRStmt assignDefault = new IRMove(dest, src);
+			stmts.add(assignDefault);
 		}
+		tempNode = new IRSeq(stmts);
 	}
 
 	// Probably don't need

@@ -1423,7 +1423,8 @@ public class MIRVisitor implements ASTVisitor{
             			superclassName, 
         				IRGlobalReference.GlobalType.SIZE);
             	// move superclass size (class offset) into temp
-            	IRMove moveClassOffset = new IRMove(offsetTemp, superclassSize);
+            	IRBinOp multSuperSize = new IRBinOp(OpType.MUL, superclassSize, new IRConst(8));
+            	IRMove moveClassOffset = new IRMove(offsetTemp, multSuperSize);
             	stmts.add(moveClassOffset);
             	
             	IRConst fieldOffset = new IRConst((indexOfFieldInObjectLayout-1)*8); // -1 because of DV

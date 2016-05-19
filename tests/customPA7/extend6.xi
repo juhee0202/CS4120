@@ -7,7 +7,7 @@ main(args:int[][]) {
     a:Animal = dog
     a.name = "notTobi"
     println(dog.name)
-    // println(a.name)
+    println(a.name)
 }
 
 class Dog extends Animal {

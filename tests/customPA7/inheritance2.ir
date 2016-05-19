@@ -1,0 +1,268 @@
+(COMPUNIT
+ Program
+ (FUNC
+  _Dog_Iinit_pi
+  (SEQ
+   (MOVE (TEMP _t4) (TEMP _ARG0))
+   (MOVE (TEMP x) (TEMP _ARG1))
+   (MOVE (TEMP a) (TEMP _t4))
+   (MOVE
+    (ESEQ (SEQ (MOVE (TEMP _t5) (TEMP a))) (MEM (ADD (TEMP _t5) (CONST 8))))
+    (TEMP x))
+   (EXP
+    (CALL
+     (NAME _Iprintln_pai)
+     (ESEQ
+      (SEQ
+       (MOVE (TEMP _t6) (CALL (NAME _I_alloc_i) (CONST 32)))
+       (MOVE (MEM (TEMP _t6)) (CONST 3))
+       (MOVE (MEM (ADD (CONST 8) (TEMP _t6))) (CONST 115))
+       (MOVE (MEM (ADD (CONST 16) (TEMP _t6))) (CONST 117))
+       (MOVE (MEM (ADD (CONST 24) (TEMP _t6))) (CONST 98))
+       (MOVE (TEMP _t6) (ADD (TEMP _t6) (CONST 8))))
+      (TEMP _t6))))
+   (EXP (CALL (NAME _Iprintln_pai) (CALL (NAME _IunparseInt_aii) (TEMP x))))
+   (MOVE (TEMP age) (CONST 97))))
+ (FUNC
+  _I_init_Animal
+  (SEQ
+   (CJUMP (EQ (CONST 0) (GLOBAL VARIABLE _I_size_Animal)) l0 l1)
+   (LABEL l0)
+   (MOVE (GLOBAL VARIABLE _I_size_Animal) (CONST 2))
+   (LABEL l1)
+   (MOVE (TEMP _t3) (CALL (NAME _I_alloc_i) (CONST 16)))
+   (MOVE (MEM (ADD (TEMP _t3) (CONST 0))) (METHOD _Animal_Iinit_pi))
+   (MOVE (MEM (ADD (TEMP _t3) (CONST 8))) (METHOD _Animal_Iwalk_p))
+   (MOVE (GLOBAL VARIABLE _I_vt_Animal) (TEMP _t3))
+   (LABEL l1)
+   (RETURN)))
+ (FUNC
+  _Imain_paai
+  (SEQ
+   (MOVE (TEMP args) (TEMP _ARG0))
+   (MOVE
+    (TEMP d)
+    (ESEQ
+     (SEQ
+      (MOVE (TEMP _t9)
+       (CALL (NAME _I_alloc_i) (MUL (GLOBAL VARIABLE _I_size_Dog) (CONST 8))))
+      (MOVE (MEM (TEMP _t9)) (GLOBAL VARIABLE _I_vt_Dog)))
+     (TEMP _t9)))
+   (EXP
+    (ESEQ
+     (SEQ
+      (MOVE (TEMP _t10) (TEMP d))
+      (MOVE (TEMP _t11) (MEM (TEMP _t10)))
+      (MOVE (TEMP _t12) (MEM (ADD (TEMP _t11) (CONST 0)))))
+     (CALL (TEMP _t12) (TEMP _t10) (CONST 98))))
+   (EXP
+    (CALL
+     (NAME _Iprintln_pai)
+     (CALL
+      (NAME _IunparseInt_aii)
+      (ESEQ
+       (SEQ
+        (MOVE (TEMP _t13) (TEMP d))
+        (MOVE (TEMP _t14) (MEM (ADD (TEMP _t13) (CONST 8)))))
+       (TEMP _t14)))))
+   (MOVE
+    (TEMP a)
+    (ESEQ
+     (SEQ
+      (MOVE
+       (TEMP _t15)
+       (CALL (NAME _I_alloc_i)
+        (MUL (GLOBAL VARIABLE _I_size_Animal) (CONST 8))))
+      (MOVE (MEM (TEMP _t15)) (GLOBAL VARIABLE _I_vt_Animal)))
+     (TEMP _t15)))
+   (EXP
+    (ESEQ
+     (SEQ
+      (MOVE (TEMP _t16) (TEMP a))
+      (MOVE (TEMP _t17) (MEM (TEMP _t16)))
+      (MOVE (TEMP _t18) (MEM (ADD (TEMP _t17) (CONST 0)))))
+     (CALL (TEMP _t18) (TEMP _t16) (CONST 99))))
+   (MOVE (TEMP ad) (TEMP d))
+   (EXP
+    (CALL
+     (NAME _Iprintln_pai)
+     (CALL
+      (NAME _IunparseInt_aii)
+      (ESEQ
+       (SEQ
+        (MOVE (TEMP _t19) (TEMP ad))
+        (MOVE (TEMP _t20) (MEM (ADD (TEMP _t19) (CONST 8)))))
+       (TEMP _t20)))))))
+ (FUNC _Dog_Icolor_p (SEQ (MOVE (TEMP _t7) (TEMP _ARG0)) (RETURN)))
+ (FUNC _Animal_Iwalk_p (SEQ (MOVE (TEMP _t2) (TEMP _ARG0)) (RETURN)))
+ (FUNC
+  _Animal_Iinit_pi
+  (SEQ
+   (MOVE (TEMP _t0) (TEMP _ARG0))
+   (MOVE (TEMP x) (TEMP _ARG1))
+   (MOVE (TEMP age) (TEMP x))
+   (EXP
+    (CALL
+     (NAME _Iprintln_pai)
+     (ESEQ
+      (SEQ
+       (MOVE (TEMP _t1) (CALL (NAME _I_alloc_i) (CONST 48)))
+       (MOVE (MEM (TEMP _t1)) (CONST 5))
+       (MOVE (MEM (ADD (CONST 8) (TEMP _t1))) (CONST 115))
+       (MOVE (MEM (ADD (CONST 16) (TEMP _t1))) (CONST 117))
+       (MOVE (MEM (ADD (CONST 24) (TEMP _t1))) (CONST 112))
+       (MOVE (MEM (ADD (CONST 32) (TEMP _t1))) (CONST 101))
+       (MOVE (MEM (ADD (CONST 40) (TEMP _t1))) (CONST 114))
+       (MOVE (TEMP _t1) (ADD (TEMP _t1) (CONST 8))))
+      (TEMP _t1))))
+   (EXP (CALL (NAME _Iprintln_pai) (CALL (NAME _IunparseInt_aii) (TEMP age))))))
+ (FUNC
+  _I_init_Dog
+  (SEQ
+   (CJUMP (EQ (CONST 0) (GLOBAL VARIABLE _I_size_Dog)) l2 l3)
+   (LABEL l2)
+   (EXP (CALL (NAME _I_init_Animal)))
+   (MOVE (GLOBAL VARIABLE _I_size_Dog)
+    (ADD (GLOBAL VARIABLE _I_size_Animal) (CONST 2)))
+   (LABEL l3)
+   (MOVE (TEMP _t8) (CALL (NAME _I_alloc_i) (CONST 24)))
+   (MOVE (MEM (ADD (TEMP _t8) (CONST 0))) (METHOD _Dog_Iinit_pi))
+   (MOVE (MEM (ADD (TEMP _t8) (CONST 8))) (METHOD _Animal_Iwalk_p))
+   (MOVE (MEM (ADD (TEMP _t8) (CONST 16))) (METHOD _Dog_Icolor_p))
+   (MOVE (GLOBAL VARIABLE _I_vt_Dog) (TEMP _t8))
+   (LABEL l3)
+   (RETURN)))
+ (DISPATCH VECTOR CLASSNAME: Dog
+  METHODS: [_Dog_Iinit_pi, _Animal_Iwalk_p, _Dog_Icolor_p]
+  FIELDS: [age, size, age])
+ (DISPATCH VECTOR CLASSNAME: Animal METHODS: [_Animal_Iinit_pi, _Animal_Iwalk_p]
+  FIELDS: [age]))
+(COMPUNIT
+ Program
+ (FUNC
+  _Dog_Iinit_pi
+  (SEQ
+   (MOVE (TEMP _t4) (TEMP _ARG0))
+   (MOVE (TEMP x) (TEMP _ARG1))
+   (MOVE (TEMP a) (TEMP _t4))
+   (MOVE (TEMP _t5) (TEMP a))
+   (MOVE (MEM (ADD (TEMP _t5) (CONST 8))) (TEMP x))
+   (MOVE (TEMP _temp0) (CONST 32))
+   (MOVE (TEMP _temp1) (CALL (NAME _I_alloc_i) (TEMP _temp0)))
+   (MOVE (TEMP _t6) (TEMP _temp1))
+   (MOVE (MEM (TEMP _t6)) (CONST 3))
+   (MOVE (MEM (ADD (CONST 8) (TEMP _t6))) (CONST 115))
+   (MOVE (MEM (ADD (CONST 16) (TEMP _t6))) (CONST 117))
+   (MOVE (MEM (ADD (CONST 24) (TEMP _t6))) (CONST 98))
+   (MOVE (TEMP _t6) (ADD (TEMP _t6) (CONST 8)))
+   (MOVE (TEMP _temp2) (TEMP _t6))
+   (EXP (CALL (NAME _Iprintln_pai) (TEMP _temp2)))
+   (MOVE (TEMP _temp4) (TEMP x))
+   (MOVE (TEMP _temp5) (CALL (NAME _IunparseInt_aii) (TEMP _temp4)))
+   (MOVE (TEMP _temp6) (TEMP _temp5))
+   (EXP (CALL (NAME _Iprintln_pai) (TEMP _temp6)))
+   (MOVE (TEMP age) (CONST 97))
+   (RETURN)))
+ (FUNC
+  _I_init_Animal
+  (SEQ
+   (CJUMP (EQ (CONST 0) (GLOBAL VARIABLE _I_size_Animal)) l0)
+   (LABEL l1)
+   (RETURN)
+   (LABEL l0)
+   (MOVE (GLOBAL VARIABLE _I_size_Animal) (CONST 2))
+   (MOVE (TEMP _temp8) (CONST 16))
+   (MOVE (TEMP _temp9) (CALL (NAME _I_alloc_i) (TEMP _temp8)))
+   (MOVE (TEMP _t3) (TEMP _temp9))
+   (MOVE (MEM (ADD (TEMP _t3) (CONST 0))) (METHOD _Animal_Iinit_pi))
+   (MOVE (MEM (ADD (TEMP _t3) (CONST 8))) (METHOD _Animal_Iwalk_p))
+   (MOVE (GLOBAL VARIABLE _I_vt_Animal) (TEMP _t3))
+   (JUMP (NAME l1))))
+ (FUNC
+  _Imain_paai
+  (SEQ
+   (MOVE (TEMP args) (TEMP _ARG0))
+   (MOVE (TEMP _temp10) (MUL (GLOBAL VARIABLE _I_size_Dog) (CONST 8)))
+   (MOVE (TEMP _temp11) (CALL (NAME _I_alloc_i) (TEMP _temp10)))
+   (MOVE (TEMP _t9) (TEMP _temp11))
+   (MOVE (MEM (TEMP _t9)) (GLOBAL VARIABLE _I_vt_Dog))
+   (MOVE (TEMP d) (TEMP _t9))
+   (MOVE (TEMP _t10) (TEMP d))
+   (MOVE (TEMP _t11) (MEM (TEMP _t10)))
+   (MOVE (TEMP _t12) (MEM (ADD (TEMP _t11) (CONST 0))))
+   (MOVE (TEMP _temp12) (TEMP _t10))
+   (MOVE (TEMP _temp13) (CONST 98))
+   (EXP (CALL (TEMP _t12) (TEMP _temp12) (TEMP _temp13)))
+   (MOVE (TEMP _t13) (TEMP d))
+   (MOVE (TEMP _t14) (MEM (ADD (TEMP _t13) (CONST 8))))
+   (MOVE (TEMP _temp15) (TEMP _t14))
+   (MOVE (TEMP _temp16) (CALL (NAME _IunparseInt_aii) (TEMP _temp15)))
+   (MOVE (TEMP _temp17) (TEMP _temp16))
+   (EXP (CALL (NAME _Iprintln_pai) (TEMP _temp17)))
+   (MOVE (TEMP _temp19) (MUL (GLOBAL VARIABLE _I_size_Animal) (CONST 8)))
+   (MOVE (TEMP _temp20) (CALL (NAME _I_alloc_i) (TEMP _temp19)))
+   (MOVE (TEMP _t15) (TEMP _temp20))
+   (MOVE (MEM (TEMP _t15)) (GLOBAL VARIABLE _I_vt_Animal))
+   (MOVE (TEMP a) (TEMP _t15))
+   (MOVE (TEMP _t16) (TEMP a))
+   (MOVE (TEMP _t17) (MEM (TEMP _t16)))
+   (MOVE (TEMP _t18) (MEM (ADD (TEMP _t17) (CONST 0))))
+   (MOVE (TEMP _temp21) (TEMP _t16))
+   (MOVE (TEMP _temp22) (CONST 99))
+   (EXP (CALL (TEMP _t18) (TEMP _temp21) (TEMP _temp22)))
+   (MOVE (TEMP ad) (TEMP d))
+   (MOVE (TEMP _t19) (TEMP ad))
+   (MOVE (TEMP _t20) (MEM (ADD (TEMP _t19) (CONST 8))))
+   (MOVE (TEMP _temp24) (TEMP _t20))
+   (MOVE (TEMP _temp25) (CALL (NAME _IunparseInt_aii) (TEMP _temp24)))
+   (MOVE (TEMP _temp26) (TEMP _temp25))
+   (EXP (CALL (NAME _Iprintln_pai) (TEMP _temp26)))
+   (RETURN)))
+ (FUNC _Dog_Icolor_p (SEQ (MOVE (TEMP _t7) (TEMP _ARG0)) (RETURN)))
+ (FUNC _Animal_Iwalk_p (SEQ (MOVE (TEMP _t2) (TEMP _ARG0)) (RETURN)))
+ (FUNC
+  _Animal_Iinit_pi
+  (SEQ
+   (MOVE (TEMP _t0) (TEMP _ARG0))
+   (MOVE (TEMP x) (TEMP _ARG1))
+   (MOVE (TEMP age) (TEMP x))
+   (MOVE (TEMP _temp28) (CONST 48))
+   (MOVE (TEMP _temp29) (CALL (NAME _I_alloc_i) (TEMP _temp28)))
+   (MOVE (TEMP _t1) (TEMP _temp29))
+   (MOVE (MEM (TEMP _t1)) (CONST 5))
+   (MOVE (MEM (ADD (CONST 8) (TEMP _t1))) (CONST 115))
+   (MOVE (MEM (ADD (CONST 16) (TEMP _t1))) (CONST 117))
+   (MOVE (MEM (ADD (CONST 24) (TEMP _t1))) (CONST 112))
+   (MOVE (MEM (ADD (CONST 32) (TEMP _t1))) (CONST 101))
+   (MOVE (MEM (ADD (CONST 40) (TEMP _t1))) (CONST 114))
+   (MOVE (TEMP _t1) (ADD (TEMP _t1) (CONST 8)))
+   (MOVE (TEMP _temp30) (TEMP _t1))
+   (EXP (CALL (NAME _Iprintln_pai) (TEMP _temp30)))
+   (MOVE (TEMP _temp32) (TEMP age))
+   (MOVE (TEMP _temp33) (CALL (NAME _IunparseInt_aii) (TEMP _temp32)))
+   (MOVE (TEMP _temp34) (TEMP _temp33))
+   (EXP (CALL (NAME _Iprintln_pai) (TEMP _temp34)))
+   (RETURN)))
+ (FUNC
+  _I_init_Dog
+  (SEQ
+   (CJUMP (EQ (CONST 0) (GLOBAL VARIABLE _I_size_Dog)) l2)
+   (LABEL l3)
+   (RETURN)
+   (LABEL l2)
+   (EXP (CALL (NAME _I_init_Animal)))
+   (MOVE (GLOBAL VARIABLE _I_size_Dog)
+    (ADD (GLOBAL VARIABLE _I_size_Animal) (CONST 2)))
+   (MOVE (TEMP _temp37) (CONST 24))
+   (MOVE (TEMP _temp38) (CALL (NAME _I_alloc_i) (TEMP _temp37)))
+   (MOVE (TEMP _t8) (TEMP _temp38))
+   (MOVE (MEM (ADD (TEMP _t8) (CONST 0))) (METHOD _Dog_Iinit_pi))
+   (MOVE (MEM (ADD (TEMP _t8) (CONST 8))) (METHOD _Animal_Iwalk_p))
+   (MOVE (MEM (ADD (TEMP _t8) (CONST 16))) (METHOD _Dog_Icolor_p))
+   (MOVE (GLOBAL VARIABLE _I_vt_Dog) (TEMP _t8))
+   (JUMP (NAME l3))))
+ (DISPATCH VECTOR CLASSNAME: Dog
+  METHODS: [_Dog_Iinit_pi, _Animal_Iwalk_p, _Dog_Icolor_p]
+  FIELDS: [age, size, age])
+ (DISPATCH VECTOR CLASSNAME: Animal METHODS: [_Animal_Iinit_pi, _Animal_Iwalk_p]
+  FIELDS: [age]))

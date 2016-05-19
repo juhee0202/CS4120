@@ -447,7 +447,7 @@ l0:
 	movq	-80(%rbp), %r14
 	addq	$0, %r14
 	movq	%r14, -80(%rbp)
-	movq	_Dog_Iinit_pi(%rip), %r14
+	leaq	_Dog_Iinit_pi(%rip), %r14
 	movq	%r14, -88(%rbp)
 	movq	-88(%rbp), %r14
 	movq	-80(%rbp), %r12

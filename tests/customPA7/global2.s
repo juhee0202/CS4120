@@ -50,7 +50,7 @@ _Imain_paai:
 	addq	%r14, %r12
 	movq	%r12, -88(%rbp)
 	movq	-88(%rbp), %r12
-	movq	$49, (%r12)
+	movq	$46, (%r12)
 	movq	-80(%rbp), %r14
 	movq	%r14, %r12
 	movq	%r12, -96(%rbp)
@@ -60,14 +60,14 @@ _Imain_paai:
 	movq	-96(%rbp), %r14
 	movq	%r14, %r12
 	movq	%r12, -80(%rbp)
-	movq	-80(%rbp), %r14
-	movq	%r14, %r12
-	movq	%r12, -104(%rbp)
+	movq	y(%rip), %r14
+	movq	%r14, -104(%rbp)
 	movq	-104(%rbp), %r14
 	subq	$8, %r14
 	movq	%r14, -104(%rbp)
-	movq	_I_g_y_ai(%rip), %r14
-	movq	%r14, -112(%rbp)
+	movq	-80(%rbp), %r14
+	movq	%r14, %r12
+	movq	%r12, -112(%rbp)
 	movq	-112(%rbp), %r14
 	subq	$8, %r14
 	movq	%r14, -112(%rbp)
@@ -142,9 +142,8 @@ _Imain_paai:
 	movq	$0, %r14
 	movq	%r14, -192(%rbp)
 l6:
-	movq	-80(%rbp), %r14
-	movq	%r14, %r12
-	movq	%r12, -200(%rbp)
+	movq	y(%rip), %r14
+	movq	%r14, -200(%rbp)
 	movq	-200(%rbp), %r14
 	subq	$8, %r14
 	movq	%r14, -200(%rbp)
@@ -155,9 +154,8 @@ l6:
 	jl	l7
 	movq	$0, %r14
 	movq	%r14, -208(%rbp)
-	movq	-80(%rbp), %r14
-	movq	%r14, %r12
-	movq	%r12, -216(%rbp)
+	movq	y(%rip), %r14
+	movq	%r14, -216(%rbp)
 	movq	-216(%rbp), %r14
 	subq	$8, %r14
 	movq	%r14, -216(%rbp)
@@ -165,8 +163,9 @@ l6:
 	movq	(%r12), %r14
 	movq	%r14, -224(%rbp)
 l9:
-	movq	_I_g_y_ai(%rip), %r14
-	movq	%r14, -232(%rbp)
+	movq	-80(%rbp), %r14
+	movq	%r14, %r12
+	movq	%r12, -232(%rbp)
 	movq	-232(%rbp), %r14
 	subq	$8, %r14
 	movq	%r14, -232(%rbp)
@@ -269,40 +268,39 @@ l9:
 	leave
 	ret
 l7:
-	movq	-80(%rbp), %r12
-	movq	-192(%rbp), %r13
-	movq	(%r12,%r13,8), %r14
-	movq	%r14, -280(%rbp)
+	movq	-192(%rbp), %r14
+	movq	%r14, %r12
+	movq	%r12, -280(%rbp)
+	movq	$8, %r14
+	movq	%r14, -288(%rbp)
+	movq	-280(%rbp), %r12
+	movq	-288(%rbp), %r14
+	imulq	%r14, %r12
+	movq	%r12, -280(%rbp)
+	movq	y(%rip), %r14
+	movq	%r14, -296(%rbp)
+	movq	-296(%rbp), %r12
 	movq	-280(%rbp), %r14
+	addq	%r14, %r12
+	movq	%r12, -296(%rbp)
+	movq	-296(%rbp), %r12
+	movq	(%r12), %r14
+	movq	%r14, -304(%rbp)
+	movq	-304(%rbp), %r14
 	movq	-176(%rbp), %r12
 	movq	-192(%rbp), %r13
 	movq	%r14, (%r12,%r13,8)
 	movq	-192(%rbp), %r14
 	movq	%r14, %r12
-	movq	%r12, -288(%rbp)
-	movq	-288(%rbp), %r14
+	movq	%r12, -312(%rbp)
+	movq	-312(%rbp), %r14
 	addq	$1, %r14
-	movq	%r14, -288(%rbp)
-	movq	-288(%rbp), %r14
+	movq	%r14, -312(%rbp)
+	movq	-312(%rbp), %r14
 	movq	%r14, %r12
 	movq	%r12, -192(%rbp)
 	jmp	l6
 l10:
-	movq	-208(%rbp), %r14
-	movq	%r14, %r12
-	movq	%r12, -296(%rbp)
-	movq	$8, %r14
-	movq	%r14, -304(%rbp)
-	movq	-296(%rbp), %r12
-	movq	-304(%rbp), %r14
-	imulq	%r14, %r12
-	movq	%r12, -296(%rbp)
-	movq	_I_g_y_ai(%rip), %r14
-	movq	%r14, -312(%rbp)
-	movq	-312(%rbp), %r12
-	movq	-296(%rbp), %r14
-	addq	%r14, %r12
-	movq	%r12, -312(%rbp)
 	movq	-208(%rbp), %r14
 	movq	%r14, %r12
 	movq	%r12, -320(%rbp)
@@ -310,8 +308,9 @@ l10:
 	movq	-224(%rbp), %r14
 	addq	%r14, %r12
 	movq	%r12, -320(%rbp)
-	movq	-312(%rbp), %r12
-	movq	(%r12), %r14
+	movq	-80(%rbp), %r12
+	movq	-208(%rbp), %r13
+	movq	(%r12,%r13,8), %r14
 	movq	%r14, -328(%rbp)
 	movq	-328(%rbp), %r14
 	movq	-176(%rbp), %r12
@@ -555,6 +554,13 @@ l4:
 
 	.section .data
 	.align 8
+.globl _I_g_x_i
+_I_g_x_i:
+	.quad 5
+	.text
+
+	.section .data
+	.align 8
 .globl _I_g_y_ai
 _I_g_y_ai:
 	.zero 8
@@ -563,13 +569,6 @@ _I_g_y_ai:
 .section .ctors
 	.align 8
 	.quad _I_init_y_ai
-	.text
-
-	.section .data
-	.align 8
-.globl _I_g_x_i
-_I_g_x_i:
-	.quad 5
 	.text
 
 	.section .data

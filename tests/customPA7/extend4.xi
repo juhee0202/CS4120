@@ -1,8 +1,8 @@
 use io
-use conv
 
 x, y, z: int;
 
+<<<<<<< HEAD
 class Organism {
 	size: int;
 	evolve() {
@@ -27,12 +27,17 @@ class Dog extends Animal {
 	eat() {
 		println("DOG IS EAT");
 	}
+=======
+class Animal {
+    a: int;
+>>>>>>> 697c94971bd9ea32e9fa8a0572c4c48413cc0095
 	sleep(c: int) {
-		println("NO HELLO");
+		
 	}
 }
 
 main(args: int[][]) {
+<<<<<<< HEAD
 	doggie: Dog = new Dog;
 	a: Animal = doggie;
 	a.sleep(2755);
@@ -42,4 +47,9 @@ main(args: int[][]) {
 	o:Organism = doggie;
 	o.evolve();
 	println(unparseInt(o.size));
+=======
+	a: Animal = new Animal;
+	m: int = 10;
+	a.sleep(m);
+>>>>>>> 697c94971bd9ea32e9fa8a0572c4c48413cc0095
 }

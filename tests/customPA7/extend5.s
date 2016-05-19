@@ -2,7 +2,7 @@
 	.globl	_I_init_Organism
 	.align	4
 _I_init_Organism:
-	enter	$0, $0
+	enter	$96, $0
 	movq	%rbx, -8(%rbp)
 	movq	%rbp, -16(%rbp)
 	movq	%r12, -24(%rbp)
@@ -22,7 +22,8 @@ l4:
 	ret
 l3:
 	movq	$2, _I_size_Organism(%rip)
-	movq	$8, %_temp0
+	movq	$8, %r14
+	movq	%r14, -56(%rbp)
 	pushq	%rax
 	pushq	%rcx
 	pushq	%rdx
@@ -32,10 +33,12 @@ l3:
 	pushq	%r11
 	pushq	%rdi
 	pushq	%rsi
-	movq	%_temp0, %rdi
+	movq	-56(%rbp), %r14
+	movq	%r14, %rdi
 	subq	$8, %rsp
 	callq	_I_alloc_i
-	movq	%rax, %_temp1
+	movq	%rax, %r12
+	movq	%r12, -64(%rbp)
 	addq	$8, %rsp
 	popq	%rsi
 	popq	%rdi
@@ -46,18 +49,28 @@ l3:
 	popq	%rdx
 	popq	%rcx
 	popq	%rax
-	movq	%_temp1, %_t6
-	movq	%_t6, %_tileRegister0
-	addq	$0, %_tileRegister0
-	leaq	_Organism_Ievolve_p(%rip), %_tileRegister1
-	movq	%_tileRegister1, (%_tileRegister0)
-	movq	%_t6, _I_vt_Organism(%rip)
+	movq	-64(%rbp), %r14
+	movq	%r14, %r12
+	movq	%r12, -72(%rbp)
+	movq	-72(%rbp), %r14
+	movq	%r14, %r12
+	movq	%r12, -80(%rbp)
+	movq	-80(%rbp), %r14
+	addq	$0, %r14
+	movq	%r14, -80(%rbp)
+	leaq	_Organism_Ievolve_p(%rip), %r14
+	movq	%r14, -88(%rbp)
+	movq	-88(%rbp), %r14
+	movq	-80(%rbp), %r12
+	movq	%r14, (%r12)
+	movq	-72(%rbp), %r14
+	movq	%r14, _I_vt_Organism(%rip)
 	jmp	l4
 
 	.globl	_I_init_Animal
 	.align	4
 _I_init_Animal:
-	enter	$0, $0
+	enter	$144, $0
 	movq	%rbx, -8(%rbp)
 	movq	%rbp, -16(%rbp)
 	movq	%r12, -24(%rbp)
@@ -97,10 +110,18 @@ l5:
 	popq	%rdx
 	popq	%rcx
 	popq	%rax
-	movq	_I_size_Organism(%rip), %_tileRegister2
-	addq	$1, %_tileRegister2
-	movq	%_tileRegister2, _I_size_Animal(%rip)
-	movq	$24, %_temp3
+	movq	_I_size_Organism(%rip), %r14
+	movq	%r14, -56(%rbp)
+	movq	-56(%rbp), %r14
+	movq	%r14, %r12
+	movq	%r12, -64(%rbp)
+	movq	-64(%rbp), %r14
+	addq	$1, %r14
+	movq	%r14, -64(%rbp)
+	movq	-64(%rbp), %r14
+	movq	%r14, _I_size_Animal(%rip)
+	movq	$24, %r14
+	movq	%r14, -72(%rbp)
 	pushq	%rax
 	pushq	%rcx
 	pushq	%rdx
@@ -110,10 +131,12 @@ l5:
 	pushq	%r11
 	pushq	%rdi
 	pushq	%rsi
-	movq	%_temp3, %rdi
+	movq	-72(%rbp), %r14
+	movq	%r14, %rdi
 	subq	$8, %rsp
 	callq	_I_alloc_i
-	movq	%rax, %_temp4
+	movq	%rax, %r12
+	movq	%r12, -80(%rbp)
 	addq	$8, %rsp
 	popq	%rsi
 	popq	%rdi
@@ -124,37 +147,60 @@ l5:
 	popq	%rdx
 	popq	%rcx
 	popq	%rax
-	movq	%_temp4, %_t11
-	movq	%_t11, %_tileRegister3
-	addq	$0, %_tileRegister3
-	leaq	_Organism_Ievolve_p(%rip), %_tileRegister4
-	movq	%_tileRegister4, (%_tileRegister3)
-	movq	%_t11, %_tileRegister5
-	addq	$8, %_tileRegister5
-	leaq	_Animal_Isleep_pi(%rip), %_tileRegister6
-	movq	%_tileRegister6, (%_tileRegister5)
-	movq	%_t11, %_tileRegister7
-	addq	$16, %_tileRegister7
-	leaq	_Animal_Iwake_p(%rip), %_tileRegister8
-	movq	%_tileRegister8, (%_tileRegister7)
-	movq	%_t11, _I_vt_Animal(%rip)
+	movq	-80(%rbp), %r14
+	movq	%r14, %r12
+	movq	%r12, -88(%rbp)
+	movq	-88(%rbp), %r14
+	movq	%r14, %r12
+	movq	%r12, -96(%rbp)
+	movq	-96(%rbp), %r14
+	addq	$0, %r14
+	movq	%r14, -96(%rbp)
+	leaq	_Organism_Ievolve_p(%rip), %r14
+	movq	%r14, -104(%rbp)
+	movq	-104(%rbp), %r14
+	movq	-96(%rbp), %r12
+	movq	%r14, (%r12)
+	movq	-88(%rbp), %r14
+	movq	%r14, %r12
+	movq	%r12, -112(%rbp)
+	movq	-112(%rbp), %r14
+	addq	$8, %r14
+	movq	%r14, -112(%rbp)
+	leaq	_Animal_Isleep_pi(%rip), %r14
+	movq	%r14, -120(%rbp)
+	movq	-120(%rbp), %r14
+	movq	-112(%rbp), %r12
+	movq	%r14, (%r12)
+	movq	-88(%rbp), %r14
+	movq	%r14, %r12
+	movq	%r12, -128(%rbp)
+	movq	-128(%rbp), %r14
+	addq	$16, %r14
+	movq	%r14, -128(%rbp)
+	leaq	_Animal_Iwake_p(%rip), %r14
+	movq	%r14, -136(%rbp)
+	movq	-136(%rbp), %r14
+	movq	-128(%rbp), %r12
+	movq	%r14, (%r12)
+	movq	-88(%rbp), %r14
+	movq	%r14, _I_vt_Animal(%rip)
 	jmp	l6
 
 	.globl	_Imain_paai
 	.align	4
 _Imain_paai:
-	enter	$0, $0
+	enter	$160, $0
 	movq	%rbx, -8(%rbp)
 	movq	%rbp, -16(%rbp)
 	movq	%r12, -24(%rbp)
 	movq	%r13, -32(%rbp)
 	movq	%r14, -40(%rbp)
 	movq	%r15, -48(%rbp)
-	movq	%rdi, %args
-	movq	_I_size_Dog(%rip), %_tileRegister9
-	movq	$8, %_tileRegister10
-	imulq	%_tileRegister10, %_tileRegister9
-	movq	%_tileRegister9, %_temp5
+	movq	%rdi, %r12
+	movq	%r12, -56(%rbp)
+	movq	$64, %r14
+	movq	%r14, -64(%rbp)
 	pushq	%rax
 	pushq	%rcx
 	pushq	%rdx
@@ -164,10 +210,12 @@ _Imain_paai:
 	pushq	%r11
 	pushq	%rdi
 	pushq	%rsi
-	movq	%_temp5, %rdi
+	movq	-64(%rbp), %r14
+	movq	%r14, %rdi
 	subq	$8, %rsp
 	callq	_I_alloc_i
-	movq	%rax, %_temp6
+	movq	%rax, %r12
+	movq	%r12, -72(%rbp)
 	addq	$8, %rsp
 	popq	%rsi
 	popq	%rdi
@@ -178,11 +226,80 @@ _Imain_paai:
 	popq	%rdx
 	popq	%rcx
 	popq	%rax
-	movq	%_temp6, %_t17
-	movq	_I_vt_Dog(%rip), %_tileRegister11
-	movq	%_tileRegister11, (%_t17)
-	movq	%_t17, %doggie
-	movq	_I_g_everyone_ai(%rip), %_temp10
+	movq	-72(%rbp), %r14
+	movq	%r14, %r12
+	movq	%r12, -80(%rbp)
+	movq	-80(%rbp), %r12
+	movq	$7, (%r12)
+	movq	$8, %r14
+	movq	%r14, -88(%rbp)
+	movq	-88(%rbp), %r12
+	movq	-80(%rbp), %r14
+	addq	%r14, %r12
+	movq	%r12, -88(%rbp)
+	movq	-88(%rbp), %r12
+	movq	$119, (%r12)
+	movq	$16, %r14
+	movq	%r14, -96(%rbp)
+	movq	-96(%rbp), %r12
+	movq	-80(%rbp), %r14
+	addq	%r14, %r12
+	movq	%r12, -96(%rbp)
+	movq	-96(%rbp), %r12
+	movq	$111, (%r12)
+	movq	$24, %r14
+	movq	%r14, -104(%rbp)
+	movq	-104(%rbp), %r12
+	movq	-80(%rbp), %r14
+	addq	%r14, %r12
+	movq	%r12, -104(%rbp)
+	movq	-104(%rbp), %r12
+	movq	$114, (%r12)
+	movq	$32, %r14
+	movq	%r14, -112(%rbp)
+	movq	-112(%rbp), %r12
+	movq	-80(%rbp), %r14
+	addq	%r14, %r12
+	movq	%r12, -112(%rbp)
+	movq	-112(%rbp), %r12
+	movq	$107, (%r12)
+	movq	$40, %r14
+	movq	%r14, -120(%rbp)
+	movq	-120(%rbp), %r12
+	movq	-80(%rbp), %r14
+	addq	%r14, %r12
+	movq	%r12, -120(%rbp)
+	movq	-120(%rbp), %r12
+	movq	$105, (%r12)
+	movq	$48, %r14
+	movq	%r14, -128(%rbp)
+	movq	-128(%rbp), %r12
+	movq	-80(%rbp), %r14
+	addq	%r14, %r12
+	movq	%r12, -128(%rbp)
+	movq	-128(%rbp), %r12
+	movq	$110, (%r12)
+	movq	$56, %r14
+	movq	%r14, -136(%rbp)
+	movq	-136(%rbp), %r12
+	movq	-80(%rbp), %r14
+	addq	%r14, %r12
+	movq	%r12, -136(%rbp)
+	movq	-136(%rbp), %r12
+	movq	$103, (%r12)
+	movq	-80(%rbp), %r14
+	movq	%r14, %r12
+	movq	%r12, -144(%rbp)
+	movq	-144(%rbp), %r14
+	addq	$8, %r14
+	movq	%r14, -144(%rbp)
+	movq	-144(%rbp), %r14
+	movq	%r14, %r12
+	movq	%r12, -80(%rbp)
+	movq	-80(%rbp), %r14
+	movq	%r14, _I_g_everyone_ai(%rip)
+	movq	_I_g_everyone_ai(%rip), %r14
+	movq	%r14, -152(%rbp)
 	pushq	%rax
 	pushq	%rcx
 	pushq	%rdx
@@ -192,7 +309,8 @@ _Imain_paai:
 	pushq	%r11
 	pushq	%rdi
 	pushq	%rsi
-	movq	%_temp10, %rdi
+	movq	-152(%rbp), %r14
+	movq	%r14, %rdi
 	subq	$8, %rsp
 	callq	_Iprintln_pai
 	addq	$8, %rsp
@@ -217,17 +335,24 @@ _Imain_paai:
 	.globl	_Animal_Iwake_p
 	.align	4
 _Animal_Iwake_p:
-	enter	$0, $0
+	enter	$176, $0
 	movq	%rbx, -8(%rbp)
 	movq	%rbp, -16(%rbp)
 	movq	%r12, -24(%rbp)
 	movq	%r13, -32(%rbp)
 	movq	%r14, -40(%rbp)
 	movq	%r15, -48(%rbp)
-	movq	%rdi, %_t9
-	movq	%_t9, %_tileRegister12
-	addq	$16, %_tileRegister12
-	movq	(%_tileRegister12), %_temp12
+	movq	%rdi, %r12
+	movq	%r12, -56(%rbp)
+	movq	-56(%rbp), %r14
+	movq	%r14, %r12
+	movq	%r12, -64(%rbp)
+	movq	-64(%rbp), %r14
+	addq	$16, %r14
+	movq	%r14, -64(%rbp)
+	movq	-64(%rbp), %r12
+	movq	(%r12), %r14
+	movq	%r14, -72(%rbp)
 	pushq	%rax
 	pushq	%rcx
 	pushq	%rdx
@@ -237,10 +362,12 @@ _Animal_Iwake_p:
 	pushq	%r11
 	pushq	%rdi
 	pushq	%rsi
-	movq	%_temp12, %rdi
+	movq	-72(%rbp), %r14
+	movq	%r14, %rdi
 	subq	$8, %rsp
 	callq	_IunparseInt_aii
-	movq	%rax, %_temp13
+	movq	%rax, %r12
+	movq	%r12, -80(%rbp)
 	addq	$8, %rsp
 	popq	%rsi
 	popq	%rdi
@@ -251,7 +378,9 @@ _Animal_Iwake_p:
 	popq	%rdx
 	popq	%rcx
 	popq	%rax
-	movq	%_temp13, %_temp14
+	movq	-80(%rbp), %r14
+	movq	%r14, %r12
+	movq	%r12, -88(%rbp)
 	pushq	%rax
 	pushq	%rcx
 	pushq	%rdx
@@ -261,7 +390,8 @@ _Animal_Iwake_p:
 	pushq	%r11
 	pushq	%rdi
 	pushq	%rsi
-	movq	%_temp14, %rdi
+	movq	-88(%rbp), %r14
+	movq	%r14, %rdi
 	subq	$8, %rsp
 	callq	_Iprintln_pai
 	addq	$8, %rsp
@@ -274,7 +404,8 @@ _Animal_Iwake_p:
 	popq	%rdx
 	popq	%rcx
 	popq	%rax
-	movq	$48, %_temp16
+	movq	$48, %r14
+	movq	%r14, -96(%rbp)
 	pushq	%rax
 	pushq	%rcx
 	pushq	%rdx
@@ -284,10 +415,12 @@ _Animal_Iwake_p:
 	pushq	%r11
 	pushq	%rdi
 	pushq	%rsi
-	movq	%_temp16, %rdi
+	movq	-96(%rbp), %r14
+	movq	%r14, %rdi
 	subq	$8, %rsp
 	callq	_I_alloc_i
-	movq	%rax, %_temp17
+	movq	%rax, %r12
+	movq	%r12, -104(%rbp)
 	addq	$8, %rsp
 	popq	%rsi
 	popq	%rdi
@@ -298,27 +431,63 @@ _Animal_Iwake_p:
 	popq	%rdx
 	popq	%rcx
 	popq	%rax
-	movq	%_temp17, %_t10
-	movq	$5, (%_t10)
-	movq	$8, %_tileRegister13
-	addq	%_t10, %_tileRegister13
-	movq	$87, (%_tileRegister13)
-	movq	$16, %_tileRegister14
-	addq	%_t10, %_tileRegister14
-	movq	$79, (%_tileRegister14)
-	movq	$24, %_tileRegister15
-	addq	%_t10, %_tileRegister15
-	movq	$82, (%_tileRegister15)
-	movq	$32, %_tileRegister16
-	addq	%_t10, %_tileRegister16
-	movq	$76, (%_tileRegister16)
-	movq	$40, %_tileRegister17
-	addq	%_t10, %_tileRegister17
-	movq	$68, (%_tileRegister17)
-	movq	%_t10, %_tileRegister18
-	addq	$8, %_tileRegister18
-	movq	%_tileRegister18, %_t10
-	movq	%_t10, %_temp18
+	movq	-104(%rbp), %r14
+	movq	%r14, %r12
+	movq	%r12, -112(%rbp)
+	movq	-112(%rbp), %r12
+	movq	$5, (%r12)
+	movq	$8, %r14
+	movq	%r14, -120(%rbp)
+	movq	-120(%rbp), %r12
+	movq	-112(%rbp), %r14
+	addq	%r14, %r12
+	movq	%r12, -120(%rbp)
+	movq	-120(%rbp), %r12
+	movq	$87, (%r12)
+	movq	$16, %r14
+	movq	%r14, -128(%rbp)
+	movq	-128(%rbp), %r12
+	movq	-112(%rbp), %r14
+	addq	%r14, %r12
+	movq	%r12, -128(%rbp)
+	movq	-128(%rbp), %r12
+	movq	$79, (%r12)
+	movq	$24, %r14
+	movq	%r14, -136(%rbp)
+	movq	-136(%rbp), %r12
+	movq	-112(%rbp), %r14
+	addq	%r14, %r12
+	movq	%r12, -136(%rbp)
+	movq	-136(%rbp), %r12
+	movq	$82, (%r12)
+	movq	$32, %r14
+	movq	%r14, -144(%rbp)
+	movq	-144(%rbp), %r12
+	movq	-112(%rbp), %r14
+	addq	%r14, %r12
+	movq	%r12, -144(%rbp)
+	movq	-144(%rbp), %r12
+	movq	$76, (%r12)
+	movq	$40, %r14
+	movq	%r14, -152(%rbp)
+	movq	-152(%rbp), %r12
+	movq	-112(%rbp), %r14
+	addq	%r14, %r12
+	movq	%r12, -152(%rbp)
+	movq	-152(%rbp), %r12
+	movq	$68, (%r12)
+	movq	-112(%rbp), %r14
+	movq	%r14, %r12
+	movq	%r12, -160(%rbp)
+	movq	-160(%rbp), %r14
+	addq	$8, %r14
+	movq	%r14, -160(%rbp)
+	movq	-160(%rbp), %r14
+	movq	%r14, %r12
+	movq	%r12, -112(%rbp)
+	movq	-112(%rbp), %r14
+	movq	%r14, %r12
+	movq	%r12, -168(%rbp)
 	pushq	%rax
 	pushq	%rcx
 	pushq	%rdx
@@ -328,7 +497,8 @@ _Animal_Iwake_p:
 	pushq	%r11
 	pushq	%rdi
 	pushq	%rsi
-	movq	%_temp18, %rdi
+	movq	-168(%rbp), %r14
+	movq	%r14, %rdi
 	subq	$8, %rsp
 	callq	_Iprintln_pai
 	addq	$8, %rsp
@@ -353,18 +523,25 @@ _Animal_Iwake_p:
 	.globl	_Organism_Ievolve_p
 	.align	4
 _Organism_Ievolve_p:
-	enter	$0, $0
+	enter	$160, $0
 	movq	%rbx, -8(%rbp)
 	movq	%rbp, -16(%rbp)
 	movq	%r12, -24(%rbp)
 	movq	%r13, -32(%rbp)
 	movq	%r14, -40(%rbp)
 	movq	%r15, -48(%rbp)
-	movq	%rdi, %_t4
-	movq	%_t4, %_tileRegister19
-	addq	$8, %_tileRegister19
-	movq	$10, (%_tileRegister19)
-	movq	$64, %_temp20
+	movq	%rdi, %r12
+	movq	%r12, -56(%rbp)
+	movq	-56(%rbp), %r14
+	movq	%r14, %r12
+	movq	%r12, -64(%rbp)
+	movq	-64(%rbp), %r14
+	addq	$8, %r14
+	movq	%r14, -64(%rbp)
+	movq	-64(%rbp), %r12
+	movq	$10, (%r12)
+	movq	$64, %r14
+	movq	%r14, -72(%rbp)
 	pushq	%rax
 	pushq	%rcx
 	pushq	%rdx
@@ -374,10 +551,12 @@ _Organism_Ievolve_p:
 	pushq	%r11
 	pushq	%rdi
 	pushq	%rsi
-	movq	%_temp20, %rdi
+	movq	-72(%rbp), %r14
+	movq	%r14, %rdi
 	subq	$8, %rsp
 	callq	_I_alloc_i
-	movq	%rax, %_temp21
+	movq	%rax, %r12
+	movq	%r12, -80(%rbp)
 	addq	$8, %rsp
 	popq	%rsi
 	popq	%rdi
@@ -388,33 +567,79 @@ _Organism_Ievolve_p:
 	popq	%rdx
 	popq	%rcx
 	popq	%rax
-	movq	%_temp21, %_t5
-	movq	$7, (%_t5)
-	movq	$8, %_tileRegister20
-	addq	%_t5, %_tileRegister20
-	movq	$87, (%_tileRegister20)
-	movq	$16, %_tileRegister21
-	addq	%_t5, %_tileRegister21
-	movq	$79, (%_tileRegister21)
-	movq	$24, %_tileRegister22
-	addq	%_t5, %_tileRegister22
-	movq	$80, (%_tileRegister22)
-	movq	$32, %_tileRegister23
-	addq	%_t5, %_tileRegister23
-	movq	$32, (%_tileRegister23)
-	movq	$40, %_tileRegister24
-	addq	%_t5, %_tileRegister24
-	movq	$87, (%_tileRegister24)
-	movq	$48, %_tileRegister25
-	addq	%_t5, %_tileRegister25
-	movq	$79, (%_tileRegister25)
-	movq	$56, %_tileRegister26
-	addq	%_t5, %_tileRegister26
-	movq	$80, (%_tileRegister26)
-	movq	%_t5, %_tileRegister27
-	addq	$8, %_tileRegister27
-	movq	%_tileRegister27, %_t5
-	movq	%_t5, %_temp22
+	movq	-80(%rbp), %r14
+	movq	%r14, %r12
+	movq	%r12, -88(%rbp)
+	movq	-88(%rbp), %r12
+	movq	$7, (%r12)
+	movq	$8, %r14
+	movq	%r14, -96(%rbp)
+	movq	-96(%rbp), %r12
+	movq	-88(%rbp), %r14
+	addq	%r14, %r12
+	movq	%r12, -96(%rbp)
+	movq	-96(%rbp), %r12
+	movq	$87, (%r12)
+	movq	$16, %r14
+	movq	%r14, -104(%rbp)
+	movq	-104(%rbp), %r12
+	movq	-88(%rbp), %r14
+	addq	%r14, %r12
+	movq	%r12, -104(%rbp)
+	movq	-104(%rbp), %r12
+	movq	$79, (%r12)
+	movq	$24, %r14
+	movq	%r14, -112(%rbp)
+	movq	-112(%rbp), %r12
+	movq	-88(%rbp), %r14
+	addq	%r14, %r12
+	movq	%r12, -112(%rbp)
+	movq	-112(%rbp), %r12
+	movq	$80, (%r12)
+	movq	$32, %r14
+	movq	%r14, -120(%rbp)
+	movq	-120(%rbp), %r12
+	movq	-88(%rbp), %r14
+	addq	%r14, %r12
+	movq	%r12, -120(%rbp)
+	movq	-120(%rbp), %r12
+	movq	$32, (%r12)
+	movq	$40, %r14
+	movq	%r14, -128(%rbp)
+	movq	-128(%rbp), %r12
+	movq	-88(%rbp), %r14
+	addq	%r14, %r12
+	movq	%r12, -128(%rbp)
+	movq	-128(%rbp), %r12
+	movq	$87, (%r12)
+	movq	$48, %r14
+	movq	%r14, -136(%rbp)
+	movq	-136(%rbp), %r12
+	movq	-88(%rbp), %r14
+	addq	%r14, %r12
+	movq	%r12, -136(%rbp)
+	movq	-136(%rbp), %r12
+	movq	$79, (%r12)
+	movq	$56, %r14
+	movq	%r14, -144(%rbp)
+	movq	-144(%rbp), %r12
+	movq	-88(%rbp), %r14
+	addq	%r14, %r12
+	movq	%r12, -144(%rbp)
+	movq	-144(%rbp), %r12
+	movq	$80, (%r12)
+	movq	-88(%rbp), %r14
+	movq	%r14, %r12
+	movq	%r12, -152(%rbp)
+	movq	-152(%rbp), %r14
+	addq	$8, %r14
+	movq	%r14, -152(%rbp)
+	movq	-152(%rbp), %r14
+	movq	%r14, %r12
+	movq	%r12, -88(%rbp)
+	movq	-88(%rbp), %r14
+	movq	%r14, %r12
+	movq	%r12, -160(%rbp)
 	pushq	%rax
 	pushq	%rcx
 	pushq	%rdx
@@ -424,7 +649,8 @@ _Organism_Ievolve_p:
 	pushq	%r11
 	pushq	%rdi
 	pushq	%rsi
-	movq	%_temp22, %rdi
+	movq	-160(%rbp), %r14
+	movq	%r14, %rdi
 	subq	$8, %rsp
 	callq	_Iprintln_pai
 	addq	$8, %rsp
@@ -449,16 +675,19 @@ _Organism_Ievolve_p:
 	.globl	_Animal_Isleep_pi
 	.align	4
 _Animal_Isleep_pi:
-	enter	$0, $0
+	enter	$144, $0
 	movq	%rbx, -8(%rbp)
 	movq	%rbp, -16(%rbp)
 	movq	%r12, -24(%rbp)
 	movq	%r13, -32(%rbp)
 	movq	%r14, -40(%rbp)
 	movq	%r15, -48(%rbp)
-	movq	%rdi, %_t7
-	movq	%rsi, %c
-	movq	$48, %_temp24
+	movq	%rdi, %r12
+	movq	%r12, -56(%rbp)
+	movq	%rsi, %r12
+	movq	%r12, -64(%rbp)
+	movq	$48, %r14
+	movq	%r14, -72(%rbp)
 	pushq	%rax
 	pushq	%rcx
 	pushq	%rdx
@@ -468,10 +697,12 @@ _Animal_Isleep_pi:
 	pushq	%r11
 	pushq	%rdi
 	pushq	%rsi
-	movq	%_temp24, %rdi
+	movq	-72(%rbp), %r14
+	movq	%r14, %rdi
 	subq	$8, %rsp
 	callq	_I_alloc_i
-	movq	%rax, %_temp25
+	movq	%rax, %r12
+	movq	%r12, -80(%rbp)
 	addq	$8, %rsp
 	popq	%rsi
 	popq	%rdi
@@ -482,27 +713,63 @@ _Animal_Isleep_pi:
 	popq	%rdx
 	popq	%rcx
 	popq	%rax
-	movq	%_temp25, %_t8
-	movq	$5, (%_t8)
-	movq	$8, %_tileRegister28
-	addq	%_t8, %_tileRegister28
-	movq	$72, (%_tileRegister28)
-	movq	$16, %_tileRegister29
-	addq	%_t8, %_tileRegister29
-	movq	$69, (%_tileRegister29)
-	movq	$24, %_tileRegister30
-	addq	%_t8, %_tileRegister30
-	movq	$76, (%_tileRegister30)
-	movq	$32, %_tileRegister31
-	addq	%_t8, %_tileRegister31
-	movq	$76, (%_tileRegister31)
-	movq	$40, %_tileRegister32
-	addq	%_t8, %_tileRegister32
-	movq	$79, (%_tileRegister32)
-	movq	%_t8, %_tileRegister33
-	addq	$8, %_tileRegister33
-	movq	%_tileRegister33, %_t8
-	movq	%_t8, %_temp26
+	movq	-80(%rbp), %r14
+	movq	%r14, %r12
+	movq	%r12, -88(%rbp)
+	movq	-88(%rbp), %r12
+	movq	$5, (%r12)
+	movq	$8, %r14
+	movq	%r14, -96(%rbp)
+	movq	-96(%rbp), %r12
+	movq	-88(%rbp), %r14
+	addq	%r14, %r12
+	movq	%r12, -96(%rbp)
+	movq	-96(%rbp), %r12
+	movq	$72, (%r12)
+	movq	$16, %r14
+	movq	%r14, -104(%rbp)
+	movq	-104(%rbp), %r12
+	movq	-88(%rbp), %r14
+	addq	%r14, %r12
+	movq	%r12, -104(%rbp)
+	movq	-104(%rbp), %r12
+	movq	$69, (%r12)
+	movq	$24, %r14
+	movq	%r14, -112(%rbp)
+	movq	-112(%rbp), %r12
+	movq	-88(%rbp), %r14
+	addq	%r14, %r12
+	movq	%r12, -112(%rbp)
+	movq	-112(%rbp), %r12
+	movq	$76, (%r12)
+	movq	$32, %r14
+	movq	%r14, -120(%rbp)
+	movq	-120(%rbp), %r12
+	movq	-88(%rbp), %r14
+	addq	%r14, %r12
+	movq	%r12, -120(%rbp)
+	movq	-120(%rbp), %r12
+	movq	$76, (%r12)
+	movq	$40, %r14
+	movq	%r14, -128(%rbp)
+	movq	-128(%rbp), %r12
+	movq	-88(%rbp), %r14
+	addq	%r14, %r12
+	movq	%r12, -128(%rbp)
+	movq	-128(%rbp), %r12
+	movq	$79, (%r12)
+	movq	-88(%rbp), %r14
+	movq	%r14, %r12
+	movq	%r12, -136(%rbp)
+	movq	-136(%rbp), %r14
+	addq	$8, %r14
+	movq	%r14, -136(%rbp)
+	movq	-136(%rbp), %r14
+	movq	%r14, %r12
+	movq	%r12, -88(%rbp)
+	movq	-88(%rbp), %r14
+	movq	%r14, %r12
+	movq	%r12, -144(%rbp)
 	pushq	%rax
 	pushq	%rcx
 	pushq	%rdx
@@ -512,7 +779,8 @@ _Animal_Isleep_pi:
 	pushq	%r11
 	pushq	%rdi
 	pushq	%rsi
-	movq	%_temp26, %rdi
+	movq	-144(%rbp), %r14
+	movq	%r14, %rdi
 	subq	$8, %rsp
 	callq	_Iprintln_pai
 	addq	$8, %rsp
@@ -537,15 +805,17 @@ _Animal_Isleep_pi:
 	.globl	_Dog_Ieat_p
 	.align	4
 _Dog_Ieat_p:
-	enter	$0, $0
+	enter	$176, $0
 	movq	%rbx, -8(%rbp)
 	movq	%rbp, -16(%rbp)
 	movq	%r12, -24(%rbp)
 	movq	%r13, -32(%rbp)
 	movq	%r14, -40(%rbp)
 	movq	%r15, -48(%rbp)
-	movq	%rdi, %_t12
-	movq	$88, %_temp28
+	movq	%rdi, %r12
+	movq	%r12, -56(%rbp)
+	movq	$88, %r14
+	movq	%r14, -64(%rbp)
 	pushq	%rax
 	pushq	%rcx
 	pushq	%rdx
@@ -555,10 +825,12 @@ _Dog_Ieat_p:
 	pushq	%r11
 	pushq	%rdi
 	pushq	%rsi
-	movq	%_temp28, %rdi
+	movq	-64(%rbp), %r14
+	movq	%r14, %rdi
 	subq	$8, %rsp
 	callq	_I_alloc_i
-	movq	%rax, %_temp29
+	movq	%rax, %r12
+	movq	%r12, -72(%rbp)
 	addq	$8, %rsp
 	popq	%rsi
 	popq	%rdi
@@ -569,42 +841,103 @@ _Dog_Ieat_p:
 	popq	%rdx
 	popq	%rcx
 	popq	%rax
-	movq	%_temp29, %_t13
-	movq	$10, (%_t13)
-	movq	$8, %_tileRegister34
-	addq	%_t13, %_tileRegister34
-	movq	$68, (%_tileRegister34)
-	movq	$16, %_tileRegister35
-	addq	%_t13, %_tileRegister35
-	movq	$79, (%_tileRegister35)
-	movq	$24, %_tileRegister36
-	addq	%_t13, %_tileRegister36
-	movq	$71, (%_tileRegister36)
-	movq	$32, %_tileRegister37
-	addq	%_t13, %_tileRegister37
-	movq	$32, (%_tileRegister37)
-	movq	$40, %_tileRegister38
-	addq	%_t13, %_tileRegister38
-	movq	$73, (%_tileRegister38)
-	movq	$48, %_tileRegister39
-	addq	%_t13, %_tileRegister39
-	movq	$83, (%_tileRegister39)
-	movq	$56, %_tileRegister40
-	addq	%_t13, %_tileRegister40
-	movq	$32, (%_tileRegister40)
-	movq	$64, %_tileRegister41
-	addq	%_t13, %_tileRegister41
-	movq	$69, (%_tileRegister41)
-	movq	$72, %_tileRegister42
-	addq	%_t13, %_tileRegister42
-	movq	$65, (%_tileRegister42)
-	movq	$80, %_tileRegister43
-	addq	%_t13, %_tileRegister43
-	movq	$84, (%_tileRegister43)
-	movq	%_t13, %_tileRegister44
-	addq	$8, %_tileRegister44
-	movq	%_tileRegister44, %_t13
-	movq	%_t13, %_temp30
+	movq	-72(%rbp), %r14
+	movq	%r14, %r12
+	movq	%r12, -80(%rbp)
+	movq	-80(%rbp), %r12
+	movq	$10, (%r12)
+	movq	$8, %r14
+	movq	%r14, -88(%rbp)
+	movq	-88(%rbp), %r12
+	movq	-80(%rbp), %r14
+	addq	%r14, %r12
+	movq	%r12, -88(%rbp)
+	movq	-88(%rbp), %r12
+	movq	$68, (%r12)
+	movq	$16, %r14
+	movq	%r14, -96(%rbp)
+	movq	-96(%rbp), %r12
+	movq	-80(%rbp), %r14
+	addq	%r14, %r12
+	movq	%r12, -96(%rbp)
+	movq	-96(%rbp), %r12
+	movq	$79, (%r12)
+	movq	$24, %r14
+	movq	%r14, -104(%rbp)
+	movq	-104(%rbp), %r12
+	movq	-80(%rbp), %r14
+	addq	%r14, %r12
+	movq	%r12, -104(%rbp)
+	movq	-104(%rbp), %r12
+	movq	$71, (%r12)
+	movq	$32, %r14
+	movq	%r14, -112(%rbp)
+	movq	-112(%rbp), %r12
+	movq	-80(%rbp), %r14
+	addq	%r14, %r12
+	movq	%r12, -112(%rbp)
+	movq	-112(%rbp), %r12
+	movq	$32, (%r12)
+	movq	$40, %r14
+	movq	%r14, -120(%rbp)
+	movq	-120(%rbp), %r12
+	movq	-80(%rbp), %r14
+	addq	%r14, %r12
+	movq	%r12, -120(%rbp)
+	movq	-120(%rbp), %r12
+	movq	$73, (%r12)
+	movq	$48, %r14
+	movq	%r14, -128(%rbp)
+	movq	-128(%rbp), %r12
+	movq	-80(%rbp), %r14
+	addq	%r14, %r12
+	movq	%r12, -128(%rbp)
+	movq	-128(%rbp), %r12
+	movq	$83, (%r12)
+	movq	$56, %r14
+	movq	%r14, -136(%rbp)
+	movq	-136(%rbp), %r12
+	movq	-80(%rbp), %r14
+	addq	%r14, %r12
+	movq	%r12, -136(%rbp)
+	movq	-136(%rbp), %r12
+	movq	$32, (%r12)
+	movq	$64, %r14
+	movq	%r14, -144(%rbp)
+	movq	-144(%rbp), %r12
+	movq	-80(%rbp), %r14
+	addq	%r14, %r12
+	movq	%r12, -144(%rbp)
+	movq	-144(%rbp), %r12
+	movq	$69, (%r12)
+	movq	$72, %r14
+	movq	%r14, -152(%rbp)
+	movq	-152(%rbp), %r12
+	movq	-80(%rbp), %r14
+	addq	%r14, %r12
+	movq	%r12, -152(%rbp)
+	movq	-152(%rbp), %r12
+	movq	$65, (%r12)
+	movq	$80, %r14
+	movq	%r14, -160(%rbp)
+	movq	-160(%rbp), %r12
+	movq	-80(%rbp), %r14
+	addq	%r14, %r12
+	movq	%r12, -160(%rbp)
+	movq	-160(%rbp), %r12
+	movq	$84, (%r12)
+	movq	-80(%rbp), %r14
+	movq	%r14, %r12
+	movq	%r12, -168(%rbp)
+	movq	-168(%rbp), %r14
+	addq	$8, %r14
+	movq	%r14, -168(%rbp)
+	movq	-168(%rbp), %r14
+	movq	%r14, %r12
+	movq	%r12, -80(%rbp)
+	movq	-80(%rbp), %r14
+	movq	%r14, %r12
+	movq	%r12, -176(%rbp)
 	pushq	%rax
 	pushq	%rcx
 	pushq	%rdx
@@ -614,7 +947,8 @@ _Dog_Ieat_p:
 	pushq	%r11
 	pushq	%rdi
 	pushq	%rsi
-	movq	%_temp30, %rdi
+	movq	-176(%rbp), %r14
+	movq	%r14, %rdi
 	subq	$8, %rsp
 	callq	_Iprintln_pai
 	addq	$8, %rsp
@@ -639,16 +973,19 @@ _Dog_Ieat_p:
 	.globl	_Dog_Isleep_pi
 	.align	4
 _Dog_Isleep_pi:
-	enter	$0, $0
+	enter	$176, $0
 	movq	%rbx, -8(%rbp)
 	movq	%rbp, -16(%rbp)
 	movq	%r12, -24(%rbp)
 	movq	%r13, -32(%rbp)
 	movq	%r14, -40(%rbp)
 	movq	%r15, -48(%rbp)
-	movq	%rdi, %_t14
-	movq	%rsi, %c
-	movq	$72, %_temp32
+	movq	%rdi, %r12
+	movq	%r12, -56(%rbp)
+	movq	%rsi, %r12
+	movq	%r12, -64(%rbp)
+	movq	$72, %r14
+	movq	%r14, -72(%rbp)
 	pushq	%rax
 	pushq	%rcx
 	pushq	%rdx
@@ -658,10 +995,12 @@ _Dog_Isleep_pi:
 	pushq	%r11
 	pushq	%rdi
 	pushq	%rsi
-	movq	%_temp32, %rdi
+	movq	-72(%rbp), %r14
+	movq	%r14, %rdi
 	subq	$8, %rsp
 	callq	_I_alloc_i
-	movq	%rax, %_temp33
+	movq	%rax, %r12
+	movq	%r12, -80(%rbp)
 	addq	$8, %rsp
 	popq	%rsi
 	popq	%rdi
@@ -672,36 +1011,87 @@ _Dog_Isleep_pi:
 	popq	%rdx
 	popq	%rcx
 	popq	%rax
-	movq	%_temp33, %_t15
-	movq	$8, (%_t15)
-	movq	$8, %_tileRegister45
-	addq	%_t15, %_tileRegister45
-	movq	$78, (%_tileRegister45)
-	movq	$16, %_tileRegister46
-	addq	%_t15, %_tileRegister46
-	movq	$79, (%_tileRegister46)
-	movq	$24, %_tileRegister47
-	addq	%_t15, %_tileRegister47
-	movq	$32, (%_tileRegister47)
-	movq	$32, %_tileRegister48
-	addq	%_t15, %_tileRegister48
-	movq	$72, (%_tileRegister48)
-	movq	$40, %_tileRegister49
-	addq	%_t15, %_tileRegister49
-	movq	$69, (%_tileRegister49)
-	movq	$48, %_tileRegister50
-	addq	%_t15, %_tileRegister50
-	movq	$76, (%_tileRegister50)
-	movq	$56, %_tileRegister51
-	addq	%_t15, %_tileRegister51
-	movq	$76, (%_tileRegister51)
-	movq	$64, %_tileRegister52
-	addq	%_t15, %_tileRegister52
-	movq	$79, (%_tileRegister52)
-	movq	%_t15, %_tileRegister53
-	addq	$8, %_tileRegister53
-	movq	%_tileRegister53, %_t15
-	movq	%_t15, %_temp34
+	movq	-80(%rbp), %r14
+	movq	%r14, %r12
+	movq	%r12, -88(%rbp)
+	movq	-88(%rbp), %r12
+	movq	$8, (%r12)
+	movq	$8, %r14
+	movq	%r14, -96(%rbp)
+	movq	-96(%rbp), %r12
+	movq	-88(%rbp), %r14
+	addq	%r14, %r12
+	movq	%r12, -96(%rbp)
+	movq	-96(%rbp), %r12
+	movq	$78, (%r12)
+	movq	$16, %r14
+	movq	%r14, -104(%rbp)
+	movq	-104(%rbp), %r12
+	movq	-88(%rbp), %r14
+	addq	%r14, %r12
+	movq	%r12, -104(%rbp)
+	movq	-104(%rbp), %r12
+	movq	$79, (%r12)
+	movq	$24, %r14
+	movq	%r14, -112(%rbp)
+	movq	-112(%rbp), %r12
+	movq	-88(%rbp), %r14
+	addq	%r14, %r12
+	movq	%r12, -112(%rbp)
+	movq	-112(%rbp), %r12
+	movq	$32, (%r12)
+	movq	$32, %r14
+	movq	%r14, -120(%rbp)
+	movq	-120(%rbp), %r12
+	movq	-88(%rbp), %r14
+	addq	%r14, %r12
+	movq	%r12, -120(%rbp)
+	movq	-120(%rbp), %r12
+	movq	$72, (%r12)
+	movq	$40, %r14
+	movq	%r14, -128(%rbp)
+	movq	-128(%rbp), %r12
+	movq	-88(%rbp), %r14
+	addq	%r14, %r12
+	movq	%r12, -128(%rbp)
+	movq	-128(%rbp), %r12
+	movq	$69, (%r12)
+	movq	$48, %r14
+	movq	%r14, -136(%rbp)
+	movq	-136(%rbp), %r12
+	movq	-88(%rbp), %r14
+	addq	%r14, %r12
+	movq	%r12, -136(%rbp)
+	movq	-136(%rbp), %r12
+	movq	$76, (%r12)
+	movq	$56, %r14
+	movq	%r14, -144(%rbp)
+	movq	-144(%rbp), %r12
+	movq	-88(%rbp), %r14
+	addq	%r14, %r12
+	movq	%r12, -144(%rbp)
+	movq	-144(%rbp), %r12
+	movq	$76, (%r12)
+	movq	$64, %r14
+	movq	%r14, -152(%rbp)
+	movq	-152(%rbp), %r12
+	movq	-88(%rbp), %r14
+	addq	%r14, %r12
+	movq	%r12, -152(%rbp)
+	movq	-152(%rbp), %r12
+	movq	$79, (%r12)
+	movq	-88(%rbp), %r14
+	movq	%r14, %r12
+	movq	%r12, -160(%rbp)
+	movq	-160(%rbp), %r14
+	addq	$8, %r14
+	movq	%r14, -160(%rbp)
+	movq	-160(%rbp), %r14
+	movq	%r14, %r12
+	movq	%r12, -88(%rbp)
+	movq	-88(%rbp), %r14
+	movq	%r14, %r12
+	movq	%r12, -168(%rbp)
 	pushq	%rax
 	pushq	%rcx
 	pushq	%rdx
@@ -711,7 +1101,8 @@ _Dog_Isleep_pi:
 	pushq	%r11
 	pushq	%rdi
 	pushq	%rsi
-	movq	%_temp34, %rdi
+	movq	-168(%rbp), %r14
+	movq	%r14, %rdi
 	subq	$8, %rsp
 	callq	_Iprintln_pai
 	addq	$8, %rsp
@@ -736,7 +1127,7 @@ _Dog_Isleep_pi:
 	.globl	_I_init_Dog
 	.align	4
 _I_init_Dog:
-	enter	$0, $0
+	enter	$160, $0
 	movq	%rbx, -8(%rbp)
 	movq	%rbp, -16(%rbp)
 	movq	%r12, -24(%rbp)
@@ -776,10 +1167,18 @@ l7:
 	popq	%rdx
 	popq	%rcx
 	popq	%rax
-	movq	_I_size_Animal(%rip), %_tileRegister54
-	addq	$1, %_tileRegister54
-	movq	%_tileRegister54, _I_size_Dog(%rip)
-	movq	$32, %_temp37
+	movq	_I_size_Animal(%rip), %r14
+	movq	%r14, -56(%rbp)
+	movq	-56(%rbp), %r14
+	movq	%r14, %r12
+	movq	%r12, -64(%rbp)
+	movq	-64(%rbp), %r14
+	addq	$1, %r14
+	movq	%r14, -64(%rbp)
+	movq	-64(%rbp), %r14
+	movq	%r14, _I_size_Dog(%rip)
+	movq	$32, %r14
+	movq	%r14, -72(%rbp)
 	pushq	%rax
 	pushq	%rcx
 	pushq	%rdx
@@ -789,10 +1188,12 @@ l7:
 	pushq	%r11
 	pushq	%rdi
 	pushq	%rsi
-	movq	%_temp37, %rdi
+	movq	-72(%rbp), %r14
+	movq	%r14, %rdi
 	subq	$8, %rsp
 	callq	_I_alloc_i
-	movq	%rax, %_temp38
+	movq	%rax, %r12
+	movq	%r12, -80(%rbp)
 	addq	$8, %rsp
 	popq	%rsi
 	popq	%rdi
@@ -803,43 +1204,87 @@ l7:
 	popq	%rdx
 	popq	%rcx
 	popq	%rax
-	movq	%_temp38, %_t16
-	movq	%_t16, %_tileRegister55
-	addq	$0, %_tileRegister55
-	leaq	_Organism_Ievolve_p(%rip), %_tileRegister56
-	movq	%_tileRegister56, (%_tileRegister55)
-	movq	%_t16, %_tileRegister57
-	addq	$8, %_tileRegister57
-	leaq	_Dog_Isleep_pi(%rip), %_tileRegister58
-	movq	%_tileRegister58, (%_tileRegister57)
-	movq	%_t16, %_tileRegister59
-	addq	$16, %_tileRegister59
-	leaq	_Animal_Iwake_p(%rip), %_tileRegister60
-	movq	%_tileRegister60, (%_tileRegister59)
-	movq	%_t16, %_tileRegister61
-	addq	$24, %_tileRegister61
-	leaq	_Dog_Ieat_p(%rip), %_tileRegister62
-	movq	%_tileRegister62, (%_tileRegister61)
-	movq	%_t16, _I_vt_Dog(%rip)
+	movq	-80(%rbp), %r14
+	movq	%r14, %r12
+	movq	%r12, -88(%rbp)
+	movq	-88(%rbp), %r14
+	movq	%r14, %r12
+	movq	%r12, -96(%rbp)
+	movq	-96(%rbp), %r14
+	addq	$0, %r14
+	movq	%r14, -96(%rbp)
+	leaq	_Organism_Ievolve_p(%rip), %r14
+	movq	%r14, -104(%rbp)
+	movq	-104(%rbp), %r14
+	movq	-96(%rbp), %r12
+	movq	%r14, (%r12)
+	movq	-88(%rbp), %r14
+	movq	%r14, %r12
+	movq	%r12, -112(%rbp)
+	movq	-112(%rbp), %r14
+	addq	$8, %r14
+	movq	%r14, -112(%rbp)
+	leaq	_Dog_Isleep_pi(%rip), %r14
+	movq	%r14, -120(%rbp)
+	movq	-120(%rbp), %r14
+	movq	-112(%rbp), %r12
+	movq	%r14, (%r12)
+	movq	-88(%rbp), %r14
+	movq	%r14, %r12
+	movq	%r12, -128(%rbp)
+	movq	-128(%rbp), %r14
+	addq	$16, %r14
+	movq	%r14, -128(%rbp)
+	leaq	_Animal_Iwake_p(%rip), %r14
+	movq	%r14, -136(%rbp)
+	movq	-136(%rbp), %r14
+	movq	-128(%rbp), %r12
+	movq	%r14, (%r12)
+	movq	-88(%rbp), %r14
+	movq	%r14, %r12
+	movq	%r12, -144(%rbp)
+	movq	-144(%rbp), %r14
+	addq	$24, %r14
+	movq	%r14, -144(%rbp)
+	leaq	_Dog_Ieat_p(%rip), %r14
+	movq	%r14, -152(%rbp)
+	movq	-152(%rbp), %r14
+	movq	-144(%rbp), %r12
+	movq	%r14, (%r12)
+	movq	-88(%rbp), %r14
+	movq	%r14, _I_vt_Dog(%rip)
 	jmp	l8
 
 	.globl	_I_init_everyone_ai
 	.align	4
 _I_init_everyone_ai:
-	enter	$0, $0
+	enter	$160, $0
 	movq	%rbx, -8(%rbp)
 	movq	%rbp, -16(%rbp)
 	movq	%r12, -24(%rbp)
 	movq	%r13, -32(%rbp)
 	movq	%r14, -40(%rbp)
 	movq	%r15, -48(%rbp)
-	movq	$6, %_t0
-	movq	%_t0, %_tileRegister63
-	addq	$1, %_tileRegister63
-	movq	%_tileRegister63, %_tileRegister64
-	movq	$8, %_tileRegister65
-	imulq	%_tileRegister65, %_tileRegister64
-	movq	%_tileRegister64, %_temp39
+	movq	$6, %r14
+	movq	%r14, -56(%rbp)
+	movq	-56(%rbp), %r14
+	movq	%r14, %r12
+	movq	%r12, -64(%rbp)
+	movq	-64(%rbp), %r14
+	addq	$1, %r14
+	movq	%r14, -64(%rbp)
+	movq	-64(%rbp), %r14
+	movq	%r14, %r12
+	movq	%r12, -72(%rbp)
+	movq	$8, %r14
+	movq	%r14, -80(%rbp)
+	movq	-72(%rbp), %r12
+	movq	-80(%rbp), %r14
+	imulq	%r14, %r12
+	movq	%r12, -72(%rbp)
+	movq	-72(%rbp), %r14
+	movq	%r14, %r12
+	movq	%r12, -88(%rbp)
 	pushq	%rax
 	pushq	%rcx
 	pushq	%rdx
@@ -849,10 +1294,12 @@ _I_init_everyone_ai:
 	pushq	%r11
 	pushq	%rdi
 	pushq	%rsi
-	movq	%_temp39, %rdi
+	movq	-88(%rbp), %r14
+	movq	%r14, %rdi
 	subq	$8, %rsp
 	callq	_I_alloc_i
-	movq	%rax, %_temp40
+	movq	%rax, %r12
+	movq	%r12, -96(%rbp)
 	addq	$8, %rsp
 	popq	%rsi
 	popq	%rdi
@@ -863,16 +1310,31 @@ _I_init_everyone_ai:
 	popq	%rdx
 	popq	%rcx
 	popq	%rax
-	movq	%_temp40, %_t1
-	movq	%_t0, (%_t1)
-	movq	%_t1, %_tileRegister66
-	addq	$8, %_tileRegister66
-	movq	%_tileRegister66, %_t1
-	movq	$0, %_t2
+	movq	-96(%rbp), %r14
+	movq	%r14, %r12
+	movq	%r12, -104(%rbp)
+	movq	-56(%rbp), %r14
+	movq	-104(%rbp), %r12
+	movq	%r14, (%r12)
+	movq	-104(%rbp), %r14
+	movq	%r14, %r12
+	movq	%r12, -112(%rbp)
+	movq	-112(%rbp), %r14
+	addq	$8, %r14
+	movq	%r14, -112(%rbp)
+	movq	-112(%rbp), %r14
+	movq	%r14, %r12
+	movq	%r12, -104(%rbp)
+	movq	$0, %r14
+	movq	%r14, -120(%rbp)
 l0:
-	cmpq	%_t0, %_t2
+	movq	-120(%rbp), %r12
+	movq	-56(%rbp), %r14
+	cmpq	%r14, %r12
+	movq	%r12, -120(%rbp)
 	jl	l1
-	movq	%_t1, _I_g_everyone_ai(%rip)
+	movq	-104(%rbp), %r14
+	movq	%r14, _I_g_everyone_ai(%rip)
 	movq	-8(%rbp), %rbx
 	movq	-16(%rbp), %rbp
 	movq	-24(%rbp), %r12
@@ -882,13 +1344,27 @@ l0:
 	leave
 	ret
 l1:
-	leaq	(%_t1,%_t2,8), %_tileRegister67
-	movq	%_tileRegister67, %_temp41
-	movq	$0, %_t3
-	movq	%_t3, (%_temp41)
-	movq	%_t2, %_tileRegister70
-	addq	$1, %_tileRegister70
-	movq	%_tileRegister70, %_t2
+	movq	-104(%rbp), %r12
+	movq	-120(%rbp), %r13
+	leaq	(%r12,%r13,8), %r14
+	movq	%r14, -128(%rbp)
+	movq	-128(%rbp), %r14
+	movq	%r14, %r12
+	movq	%r12, -136(%rbp)
+	movq	$0, %r14
+	movq	%r14, -144(%rbp)
+	movq	-144(%rbp), %r14
+	movq	-136(%rbp), %r12
+	movq	%r14, (%r12)
+	movq	-120(%rbp), %r14
+	movq	%r14, %r12
+	movq	%r12, -152(%rbp)
+	movq	-152(%rbp), %r14
+	addq	$1, %r14
+	movq	%r14, -152(%rbp)
+	movq	-152(%rbp), %r14
+	movq	%r14, %r12
+	movq	%r12, -120(%rbp)
 	jmp	l0
 
 
@@ -897,6 +1373,13 @@ l1:
 .globl _I_g_x_i
 _I_g_x_i:
 	.quad 0
+	.text
+
+	.bss
+	.align 8
+.globl _I_size_Dog
+_I_size_Dog:
+	.zero 8
 	.text
 
 	.bss
@@ -911,6 +1394,13 @@ _I_vt_Dog:
 	.quad _I_init_Dog
 	.text
 
+	.bss
+	.align 8
+.globl _I_size_Animal
+_I_size_Animal:
+	.zero 8
+	.text
+
 	.section .data
 	.align 8
 .globl _I_g_z_i
@@ -918,11 +1408,35 @@ _I_g_z_i:
 	.quad 0
 	.text
 
+	.section .data
+	.align 8
+.globl _I_g_everyone_ai
+_I_g_everyone_ai:
+	.zero 8
+	.text
+
+.section .ctors
+	.align 8
+	.quad _I_init_everyone_ai
+	.text
+
 	.bss
 	.align 8
-.globl _I_size_Dog
-_I_size_Dog:
-	.zero 8
+.globl _I_vt_Animal
+_I_vt_Animal:
+	.zero 24
+	.text
+
+.section .ctors
+	.align 8
+	.quad _I_init_Animal
+	.text
+
+	.section .data
+	.align 8
+.globl _I_g_y_i
+_I_g_y_i:
+	.quad 0
 	.text
 
 	.bss
@@ -942,42 +1456,4 @@ _I_vt_Organism:
 .section .ctors
 	.align 8
 	.quad _I_init_Organism
-	.text
-
-	.section .data
-	.align 8
-.globl _I_g_y_i
-_I_g_y_i:
-	.quad 0
-	.text
-
-	.bss
-	.align 8
-.globl _I_vt_Animal
-_I_vt_Animal:
-	.zero 24
-	.text
-
-.section .ctors
-	.align 8
-	.quad _I_init_Animal
-	.text
-
-	.section .data
-	.align 8
-.globl _I_g_everyone_ai
-_I_g_everyone_ai:
-	.zero 8
-	.text
-
-.section .ctors
-	.align 8
-	.quad _I_init_everyone_ai
-	.text
-
-	.bss
-	.align 8
-.globl _I_size_Animal
-_I_size_Animal:
-	.zero 8
 	.text

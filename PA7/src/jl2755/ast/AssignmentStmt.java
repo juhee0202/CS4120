@@ -20,18 +20,13 @@ public class AssignmentStmt implements NakedStmt {
 	private DotableExpr dotableExpr;
 	private IndexedBrackets indexedBrackets;
 	private Expr expr;
+	private boolean isIncOrDec;
 	
-	public AssignmentStmt(DotableExpr de, Expr e) {
+	public AssignmentStmt(DotableExpr de, Expr e, boolean isIncOrDec) {
 		dotableExpr = de;
 		expr = e;
 		index = 0;
-	}
-	
-	public AssignmentStmt(DotableExpr de, IndexedBrackets ib, Expr e) {
-		dotableExpr = de;
-		indexedBrackets = ib;
-		expr = e;
-		index = 1;
+		this.isIncOrDec = isIncOrDec;
 	}
 	
 	public int getIndex() {
@@ -64,6 +59,14 @@ public class AssignmentStmt implements NakedStmt {
 
 	public void setExpr(Expr expr) {
 		this.expr = expr;
+	}
+	
+	public boolean isIncOrDec() {
+		return isIncOrDec;
+	}
+
+	public void setIncOrDec(boolean isIncOrDec) {
+		this.isIncOrDec = isIncOrDec;
 	}
 
 	public void prettyPrintNode() {

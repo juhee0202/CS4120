@@ -2,10 +2,13 @@ use io
 use conv
 
 main(args: int[][]) {
-	jona:Person = new Student
+	student:Student = new Student
+	jona:Person = student
 	jona.name = "Jona"
 
-	println(jona.name)
+	jonathan:Student = student
+	jonathan.id = 1
+	println(unparseInt(jonathan.id))
 }
 
 class Person {

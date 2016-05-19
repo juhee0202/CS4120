@@ -35,8 +35,9 @@ public class dohMyGod {
 
 	@Test
 	public void test() {
-		int[] array = {1, 2, 3};
-		System.out.println(array[-1]);
+//		int[] array = {1, 2, 3};
+//		array[0]++;
+//		System.out.println(array[0]);
 		
 		int a = 'H';
 		System.out.println(a);
@@ -342,7 +343,29 @@ public class dohMyGod {
 		System.out.println(w.z);
 //		v.z = 1;
 		
+		
+		
 	}
+	
+	@Test
+	public void testClass2() {
+		Student student = new Student();
+		student.name = "Thomas";
+		student.id = 8;
+		
+		Person thomas = student;
+		assert(!thomas.name.equals(student.name));
+	}
+	
+	class Person {
+		private String name;
+	}
+	
+	class Student extends Person {
+		private String name;
+		private int id;
+	}
+	
 	class Dog extends Animal{
 		private int[][] x;
 		

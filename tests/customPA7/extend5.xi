@@ -34,7 +34,7 @@ class Dog extends Animal {
 }
 
 main(args: int[][]) {
-    doggie: Dog = new Dog;
+    // doggie: Dog = new Dog;
     everyone = "working";
     println(everyone);
 }

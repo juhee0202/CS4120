@@ -76,7 +76,7 @@ _Imain_paai:
 
 	.section .data
 	.align 8
-.globl _I_g__I_g_x_i
-_I_g__I_g_x_i:
+.globl _I_g_x_i
+_I_g_x_i:
 	.quad 5
 	.text

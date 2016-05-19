@@ -15,6 +15,10 @@ public class Label {
 		col = c;
 	}
 	
+	public Label(String n) {
+		name = n;
+	}
+	
 	public String getName() {
 		return name;
 	}

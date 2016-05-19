@@ -31,6 +31,7 @@ import edu.cornell.cs.cs4120.xic.ir.IRTemp;
 import edu.cornell.cs.cs4120.xic.ir.OpType;
 import jl2755.assembly.Constant;
 import jl2755.assembly.GlobalVariableSection;
+import jl2755.assembly.GlobalVariableSection.GlobalVarValueType;
 import jl2755.assembly.Instruction;
 import jl2755.assembly.Instruction.Operation;
 import jl2755.assembly.Label;
@@ -1457,6 +1458,9 @@ public class TilingVisitor implements IRTreeVisitor {
 				GlobalVariableSection gvs;
 				if (irgv.isInitialized()) {
 					gvs = new GlobalVariableSection(irgv.getABIName(),irgv.getValue());
+					if (irgv.isArray()) {
+						gvs.setvalueType(GlobalVarValueType.ARRAY);
+					}
 				}
 				else {
 					gvs = new GlobalVariableSection(irgv.getABIName());
@@ -1511,72 +1515,75 @@ public class TilingVisitor implements IRTreeVisitor {
 		Label fnLabel = new Label(fd.getABIName(), true);
 		instructions.add(new Instruction(Operation.LABEL, fnLabel));
 		
-		/* Prologue */
-		// TODO: replace enter with push/mov/sub for optimization
-		// "enter 8*l, 0" 8*l will be filled in later
-		Instruction enter = new Instruction(Operation.ENTER, new Constant(0), new Constant(0));
-		instructions.add(enter);
-
-		// save callee-saved registers
-		int currFnNumSpace = 0;
-		for (int i = 0; i < CALLEE_REG_LIST.length; i++) {
-			Register rbp = new Register(RegisterName.RBP);
-			Register calleeReg = new Register(CALLEE_REG_LIST[i]);
-			Constant offset = new Constant(-8*(i+1));
-			Memory mem = new Memory(offset, rbp);
-			// "movq calleeReg k(rbp)"
-			Instruction instr = new Instruction(Operation.MOVQ, calleeReg, mem);
-			instructions.add(instr);
-			currFnNumSpace++;
-		}
-		fd.setNumSavedCalleeRegs(currFnNumSpace);
-		
-		// move args to param regs
-		List<String> paramList = fd.getParamList();
-		int numArgs = fd.getNumArgs();
-		int numReturns = fd.getNumReturns();
-		int offset = numReturns > 2 ? 1 : 0;	
-		int numRegParams = Math.min(numArgs, 6-offset);
-		for (int i = 0; i < numRegParams; i++) {
-			Register arg = new Register(ARG_REG_LIST[i + offset]);
-			Register param = new Register(paramList.get(i));
-			Instruction moveArgToParam = new Instruction(Operation.MOVQ, arg, 
-														 param);
-			instructions.add(moveArgToParam);
-		}
+		IRStmt body = fd.body();
 		Register rbp = new Register(RegisterName.RBP);
 		
-		// Determine if there is extra 8 byte of space
-		int extraSpace = Math.max(0, fd.getNumReturns() - 2);
-		if (extraSpace != 0) {
-			extraSpace ++;
-		}
-		extraSpace += Math.max(0, fd.getNumArgs() - ARG_REG_LIST.length);
-		extraSpace += CALLER_REG_LIST.length;
-		int extraOff = 0;
-		if (extraSpace%2 == 1) {
-			extraOff++;
-		}
-		// Move arguments from stack into local variables
-		for (int i = numRegParams; i < numArgs; i++) {
-			int off = 2+i-numRegParams;
-			Memory arg = new Memory(new Constant(8*(off+extraOff)), rbp);
-			Register param = new Register(paramList.get(i));
-			Instruction moveArgtoParam = new Instruction(Operation.MOVQ, arg, param);
-			instructions.add(moveArgtoParam);
-		}
-		
-		// Body 
-		IRStmt body = fd.body();
-		if (body instanceof IRSeq) {
-			List<IRStmt> bodyStmtList = ((IRSeq) body).stmts();
-			// precondition: first n stmts are moving n arg stmts
-			// remove duplicate move(%ARG, %arg) instructions
-			// TODO fix
-			for (int i = 0; i < numArgs; i++) {
-				bodyStmtList.remove(0);
-			}	
-		}
+//		if (!fd.isInit()) {
+			/* Prologue */
+			// TODO: replace enter with push/mov/sub for optimization
+			// "enter 8*l, 0" 8*l will be filled in later
+			Instruction enter = new Instruction(Operation.ENTER, new Constant(0), new Constant(0));
+			instructions.add(enter);
+	
+			// save callee-saved registers
+			int currFnNumSpace = 0;
+			for (int i = 0; i < CALLEE_REG_LIST.length; i++) {
+				Register calleeReg = new Register(CALLEE_REG_LIST[i]);
+				Constant offset = new Constant(-8*(i+1));
+				Memory mem = new Memory(offset, rbp);
+				// "movq calleeReg k(rbp)"
+				Instruction instr = new Instruction(Operation.MOVQ, calleeReg, mem);
+				instructions.add(instr);
+				currFnNumSpace++;
+			}
+			fd.setNumSavedCalleeRegs(currFnNumSpace);
+			
+			// move args to param regs
+			List<String> paramList = fd.getParamList();
+			int numArgs = fd.getNumArgs();
+			int numReturns = fd.getNumReturns();
+			int offset = numReturns > 2 ? 1 : 0;	
+			int numRegParams = Math.min(numArgs, 6-offset);
+			for (int i = 0; i < numRegParams; i++) {
+				Register arg = new Register(ARG_REG_LIST[i + offset]);
+				Register param = new Register(paramList.get(i));
+				Instruction moveArgToParam = new Instruction(Operation.MOVQ, arg, 
+															 param);
+				instructions.add(moveArgToParam);
+			}
+			
+			// Determine if there is extra 8 byte of space
+			int extraSpace = Math.max(0, fd.getNumReturns() - 2);
+			if (extraSpace != 0) {
+				extraSpace ++;
+			}
+			extraSpace += Math.max(0, fd.getNumArgs() - ARG_REG_LIST.length);
+			extraSpace += CALLER_REG_LIST.length;
+			int extraOff = 0;
+			if (extraSpace%2 == 1) {
+				extraOff++;
+			}
+			// Move arguments from stack into local variables
+			for (int i = numRegParams; i < numArgs; i++) {
+				int off = 2+i-numRegParams;
+				Memory arg = new Memory(new Constant(8*(off+extraOff)), rbp);
+				Register param = new Register(paramList.get(i));
+				Instruction moveArgtoParam = new Instruction(Operation.MOVQ, arg, param);
+				instructions.add(moveArgtoParam);
+			}
+			
+			// Body 
+			if (body instanceof IRSeq) {
+				List<IRStmt> bodyStmtList = ((IRSeq) body).stmts();
+				// precondition: first n stmts are moving n arg stmts
+				// remove duplicate move(%ARG, %arg) instructions
+				// TODO fix
+//				int numArgMoves = ()
+				for (int i = 0; i < numArgs; i++) {
+					bodyStmtList.remove(0);
+				}
+			}
+//		}
 		
 		// tile function body
 		body.accept(this);
@@ -1585,19 +1592,21 @@ public class TilingVisitor implements IRTreeVisitor {
 		replaceReturnRegisters(bodyTile);		
 		instructions.addAll(bodyTile.getInstructions());
 		
-		/* Epilogue */
-		// restore callee saved registers
-		List<Instruction> epilogue = new ArrayList<Instruction>();
-		for (int i = 0; i < CALLEE_REG_LIST.length; i++) {
-			Register calleeReg = new Register(CALLEE_REG_LIST[i]);
-			// "movq k(%rbp), reg"
-			Constant memOffset = new Constant(-8*(i+1));
-			Memory mem = new Memory(memOffset, rbp);			
-			Instruction instr = new Instruction(Operation.MOVQ, mem, calleeReg);
-			epilogue.add(instr);
-		}
-		
-		insertEpilogue(instructions, epilogue);
+//		if (!fd.isInit()) {
+			/* Epilogue */
+			// restore callee saved registers
+			List<Instruction> epilogue = new ArrayList<Instruction>();
+			for (int i = 0; i < CALLEE_REG_LIST.length; i++) {
+				Register calleeReg = new Register(CALLEE_REG_LIST[i]);
+				// "movq k(%rbp), reg"
+				Constant memOffset = new Constant(-8*(i+1));
+				Memory mem = new Memory(memOffset, rbp);			
+				Instruction instr = new Instruction(Operation.MOVQ, mem, calleeReg);
+				epilogue.add(instr);
+			}
+			
+			insertEpilogue(instructions, epilogue);
+//		}
 		
 		// create a tile for this node
 		Tile tile = new Tile(instructions);
@@ -2722,6 +2731,7 @@ public class TilingVisitor implements IRTreeVisitor {
 						Instruction movToRegS = new Instruction(Operation.MOVQ,memS,r14);
 						added.add(movToRegS);
 					} else {
+						System.out.println(currentFunction);
 						System.out.println(currentInstruction);
 						System.out.println(regS);
 						System.out.println(regToStack);

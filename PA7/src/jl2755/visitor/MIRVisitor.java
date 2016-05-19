@@ -25,28 +25,36 @@ public class MIRVisitor implements ASTVisitor{
 	private static final IRConst WORD_SIZE = new IRConst(Configuration.WORD_SIZE);
 	
 	// While loop globals for break and continue
-	private String currentWhileStart;
-	private String currentWhileEnd;
-	private Map<String, String> startToEnd = new HashMap<String, String>();
+//	private String currentWhileStart;
+//	private String currentWhileEnd;
+//	private Map<String, String> startToEnd = new HashMap<String, String>();
+	private WhileStmt currWhile;
+	private Map<String, WhileStmt> labelToWhile = new HashMap<String, WhileStmt>();
+	private Set<String> labelSet;
 	
 	// Tracking inside of a class declaration
 	private boolean inClass = false;
 	private ClassType classType;
 	private IRExpr thisNode;
 	
+	// Handles field access vs modify
+	private boolean isLeftSide;
+	
 	// Global for Method Dispatch
 	private Map<String, IRDispatchVector> classToDispatch =  new HashMap<String, IRDispatchVector>();
 	
 	// Global Variable name to its ABIName to be used for labels
-	private Map<String, String> globalNameToABI = new HashMap<String, String>();
+//	private Map<String, String> globalNameToABI = new HashMap<String, String>();
 	
 	// Global Environment
 	private Environment env;
+
 	
 	public IRNode program;
 	
 	public MIRVisitor(Environment global) {
 		env = global;
+		labelSet = global.getLabelSet();
 	}
 	
 	@Override
@@ -116,8 +124,11 @@ public class MIRVisitor implements ASTVisitor{
 	// ADD LOGIC FOR CLASSES
 	@Override
 	public void visit(AssignmentStmt as) {
+		isLeftSide = true;
 		as.getDotableExpr().accept(this);
 		IRExpr de = (IRExpr) tempNode;
+		
+		isLeftSide = false;
 		as.getExpr().accept(this);
 		IRExpr e = (IRExpr) tempNode;
 		tempNode = new IRMove(de,e);
@@ -223,11 +234,11 @@ public class MIRVisitor implements ASTVisitor{
 			// i:int = 0
 			IRTemp firstLoopCounter = new IRTemp("_t" + tempCount++);
 			IRMove initializeFirstCounter = new IRMove(firstLoopCounter,new IRConst(0));
-			IRLabel startOfLoop1 = new IRLabel("_l"+labelCount++);
+			IRLabel startOfLoop1 = new IRLabel(getFreshLabel());
 
 			IRBinOp loopCondition1 = new IRBinOp(OpType.LT, (IRTemp) firstLoopCounter.copy(), (IRMem) leftMem.copy());
-			IRLabel trueLabel1 = new IRLabel("_l"+labelCount++);
-			IRLabel falseLabel1 = new IRLabel("_l"+labelCount++);
+			IRLabel trueLabel1 = new IRLabel(getFreshLabel());
+			IRLabel falseLabel1 = new IRLabel(getFreshLabel());
 			
 			// while(i < length(e1))
 			IRCJump firstWhileJump = new IRCJump(loopCondition1,trueLabel1.name(),falseLabel1.name());
@@ -258,11 +269,11 @@ public class MIRVisitor implements ASTVisitor{
 			// i = 0
 			IRTemp secondLoopCounter = new IRTemp("_t" + tempCount++);
 			IRMove initializeSecondCounter = new IRMove(secondLoopCounter,new IRConst(0));
-			IRLabel startOfLoop2 = new IRLabel("_l"+labelCount++);
+			IRLabel startOfLoop2 = new IRLabel(getFreshLabel());
 
 			IRBinOp loopCondition2 = new IRBinOp(OpType.LT, (IRTemp) secondLoopCounter.copy(), (IRMem) rightMem.copy());
-			IRLabel trueLabel2 = new IRLabel("_l"+labelCount++);
-			IRLabel falseLabel2 = new IRLabel("_l"+labelCount++);
+			IRLabel trueLabel2 = new IRLabel(getFreshLabel());
+			IRLabel falseLabel2 = new IRLabel(getFreshLabel());
 			
 			// while(i < length(e2))
 			IRCJump secondWhileJump = new IRCJump(loopCondition2,trueLabel2.name(),falseLabel2.name());
@@ -346,8 +357,8 @@ public class MIRVisitor implements ASTVisitor{
 			IRMove moveFalseToTemp = new IRMove(temp1, new IRConst(0));
 			stmts1.add(moveFalseToTemp);
 			
-			IRLabel tL = new IRLabel("_l" + labelCount++);
-			IRLabel fL = new IRLabel("_l" + labelCount++);
+			IRLabel tL = new IRLabel(getFreshLabel());
+			IRLabel fL = new IRLabel(getFreshLabel());
 			IRCJump jump = new IRCJump(leftNode, tL.name(), fL.name());
 			stmts1.add(jump);
 			stmts1.add(tL);
@@ -367,8 +378,8 @@ public class MIRVisitor implements ASTVisitor{
 			IRMove moveTrueToTemp = new IRMove(temp2, new IRConst(1));
 			stmts2.add(moveTrueToTemp);
 			
-			IRLabel tL2 = new IRLabel("_l" + labelCount++);
-			IRLabel fL2 = new IRLabel("_l" + labelCount++);
+			IRLabel tL2 = new IRLabel(getFreshLabel());
+			IRLabel fL2 = new IRLabel(getFreshLabel());
 			IRCJump jump2 = new IRCJump(leftNode, tL2.name(), fL2.name());
 			stmts2.add(jump2);
 			stmts2.add(fL2);
@@ -592,11 +603,17 @@ public class MIRVisitor implements ASTVisitor{
 		IRSeq seq = new IRSeq(new ArrayList<IRStmt>());
 		List<String> holyParamList = fd.getParams();
 		int start = 0;
+		int numParams = fd.getNumParams();
 		if (inClass) {
 			// THIS is implicitly the first argument
-			thisNode = new IRTemp(Configuration.ABSTRACT_ARG_PREFIX + 0);
-			holyParamList.add(((IRTemp) thisNode).name());
+			IRTemp temp = new IRTemp("_t" + tempCount++);
+			IRTemp arg = new IRTemp(Configuration.ABSTRACT_ARG_PREFIX + 0);
+			IRMove tempMove = new IRMove(temp, arg);
+			seq = LIRVisitor.combineTwoStmt(seq, tempMove);
+			holyParamList.add(0, temp.name());
+			thisNode = temp;
 			start = 1;
+			numParams++;
 		}
 		for (int i = start; i < holyParamList.size(); i++) {
 			IRTemp paramTemp = new IRTemp(holyParamList.get(i));
@@ -617,8 +634,8 @@ public class MIRVisitor implements ASTVisitor{
 		
 		// create IRFuncDecl
 		IRFuncDecl irFuncDecl = new IRFuncDecl(name, label, seq);
-		irFuncDecl.setParamList(fd.getParams());
-		irFuncDecl.setNumArgs(fd.getNumParams());
+		irFuncDecl.setParamList(holyParamList);
+		irFuncDecl.setNumArgs(numParams);
 		irFuncDecl.setNumReturns(fd.getNumReturns());
 		
 		tempNode = irFuncDecl;
@@ -629,8 +646,8 @@ public class MIRVisitor implements ASTVisitor{
 		String name = id.toString();
 		if (env.containsVar(name)) {
 			// id is a global variable, return a mem pointing to the global variable
-//			IRName irName = new IRName(globalNameToABI.get(name));
-			tempNode = new IRGlobalReference(name, globalNameToABI.get(name), GlobalType.REGULAR);
+			String abiName = translateVarTypeToABI(env.getVarType(name), name);
+			tempNode = new IRGlobalReference(name, abiName, GlobalType.REGULAR);
 		} else {
 			// must be a local variable
 			tempNode = new IRTemp(name);
@@ -639,8 +656,8 @@ public class MIRVisitor implements ASTVisitor{
 
 	@Override
 	public void visit(IfStmt is) {
-		IRLabel trueLabel = new IRLabel("_l"+labelCount++);
-		IRLabel falseLabel = new IRLabel("_l"+labelCount++);
+		IRLabel trueLabel = new IRLabel(getFreshLabel());
+		IRLabel falseLabel = new IRLabel(getFreshLabel());
 		IRStmt ifJump = controlFlow(is.getExpr(),trueLabel,falseLabel);
 		if (is.getIndex() == 0) {
 			// Only if
@@ -649,7 +666,7 @@ public class MIRVisitor implements ASTVisitor{
 			tempNode = new IRSeq(ifJump,trueLabel,stmt,falseLabel);
 		} else {
 			// If, else
-			String end = "_l"+labelCount++;
+			String end = getFreshLabel();
 			IRLabel endLabel = new IRLabel(end);
 			IRJump endJump = new IRJump(new IRName(end));
 			is.getStmt1().accept(this);
@@ -785,6 +802,16 @@ public class MIRVisitor implements ASTVisitor{
 				assert(false);
 			}
 		}
+		for (IRGlobalVariable igv : globalVariables) {
+			if (igv.isArray() && igv.isInitialized()) {
+				String name = "_I_init"+igv.getABIName().substring(4);
+				IRFuncDecl initArray = new IRFuncDecl(name,igv.getCreateArray(),true);
+				initArray.setNumArgs(0);
+				initArray.setNumReturns(0);
+				functions.put(name, initArray);
+			}
+		}
+		
 		program = new IRCompUnit("Program", functions, dispatchVectors, globalVariables);
 	}
 
@@ -974,32 +1001,40 @@ public class MIRVisitor implements ASTVisitor{
 
 	@Override
 	public void visit(WhileStmt ws) {
+		currWhile = ws;
 		IRLabel startOfLoop;
 		if (ws.hasLabel()) {
+			labelSet.add(ws.getLabel().getName());
 			startOfLoop = new IRLabel(ws.getLabel().getName());
 		} else {
-			String start = "_l"+labelCount++;
+			String start = getFreshLabel();
 			startOfLoop = new IRLabel(start);
+			ws.setLabel(new Label(start, ws.getExpr().getLineNumber(), 
+					ws.getExpr().getColumnNumber()));
 		}
 		
-		IRLabel trueLabel = new IRLabel("_l"+labelCount++);
-		IRLabel falseLabel = new IRLabel("_l"+labelCount++);
+		IRLabel trueLabel = new IRLabel(getFreshLabel());
+		IRLabel falseLabel = new IRLabel(getFreshLabel());
 		IRStmt cJumpNode = controlFlow(ws.getExpr(),trueLabel,falseLabel);
 		
+		ws.setExitLabel(new Label(falseLabel.name()));
+		labelToWhile.put(startOfLoop.name(), ws);
+		
 		// Update currentWhile as you enter and leave a while loop
-		String oldWhileStart = currentWhileStart;
-		String oldWhileEnd = currentWhileEnd;
-		currentWhileStart = startOfLoop.name();
-		currentWhileEnd = falseLabel.name();
-		startToEnd.put(currentWhileStart, currentWhileEnd);
+//		String oldWhileStart = currentWhileStart;
+//		String oldWhileEnd = currentWhileEnd;
+//		currentWhileStart = startOfLoop.name();
+//		currentWhileEnd = falseLabel.name();
+//		startToEnd.put(currentWhileStart, currentWhileEnd);
 		ws.getStmt().accept(this);
-		currentWhileStart = oldWhileStart;
-		currentWhileEnd = oldWhileEnd;
+//		currentWhileStart = oldWhileStart;
+//		currentWhileEnd = oldWhileEnd;
 		
 		IRStmt loopStmts = (IRStmt) tempNode;
 		IRJump jumpToStart = new IRJump(new IRName(startOfLoop.name()));
 		tempNode = new IRSeq(startOfLoop, cJumpNode, trueLabel, 
 				loopStmts, jumpToStart, falseLabel);
+		currWhile = null;
 	}
 
 	/**
@@ -1067,15 +1102,15 @@ public class MIRVisitor implements ASTVisitor{
 
 		/* Check bounds */
 		// i < 0
-		IRLabel label1 = new IRLabel("_l"+labelCount++);
-		IRLabel label2 = new IRLabel("_l"+labelCount++);
+		IRLabel label1 = new IRLabel(getFreshLabel());
+		IRLabel label2 = new IRLabel(getFreshLabel());
 		IRConst zero = new IRConst(0);
 		IRBinOp lessThanZero = new IRBinOp(OpType.LT, arrayIndex, zero);
 		IRCJump cond1 = new IRCJump(lessThanZero, label2.name(), label1.name()); 
 		stmtList.add(cond1);
 		stmtList.add(label1);
 		// i < length
-		IRLabel label3 = new IRLabel("_l"+labelCount++);
+		IRLabel label3 = new IRLabel(getFreshLabel());
 		arrayIndex = (IRExpr)arrayIndex.copy();
 		IRBinOp lessThanLength = new IRBinOp(OpType.LT, arrayIndex, (IRTemp) length.copy());
 		IRCJump cond2 = new IRCJump(lessThanLength, label3.name(), label2.name());
@@ -1122,12 +1157,12 @@ public class MIRVisitor implements ASTVisitor{
 			BinaryExpr e1 = (BinaryExpr) e;
 			BinaryOp op = e1.getBinaryOp();
 			if (op == BinaryOp.AND) {
-				IRLabel trueLabel = new IRLabel("_l"+labelCount++);
+				IRLabel trueLabel = new IRLabel(getFreshLabel());
 				IRStmt c1 = controlFlow(e1.getLeftExpr(),trueLabel,f);
 				IRStmt c2 = controlFlow(e1.getRightExpr(),t,f);
 				return new IRSeq(c1,trueLabel,c2);
 			} else if (op == BinaryOp.OR) {
-				IRLabel falseLabel = new IRLabel("_l"+labelCount++);
+				IRLabel falseLabel = new IRLabel(getFreshLabel());
 				IRStmt c1 = controlFlow(e1.getLeftExpr(),t,falseLabel);
 				IRStmt c2 = controlFlow(e1.getRightExpr(),t,f);
 				return new IRSeq(c1,falseLabel,c2);
@@ -1189,11 +1224,11 @@ public class MIRVisitor implements ASTVisitor{
 		IRTemp loopCounter = new IRTemp("_t" + tempCount++);
 		IRMove initializeCounter = new IRMove(loopCounter, new IRConst(0));
 	
-		IRLabel startOfLoop = new IRLabel("_l" + labelCount++);
+		IRLabel startOfLoop = new IRLabel(getFreshLabel());
 		
 		IRBinOp loopCondition = new IRBinOp(OpType.LT, (IRTemp) loopCounter.copy(), (IRTemp) lengthTemp.copy());
-		IRLabel trueLabel = new IRLabel("_l" + labelCount++);
-		IRLabel falseLabel = new IRLabel("_l" + labelCount++);
+		IRLabel trueLabel = new IRLabel(getFreshLabel());
+		IRLabel falseLabel = new IRLabel(getFreshLabel());
 		IRCJump whileJump = new IRCJump(loopCondition, trueLabel.name(), falseLabel.name());
 		IRBinOp baseOffset = new IRBinOp(OpType.MUL, (IRTemp) loopCounter.copy(), (IRConst) WORD_SIZE.copy());
 		IRBinOp currAddr = new IRBinOp(OpType.ADD, (IRTemp) freshArray.copy(), baseOffset);
@@ -1209,11 +1244,13 @@ public class MIRVisitor implements ASTVisitor{
 
 	@Override
 	public void visit(Break br) {
-		String label;
+		String label = "";
 		if (br.hasLabel()) {
-			label = startToEnd.get(br.getLabel());
+//			label = startToEnd.get(br.getLabel());
+			WhileStmt ws = labelToWhile.get(br.getLabel());
+			label = ws.getExitLabel().getName();
 		} else {
-			label = currentWhileEnd;
+			label = currWhile.getExitLabel().getName();
 		}
 		tempNode = new IRJump(new IRName(label));
 	}
@@ -1250,8 +1287,8 @@ public class MIRVisitor implements ASTVisitor{
 		IRGlobalReference classSize = new IRGlobalReference(className, 
 				IRGlobalReference.GlobalType.SIZE);
 		IRBinOp compareSizeTo0 = new IRBinOp(OpType.EQ, new IRConst(0), classSize);
-		IRLabel trueLabel = new IRLabel("_l" + labelCount++);
-		IRLabel falseLabel = new IRLabel("_l" + labelCount++);
+		IRLabel trueLabel = new IRLabel(getFreshLabel());
+		IRLabel falseLabel = new IRLabel(getFreshLabel());
 		IRCJump jumpToTrue = new IRCJump(compareSizeTo0, trueLabel.name(), falseLabel.name());
 		list.add(jumpToTrue);
 		
@@ -1307,6 +1344,8 @@ public class MIRVisitor implements ASTVisitor{
 		// Create new IRFuncDecl
 		IRSeq seq = new IRSeq(list);
 		IRFuncDecl initClass = new IRFuncDecl(className, "_I_init_"+className, seq);
+		initClass.setNumArgs(0);
+		initClass.setNumReturns(0);
 		
 		// Combine with class body
 		((IRFuncDeclList) tempNode).addDecl(initClass);
@@ -1319,7 +1358,7 @@ public class MIRVisitor implements ASTVisitor{
 		if (cn.hasLabel()) {
 			label = cn.getLabel();
 		} else {
-			label = currentWhileStart;
+			label = currWhile.getLabel().getName();
 		}
 		tempNode = new IRJump(new IRName(label));
 	}
@@ -1328,9 +1367,16 @@ public class MIRVisitor implements ASTVisitor{
 	public void visit(DotableExpr de) {
 		switch (de.getType()) {
 		case DOT:
+			boolean isFieldAssigment = false;
+			if (isLeftSide) {
+				isFieldAssigment = true;
+				isLeftSide = false; // set to false in case of recursive DOTs
+			}
 			de.getDotableExpr().accept(this);
-			IRTemp freshTemp = new IRTemp("t" + tempCount++);
+			List<IRStmt> stmts = new ArrayList<IRStmt>();
+			IRTemp freshTemp = new IRTemp("_t" + tempCount++);
 			IRMove tempClean = new IRMove(freshTemp, (IRExpr) tempNode);
+			stmts.add(tempClean);
 			VType compileTimeTypeOfDotable = de.getDotableExpr().getCompileTimeType();
             assert(compileTimeTypeOfDotable instanceof VarType);
             VarType compileVType = (VarType) compileTimeTypeOfDotable;
@@ -1341,13 +1387,24 @@ public class MIRVisitor implements ASTVisitor{
             int indexOfFieldInObjectLayout = fieldList.indexOf(de.getId().toString()) + 1;
             IRBinOp getFieldElement = new IRBinOp(OpType.ADD, freshTemp, new IRConst(indexOfFieldInObjectLayout*8));
             IRMem offsetMem = new IRMem(getFieldElement);
-            IRTemp resultTemp = new IRTemp("t" + tempCount++);
-            IRMove moveResult = new IRMove(resultTemp, offsetMem);
-            List<IRStmt> stmts = new ArrayList<IRStmt>();
-            stmts.add(tempClean);
-            stmts.add(moveResult);
+            
+            /* 
+             * Return a different result depending on whether we want to 
+             * access or modify the field 
+             */
+            IRExpr result;
+            // return mem(field)
+            if (isFieldAssigment) {
+            	result = offsetMem;
+            	
+            // return temp(mem(field))
+            } else {
+            	result = new IRTemp("_t" + tempCount++);
+                IRMove moveResult = new IRMove(result, offsetMem);
+                stmts.add(moveResult);
+            }
             IRSeq seqResult = new IRSeq(stmts);
-            IRESeq wholeResult = new IRESeq(seqResult, resultTemp);
+            IRESeq wholeResult = new IRESeq(seqResult, result);
             tempNode = wholeResult;
 			break;
 		case FUNCTION_CALL:
@@ -1401,14 +1458,14 @@ public class MIRVisitor implements ASTVisitor{
 		case SHORT_TUPLE_DECL:
 			ShortTupleDecl std = gd.getShortTupleDecl();
 			List<IRGlobalVariable> list = new ArrayList<IRGlobalVariable>();
-			Type type = std.getType();
+			ShortTupleDecl.Type type = std.getType();
 			for (Identifier i : std.getAllIdentifiers()) {
 				String name = i.toString();
 				VarType vType = env.getVarType(name);
 				IRGlobalVariable gv;
 				String ABIName;
-				if (type instanceof MixedArrayType) {
-					List<Expr> exprList = ((MixedArrayType) type).getAllExprs();
+				if (type == ShortTupleDecl.Type.MIXEDARRAY) {
+					List<Expr> exprList = std.getMixedArrayType().getAllExprs();
 					List<IRTemp> sizes = new ArrayList<IRTemp>();
 					List<IRStmt> stmts = new ArrayList<IRStmt>();
 					for (int ii = 0; ii < exprList.size(); ii++) {
@@ -1419,8 +1476,11 @@ public class MIRVisitor implements ASTVisitor{
 						stmts.add(moveExprToTemp);
 					}
 					IRESeq array = (IRESeq) createArray(0, sizes);
-					stmts.addAll(0, ((IRSeq) array.stmt()).stmts());
+					stmts.addAll(((IRSeq) array.stmt()).stmts());
 					ABIName = translateVarTypeToABI(vType, name);
+					IRGlobalReference gr = new IRGlobalReference(ABIName, GlobalType.REGULAR);
+					IRMove moveResultToGlobal = new IRMove(gr, array.expr());
+					stmts.add(moveResultToGlobal);
 					gv = new IRGlobalVariable(name, ABIName, 
 											array.expr(),
 											new IRSeq(stmts));
@@ -1428,7 +1488,7 @@ public class MIRVisitor implements ASTVisitor{
 					ABIName = translateVarTypeToABI(vType, name);
 					gv = new IRGlobalVariable(name, ABIName, 0);
 				}
-				globalNameToABI.put(name, ABIName);
+//				globalNameToABI.put(name, ABIName);
 				list.add(gv);
 			}
 			tempNode = new IRGVList(list);
@@ -1447,7 +1507,7 @@ public class MIRVisitor implements ASTVisitor{
 			}
 			String ABIName = translateVarTypeToABI(vType, name);
 			tempNode = new IRGlobalVariable(name, ABIName, value);
-			globalNameToABI.put(name, ABIName);
+//			globalNameToABI.put(name, ABIName);
 			return;
 		case VAR_DECL:
 			VarDecl vd = gd.getVarDecl();
@@ -1468,8 +1528,11 @@ public class MIRVisitor implements ASTVisitor{
 					stmts.add(moveExprToTemp);
 				}
 				IRESeq array = (IRESeq) createArray(0, sizes);
-				stmts.addAll(0, ((IRSeq) array.stmt()).stmts());
+				stmts.addAll(((IRSeq) array.stmt()).stmts());
 				ABIName1 = translateVarTypeToABI(type1, id);
+				IRGlobalReference gr = new IRGlobalReference(ABIName1, GlobalType.REGULAR);
+				IRMove moveResultToGlobal = new IRMove(gr, array.expr());
+				stmts.add(moveResultToGlobal);
 				tempNode = new IRGlobalVariable(id, ABIName1, 
 											array.expr(), new IRSeq(stmts));
 			} else {
@@ -1477,7 +1540,7 @@ public class MIRVisitor implements ASTVisitor{
 				ABIName1 = translateVarTypeToABI(type1, id);
 				tempNode = new IRGlobalVariable(id, ABIName1, 0);
 			}
-			globalNameToABI.put(id, ABIName1);
+//			globalNameToABI.put(id, ABIName1);
 			return;
 		}		
 	}
@@ -1504,18 +1567,32 @@ public class MIRVisitor implements ASTVisitor{
 
 	@Override
 	public void visit(ShortTupleDecl std) {
-		Type type = std.getType();
 		IRExpr src = null;
-		if (type instanceof PrimitiveType) {
-			src = new IRConst(0);
-		} else if (type instanceof Identifier) {
-			src = new IRConst(0);	// null = 0?
-		}
+		ShortTupleDecl.Type type = std.getType();
+		List<IRStmt> stmts = new ArrayList<IRStmt>();
 		for (Identifier id : std.getAllIdentifiers()) {	
+			if (type == ShortTupleDecl.Type.PRIMITIVE || type == ShortTupleDecl.Type.OBJECT) {
+				src = new IRConst(0);
+			} else {
+				MixedArrayType mat = std.getMixedArrayType();
+				List<Expr> bracketContents = mat.getAllExprs();
+				List<IRTemp> indices = new ArrayList<IRTemp>();
+				for (Expr index: bracketContents) {
+					index.accept(this);
+					IRTemp freshTemp = new IRTemp("_t" + tempCount++);
+					IRMove moveToTemp = new IRMove(freshTemp, (IRExpr) tempNode);
+					indices.add(freshTemp);
+					stmts.add(moveToTemp);
+				}
+				IRESeq array = (IRESeq) createArray(0, indices);
+				src = array;
+			}
 			id.accept(this);
 			IRExpr dest = (IRExpr) tempNode;
-			tempNode = new IRMove(dest, src);
+			IRStmt assignDefault = new IRMove(dest, src);
+			stmts.add(assignDefault);
 		}
+		tempNode = new IRSeq(stmts);
 	}
 
 	// Probably don't need
@@ -1548,5 +1625,15 @@ public class MIRVisitor implements ASTVisitor{
 //		IRExpr e = (IRExpr) tempNode;
 //		
 //		tempNode = new IRMove(dest,e);
+	}
+	
+	private String getFreshLabel() {
+		while (labelSet.contains("l"+labelCount)) {
+			labelCount++;
+		}
+		String freshLabel = "l" + labelCount;
+		labelSet.add(freshLabel);
+		labelCount++;
+		return freshLabel;
 	}
 }

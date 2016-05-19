@@ -549,13 +549,12 @@ public class Main {
 			program.accept(mir);
 
 			// Output MIR
-//			StringWriter sww = new StringWriter();
-//			try (PrintWriter pw = new PrintWriter(sww);
-//					SExpPrinter sp = new CodeWriterSExpPrinter(pw)) {
-//				mir.program.printSExp(sp);
-//			}
-//			bw.write(sww.toString());
-//			bw.close();
+			StringWriter sww = new StringWriter();
+			try (PrintWriter pw = new PrintWriter(sww);
+					SExpPrinter sp = new CodeWriterSExpPrinter(pw)) {
+				mir.program.printSExp(sp);
+			}
+			bw.write(sww.toString());
 
 			/* Lower to LIR */
 			LIRVisitor lir = new LIRVisitor();
@@ -1115,8 +1114,14 @@ public class Main {
 				case SHORT_TUPLE_DECL:
 					ShortTupleDecl std = gdView.getShortTupleDecl();
 					List<Identifier> list = std.getAllIdentifiers();
-					Type t = std.getType();
-					type = new VarType(t);
+					ShortTupleDecl.Type t = std.getType();
+					if (t == ShortTupleDecl.Type.PRIMITIVE) {
+						type = new VarType(std.getPrimitiveType());
+					} else if (t == ShortTupleDecl.Type.MIXEDARRAY) {
+						type = new VarType(std.getMixedArrayType());
+					} else {
+						type = new VarType(std.getObjectId());
+					}
 					for (Identifier i : list) {
 						varName = i.toString();
 						if (globalEnv.containsVar(varName)) {

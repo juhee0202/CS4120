@@ -79,7 +79,7 @@ public class TypeCheckVisitor implements ASTVisitor {
 	private boolean isInGlobalDecl = false;
 	private boolean isInFieldDecl = false;
 	private int whileCount;				// number of nested while loops we're currently in
-	private Set<String> labelSet;
+	private Set<String> currLabelSet;
 	
 	/**
 	 * Creates a TypeCheckVisitor instance
@@ -88,7 +88,7 @@ public class TypeCheckVisitor implements ASTVisitor {
 	public TypeCheckVisitor(Environment initial_env){
 		env = initial_env;
 		stack = new Stack<String>();
-		labelSet = new HashSet<String>();
+		currLabelSet = new HashSet<String>();
 		whileCount = 0;
 	}
 	
@@ -599,7 +599,7 @@ public class TypeCheckVisitor implements ASTVisitor {
 		}
 		if (b.hasLabel()) {
 			String label = b.getLabel();
-			if (!labelSet.contains(label)) {
+			if (!currLabelSet.contains(label)) {
 				String s = "Illegal label: " + label;
 				SemanticErrorObject seo = new SemanticErrorObject(
 						b.getLineNumber(), b.getColumnNumber(), s);
@@ -624,7 +624,7 @@ public class TypeCheckVisitor implements ASTVisitor {
 		}
 		if (c.hasLabel()) {
 			String label = c.getLabel();
-			if (!labelSet.contains(label)) {
+			if (!currLabelSet.contains(label)) {
 				String s = "Illegal label: " + label;
 				SemanticErrorObject seo = new SemanticErrorObject(
 						c.getLineNumber(), c.getColumnNumber(), s);
@@ -848,7 +848,7 @@ public class TypeCheckVisitor implements ASTVisitor {
 			fd.setABIName(ABIName);
 		} else {
 			String className = classEnv.getClassName();
-			String ABIName = "_" + className + "_" + functionToABIName(funId, funType);
+			String ABIName = "_" + className + functionToABIName(funId, funType);
 			fd.setABIName(ABIName);
 		}
 				
@@ -1589,7 +1589,7 @@ public class TypeCheckVisitor implements ASTVisitor {
 		if (ws.hasLabel()) {
 			String label = ws.getLabel().getName();
 			// error if the label already exists
-			if (labelSet.contains(label)) {
+			if (currLabelSet.contains(label)) {
 				String s = "Duplicate label found";
 				SemanticErrorObject seo = new SemanticErrorObject(
 						ws.getLabel().getLine(), 
@@ -1597,7 +1597,8 @@ public class TypeCheckVisitor implements ASTVisitor {
 						s);
 				Main.handleSemanticError(seo);		
 			} 
-			labelSet.add(ws.getLabel().getName());
+			currLabelSet.add(label);
+			env.putLabel(label);
 		}
 		
 		ws.getExpr().accept(this);
@@ -1633,7 +1634,7 @@ public class TypeCheckVisitor implements ASTVisitor {
 			}
 		}
 		if (ws.hasLabel()) {
-			labelSet.remove(ws.getLabel().getName());
+			currLabelSet.remove(ws.getLabel().getName());
 		}
 		whileCount--;
 	}
@@ -1795,15 +1796,23 @@ public class TypeCheckVisitor implements ASTVisitor {
 	@Override
 	public void visit(ShortTupleDecl std) {
 		/* Typecheck the type */
-		Type t = std.getType();
-		VarType varType = new VarType(t);
+		ShortTupleDecl.Type type = std.getType();
+		VarType varType;
+		if (std.getType() == ShortTupleDecl.Type.PRIMITIVE) {
+			varType = new VarType(std.getPrimitiveType());
+		} else if (std.getType() == ShortTupleDecl.Type.MIXEDARRAY) {
+			varType = new VarType(std.getMixedArrayType());
+		} else {
+			varType = new VarType(std.getObjectId());
+		}
 		// if it's an object type, make sure its declared in env
 		if (varType.isObject()) {
 			String className = varType.getElementType();
 			if (!env.containsClass(className)) {
 				String s = "Name " + className + " cannot be resolved";
 				SemanticErrorObject seo = new SemanticErrorObject(
-						t.getLineNumber(), t.getColumnNumber(), s);
+						std.getIdentifier().getLineNumber(), 
+						std.getIdentifier().getColumnNumber(), s);
 				Main.handleSemanticError(seo);
 			}			
 		}
@@ -1846,13 +1855,13 @@ public class TypeCheckVisitor implements ASTVisitor {
 		switch(fieldDecl.getType()) {
 		case SHORT_TUPLE_DECL:
 			ShortTupleDecl std = fieldDecl.getShortTupleDecl();
-			Type t = std.getType();
-			if (t instanceof MixedArrayType) {
-				int index = ((MixedArrayType)t).getIndex();
+			if (std.getType() == ShortTupleDecl.Type.MIXEDARRAY) {
+				int index = std.getMixedArrayType().getIndex();
 				if (index == 1 || index == 3) {
 					String s = "Field variables cannot be initialized with values";
 					SemanticErrorObject seo = new SemanticErrorObject(
-							t.getLineNumber(), t.getColumnNumber(), s);
+							std.getIdentifier().getLineNumber(), 
+							std.getIdentifier().getColumnNumber(), s);
 					Main.handleSemanticError(seo);
 				}
 			}

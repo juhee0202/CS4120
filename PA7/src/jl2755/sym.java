@@ -34,7 +34,6 @@ public class sym {
   public static final int CLOSE_PAREN = 35;
   public static final int PLUS = 13;
   public static final int LENGTH = 42;
-  public static final int TO_LABEL = 51;
   public static final int CLOSE_BRACKET = 33;
   public static final int error = 1;
   public static final int INT = 18;
@@ -59,6 +58,7 @@ public class sym {
   public static final int STRING_LITERAL = 3;
   public static final int FALSE = 7;
   public static final int WHILE = 10;
+  public static final int TO = 51;
   public static final int GETS = 31;
   public static final String[] terminalNames = new String[] {
   "EOF",
@@ -112,7 +112,7 @@ public class sym {
   "CONTINUE",
   "NULL",
   "DOT",
-  "TO_LABEL"
+  "TO"
   };
 }
 

@@ -114,6 +114,9 @@ public class TilingVisitor implements IRTreeVisitor {
 			assemblyString += gvs.generateInitialization();
 		}
 		
+		// newline at eof
+		assemblyString += "\n";
+		
 		return assemblyString;
 	}
 	
@@ -1424,7 +1427,7 @@ public class TilingVisitor implements IRTreeVisitor {
 //		} else {
 //			stackAllocation(cu);
 //		}
-//		stackAllocation(cu);
+		stackAllocation(cu);
 		
 		Tile superTile = new Tile(new ArrayList<Instruction>());
 		

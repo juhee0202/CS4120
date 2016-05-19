@@ -326,6 +326,20 @@ public class TypeCheckVisitor implements ASTVisitor {
 		de.accept(this);
 		VType dotableExprType = tempType;
 		
+		if (as.isIncOrDec()) {
+			if (de.getType() == DotableExpr.Type.THIS || 
+				de.getType() == DotableExpr.Type.NEW || 
+				de.getType() == DotableExpr.Type.FUNCTION_CALL) 
+			{
+				String s = "Invalid argument to operation ++/--";
+				SemanticErrorObject seo = new SemanticErrorObject(
+						de.getLineNumber(), 
+						de.getColumnNumber(),
+						s);
+				Main.handleSemanticError(seo);
+			}
+		}
+		
 		if (!(dotableExprType instanceof VarType)) {
 			String s = "The type of the expression must be VarType "
 					+ "but it resolved to " + dotableExprType.toString();
@@ -941,6 +955,7 @@ public class TypeCheckVisitor implements ASTVisitor {
 				if (isInClass && classEnv.containsField(name)) {
 					inScope = true;
 					tempType = classEnv.getFieldEnv().get(name);
+					id.setIsField(true);
 				}
 			}
 		}

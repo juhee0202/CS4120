@@ -14,4 +14,10 @@ public class TestInstanceVariables extends Animal implements testInterface{
 		array[0]++;
 		System.out.println(array[0]);
 	}
+	
+	public int f() {
+		System.out.println("hello");
+		String s = "hellO";
+		return 0;
+	}
 }

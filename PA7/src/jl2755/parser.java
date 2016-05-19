@@ -1015,7 +1015,7 @@ class CUP$parser$actions {
                 int eleft = CUP$parser$stack.peek().left;
                 int eright = CUP$parser$stack.peek().right;
                 Expr e = CUP$parser$stack.peek().<Expr> value();
-                 RESULT = new AssignmentStmt(de, e); 
+                 RESULT = new AssignmentStmt(de, e, false); 
                 CUP$parser$result = parser.getSymbolFactory().newSymbol("assignment_stmt",3, CUP$parser$stack.elementAt(CUP$parser$top-2), CUP$parser$stack.peek(), RESULT);
             }
             return CUP$parser$result;
@@ -1030,7 +1030,7 @@ class CUP$parser$actions {
                 int ileft = CUP$parser$stack.peek().left;
                 int iright = CUP$parser$stack.peek().right;
                 Object i = CUP$parser$stack.peek().<Object> value();
-                 RESULT = new AssignmentStmt(de, new BinaryExpr(de, new Literal("1", 0, ileft, iright), BinaryOp.PLUS)); 
+                 RESULT = new AssignmentStmt(de, new BinaryExpr(de, new Literal("1", 0, ileft, iright), BinaryOp.PLUS), true); 
                 CUP$parser$result = parser.getSymbolFactory().newSymbol("assignment_stmt",3, CUP$parser$stack.elementAt(CUP$parser$top-1), CUP$parser$stack.peek(), RESULT);
             }
             return CUP$parser$result;
@@ -1045,7 +1045,7 @@ class CUP$parser$actions {
                 int ileft = CUP$parser$stack.peek().left;
                 int iright = CUP$parser$stack.peek().right;
                 Object i = CUP$parser$stack.peek().<Object> value();
-                 RESULT = new AssignmentStmt(de, new BinaryExpr(de, new Literal("1", 0, ileft, iright), BinaryOp.MINUS)); 
+                 RESULT = new AssignmentStmt(de, new BinaryExpr(de, new Literal("1", 0, ileft, iright), BinaryOp.MINUS), true); 
                 CUP$parser$result = parser.getSymbolFactory().newSymbol("assignment_stmt",3, CUP$parser$stack.elementAt(CUP$parser$top-1), CUP$parser$stack.peek(), RESULT);
             }
             return CUP$parser$result;

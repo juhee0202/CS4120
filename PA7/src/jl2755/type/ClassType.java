@@ -101,7 +101,13 @@ public class ClassType implements VType{
 				ShortTupleDecl tupleDecl = field.getShortTupleDecl();
 				for (Identifier id: tupleDecl.getAllIdentifiers()) {
 					fieldName = id.getTheValue();
-					fieldType = new VarType(tupleDecl.getType());
+					if (tupleDecl.getType() == ShortTupleDecl.Type.PRIMITIVE) {
+						fieldType = new VarType(tupleDecl.getPrimitiveType());
+					} else if (tupleDecl.getType() == ShortTupleDecl.Type.MIXEDARRAY) {
+						fieldType = new VarType(tupleDecl.getMixedArrayType());
+					} else {
+						fieldType = new VarType(tupleDecl.getObjectId());
+					}
 					if (fieldEnv.containsKey(fieldName)) {
 						String s = fieldName + " is already declared in " + className;
 						SemanticErrorObject seo = new SemanticErrorObject(
@@ -264,7 +270,13 @@ public class ClassType implements VType{
 				ShortTupleDecl tupleDecl = field.getShortTupleDecl();
 				for (Identifier id: tupleDecl.getAllIdentifiers()) {
 					fieldName = id.getTheValue();
-					fieldType = new VarType(tupleDecl.getType());
+					if (tupleDecl.getType() == ShortTupleDecl.Type.PRIMITIVE) {
+						fieldType = new VarType(tupleDecl.getPrimitiveType());
+					} else if (tupleDecl.getType() == ShortTupleDecl.Type.MIXEDARRAY) {
+						fieldType = new VarType(tupleDecl.getMixedArrayType());
+					} else {
+						fieldType = new VarType(tupleDecl.getObjectId());
+					}
 					fieldEnv.put(fieldName, fieldType);
 					orderedFields.add(fieldName);
 				}

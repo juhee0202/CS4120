@@ -79,7 +79,7 @@ public class TypeCheckVisitor implements ASTVisitor {
 	private boolean isInGlobalDecl = false;
 	private boolean isInFieldDecl = false;
 	private int whileCount;				// number of nested while loops we're currently in
-	private Set<String> labelSet;
+	private Set<String> currLabelSet;
 	
 	/**
 	 * Creates a TypeCheckVisitor instance
@@ -88,7 +88,7 @@ public class TypeCheckVisitor implements ASTVisitor {
 	public TypeCheckVisitor(Environment initial_env){
 		env = initial_env;
 		stack = new Stack<String>();
-		labelSet = new HashSet<String>();
+		currLabelSet = new HashSet<String>();
 		whileCount = 0;
 	}
 	
@@ -599,7 +599,7 @@ public class TypeCheckVisitor implements ASTVisitor {
 		}
 		if (b.hasLabel()) {
 			String label = b.getLabel();
-			if (!labelSet.contains(label)) {
+			if (!currLabelSet.contains(label)) {
 				String s = "Illegal label: " + label;
 				SemanticErrorObject seo = new SemanticErrorObject(
 						b.getLineNumber(), b.getColumnNumber(), s);
@@ -624,7 +624,7 @@ public class TypeCheckVisitor implements ASTVisitor {
 		}
 		if (c.hasLabel()) {
 			String label = c.getLabel();
-			if (!labelSet.contains(label)) {
+			if (!currLabelSet.contains(label)) {
 				String s = "Illegal label: " + label;
 				SemanticErrorObject seo = new SemanticErrorObject(
 						c.getLineNumber(), c.getColumnNumber(), s);
@@ -1589,7 +1589,7 @@ public class TypeCheckVisitor implements ASTVisitor {
 		if (ws.hasLabel()) {
 			String label = ws.getLabel().getName();
 			// error if the label already exists
-			if (labelSet.contains(label)) {
+			if (currLabelSet.contains(label)) {
 				String s = "Duplicate label found";
 				SemanticErrorObject seo = new SemanticErrorObject(
 						ws.getLabel().getLine(), 
@@ -1597,7 +1597,8 @@ public class TypeCheckVisitor implements ASTVisitor {
 						s);
 				Main.handleSemanticError(seo);		
 			} 
-			labelSet.add(ws.getLabel().getName());
+			currLabelSet.add(label);
+			env.putLabel(label);
 		}
 		
 		ws.getExpr().accept(this);
@@ -1633,7 +1634,7 @@ public class TypeCheckVisitor implements ASTVisitor {
 			}
 		}
 		if (ws.hasLabel()) {
-			labelSet.remove(ws.getLabel().getName());
+			currLabelSet.remove(ws.getLabel().getName());
 		}
 		whileCount--;
 	}

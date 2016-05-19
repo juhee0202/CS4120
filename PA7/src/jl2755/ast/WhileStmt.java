@@ -13,6 +13,7 @@ public class WhileStmt implements NakedStmt {
 	private Expr expr;
 	private Stmt stmt;
 	private Label label;
+	private Label exitLabel;
 	
 	public WhileStmt(Expr e, Stmt s) {
 		expr = e;
@@ -64,5 +65,13 @@ public class WhileStmt implements NakedStmt {
 	
 	public boolean hasLabel() {
 		return label != null;
+	}
+	
+	public void setExitLabel(Label exitLabel) {
+		this.exitLabel = exitLabel;
+	}
+	
+	public Label getExitLabel() {
+		return exitLabel;
 	}
 }

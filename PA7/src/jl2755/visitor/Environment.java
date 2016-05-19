@@ -14,11 +14,21 @@ public class Environment {
 	private Map<String, VarType> varMap;
 	private Map<String, FunType> funMap;
 	private Map<String, ClassType> classMap;
+	private Set<String> labelSet;
 	
 	public Environment() {
 		varMap = new HashMap<String, VarType>();
 		funMap = new HashMap<String, FunType>();
 		classMap = new HashMap<String, ClassType>();
+		labelSet = new HashSet<String>();
+	}
+	
+	public void putLabel(String s) {
+		labelSet.add(s);
+	}
+	
+	public boolean containsLabel(String s) {
+		return labelSet.contains(s);
 	}
 	
 	/**
@@ -134,5 +144,13 @@ public class Environment {
 	
 	public Set<FunType> getFunTypes() {
 		return new HashSet<FunType>(funMap.values());
+	}
+	
+	public Set<String> getLabelSet() {
+		return labelSet;
+	}
+	
+	public void setLabelSet(Set<String> ls) {
+		labelSet = ls;
 	}
 }

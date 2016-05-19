@@ -959,8 +959,14 @@ public class MIRVisitor implements ASTVisitor{
 
 	@Override
 	public void visit(WhileStmt ws) {
-		String start = "l"+labelCount++;
-		IRLabel startOfLoop = new IRLabel(start);
+		IRLabel startOfLoop;
+		if (ws.hasLabel()) {
+			startOfLoop = new IRLabel(ws.getLabel().getName());
+		} else {
+			String start = "l"+labelCount++;
+			startOfLoop = new IRLabel(start);
+		}
+		
 		IRLabel trueLabel = new IRLabel("l"+labelCount++);
 		IRLabel falseLabel = new IRLabel("l"+labelCount++);
 		IRStmt cJumpNode = controlFlow(ws.getExpr(),trueLabel,falseLabel);
@@ -968,7 +974,7 @@ public class MIRVisitor implements ASTVisitor{
 		// Update currentWhile as you enter and leave a while loop
 		String oldWhileStart = currentWhileStart;
 		String oldWhileEnd = currentWhileEnd;
-		currentWhileStart = start;
+		currentWhileStart = startOfLoop.name();
 		currentWhileEnd = falseLabel.name();
 		startToEnd.put(currentWhileStart, currentWhileEnd);
 		ws.getStmt().accept(this);
@@ -976,7 +982,7 @@ public class MIRVisitor implements ASTVisitor{
 		currentWhileEnd = oldWhileEnd;
 		
 		IRStmt loopStmts = (IRStmt) tempNode;
-		IRJump jumpToStart = new IRJump(new IRName(start));
+		IRJump jumpToStart = new IRJump(new IRName(startOfLoop.name()));
 		tempNode = new IRSeq(startOfLoop, cJumpNode, trueLabel, 
 				loopStmts, jumpToStart, falseLabel);
 	}

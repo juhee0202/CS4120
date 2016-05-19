@@ -58,7 +58,7 @@ public class IRGlobalReference extends IRExpr {
 
 	@Override
 	public IRNode copy() {
-		return new IRGlobalReference(name,typeOfGlobal);
+		return new IRGlobalReference(name,ABIName,typeOfGlobal);
 	}
 
 	@Override

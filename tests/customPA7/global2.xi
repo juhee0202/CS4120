@@ -6,6 +6,6 @@ x:int = 5
 z:int[x]
 
 main(args:int[][]) {
-	println(y)
+	println("1"+y)
 	println(unparseInt(length(z)))
 }

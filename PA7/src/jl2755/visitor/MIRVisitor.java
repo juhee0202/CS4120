@@ -37,14 +37,18 @@ public class MIRVisitor implements ASTVisitor{
 	private ClassType classType;
 	private IRExpr thisNode;
 	
+	// Handles field access vs modify
+	private boolean isLeftSide;
+	
 	// Global for Method Dispatch
 	private Map<String, IRDispatchVector> classToDispatch =  new HashMap<String, IRDispatchVector>();
 	
 	// Global Variable name to its ABIName to be used for labels
-	private Map<String, String> globalNameToABI = new HashMap<String, String>();
+//	private Map<String, String> globalNameToABI = new HashMap<String, String>();
 	
 	// Global Environment
 	private Environment env;
+
 	
 	public IRNode program;
 	
@@ -120,8 +124,11 @@ public class MIRVisitor implements ASTVisitor{
 	// ADD LOGIC FOR CLASSES
 	@Override
 	public void visit(AssignmentStmt as) {
+		isLeftSide = true;
 		as.getDotableExpr().accept(this);
 		IRExpr de = (IRExpr) tempNode;
+		
+		isLeftSide = false;
 		as.getExpr().accept(this);
 		IRExpr e = (IRExpr) tempNode;
 		tempNode = new IRMove(de,e);
@@ -633,8 +640,8 @@ public class MIRVisitor implements ASTVisitor{
 		String name = id.toString();
 		if (env.containsVar(name)) {
 			// id is a global variable, return a mem pointing to the global variable
-//			IRName irName = new IRName(globalNameToABI.get(name));
-			tempNode = new IRGlobalReference(name, globalNameToABI.get(name), GlobalType.REGULAR);
+			String abiName = translateVarTypeToABI(env.getVarType(name), name);
+			tempNode = new IRGlobalReference(name, abiName, GlobalType.REGULAR);
 		} else {
 			// must be a local variable
 			tempNode = new IRTemp(name);
@@ -1353,9 +1360,16 @@ public class MIRVisitor implements ASTVisitor{
 	public void visit(DotableExpr de) {
 		switch (de.getType()) {
 		case DOT:
+			boolean isFieldAssigment = false;
+			if (isLeftSide) {
+				isFieldAssigment = true;
+				isLeftSide = false; // set to false in case of recursive DOTs
+			}
 			de.getDotableExpr().accept(this);
+			List<IRStmt> stmts = new ArrayList<IRStmt>();
 			IRTemp freshTemp = new IRTemp("t" + tempCount++);
 			IRMove tempClean = new IRMove(freshTemp, (IRExpr) tempNode);
+			stmts.add(tempClean);
 			VType compileTimeTypeOfDotable = de.getDotableExpr().getCompileTimeType();
             assert(compileTimeTypeOfDotable instanceof VarType);
             VarType compileVType = (VarType) compileTimeTypeOfDotable;
@@ -1366,13 +1380,24 @@ public class MIRVisitor implements ASTVisitor{
             int indexOfFieldInObjectLayout = fieldList.indexOf(de.getId().toString()) + 1;
             IRBinOp getFieldElement = new IRBinOp(OpType.ADD, freshTemp, new IRConst(indexOfFieldInObjectLayout*8));
             IRMem offsetMem = new IRMem(getFieldElement);
-            IRTemp resultTemp = new IRTemp("t" + tempCount++);
-            IRMove moveResult = new IRMove(resultTemp, offsetMem);
-            List<IRStmt> stmts = new ArrayList<IRStmt>();
-            stmts.add(tempClean);
-            stmts.add(moveResult);
+            
+            /* 
+             * Return a different result depending on whether we want to 
+             * access or modify the field 
+             */
+            IRExpr result;
+            // return mem(field)
+            if (isFieldAssigment) {
+            	result = offsetMem;
+            	
+            // return temp(mem(field))
+            } else {
+            	result = new IRTemp("t" + tempCount++);
+                IRMove moveResult = new IRMove(result, offsetMem);
+                stmts.add(moveResult);
+            }
             IRSeq seqResult = new IRSeq(stmts);
-            IRESeq wholeResult = new IRESeq(seqResult, resultTemp);
+            IRESeq wholeResult = new IRESeq(seqResult, result);
             tempNode = wholeResult;
 			break;
 		case FUNCTION_CALL:
@@ -1456,7 +1481,7 @@ public class MIRVisitor implements ASTVisitor{
 					ABIName = translateVarTypeToABI(vType, name);
 					gv = new IRGlobalVariable(name, ABIName, 0);
 				}
-				globalNameToABI.put(name, ABIName);
+//				globalNameToABI.put(name, ABIName);
 				list.add(gv);
 			}
 			tempNode = new IRGVList(list);
@@ -1475,7 +1500,7 @@ public class MIRVisitor implements ASTVisitor{
 			}
 			String ABIName = translateVarTypeToABI(vType, name);
 			tempNode = new IRGlobalVariable(name, ABIName, value);
-			globalNameToABI.put(name, ABIName);
+//			globalNameToABI.put(name, ABIName);
 			return;
 		case VAR_DECL:
 			VarDecl vd = gd.getVarDecl();
@@ -1508,7 +1533,7 @@ public class MIRVisitor implements ASTVisitor{
 				ABIName1 = translateVarTypeToABI(type1, id);
 				tempNode = new IRGlobalVariable(id, ABIName1, 0);
 			}
-			globalNameToABI.put(id, ABIName1);
+//			globalNameToABI.put(id, ABIName1);
 			return;
 		}		
 	}

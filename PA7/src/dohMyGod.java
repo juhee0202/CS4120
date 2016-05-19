@@ -35,8 +35,9 @@ public class dohMyGod {
 
 	@Test
 	public void test() {
-		int[] array = {1, 2, 3};
-		System.out.println(array[-1]);
+//		int[] array = {1, 2, 3};
+//		array[0]++;
+//		System.out.println(array[0]);
 		
 		int a = 'H';
 		System.out.println(a);
@@ -341,6 +342,8 @@ public class dohMyGod {
 		System.out.println(w.x);
 		System.out.println(w.z);
 //		v.z = 1;
+		
+		
 		
 	}
 	class Dog extends Animal{

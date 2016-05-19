@@ -1367,7 +1367,7 @@ public class MIRVisitor implements ASTVisitor{
 			}
 			de.getDotableExpr().accept(this);
 			List<IRStmt> stmts = new ArrayList<IRStmt>();
-			IRTemp freshTemp = new IRTemp("t" + tempCount++);
+			IRTemp freshTemp = new IRTemp("_t" + tempCount++);
 			IRMove tempClean = new IRMove(freshTemp, (IRExpr) tempNode);
 			stmts.add(tempClean);
 			VType compileTimeTypeOfDotable = de.getDotableExpr().getCompileTimeType();
@@ -1392,7 +1392,7 @@ public class MIRVisitor implements ASTVisitor{
             	
             // return temp(mem(field))
             } else {
-            	result = new IRTemp("t" + tempCount++);
+            	result = new IRTemp("_t" + tempCount++);
                 IRMove moveResult = new IRMove(result, offsetMem);
                 stmts.add(moveResult);
             }

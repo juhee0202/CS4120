@@ -72,24 +72,24 @@ public class GlobalVariableSection {
 			if (valueType == GlobalVarValueType.PRIMITIVE_INITIALIZED) {
 				s += "\t.section .data\n";
 				s += "\t.align 8\n";
-				s += ".globl _I_g_" + abiVariableName + "\n";
-				s += "_I_g_" + abiVariableName + ":\n";
+				s += ".globl " + abiVariableName + "\n";
+				s += abiVariableName + ":\n";
 				s += "\t.quad " +  variableValue + "\n";
 				s += "\t.text";
 			}
 			else if (valueType == GlobalVarValueType.PRIMITIVE) {
 				s += "\t.section .data\n";
 				s += "\t.align 8\n";
-				s += ".globl _I_g_" + abiVariableName + "\n";
-				s += "_I_g_" + abiVariableName + "_i:\n";
+				s += ".globl " + abiVariableName + "\n";
+				s += abiVariableName + ":\n";
 				s += "\t.zero " +  8 + "\n";
 				s += "\t.text";
 			}
 			else if (valueType == GlobalVarValueType.ARRAY) {
 				s += "\t.section .data\n";
 				s += "\t.align 8\n";
-				s += ".globl _I_g_" + abiVariableName + "\n";
-				s += "_I_g_" + abiVariableName + ":\n";
+				s += ".globl " + abiVariableName + "\n";
+				s += abiVariableName + ":\n";
 				s += "\t.zero " +  8 + "\n";
 				s += "\t.text\n\n";
 				s += ".section .ctors\n";

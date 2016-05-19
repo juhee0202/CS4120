@@ -28,7 +28,7 @@ terminal IF, ELSE, WHILE, RETURN, USE, PLUS, MINUS, UMINUS, TIMES, HIGH_MULT, IN
   DIVIDE, MODULO, NOT, LT, LEQ, GT, GEQ, AND, OR, EQUAL, NOT_EQUAL, GETS,
   OPEN_BRACKET, CLOSE_BRACKET, OPEN_PAREN, CLOSE_PAREN, OPEN_BRACE, CLOSE_BRACE,
   COLON, COMMA, SEMICOLON, UNDERSCORE, LENGTH,
-  CLASS, EXTENDS, NEW, THIS, BREAK, CONTINUE, NULL, DOT, TO, FROM;
+  CLASS, EXTENDS, NEW, THIS, BREAK, CONTINUE, NULL, DOT, TO, FROM, INC, DEC;
 
 
 /* Nonterminals */
@@ -114,7 +114,11 @@ array_literal ::= OPEN_BRACE:ob array_element_list:ael CLOSE_BRACE  {: RESULT = 
                   ;
 
 //*********************************************************************MODIF**********************************************************
-assignment_stmt ::= dotable_expr:de GETS expr:e                     {: RESULT = new AssignmentStmt(de, e); :}
+assignment_stmt ::= dotable_expr:de GETS expr:e                     {: RESULT = new AssignmentStmt(de, e, false); :}
+                    |
+                    dotable_expr:de INC:i                           {: RESULT = new AssignmentStmt(de, new BinaryExpr(de, new Literal("1", 0, ileft, iright), BinaryOp.PLUS), true); :}
+                    |
+                    dotable_expr:de DEC:i                           {: RESULT = new AssignmentStmt(de, new BinaryExpr(de, new Literal("1", 0, ileft, iright), BinaryOp.MINUS), true); :}
                     ;
 
 block_stmt ::= OPEN_BRACE CLOSE_BRACE                               {: RESULT = new BlockStmt(); :}

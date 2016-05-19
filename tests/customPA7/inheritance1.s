@@ -334,7 +334,22 @@ l0:
 	movq	%r14, %r12
 	movq	%r12, -72(%rbp)
 	movq	-72(%rbp), %r14
+<<<<<<< HEAD
+	movq	%r14, %r12
+	movq	%r12, -80(%rbp)
+	movq	-80(%rbp), %r14
+	addq	$0, %r14
+	movq	%r14, -80(%rbp)
+	leaq	_Dog_Iinit_pi(%rip), %r14
+	movq	%r14, -88(%rbp)
+	movq	-88(%rbp), %r14
+	movq	-80(%rbp), %r12
+	movq	%r14, (%r12)
+	movq	-72(%rbp), %r14
+	movq	%r14, _I_vt_Dog(%rip)
+=======
 	movq	%r14, _I_vt_Person(%rip)
+>>>>>>> 63975eb232c1731a40c69fb2eced1c497145ee20
 	jmp	l1
 
 

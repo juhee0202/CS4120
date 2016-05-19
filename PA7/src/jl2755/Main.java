@@ -549,12 +549,12 @@ public class Main {
 			program.accept(mir);
 
 			// Output MIR
-			StringWriter sww = new StringWriter();
-			try (PrintWriter pw = new PrintWriter(sww);
-					SExpPrinter sp = new CodeWriterSExpPrinter(pw)) {
-				mir.program.printSExp(sp);
-			}
-			bw.write(sww.toString());
+//			StringWriter sww = new StringWriter();
+//			try (PrintWriter pw = new PrintWriter(sww);
+//					SExpPrinter sp = new CodeWriterSExpPrinter(pw)) {
+//				mir.program.printSExp(sp);
+//			}
+//			bw.write(sww.toString());
 
 			/* Lower to LIR */
 			LIRVisitor lir = new LIRVisitor();
@@ -735,7 +735,7 @@ public class Main {
 				result = lir.program;
 				
 				/* Optimize */
-//				result = optimize(result);
+				result = optimize(result);
 				
 				// Update global map
 				fileToIR.put(filename, result);

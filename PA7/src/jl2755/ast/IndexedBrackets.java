@@ -33,6 +33,7 @@ public class IndexedBrackets {
 			expression = exprs.get(0);
 			index = 0;
 		} else {
+			index = 1;
 			expression = exprs.get(0);
 			indexedBrackets = new IndexedBrackets(exprs.subList(1, exprs.size()));
 		}
@@ -96,5 +97,15 @@ public class IndexedBrackets {
 
 	public void setIndex(int index) {
 		this.index = index;
+	}
+	
+	@Override
+	public String toString() {
+		if (index == 0) {
+			return expression.toString();
+		}
+		else {
+			return expression.toString() + indexedBrackets.toString();
+		}
 	}
 }

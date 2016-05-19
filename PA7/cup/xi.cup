@@ -28,7 +28,7 @@ terminal IF, ELSE, WHILE, RETURN, USE, PLUS, MINUS, UMINUS, TIMES, HIGH_MULT, IN
   DIVIDE, MODULO, NOT, LT, LEQ, GT, GEQ, AND, OR, EQUAL, NOT_EQUAL, GETS,
   OPEN_BRACKET, CLOSE_BRACKET, OPEN_PAREN, CLOSE_PAREN, OPEN_BRACE, CLOSE_BRACE,
   COLON, COMMA, SEMICOLON, UNDERSCORE, LENGTH,
-  CLASS, EXTENDS, NEW, THIS, BREAK, CONTINUE, NULL, DOT, TO, FROM, INC, DEC;
+  CLASS, EXTENDS, NEW, THIS, BREAK, CONTINUE, NULL, DOT, TO, FROM, INC, DEC, FOR;
 
 
 /* Nonterminals */
@@ -315,12 +315,21 @@ naked_stmt ::= assignment_stmt:ass                                  {: RESULT = 
                |
                BREAK:b                                              {: RESULT = new Break(bleft, bright); :}
                |
-               BREAK:b FROM IDENTIFIER:labelName                      {: RESULT = new Break(labelName, bleft, bright); :}
+               BREAK:b FROM IDENTIFIER:labelName                    {: RESULT = new Break(labelName, bleft, bright); :}
                |
                CONTINUE:c                                           {: RESULT = new Continue(cleft, cright); :}
                |
                CONTINUE:c TO IDENTIFIER:labelName                   {: RESULT = new Continue(labelName, cleft, cright); :}
+               |
+               FOR OPEN_PAREN var_init:vi SEMICOLON 
+               expr:e SEMICOLON assignment_stmt:as CLOSE_PAREN
+               stmt:s                                               {: RESULT = new WhileStmt(vi,e,as,s); :}
+               |
+               FOR OPEN_PAREN assignment_stmt:as1 SEMICOLON 
+               expr:e SEMICOLON assignment_stmt:as2 CLOSE_PAREN
+               stmt:s                                               {: RESULT = new WhileStmt(as1,e,as2,s); :}
                ;
+               
 
 //*********************************************************************MODIF**********************************************************
 normal_expr ::= constant:c                                          {: RESULT = c; :}

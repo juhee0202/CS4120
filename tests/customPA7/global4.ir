@@ -4,20 +4,6 @@
   _Imain_paai
   (SEQ
    (MOVE (TEMP args) (TEMP _ARG0))
-   (EXP
-    (CALL (NAME _Iprintln_pai)
-     (CALL (NAME _IunparseInt_aii) (GLOBAL VARIABLE _I_g_x_i))))
-   (MOVE (GLOBAL VARIABLE _I_g_x_i) (CONST 10))
-   (EXP
-    (CALL (NAME _Iprintln_pai)
-     (CALL (NAME _IunparseInt_aii) (GLOBAL VARIABLE _I_g_x_i))))))
- (_I_g_x_i = 5))
-(COMPUNIT
- Program
- (FUNC
-  _Imain_paai
-  (SEQ
-   (MOVE (TEMP args) (TEMP _ARG0))
    (MOVE (TEMP _temp0) (GLOBAL VARIABLE _I_g_x_i))
    (MOVE (TEMP _temp1) (CALL (NAME _IunparseInt_aii) (TEMP _temp0)))
    (MOVE (TEMP _temp2) (TEMP _temp1))

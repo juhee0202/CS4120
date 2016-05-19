@@ -510,7 +510,7 @@ public class LIRVisitor implements IRTreeVisitor{
 		
 		// ex: MOV TEMP1, expr
 		//     This always commutes since temp1 can be overwritten by any side expression
-		if (expr instanceof IRTemp) {
+		if (expr instanceof IRTemp || expr instanceof IRGlobalReference) {
 			return true;
 		}
 

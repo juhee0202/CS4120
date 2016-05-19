@@ -98,6 +98,7 @@ SingleCharacter = [^\'\\\"\b\t\f\n\r]
   "continue"                     { return symbol(sym.CONTINUE,"continue"); }
   "else"                         { return symbol(sym.ELSE,"else"); }
   "extends"                      { return symbol(sym.EXTENDS,"extends"); }
+  "for"                          { return symbol(sym.FOR,"for"); }
   "if"                           { return symbol(sym.IF,"if"); }
   "int"                          { return symbol(sym.INT,"int"); }
   "length"                       { return symbol(sym.LENGTH,"length"); }

@@ -139,4 +139,14 @@ public class ArrayElement implements Expr {
 	public boolean isSurroundedParentheses() {
 		return isSurroundedByParentheses;
 	}
+	
+	@Override
+	public String toString() {
+		if (index == 2) {
+			return arrayLiteral.toString() + indexedBrackets.toString();
+		}
+		else {
+			return dotableExpr.toString() + indexedBrackets.toString();
+		}
+	}
 }

@@ -76,4 +76,12 @@ public class FunctionArg {
 	public void accept(ASTVisitor v){
 		v.visit(this);
 	}
+	
+	@Override
+	public String toString() {
+		if (index == 0) {
+			return expr.toString();
+		}
+		return expr + " " + functionArg.toString();
+	}
 }

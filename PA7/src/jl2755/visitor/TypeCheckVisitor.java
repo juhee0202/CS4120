@@ -365,6 +365,16 @@ public class TypeCheckVisitor implements ASTVisitor {
 		as.getExpr().accept(this);
 		rightType = tempType;
 		
+		if (rightType instanceof UnitType) {
+			String s = "Expected " + leftType.toString() 
+			+ ", but found " + rightType.toString();
+			SemanticErrorObject seo = new SemanticErrorObject(
+					as.getExpr().getLineNumber(), 
+					as.getExpr().getColumnNumber(),
+					s);
+			Main.handleSemanticError(seo);
+		}
+		
 		if (leftType.isPrimitive()) {	// must match exactly
 			if (!leftType.equals(rightType)) {
 				String s = "Expected " + leftType.toString() 

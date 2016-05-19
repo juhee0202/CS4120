@@ -471,7 +471,7 @@ public class MIRVisitor implements ASTVisitor{
 						break;
 					}
 				}
-				assert(i++ != -1);
+				assert(i != -1);
 				IRConst offset = new IRConst(i*8);
 				IRBinOp offsetFromDispatch = new IRBinOp(OpType.ADD, dispatch, offset);
 				IRMem label = new IRMem(offsetFromDispatch);

@@ -1038,7 +1038,8 @@ public class TilingVisitor implements IRTreeVisitor {
 		Instruction callInstruction = null;
 		
 		if (targetTile.getDest() instanceof Memory) {
-			callInstruction = new Instruction(Operation.CALLQ, new Star((Memory) targetTile.getDest()));
+			callInstruction = new Instruction(Operation.CALLQ, targetTile.getDest());
+			callInstruction.setStar();
 		}
 		
 		// "callq targetDest"
@@ -2641,6 +2642,8 @@ public class TilingVisitor implements IRTreeVisitor {
 				currentInstruction.setDest(newMem);
 				added.add(currentInstruction);
 			} else {
+//				System.out.println(currentInstruction);
+//				System.out.println(currentInstruction.getDest().getClass());
 				// dest is constant or label
 				Operation op = currentInstruction.getOp();
 				Operand label = currentInstruction.getDest();

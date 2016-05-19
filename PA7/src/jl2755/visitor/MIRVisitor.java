@@ -529,6 +529,7 @@ public class MIRVisitor implements ASTVisitor{
 			
 			// Use this as the first argument
 			IRCall call = new IRCall(callThisTemp, freshTemp);
+			call.setStar(true);
 			call.setNumReturns(fc.getNumReturns());
 			List<IRStmt> stmts = new ArrayList<IRStmt>();
 			stmts.add(tempClean);
@@ -567,6 +568,7 @@ public class MIRVisitor implements ASTVisitor{
 				irArgs.add((IRExpr) tempNode);
 			}
 			IRCall call = new IRCall(callThisTemp, irArgs);
+			call.setStar(true);
 			call.setNumReturns(fc.getNumReturns());
 			List<IRStmt> stmts = new ArrayList<IRStmt>();
 			stmts.add(tempClean);

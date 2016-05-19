@@ -22,6 +22,7 @@ public class IRCall extends IRExpr {
     private boolean[] returnBoolList; 
     private int num8ByteSpace;
     private boolean hasExtra8ByteSpace = false;
+    private boolean isStar = false;
 
     /**
      *
@@ -101,6 +102,14 @@ public class IRCall extends IRExpr {
     public void accept(IRTreeVisitor irv) {
     	irv.visit(this);
     }
+
+	public boolean isStar() {
+		return isStar;
+	}
+
+	public void setStar(boolean isStar) {
+		this.isStar = isStar;
+	}
 
 	@Override
 	public void addLeft(IRNode irn) {

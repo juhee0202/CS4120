@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Set;
 
 import edu.cornell.cs.cs4120.xic.ir.*;
+import edu.cornell.cs.cs4120.xic.ir.IRGlobalReference.GlobalType;
 import edu.cornell.cs.cs4120.xic.ir.interpret.Configuration;
 import jl2755.assembly.Instruction.Operation;
 import jl2755.ast.*;
@@ -529,6 +530,7 @@ public class MIRVisitor implements ASTVisitor{
 			
 			// Use this as the first argument
 			IRCall call = new IRCall(callThisTemp, freshTemp);
+			call.setStar(true);
 			call.setNumReturns(fc.getNumReturns());
 			List<IRStmt> stmts = new ArrayList<IRStmt>();
 			stmts.add(tempClean);
@@ -567,6 +569,7 @@ public class MIRVisitor implements ASTVisitor{
 				irArgs.add((IRExpr) tempNode);
 			}
 			IRCall call = new IRCall(callThisTemp, irArgs);
+			call.setStar(true);
 			call.setNumReturns(fc.getNumReturns());
 			List<IRStmt> stmts = new ArrayList<IRStmt>();
 			stmts.add(tempClean);
@@ -625,39 +628,11 @@ public class MIRVisitor implements ASTVisitor{
 		String name = id.toString();
 		if (env.containsVar(name)) {
 			// id is a global variable, return a mem pointing to the global variable
-			IRName irName = new IRName(globalNameToABI.get(name));
-			tempNode = new IRMem(irName);
+//			IRName irName = new IRName(globalNameToABI.get(name));
+			tempNode = new IRGlobalReference(name, globalNameToABI.get(name), GlobalType.REGULAR);
 		} else {
-			// Variable must be a field or local
-			if (id.isField()) {
-				String object;
-				assert (thisNode instanceof IRTemp || thisNode instanceof IRESeq);
-				if (thisNode instanceof IRTemp) {
-					object = ((IRTemp) thisNode).name();
-				} else {
-					IRExpr temp = ((IRESeq)thisNode).expr();
-					object = ((IRTemp) temp).name();
-				}
-				
-				IRDispatchVector dv = classToDispatch.get(object);
-				List<String> fields = dv.getFields();
-				// Find the field index (looking from back to front to get closest)
-				VarType varType = classType.getFieldType(name);
-				int i;
-				for (i = fields.size()-1; i >= 0; i--) {
-					VarType fieldType = classType.getFieldType(fields.get(i));
-					if (fieldType.equals(varType)) {
-						break;
-					}
-				}
-				// Offset from object pointer to get field
-				IRConst offset = new IRConst((i+1)*8);
-				IRBinOp offsetFromObject = new IRBinOp(OpType.ADD, thisNode, offset);
-				tempNode = new IRMem(offsetFromObject);
-			} else {
-				tempNode = new IRTemp(name);
-			}
-			
+			// must be a local variable
+			tempNode = new IRTemp(name);
 		}
 	}
 

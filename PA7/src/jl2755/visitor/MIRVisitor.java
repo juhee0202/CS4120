@@ -132,6 +132,8 @@ public class MIRVisitor implements ASTVisitor{
 		isLeftSide = false;
 		as.getExpr().accept(this);
 		IRExpr e = (IRExpr) tempNode;
+		System.out.println("Left side: " + de);
+		System.out.println("Right side: " + e);
 		tempNode = new IRMove(de,e);
 		
 //		int index = as.getIndex();

@@ -6,6 +6,7 @@ x, y, z: int;
 class Organism {
 	size: int;
 	evolve() {
+	size = 10;
 		println("WOP WOP");
 	}
 }
@@ -40,4 +41,5 @@ main(args: int[][]) {
 	println(unparseInt(doggie.weight));
 	o:Organism = doggie;
 	o.evolve();
+	println(unparseInt(o.size));
 }

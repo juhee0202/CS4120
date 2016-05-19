@@ -79,7 +79,17 @@
       (MOVE (TEMP _t25) (TEMP o))
       (MOVE (TEMP _t26) (MEM (TEMP _t25)))
       (MOVE (TEMP _t27) (MEM (ADD (TEMP _t26) (CONST 0)))))
-     (CALL (TEMP _t27) (TEMP _t25))))))
+     (CALL (TEMP _t27) (TEMP _t25))))
+   (EXP
+    (CALL
+     (NAME _Iprintln_pai)
+     (CALL
+      (NAME _IunparseInt_aii)
+      (ESEQ
+       (SEQ
+        (MOVE (TEMP _t28) (TEMP o))
+        (MOVE (TEMP _t29) (MEM (ADD (TEMP _t28) (CONST 8)))))
+       (TEMP _t29)))))))
  (FUNC
   _Animal_Iwake_p
   (SEQ
@@ -105,6 +115,7 @@
   _Organism_Ievolve_p
   (SEQ
    (MOVE (TEMP _t0) (TEMP _ARG0))
+   (MOVE (MEM (ADD (TEMP _t0) (CONST 8))) (CONST 10))
    (EXP
     (CALL
      (NAME _Iprintln_pai)
@@ -285,18 +296,24 @@
    (MOVE (TEMP _t27) (MEM (ADD (TEMP _t26) (CONST 0))))
    (MOVE (TEMP _temp18) (TEMP _t25))
    (EXP (CALL (TEMP _t27) (TEMP _temp18)))
+   (MOVE (TEMP _t28) (TEMP o))
+   (MOVE (TEMP _t29) (MEM (ADD (TEMP _t28) (CONST 8))))
+   (MOVE (TEMP _temp20) (TEMP _t29))
+   (MOVE (TEMP _temp21) (CALL (NAME _IunparseInt_aii) (TEMP _temp20)))
+   (MOVE (TEMP _temp22) (TEMP _temp21))
+   (EXP (CALL (NAME _Iprintln_pai) (TEMP _temp22)))
    (RETURN)))
  (FUNC
   _Animal_Iwake_p
   (SEQ
    (MOVE (TEMP _t5) (TEMP _ARG0))
-   (MOVE (TEMP _temp20) (MEM (ADD (TEMP _t5) (CONST 16))))
-   (MOVE (TEMP _temp21) (CALL (NAME _IunparseInt_aii) (TEMP _temp20)))
-   (MOVE (TEMP _temp22) (TEMP _temp21))
-   (EXP (CALL (NAME _Iprintln_pai) (TEMP _temp22)))
-   (MOVE (TEMP _temp24) (CONST 48))
-   (MOVE (TEMP _temp25) (CALL (NAME _I_alloc_i) (TEMP _temp24)))
-   (MOVE (TEMP _t6) (TEMP _temp25))
+   (MOVE (TEMP _temp24) (MEM (ADD (TEMP _t5) (CONST 16))))
+   (MOVE (TEMP _temp25) (CALL (NAME _IunparseInt_aii) (TEMP _temp24)))
+   (MOVE (TEMP _temp26) (TEMP _temp25))
+   (EXP (CALL (NAME _Iprintln_pai) (TEMP _temp26)))
+   (MOVE (TEMP _temp28) (CONST 48))
+   (MOVE (TEMP _temp29) (CALL (NAME _I_alloc_i) (TEMP _temp28)))
+   (MOVE (TEMP _t6) (TEMP _temp29))
    (MOVE (MEM (TEMP _t6)) (CONST 5))
    (MOVE (MEM (ADD (CONST 8) (TEMP _t6))) (CONST 87))
    (MOVE (MEM (ADD (CONST 16) (TEMP _t6))) (CONST 79))
@@ -304,16 +321,17 @@
    (MOVE (MEM (ADD (CONST 32) (TEMP _t6))) (CONST 76))
    (MOVE (MEM (ADD (CONST 40) (TEMP _t6))) (CONST 68))
    (MOVE (TEMP _t6) (ADD (TEMP _t6) (CONST 8)))
-   (MOVE (TEMP _temp26) (TEMP _t6))
-   (EXP (CALL (NAME _Iprintln_pai) (TEMP _temp26)))
+   (MOVE (TEMP _temp30) (TEMP _t6))
+   (EXP (CALL (NAME _Iprintln_pai) (TEMP _temp30)))
    (RETURN)))
  (FUNC
   _Organism_Ievolve_p
   (SEQ
    (MOVE (TEMP _t0) (TEMP _ARG0))
-   (MOVE (TEMP _temp28) (CONST 64))
-   (MOVE (TEMP _temp29) (CALL (NAME _I_alloc_i) (TEMP _temp28)))
-   (MOVE (TEMP _t1) (TEMP _temp29))
+   (MOVE (MEM (ADD (TEMP _t0) (CONST 8))) (CONST 10))
+   (MOVE (TEMP _temp32) (CONST 64))
+   (MOVE (TEMP _temp33) (CALL (NAME _I_alloc_i) (TEMP _temp32)))
+   (MOVE (TEMP _t1) (TEMP _temp33))
    (MOVE (MEM (TEMP _t1)) (CONST 7))
    (MOVE (MEM (ADD (CONST 8) (TEMP _t1))) (CONST 87))
    (MOVE (MEM (ADD (CONST 16) (TEMP _t1))) (CONST 79))
@@ -323,17 +341,17 @@
    (MOVE (MEM (ADD (CONST 48) (TEMP _t1))) (CONST 79))
    (MOVE (MEM (ADD (CONST 56) (TEMP _t1))) (CONST 80))
    (MOVE (TEMP _t1) (ADD (TEMP _t1) (CONST 8)))
-   (MOVE (TEMP _temp30) (TEMP _t1))
-   (EXP (CALL (NAME _Iprintln_pai) (TEMP _temp30)))
+   (MOVE (TEMP _temp34) (TEMP _t1))
+   (EXP (CALL (NAME _Iprintln_pai) (TEMP _temp34)))
    (RETURN)))
  (FUNC
   _Animal_Isleep_pi
   (SEQ
    (MOVE (TEMP _t3) (TEMP _ARG0))
    (MOVE (TEMP c) (TEMP _ARG1))
-   (MOVE (TEMP _temp32) (CONST 48))
-   (MOVE (TEMP _temp33) (CALL (NAME _I_alloc_i) (TEMP _temp32)))
-   (MOVE (TEMP _t4) (TEMP _temp33))
+   (MOVE (TEMP _temp36) (CONST 48))
+   (MOVE (TEMP _temp37) (CALL (NAME _I_alloc_i) (TEMP _temp36)))
+   (MOVE (TEMP _t4) (TEMP _temp37))
    (MOVE (MEM (TEMP _t4)) (CONST 5))
    (MOVE (MEM (ADD (CONST 8) (TEMP _t4))) (CONST 72))
    (MOVE (MEM (ADD (CONST 16) (TEMP _t4))) (CONST 69))
@@ -341,16 +359,16 @@
    (MOVE (MEM (ADD (CONST 32) (TEMP _t4))) (CONST 76))
    (MOVE (MEM (ADD (CONST 40) (TEMP _t4))) (CONST 79))
    (MOVE (TEMP _t4) (ADD (TEMP _t4) (CONST 8)))
-   (MOVE (TEMP _temp34) (TEMP _t4))
-   (EXP (CALL (NAME _Iprintln_pai) (TEMP _temp34)))
+   (MOVE (TEMP _temp38) (TEMP _t4))
+   (EXP (CALL (NAME _Iprintln_pai) (TEMP _temp38)))
    (RETURN)))
  (FUNC
   _Dog_Ieat_p
   (SEQ
    (MOVE (TEMP _t8) (TEMP _ARG0))
-   (MOVE (TEMP _temp36) (CONST 88))
-   (MOVE (TEMP _temp37) (CALL (NAME _I_alloc_i) (TEMP _temp36)))
-   (MOVE (TEMP _t9) (TEMP _temp37))
+   (MOVE (TEMP _temp40) (CONST 88))
+   (MOVE (TEMP _temp41) (CALL (NAME _I_alloc_i) (TEMP _temp40)))
+   (MOVE (TEMP _t9) (TEMP _temp41))
    (MOVE (MEM (TEMP _t9)) (CONST 10))
    (MOVE (MEM (ADD (CONST 8) (TEMP _t9))) (CONST 68))
    (MOVE (MEM (ADD (CONST 16) (TEMP _t9))) (CONST 79))
@@ -363,17 +381,17 @@
    (MOVE (MEM (ADD (CONST 72) (TEMP _t9))) (CONST 65))
    (MOVE (MEM (ADD (CONST 80) (TEMP _t9))) (CONST 84))
    (MOVE (TEMP _t9) (ADD (TEMP _t9) (CONST 8)))
-   (MOVE (TEMP _temp38) (TEMP _t9))
-   (EXP (CALL (NAME _Iprintln_pai) (TEMP _temp38)))
+   (MOVE (TEMP _temp42) (TEMP _t9))
+   (EXP (CALL (NAME _Iprintln_pai) (TEMP _temp42)))
    (RETURN)))
  (FUNC
   _Dog_Isleep_pi
   (SEQ
    (MOVE (TEMP _t10) (TEMP _ARG0))
    (MOVE (TEMP c) (TEMP _ARG1))
-   (MOVE (TEMP _temp40) (CONST 72))
-   (MOVE (TEMP _temp41) (CALL (NAME _I_alloc_i) (TEMP _temp40)))
-   (MOVE (TEMP _t11) (TEMP _temp41))
+   (MOVE (TEMP _temp44) (CONST 72))
+   (MOVE (TEMP _temp45) (CALL (NAME _I_alloc_i) (TEMP _temp44)))
+   (MOVE (TEMP _t11) (TEMP _temp45))
    (MOVE (MEM (TEMP _t11)) (CONST 8))
    (MOVE (MEM (ADD (CONST 8) (TEMP _t11))) (CONST 78))
    (MOVE (MEM (ADD (CONST 16) (TEMP _t11))) (CONST 79))
@@ -384,8 +402,8 @@
    (MOVE (MEM (ADD (CONST 56) (TEMP _t11))) (CONST 76))
    (MOVE (MEM (ADD (CONST 64) (TEMP _t11))) (CONST 79))
    (MOVE (TEMP _t11) (ADD (TEMP _t11) (CONST 8)))
-   (MOVE (TEMP _temp42) (TEMP _t11))
-   (EXP (CALL (NAME _Iprintln_pai) (TEMP _temp42)))
+   (MOVE (TEMP _temp46) (TEMP _t11))
+   (EXP (CALL (NAME _Iprintln_pai) (TEMP _temp46)))
    (RETURN)))
  (FUNC
   _I_init_Dog
@@ -397,9 +415,9 @@
    (EXP (CALL (NAME _I_init_Animal)))
    (MOVE (GLOBAL VARIABLE _I_size_Dog)
     (ADD (GLOBAL VARIABLE _I_size_Animal) (CONST 1)))
-   (MOVE (TEMP _temp45) (CONST 32))
-   (MOVE (TEMP _temp46) (CALL (NAME _I_alloc_i) (TEMP _temp45)))
-   (MOVE (TEMP _t12) (TEMP _temp46))
+   (MOVE (TEMP _temp49) (CONST 32))
+   (MOVE (TEMP _temp50) (CALL (NAME _I_alloc_i) (TEMP _temp49)))
+   (MOVE (TEMP _t12) (TEMP _temp50))
    (MOVE (MEM (ADD (TEMP _t12) (CONST 0))) (METHOD _Organism_Ievolve_p))
    (MOVE (MEM (ADD (TEMP _t12) (CONST 8))) (METHOD _Dog_Isleep_pi))
    (MOVE (MEM (ADD (TEMP _t12) (CONST 16))) (METHOD _Animal_Iwake_p))

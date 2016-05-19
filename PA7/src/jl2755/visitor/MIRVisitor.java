@@ -534,7 +534,7 @@ public class MIRVisitor implements ASTVisitor{
 			List<String> methodList = dotableExprClassType.getDispatchMethods(env);
 			assert(methodList.contains(fc.getABIName()));
 			int indexOfMethod = methodList.indexOf(fc.getABIName());
-			IRBinOp dvOffsetPointer = new IRBinOp(OpType.ADD, dvPointer, new IRConst(indexOfMethod));
+			IRBinOp dvOffsetPointer = new IRBinOp(OpType.ADD, dvPointer, new IRConst(indexOfMethod*8));
 			IRMem offsetMem = new IRMem(dvOffsetPointer);
 			IRTemp callThisTemp = new IRTemp("_t" + tempCount++);
 			IRMove movePCIntoTemp = new IRMove(callThisTemp, offsetMem);
@@ -563,8 +563,6 @@ public class MIRVisitor implements ASTVisitor{
 			assert(compileVType.isObject());
 			ClassType dotableExprClassType = env.getClassType(compileVType.getElementType());
 			List<String> methodList = dotableExprClassType.getDispatchMethods(env);
-			System.out.println(methodList);
-			System.out.println(fc.getABIName());
 			assert(methodList.contains(fc.getABIName()));
 			int indexOfMethod = methodList.indexOf(fc.getABIName());
 			IRBinOp dvOffsetPointer = new IRBinOp(OpType.ADD, dvPointer, new IRConst(indexOfMethod*8));

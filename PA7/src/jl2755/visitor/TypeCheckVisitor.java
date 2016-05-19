@@ -848,7 +848,7 @@ public class TypeCheckVisitor implements ASTVisitor {
 			fd.setABIName(ABIName);
 		} else {
 			String className = classEnv.getClassName();
-			String ABIName = "_" + className + "_" + functionToABIName(funId, funType);
+			String ABIName = "_" + className + functionToABIName(funId, funType);
 			fd.setABIName(ABIName);
 		}
 				
@@ -941,6 +941,7 @@ public class TypeCheckVisitor implements ASTVisitor {
 				if (isInClass && classEnv.containsField(name)) {
 					inScope = true;
 					tempType = classEnv.getFieldEnv().get(name);
+					id.setIsField(true);
 				}
 			}
 		}
@@ -1796,15 +1797,23 @@ public class TypeCheckVisitor implements ASTVisitor {
 	@Override
 	public void visit(ShortTupleDecl std) {
 		/* Typecheck the type */
-		Type t = std.getType();
-		VarType varType = new VarType(t);
+		ShortTupleDecl.Type type = std.getType();
+		VarType varType;
+		if (std.getType() == ShortTupleDecl.Type.PRIMITIVE) {
+			varType = new VarType(std.getPrimitiveType());
+		} else if (std.getType() == ShortTupleDecl.Type.MIXEDARRAY) {
+			varType = new VarType(std.getMixedArrayType());
+		} else {
+			varType = new VarType(std.getObjectId());
+		}
 		// if it's an object type, make sure its declared in env
 		if (varType.isObject()) {
 			String className = varType.getElementType();
 			if (!env.containsClass(className)) {
 				String s = "Name " + className + " cannot be resolved";
 				SemanticErrorObject seo = new SemanticErrorObject(
-						t.getLineNumber(), t.getColumnNumber(), s);
+						std.getIdentifier().getLineNumber(), 
+						std.getIdentifier().getColumnNumber(), s);
 				Main.handleSemanticError(seo);
 			}			
 		}
@@ -1847,13 +1856,13 @@ public class TypeCheckVisitor implements ASTVisitor {
 		switch(fieldDecl.getType()) {
 		case SHORT_TUPLE_DECL:
 			ShortTupleDecl std = fieldDecl.getShortTupleDecl();
-			Type t = std.getType();
-			if (t instanceof MixedArrayType) {
-				int index = ((MixedArrayType)t).getIndex();
+			if (std.getType() == ShortTupleDecl.Type.MIXEDARRAY) {
+				int index = std.getMixedArrayType().getIndex();
 				if (index == 1 || index == 3) {
 					String s = "Field variables cannot be initialized with values";
 					SemanticErrorObject seo = new SemanticErrorObject(
-							t.getLineNumber(), t.getColumnNumber(), s);
+							std.getIdentifier().getLineNumber(), 
+							std.getIdentifier().getColumnNumber(), s);
 					Main.handleSemanticError(seo);
 				}
 			}
@@ -1985,7 +1994,7 @@ public class TypeCheckVisitor implements ASTVisitor {
 	}
 	
 	private String classMethodToABIName(String className, String fnName, FunType fnType) {
-		String ABIName = "_" + className + "_" + functionToABIName(fnName, fnType);
+		String ABIName = "_" + className + functionToABIName(fnName, fnType);
 		return ABIName;
 	}
 	

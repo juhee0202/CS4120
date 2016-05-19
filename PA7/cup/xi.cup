@@ -392,9 +392,19 @@ return_type ::= COLON type_list:tl                                  {: RESULT = 
                                                                     {: RESULT = new ReturnType(); :}
                 ;
 
-short_tuple_decl ::= identifier:id COMMA identifier_list:idl        
-                     COLON type:t                                   {: RESULT = new ShortTupleDecl(id, idl, t); :}
+short_tuple_decl ::= identifier:id COMMA identifier_list:idl
+                     COLON primitive_type:pt                        {: RESULT = new ShortTupleDecl(id,idl,pt); :}
+                     |
+                     identifier:id COMMA identifier_list:idl
+                     COLON identifier:id2                           {: RESULT = new ShortTupleDecl(id,idl,id2); :}
+                     |
+                     identifier:id COMMA identifier_list:idl
+                     COLON mixed_array_type:mat                     {: RESULT = new ShortTupleDecl(id,idl,mat); :}
                      ;
+
+// short_tuple_decl ::= identifier:id COMMA identifier_list:idl        
+//                      COLON type:t                                   {: RESULT = new ShortTupleDecl(id, idl, t); :}
+//                      ;
 
 simple_var_init ::= identifier:id COLON primitive_type:pt 
                     GETS literal:l                                  {: RESULT = new SimpleVarInit(id,pt,l); :}

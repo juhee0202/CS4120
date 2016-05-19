@@ -1578,9 +1578,10 @@ public class TilingVisitor implements IRTreeVisitor {
 				// precondition: first n stmts are moving n arg stmts
 				// remove duplicate move(%ARG, %arg) instructions
 				// TODO fix
+//				int numArgMoves = ()
 				for (int i = 0; i < numArgs; i++) {
 					bodyStmtList.remove(0);
-				}	
+				}
 			}
 //		}
 		
@@ -2261,7 +2262,13 @@ public class TilingVisitor implements IRTreeVisitor {
 			List<Instruction> instrList = new ArrayList<Instruction>();
 			int cost = 0;
 			Operand argDest = null;
-			Instruction movConstToMem = new Instruction(Operation.MOVQ, sourceOperand, targetOperand);
+			Instruction movConstToMem = null;
+			if (mov.isSetLea()) {
+				movConstToMem = new Instruction(Operation.LEAQ, sourceOperand, targetOperand);
+			}
+			else {
+				movConstToMem = new Instruction(Operation.MOVQ, sourceOperand, targetOperand);
+			}
 			instrList.add(movConstToMem);
 			cost++;
 			argDest = targetOperand;
@@ -2282,7 +2289,12 @@ public class TilingVisitor implements IRTreeVisitor {
 			Tile finalTile;
 			if (!redundant) {
 				Register temp = new Register("_tileRegister" + registerCount++);
-				newInstructions.add(new Instruction(Operation.MOVQ,sourceOperand,temp));
+				if (mov.isSetLea()) {
+					newInstructions.add(new Instruction(Operation.LEAQ,sourceOperand,temp));
+				}
+				else {
+					newInstructions.add(new Instruction(Operation.MOVQ,sourceOperand,temp));
+				}
 				newInstructions.add(new Instruction(Operation.MOVQ,temp,targetOperand));
 				finalTile = new Tile(newInstructions,2,targetOperand);
 			} else {
@@ -2294,19 +2306,33 @@ public class TilingVisitor implements IRTreeVisitor {
 			tileMap.put(mov, finalTile);
 			return;
 		}
-		
-		List<Instruction> addingInstr = new ArrayList<Instruction>();
-		Instruction movInstruction = new Instruction(Operation.MOVQ,
-				sourceOperand, targetOperand);
-		Tile finalTile;
-		if (!redundant) {
-			addingInstr.add(movInstruction);	
-			finalTile = new Tile(addingInstr, 1, targetOperand);
-		} else {
-			finalTile = new Tile(addingInstr, 0, targetOperand);
+		Tile finalTile = null;
+		if (mov.isSetLea()) {
+			List<Instruction> addingInstr = new ArrayList<Instruction>();
+			Instruction movInstruction = new Instruction(Operation.LEAQ,
+					sourceOperand, targetOperand);
+			if (!redundant) {
+				addingInstr.add(movInstruction);	
+				finalTile = new Tile(addingInstr, 1, targetOperand);
+			} else {
+				finalTile = new Tile(addingInstr, 0, targetOperand);
+			}
+			finalTile = Tile.mergeTiles(targetTile, finalTile);
+			finalTile = Tile.mergeTiles(sourceTile, finalTile);
 		}
-		finalTile = Tile.mergeTiles(targetTile, finalTile);
-		finalTile = Tile.mergeTiles(sourceTile, finalTile);
+		else {
+			List<Instruction> addingInstr = new ArrayList<Instruction>();
+			Instruction movInstruction = new Instruction(Operation.MOVQ,
+					sourceOperand, targetOperand);
+			if (!redundant) {
+				addingInstr.add(movInstruction);	
+				finalTile = new Tile(addingInstr, 1, targetOperand);
+			} else {
+				finalTile = new Tile(addingInstr, 0, targetOperand);
+			}
+			finalTile = Tile.mergeTiles(targetTile, finalTile);
+			finalTile = Tile.mergeTiles(sourceTile, finalTile);
+		}
 		
 		// If source was a Call, put an epilogue after the mov instruction
 		// the function should have a single return
@@ -2705,6 +2731,7 @@ public class TilingVisitor implements IRTreeVisitor {
 						Instruction movToRegS = new Instruction(Operation.MOVQ,memS,r14);
 						added.add(movToRegS);
 					} else {
+						System.out.println(currentFunction);
 						System.out.println(currentInstruction);
 						System.out.println(regS);
 						System.out.println(regToStack);

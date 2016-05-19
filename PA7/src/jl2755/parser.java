@@ -519,7 +519,7 @@ public class parser
     "\ufffa\053\ufffa\054\ufffa\055\ufffa\057\ufffa\060\ufffa\061\ufffa" +
     "\062\ufffa\001\002\000\040\004\uffab\012\uffab\013\uffab\014" +
     "\uffab\015\uffab\046\uffab\047\uffab\052\uffab\053\uffab\054\uffab" +
-    "\057\uffab\060\uffab\061\uffab\062\uffab\065\332\001\002\000" +
+    "\057\uffab\060\uffab\061\uffab\062\uffab\066\332\001\002\000" +
     "\006\015\237\047\327\001\002\000\004\044\321\001\002" +
     "\000\004\047\320\001\002\000\036\004\uffac\012\uffac\013" +
     "\uffac\014\uffac\015\uffac\046\uffac\047\uffac\052\uffac\053\uffac" +
@@ -2073,7 +2073,7 @@ class CUP$parser$actions {
             return CUP$parser$result;
 
         /*. . . . . . . . . . . . . . . . . . . .*/
-        case 87: // naked_stmt ::= BREAK TO IDENTIFIER 
+        case 87: // naked_stmt ::= BREAK FROM IDENTIFIER 
             {
                 NakedStmt RESULT = null;
                 int bleft = CUP$parser$stack.elementAt(CUP$parser$top-2).left;

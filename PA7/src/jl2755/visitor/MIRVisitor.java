@@ -563,6 +563,8 @@ public class MIRVisitor implements ASTVisitor{
 			assert(compileVType.isObject());
 			ClassType dotableExprClassType = env.getClassType(compileVType.getElementType());
 			List<String> methodList = dotableExprClassType.getDispatchMethods(env);
+			System.out.println(methodList);
+			System.out.println(fc.getABIName());
 			assert(methodList.contains(fc.getABIName()));
 			int indexOfMethod = methodList.indexOf(fc.getABIName());
 			IRBinOp dvOffsetPointer = new IRBinOp(OpType.ADD, dvPointer, new IRConst(indexOfMethod));

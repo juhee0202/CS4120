@@ -13,6 +13,7 @@ import jl2755.visitor.IRTreeVisitor;
 public class IRMove extends IRStmt {
     private IRExpr target;
     private IRExpr expr;
+    private boolean setLea;
 
     /**
      *
@@ -65,7 +66,15 @@ public class IRMove extends IRStmt {
         p.endList();
     }
     
-    public void accept(IRTreeVisitor irv) {
+    public boolean isSetLea() {
+		return setLea;
+	}
+
+	public void setSetLea(boolean setLea) {
+		this.setLea = setLea;
+	}
+
+	public void accept(IRTreeVisitor irv) {
     	irv.visit(this);
     }
 
@@ -105,6 +114,8 @@ public class IRMove extends IRStmt {
 
 	@Override
 	public IRNode copy() {
-		return new IRMove((IRExpr)target.copy(), (IRExpr)expr.copy());
+		IRMove tempMove = new IRMove((IRExpr)target.copy(), (IRExpr)expr.copy());
+		tempMove.setLea = setLea;
+		return tempMove;
 	}
 }

@@ -194,6 +194,7 @@ public class Instruction {
 	protected Operand dest;
 	protected int cost;
 	protected boolean isLea = false;
+	private boolean isStar = false;
 	
 	/** Used for register allocation. */
 	private boolean isMoveWithTwoRegs = false;
@@ -265,6 +266,7 @@ public class Instruction {
 		}
 		temp.cost = cost;
 		temp.isMoveWithTwoRegs = isMoveWithTwoRegs;
+		temp.isStar = isStar;
 		return temp;
 	}
 	
@@ -315,10 +317,17 @@ public class Instruction {
 			return op.toString();
 		}
 		else if (i == 1) {
+			if (isStar) {
+				return op.toString() + "\t" + "*" + dest.toString();
+			}
 			return op.toString() + "\t" + dest.toString();
 		}
 		else {
 			return op.toString() + "\t" + src.toString() + ", " + dest.toString();
 		}
+	}
+
+	public void setStar() {
+		isStar = true;
 	}
 }

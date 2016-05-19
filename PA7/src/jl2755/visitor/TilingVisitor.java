@@ -1042,10 +1042,22 @@ public class TilingVisitor implements IRTreeVisitor {
 		
 		// "callq targetDest"
 		else {
-			assert(targetTile.getDest() instanceof Label);
-			Label targetDest = (Label)targetTile.getDest();
-			targetDest.setLabelName(targetDest.toString());
-			callInstruction = new Instruction(Operation.CALLQ, targetDest);
+//			System.out.println(targetTile.getDest());
+//			assert(targetTile.getDest() instanceof Label);
+			if (targetTile.getDest() instanceof Label) {
+				Label targetDest = (Label)targetTile.getDest();
+				targetDest.setLabelName(targetDest.toString());
+				callInstruction = new Instruction(Operation.CALLQ, targetDest);
+			}
+			else if (targetTile.getDest() instanceof Register) {
+				Register targetDest = (Register) targetTile.getDest();
+				callInstruction = new Instruction(Operation.CALLQ, targetDest);
+				callInstruction.setStar();
+			}
+			else {
+				// There shouldn't be any other cases of the target tile for a call node
+				assert(false);
+			}
 		}
 	
 		tempInstructions.add(callInstruction);

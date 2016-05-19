@@ -1578,9 +1578,10 @@ public class TilingVisitor implements IRTreeVisitor {
 				// precondition: first n stmts are moving n arg stmts
 				// remove duplicate move(%ARG, %arg) instructions
 				// TODO fix
+//				int numArgMoves = ()
 				for (int i = 0; i < numArgs; i++) {
 					bodyStmtList.remove(0);
-				}	
+				}
 			}
 //		}
 		
@@ -2705,6 +2706,7 @@ public class TilingVisitor implements IRTreeVisitor {
 						Instruction movToRegS = new Instruction(Operation.MOVQ,memS,r14);
 						added.add(movToRegS);
 					} else {
+						System.out.println(currentFunction);
 						System.out.println(currentInstruction);
 						System.out.println(regS);
 						System.out.println(regToStack);

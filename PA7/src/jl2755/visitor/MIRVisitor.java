@@ -603,11 +603,17 @@ public class MIRVisitor implements ASTVisitor{
 		IRSeq seq = new IRSeq(new ArrayList<IRStmt>());
 		List<String> holyParamList = fd.getParams();
 		int start = 0;
+		int numParams = fd.getNumParams();
 		if (inClass) {
 			// THIS is implicitly the first argument
-			thisNode = new IRTemp(Configuration.ABSTRACT_ARG_PREFIX + 0);
-			holyParamList.add(((IRTemp) thisNode).name());
+			IRTemp temp = new IRTemp("_t" + tempCount++);
+			IRTemp arg = new IRTemp(Configuration.ABSTRACT_ARG_PREFIX + 0);
+			IRMove tempMove = new IRMove(temp, arg);
+			seq = LIRVisitor.combineTwoStmt(seq, tempMove);
+			holyParamList.add(0, temp.name());
+			thisNode = temp;
 			start = 1;
+			numParams++;
 		}
 		for (int i = start; i < holyParamList.size(); i++) {
 			IRTemp paramTemp = new IRTemp(holyParamList.get(i));
@@ -628,8 +634,8 @@ public class MIRVisitor implements ASTVisitor{
 		
 		// create IRFuncDecl
 		IRFuncDecl irFuncDecl = new IRFuncDecl(name, label, seq);
-		irFuncDecl.setParamList(fd.getParams());
-		irFuncDecl.setNumArgs(fd.getNumParams());
+		irFuncDecl.setParamList(holyParamList);
+		irFuncDecl.setNumArgs(numParams);
 		irFuncDecl.setNumReturns(fd.getNumReturns());
 		
 		tempNode = irFuncDecl;

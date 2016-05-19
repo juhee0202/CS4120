@@ -132,8 +132,6 @@ public class MIRVisitor implements ASTVisitor{
 		isLeftSide = false;
 		as.getExpr().accept(this);
 		IRExpr e = (IRExpr) tempNode;
-		System.out.println("Left side: " + de);
-		System.out.println("Right side: " + e);
 		tempNode = new IRMove(de,e);
 		
 //		int index = as.getIndex();
@@ -473,7 +471,7 @@ public class MIRVisitor implements ASTVisitor{
 						break;
 					}
 				}
-				assert(i++ != -1);
+				assert(i != -1);
 				IRConst offset = new IRConst(i*8);
 				IRBinOp offsetFromDispatch = new IRBinOp(OpType.ADD, dispatch, offset);
 				IRMem label = new IRMem(offsetFromDispatch);

@@ -280,4 +280,9 @@ public class FunctionCall implements Expr,NakedStmt {
 	public void setDotableExpr_line(int dotableExpr_line) {
 		this.dotableExpr_line = dotableExpr_line;
 	}
+	
+	@Override
+	public String toString() {
+		return "Function " + identifier.toString() + " with args " + functionArg.toString();
+	}
 }

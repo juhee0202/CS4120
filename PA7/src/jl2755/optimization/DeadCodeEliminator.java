@@ -52,7 +52,7 @@ public class DeadCodeEliminator extends Optimization{
 			
 			// if var is _RET01, then even if no one uses _RET01, we don't want to
 			// eliminate the stmt because we must return the return value
-			if (var.contains("_RET")) {
+			if (var.contains("_RET") || var.contains("_ARG")) {
 				continue;
 			}
 

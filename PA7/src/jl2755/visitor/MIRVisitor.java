@@ -785,6 +785,16 @@ public class MIRVisitor implements ASTVisitor{
 				assert(false);
 			}
 		}
+		for (IRGlobalVariable igv : globalVariables) {
+			if (igv.isArray() && igv.isInitialized()) {
+				String name = "_I_init"+igv.getABIName().substring(4);
+				IRFuncDecl initArray = new IRFuncDecl(name,igv.getCreateArray(),true);
+				initArray.setNumArgs(0);
+				initArray.setNumReturns(0);
+				functions.put(name, initArray);
+			}
+		}
+		
 		program = new IRCompUnit("Program", functions, dispatchVectors, globalVariables);
 	}
 
@@ -1306,6 +1316,8 @@ public class MIRVisitor implements ASTVisitor{
 		// Create new IRFuncDecl
 		IRSeq seq = new IRSeq(list);
 		IRFuncDecl initClass = new IRFuncDecl(className, "_I_init_"+className, seq);
+		initClass.setNumArgs(0);
+		initClass.setNumReturns(0);
 		
 		// Combine with class body
 		((IRFuncDeclList) tempNode).addDecl(initClass);

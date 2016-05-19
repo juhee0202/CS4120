@@ -126,10 +126,6 @@ _l0:
 	cmpq	%r14, %r12
 	movq	%r12, -120(%rbp)
 	jl	_l1
-	
-	.globl	_l2
-	.align	4
-_l2:
 	movq	-104(%rbp), %r14
 	movq	%r14, _I_g_y_ai(%rip)
 	movq	-8(%rbp), %rbx
@@ -170,13 +166,6 @@ _l1:
 
 	.section .data
 	.align 8
-.globl _I_g_x_i
-_I_g_x_i:
-	.quad 5
-	.text
-
-	.section .data
-	.align 8
 .globl _I_g_y_ai
 _I_g_y_ai:
 	.zero 8
@@ -185,4 +174,11 @@ _I_g_y_ai:
 .section .ctors
 	.align 8
 	.quad _I_init_y_ai
+	.text
+
+	.section .data
+	.align 8
+.globl _I_g_x_i
+_I_g_x_i:
+	.quad 5
 	.text

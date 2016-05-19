@@ -146,16 +146,16 @@ public class LIRVisitor implements IRTreeVisitor{
 		}
 		
 		// Visit global variables
-		for (IRGlobalVariable igv : cu.getGlobalVariables()) {
-			igv.accept(this);
-			if (igv.isArray() && igv.isInitialized()) {
-				String name = "_I_init"+igv.getABIName().substring(4);
-				IRFuncDecl initArray = new IRFuncDecl(name,igv.getCreateArray(),true);
-				initArray.setNumArgs(0);
-				initArray.setNumReturns(0);
-				cu.functions().put(name, initArray);
-			}
-		}
+//		for (IRGlobalVariable igv : cu.getGlobalVariables()) {
+//			igv.accept(this);
+//			if (igv.isArray() && igv.isInitialized()) {
+//				String name = "_I_init"+igv.getABIName().substring(4);
+//				IRFuncDecl initArray = new IRFuncDecl(name,igv.getCreateArray(),true);
+//				initArray.setNumArgs(0);
+//				initArray.setNumReturns(0);
+//				cu.functions().put(name, initArray);
+//			}
+//		}
 		
 		// After visiting tree
 		program = cu;
@@ -754,13 +754,13 @@ public class LIRVisitor implements IRTreeVisitor{
 	// Translate createArray into LIR
 	@Override
 	public void visit(IRGlobalVariable irGlobalVariable) {
-		if (irGlobalVariable.isArray() && irGlobalVariable.isInitialized()) {
-			IRStmt createArrayStmt = irGlobalVariable.getCreateArray();
-			createArrayStmt.accept(this);
-			List<IRStmt> stmts = tempSeq.part1().stmts();
-			stmts.add(new IRReturn());
-			irGlobalVariable.setCreateArray(new IRSeq(stmts));
-		}
+//		if (irGlobalVariable.isArray() && irGlobalVariable.isInitialized()) {
+//			IRStmt createArrayStmt = irGlobalVariable.getCreateArray();
+//			createArrayStmt.accept(this);
+//			List<IRStmt> stmts = tempSeq.part1().stmts();
+//			stmts.add(new IRReturn());
+//			irGlobalVariable.setCreateArray(new IRSeq(stmts));
+//		}
 	}
 
 	@Override

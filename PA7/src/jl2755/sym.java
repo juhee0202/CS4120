@@ -14,6 +14,7 @@ public class sym {
   public static final int LT = 23;
   public static final int INTEGER_LITERAL = 5;
   public static final int CLASS = 43;
+  public static final int FROM = 52;
   public static final int MINUS = 14;
   public static final int OPEN_BRACE = 36;
   public static final int SEMICOLON = 40;
@@ -112,7 +113,8 @@ public class sym {
   "CONTINUE",
   "NULL",
   "DOT",
-  "TO"
+  "TO",
+  "FROM"
   };
 }
 

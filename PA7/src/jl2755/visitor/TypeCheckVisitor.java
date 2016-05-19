@@ -848,7 +848,7 @@ public class TypeCheckVisitor implements ASTVisitor {
 			fd.setABIName(ABIName);
 		} else {
 			String className = classEnv.getClassName();
-			String ABIName = "_" + className + "_" + functionToABIName(funId, funType);
+			String ABIName = "_" + className + functionToABIName(funId, funType);
 			fd.setABIName(ABIName);
 		}
 				

@@ -164,7 +164,7 @@ public class ClassType implements VType{
 	}
 	
 	private String classMethodToABIName(String className, String fnName, FunType fnType) {
-		String ABIName = "_" + className + "_" + functionToABIName(fnName, fnType);
+		String ABIName = "_" + className + functionToABIName(fnName, fnType);
 		return ABIName;
 	}
 	

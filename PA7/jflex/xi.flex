@@ -106,6 +106,7 @@ SingleCharacter = [^\'\\\"\b\t\f\n\r]
   "return"                       { return symbol(sym.RETURN,"return"); }
   "this"                         { return symbol(sym.THIS,"this"); }
   "_to_"                         { return symbol(sym.TO,"_to_"); }
+  "_from_"                       { return symbol(sym.FROM,"_from_"); }
   "use"                          { return symbol(sym.USE,"use"); }
   "while"                        { return symbol(sym.WHILE,"while"); }
 

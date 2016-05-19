@@ -530,6 +530,7 @@ public class MIRVisitor implements ASTVisitor{
 			
 			// Use this as the first argument
 			IRCall call = new IRCall(callThisTemp, freshTemp);
+			call.setStar(true);
 			call.setNumReturns(fc.getNumReturns());
 			List<IRStmt> stmts = new ArrayList<IRStmt>();
 			stmts.add(tempClean);
@@ -568,6 +569,7 @@ public class MIRVisitor implements ASTVisitor{
 				irArgs.add((IRExpr) tempNode);
 			}
 			IRCall call = new IRCall(callThisTemp, irArgs);
+			call.setStar(true);
 			call.setNumReturns(fc.getNumReturns());
 			List<IRStmt> stmts = new ArrayList<IRStmt>();
 			stmts.add(tempClean);
@@ -593,6 +595,7 @@ public class MIRVisitor implements ASTVisitor{
 		if (inClass) {
 			// THIS is implicitly the first argument
 			thisNode = new IRTemp(Configuration.ABSTRACT_ARG_PREFIX + 0);
+			holyParamList.add(((IRTemp) thisNode).name());
 			start = 1;
 		}
 		for (int i = start; i < holyParamList.size(); i++) {
@@ -1335,7 +1338,7 @@ public class MIRVisitor implements ASTVisitor{
             List<String> fieldList = dotableExprClassType.getDispatchFields(env);
             assert(fieldList.contains(de.getId().toString()));
             int indexOfFieldInObjectLayout = fieldList.indexOf(de.getId().toString()) + 1;
-            IRBinOp getFieldElement = new IRBinOp(OpType.ADD, freshTemp, new IRConst(indexOfFieldInObjectLayout));
+            IRBinOp getFieldElement = new IRBinOp(OpType.ADD, freshTemp, new IRConst(indexOfFieldInObjectLayout*8));
             IRMem offsetMem = new IRMem(getFieldElement);
             IRTemp resultTemp = new IRTemp("t" + tempCount++);
             IRMove moveResult = new IRMove(resultTemp, offsetMem);

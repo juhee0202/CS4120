@@ -1024,40 +1024,68 @@ public class MIRVisitor implements ASTVisitor{
 
 	@Override
 	public void visit(WhileStmt ws) {
-		currWhile = ws;
-		IRLabel startOfLoop;
-		if (ws.hasLabel()) {
-			labelSet.add(ws.getLabel().getName());
-			startOfLoop = new IRLabel(ws.getLabel().getName());
+		/* added feature for for loop */
+		if (ws.isForLoop()) {
+			Expr conditionExpr = ws.getExpr();
+			Stmt loopStmt = ws.getStmt();
+			
+			AssignmentStmt updateStmt = ws.getUpdateAssignment();
+			StmtList wrapper = new StmtList(new Stmt(updateStmt, true, 
+					updateStmt.getDotableExpr().getLineNumber(), 
+					updateStmt.getDotableExpr().getColumnNumber()));
+
+			WhileStmt newWhile = new WhileStmt(conditionExpr, new StmtList(loopStmt, wrapper));
+			
+			if (ws.getIndex() == 1) {			//assignmentstmt
+				AssignmentStmt initAssignmentStmt = ws.getInitAssignment();
+				initAssignmentStmt.accept(this);
+				IRStmt initAssign = (IRStmt) tempNode;
+				newWhile.accept(this);
+				IRStmt whileStmt = (IRStmt) tempNode;
+				tempNode = new IRSeq(initAssign, whileStmt);
+				
+			} else if (ws.getIndex() == 2) {	//varinit
+				VarInit varInit = ws.getInitVarInit();
+				varInit.accept(this);
+				IRStmt varInitStmt = (IRStmt) tempNode;
+				newWhile.accept(this);
+				IRStmt whileStmt = (IRStmt) tempNode;
+				tempNode = new IRSeq(varInitStmt, whileStmt);
+			}
+			
 		} else {
-			String start = getFreshLabel();
-			startOfLoop = new IRLabel(start);
-			ws.setLabel(new Label(start, ws.getExpr().getLineNumber(), 
-					ws.getExpr().getColumnNumber()));
+			currWhile = ws;
+			IRLabel startOfLoop;
+			if (ws.hasLabel()) {
+				labelSet.add(ws.getLabel().getName());
+				startOfLoop = new IRLabel(ws.getLabel().getName());
+			} else {
+				String start = getFreshLabel();
+				startOfLoop = new IRLabel(start);
+				ws.setLabel(new Label(start, ws.getExpr().getLineNumber(), 
+						ws.getExpr().getColumnNumber()));
+			}
+			
+			IRLabel trueLabel = new IRLabel(getFreshLabel());
+			IRLabel falseLabel = new IRLabel(getFreshLabel());
+			IRStmt cJumpNode = controlFlow(ws.getExpr(),trueLabel,falseLabel);
+			
+			ws.setExitLabel(new Label(falseLabel.name()));
+			labelToWhile.put(startOfLoop.name(), ws);
+			
+			if (ws.getIndex() == 0) {
+				ws.getStmt().accept(this);
+			} else if (ws.getIndex() == 4) {
+				ws.getStmtList().accept(this);
+			}
+			
+			IRStmt loopStmts = (IRStmt) tempNode;
+			IRJump jumpToStart = new IRJump(new IRName(startOfLoop.name()));
+			tempNode = new IRSeq(startOfLoop, cJumpNode, trueLabel, 
+					loopStmts, jumpToStart, falseLabel);
+			currWhile = null;
 		}
 		
-		IRLabel trueLabel = new IRLabel(getFreshLabel());
-		IRLabel falseLabel = new IRLabel(getFreshLabel());
-		IRStmt cJumpNode = controlFlow(ws.getExpr(),trueLabel,falseLabel);
-		
-		ws.setExitLabel(new Label(falseLabel.name()));
-		labelToWhile.put(startOfLoop.name(), ws);
-		
-		// Update currentWhile as you enter and leave a while loop
-//		String oldWhileStart = currentWhileStart;
-//		String oldWhileEnd = currentWhileEnd;
-//		currentWhileStart = startOfLoop.name();
-//		currentWhileEnd = falseLabel.name();
-//		startToEnd.put(currentWhileStart, currentWhileEnd);
-		ws.getStmt().accept(this);
-//		currentWhileStart = oldWhileStart;
-//		currentWhileEnd = oldWhileEnd;
-		
-		IRStmt loopStmts = (IRStmt) tempNode;
-		IRJump jumpToStart = new IRJump(new IRName(startOfLoop.name()));
-		tempNode = new IRSeq(startOfLoop, cJumpNode, trueLabel, 
-				loopStmts, jumpToStart, falseLabel);
-		currWhile = null;
 	}
 
 	/**
@@ -1690,5 +1718,14 @@ public class MIRVisitor implements ASTVisitor{
 		labelSet.add(freshLabel);
 		labelCount++;
 		return freshLabel;
+	}
+	
+	private Stmt combineTwoStmts(Stmt s1, Stmt s2) {
+		Stmt result = null;
+		NakedStmt ns = s1.getNakedStmt();
+		if (ns instanceof AssignmentStmt) {
+			
+		}
+		return result;
 	}
 }

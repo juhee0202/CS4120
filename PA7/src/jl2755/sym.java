@@ -26,6 +26,7 @@ public class sym {
   public static final int HIGH_MULT = 17;
   public static final int MODULO = 21;
   public static final int DOT = 50;
+  public static final int FOR = 55;
   public static final int TRUE = 6;
   public static final int NOT = 22;
   public static final int GEQ = 26;
@@ -118,7 +119,8 @@ public class sym {
   "TO",
   "FROM",
   "INC",
-  "DEC"
+  "DEC",
+  "FOR"
   };
 }
 

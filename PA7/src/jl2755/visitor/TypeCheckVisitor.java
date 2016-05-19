@@ -1600,58 +1600,106 @@ public class TypeCheckVisitor implements ASTVisitor {
 	 */
 	@Override
 	public void visit(WhileStmt ws) {
-		whileCount++;
-		if (ws.hasLabel()) {
-			String label = ws.getLabel().getName();
-			// error if the label already exists
-			if (currLabelSet.contains(label)) {
-				String s = "Duplicate label found";
-				SemanticErrorObject seo = new SemanticErrorObject(
-						ws.getLabel().getLine(), 
-						ws.getLabel().getCol(),
-						s);
-				Main.handleSemanticError(seo);		
-			} 
-			currLabelSet.add(label);
-			env.putLabel(label);
-		}
-		
-		ws.getExpr().accept(this);
-		VType exprType = tempType;
-		Type b = new PrimitiveType(1);
-		VType bType = new VarType(b);
-		
-		// Check type of conditional
-		if (!exprType.equals(bType)) {
-			String s = "Expected bool, but found " + exprType.toString();
-			SemanticErrorObject seo = new SemanticErrorObject(
-										ws.getExpr().getLineNumber(), 
-										ws.getExpr().getColumnNumber(),
-										s
-										);
-			Main.handleSemanticError(seo);
-		}
-		
-		// Start new scope
-		if (!(ws.getStmt().getNakedStmt() instanceof BlockStmt)) {
-			stack.push("_");
-		}
-
-		// Check stmt
-		(ws.getStmt()).accept(this);
-		
-		// Pop out of scope
-		if (!(ws.getStmt().getNakedStmt() instanceof BlockStmt)) {
-			String id = stack.pop();
-			while (!id.equals("_")) {
-				env.removeVar(id);
-				id = stack.pop();
+		/* added to support for loop */
+		if (ws.isForLoop()) {
+			// typecheck headers
+			if (ws.getIndex() == 1) {				//assignment
+				ws.getInitAssignment().accept(this);
+				ws.getUpdateAssignment().accept(this);
+			} else if (ws.getIndex() == 2){			//varInit
+				ws.getInitVarInit().accept(this);
+				ws.getUpdateAssignment().accept(this);
 			}
+			
+			
+			// convert from for loop to while loop
+			ws.getExpr().accept(this);
+			VType exprType = tempType;
+			Type b = new PrimitiveType(1);
+			VType bType = new VarType(b);
+			
+			// Check type of conditional
+			if (!exprType.equals(bType)) {
+				String s = "Expected bool, but found " + exprType.toString();
+				SemanticErrorObject seo = new SemanticErrorObject(
+											ws.getExpr().getLineNumber(), 
+											ws.getExpr().getColumnNumber(),
+											s
+											);
+				Main.handleSemanticError(seo);
+			}
+			
+			// Start new scope
+			if (!(ws.getStmt().getNakedStmt() instanceof BlockStmt)) {
+				stack.push("_");
+			}
+
+			// Check stmt
+			(ws.getStmt()).accept(this);
+			
+			// Pop out of scope
+			if (!(ws.getStmt().getNakedStmt() instanceof BlockStmt)) {
+				String id = stack.pop();
+				while (!id.equals("_")) {
+					env.removeVar(id);
+					id = stack.pop();
+				}
+			}
+
+		} else {
+			whileCount++;
+			if (ws.hasLabel()) {
+				String label = ws.getLabel().getName();
+				// error if the label already exists
+				if (currLabelSet.contains(label)) {
+					String s = "Duplicate label found";
+					SemanticErrorObject seo = new SemanticErrorObject(
+							ws.getLabel().getLine(), 
+							ws.getLabel().getCol(),
+							s);
+					Main.handleSemanticError(seo);		
+				} 
+				currLabelSet.add(label);
+				env.putLabel(label);
+			}
+			
+			ws.getExpr().accept(this);
+			VType exprType = tempType;
+			Type b = new PrimitiveType(1);
+			VType bType = new VarType(b);
+			
+			// Check type of conditional
+			if (!exprType.equals(bType)) {
+				String s = "Expected bool, but found " + exprType.toString();
+				SemanticErrorObject seo = new SemanticErrorObject(
+											ws.getExpr().getLineNumber(), 
+											ws.getExpr().getColumnNumber(),
+											s
+											);
+				Main.handleSemanticError(seo);
+			}
+			
+			// Start new scope
+			if (!(ws.getStmt().getNakedStmt() instanceof BlockStmt)) {
+				stack.push("_");
+			}
+
+			// Check stmt
+			(ws.getStmt()).accept(this);
+			
+			// Pop out of scope
+			if (!(ws.getStmt().getNakedStmt() instanceof BlockStmt)) {
+				String id = stack.pop();
+				while (!id.equals("_")) {
+					env.removeVar(id);
+					id = stack.pop();
+				}
+			}
+			if (ws.hasLabel()) {
+				currLabelSet.remove(ws.getLabel().getName());
+			}
+			whileCount--;
 		}
-		if (ws.hasLabel()) {
-			currLabelSet.remove(ws.getLabel().getName());
-		}
-		whileCount--;
 	}
 	
 	@Override

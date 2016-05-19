@@ -1045,7 +1045,7 @@ public class Scanner implements java_cup.runtime.Scanner {
             }
           case 120: break;
           case 42: 
-            { return symbol(sym.DEC,"++");
+            { return symbol(sym.DEC,"--");
             }
           case 121: break;
           case 43: 

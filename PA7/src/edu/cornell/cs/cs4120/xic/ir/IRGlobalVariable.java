@@ -94,6 +94,7 @@ public class IRGlobalVariable extends IRNode {
 	public void printSExp(SExpPrinter p) {
 		p.startList();
 		p.printAtom(ABIName);
+		p.printAtom("= "+value);
 		p.endList();
 	}
 

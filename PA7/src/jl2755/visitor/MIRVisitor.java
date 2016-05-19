@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Set;
 
 import edu.cornell.cs.cs4120.xic.ir.*;
+import edu.cornell.cs.cs4120.xic.ir.IRGlobalReference.GlobalType;
 import edu.cornell.cs.cs4120.xic.ir.interpret.Configuration;
 import jl2755.assembly.Instruction.Operation;
 import jl2755.ast.*;
@@ -625,8 +626,8 @@ public class MIRVisitor implements ASTVisitor{
 		String name = id.toString();
 		if (env.containsVar(name)) {
 			// id is a global variable, return a mem pointing to the global variable
-			IRName irName = new IRName(globalNameToABI.get(name));
-			tempNode = new IRMem(irName);
+//			IRName irName = new IRName(globalNameToABI.get(name));
+			tempNode = new IRGlobalReference(name, globalNameToABI.get(name), GlobalType.REGULAR);
 		} else {
 			// must be a local variable
 			tempNode = new IRTemp(name);

@@ -70,12 +70,16 @@ public class CopyPropagator extends Optimization {
 					var = ((IRTemp)target).name();
 					replaceVar = ((IRTemp)expr).name();
 				}
-				}
+			}
 			
 			// either 
 			// 1) var = replaceVar
 			// 2) var = phi(replaceVar)
 			if (var != null && replaceVar != null) {
+				if (var.contains("_RET") || var.contains("_ARG")) {
+					continue;
+				}
+				
 				// remove & substitute
 				ssaGraph.remove(node);
 				ssaGraph.substitute(var, replaceVar);

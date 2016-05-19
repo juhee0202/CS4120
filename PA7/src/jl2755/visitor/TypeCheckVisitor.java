@@ -941,6 +941,7 @@ public class TypeCheckVisitor implements ASTVisitor {
 				if (isInClass && classEnv.containsField(name)) {
 					inScope = true;
 					tempType = classEnv.getFieldEnv().get(name);
+					id.setIsField(true);
 				}
 			}
 		}

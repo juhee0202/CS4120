@@ -48,6 +48,7 @@ public class MIRVisitor implements ASTVisitor{
 	
 	// Global Environment
 	private Environment env;
+	
 
 	
 	public IRNode program;
@@ -646,11 +647,34 @@ public class MIRVisitor implements ASTVisitor{
 		String name = id.toString();
 		if (env.containsVar(name)) {
 			// id is a global variable, return a mem pointing to the global variable
-			String abiName = translateVarTypeToABI(env.getVarType(name), name);
-			tempNode = new IRGlobalReference(name, abiName, GlobalType.REGULAR);
+//			IRName irName = new IRName(globalNameToABI.get(name));
+			String ABIName = translateVarTypeToABI(env.getVarType(name), name);
+			tempNode = new IRGlobalReference(name, ABIName, GlobalType.REGULAR);
 		} else {
-			// must be a local variable
-			tempNode = new IRTemp(name);
+			// Variable must be a field or local
+			if (id.isField()) {
+				String object = classType.getClassName();
+				assert (thisNode instanceof IRTemp || thisNode instanceof IRESeq);
+				
+				IRDispatchVector dv = classToDispatch.get(object);
+				List<String> fields = dv.getFields();
+				// Find the field index (looking from back to front to get closest)
+				VarType varType = classType.getFieldType(name);
+				int i;
+				for (i = fields.size()-1; i >= 0; i--) {
+					VarType fieldType = classType.getFieldType(fields.get(i));
+					if (fieldType.equals(varType)) {
+						break;
+					}
+				}
+				// Offset from object pointer to get field
+				IRConst offset = new IRConst((i+1)*8);
+				IRBinOp offsetFromObject = new IRBinOp(OpType.ADD, thisNode, offset);
+				tempNode = new IRMem(offsetFromObject);
+			} else {
+				tempNode = new IRTemp(name);
+			}
+			
 		}
 	}
 

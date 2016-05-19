@@ -591,17 +591,25 @@ public class MIRVisitor implements ASTVisitor{
 		} else {
 			// Variable must be a field or local
 			if (id.isField()) {
-				String object;
+				// get the object's name
+				String objectName;
 				assert (thisNode instanceof IRTemp || thisNode instanceof IRESeq);
 				if (thisNode instanceof IRTemp) {
-					object = ((IRTemp) thisNode).name();
+					objectName = ((IRTemp) thisNode).name();
 				} else {
 					IRExpr temp = ((IRESeq)thisNode).expr();
-					object = ((IRTemp) temp).name();
+					objectName = ((IRTemp) temp).name();
 				}
 				
-				IRDispatchVector dv = classToDispatch.get(object);
+				// get the object's class type 
+				VarType objectType = env.getVarType(objectName);
+				assert(objectType.isObject());
+				ClassType objectClassType = env.getClassType((objectType.getElementType()));
+				
+				// get the class's field env
+				IRDispatchVector dv = classToDispatch.get(objectClassType.getClassName());
 				List<String> fields = dv.getFields();
+				
 				// Find the field index (looking from back to front to get closest)
 				VarType varType = classType.getFieldType(name);
 				int i;

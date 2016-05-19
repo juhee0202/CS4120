@@ -1295,11 +1295,14 @@ public class MIRVisitor implements ASTVisitor{
 			IRExp wrapCall = new IRExp(callToSuperInit);
 			IRGlobalReference superClassSize = new IRGlobalReference(superClassName, 
 					IRGlobalReference.GlobalType.SIZE);
-			IRBinOp addToSize = new IRBinOp(OpType.ADD, superClassSize, 
+			IRTemp temp = new IRTemp("_t" + tempCount++);
+			IRMove movSuperClassSizeToTemp = new IRMove(temp, superClassSize); 
+			IRBinOp addToSize = new IRBinOp(OpType.ADD, temp, 
 					new IRConst(classType.getFieldEnv().size()));
-			IRMove moveSumToSize = new IRMove(classSize, addToSize);
+			IRMove moveSuperClassSize = new IRMove(classSize, addToSize);
 			list.add(wrapCall);
-			list.add(moveSumToSize);
+			list.add(movSuperClassSizeToTemp);
+			list.add(moveSuperClassSize);
 		}
 		else {
 			IRMove moveSumToSize = new IRMove(classSize, new IRConst(dv.getFieldSize() + 1));
@@ -1360,14 +1363,16 @@ public class MIRVisitor implements ASTVisitor{
 	public void visit(DotableExpr de) {
 		switch (de.getType()) {
 		case DOT:
-			boolean isFieldAssigment = false;
+			boolean isFieldAssignment = false;
 			if (isLeftSide) {
-				isFieldAssigment = true;
+				isFieldAssignment = true;
 				isLeftSide = false; // set to false in case of recursive DOTs
 			}
+			
 			de.getDotableExpr().accept(this);
 			List<IRStmt> stmts = new ArrayList<IRStmt>();
-			IRTemp freshTemp = new IRTemp("t" + tempCount++);
+			
+			IRTemp freshTemp = new IRTemp("_t" + tempCount++);
 			IRMove tempClean = new IRMove(freshTemp, (IRExpr) tempNode);
 			stmts.add(tempClean);
 			VType compileTimeTypeOfDotable = de.getDotableExpr().getCompileTimeType();
@@ -1378,26 +1383,52 @@ public class MIRVisitor implements ASTVisitor{
             List<String> fieldList = dotableExprClassType.getDispatchFields(env);
             assert(fieldList.contains(de.getId().toString()));
             int indexOfFieldInObjectLayout = fieldList.indexOf(de.getId().toString()) + 1;
-            IRBinOp getFieldElement = new IRBinOp(OpType.ADD, freshTemp, new IRConst(indexOfFieldInObjectLayout*8));
-            IRMem offsetMem = new IRMem(getFieldElement);
+            
+            // calculate total field offset (class offset + field offset)
+            IRExpr offsetMem;
+            if (dotableExprClassType.hasSuper()) {
+            	IRTemp offsetTemp = new IRTemp("_t" + tempCount++);
+            	String superclassName = dotableExprClassType.getSuperClassName();
+            	IRGlobalReference superclassSize = new IRGlobalReference(
+            			superclassName, 
+        				IRGlobalReference.GlobalType.SIZE);
+            	// move superclass size (class offset) into temp
+            	IRMove moveClassOffset = new IRMove(offsetTemp, superclassSize);
+            	stmts.add(moveClassOffset);
+            	
+            	IRConst fieldOffset = new IRConst((indexOfFieldInObjectLayout-1)*8); // -1 because of DV
+            	IRBinOp addOffsets = new IRBinOp(OpType.ADD, offsetTemp, fieldOffset);
+            	IRBinOp getFieldElement = new IRBinOp(OpType.ADD, freshTemp, addOffsets);
+            	offsetMem = new IRMem(getFieldElement);
+            } else {
+            	IRConst fieldOffset = new IRConst(indexOfFieldInObjectLayout*8);
+            	IRBinOp getFieldElement = new IRBinOp(OpType.ADD, freshTemp, fieldOffset);
+                offsetMem = new IRMem(getFieldElement);
+            }
+            
             
             /* 
              * Return a different result depending on whether we want to 
              * access or modify the field 
              */
-            IRExpr result;
-            // return mem(field)
-            if (isFieldAssigment) {
-            	result = offsetMem;
+            IRExpr expr;
+            IRStmt stmt;
+            if (isFieldAssignment) {
+            	expr = offsetMem;
+            	if (stmts.size() == 1) {
+            		stmt = tempClean;
+            	} else {
+            		stmt = new IRSeq(stmts);
+            	}
             	
-            // return temp(mem(field))
             } else {
-            	result = new IRTemp("t" + tempCount++);
-                IRMove moveResult = new IRMove(result, offsetMem);
-                stmts.add(moveResult);
+            	expr = new IRTemp("_t" + tempCount++);
+            	IRMove moveResult = new IRMove(expr, offsetMem);
+            	stmts.add(moveResult);
+            	stmt = new IRSeq(stmts);
             }
-            IRSeq seqResult = new IRSeq(stmts);
-            IRESeq wholeResult = new IRESeq(seqResult, result);
+            
+            IRESeq wholeResult = new IRESeq(stmt, expr);
             tempNode = wholeResult;
 			break;
 		case FUNCTION_CALL:
@@ -1406,13 +1437,13 @@ public class MIRVisitor implements ASTVisitor{
 		case IDENTIFIER:
 			de.getId().accept(this);
 			break;
-		case NEW:
+		case NEW:			
 			List<IRStmt> list = new ArrayList<IRStmt>();
 			
 			// Allocate space for the object
 			IRName nameOfAlloc = new IRName("_I_alloc_i");
 			String id = de.getId().toString();
-			IRDispatchVector dv = classToDispatch.get(id);
+//			IRDispatchVector dv = classToDispatch.get(id);
 			IRGlobalReference sizeVariable = new IRGlobalReference(de.getId().toString(),
 					IRGlobalReference.GlobalType.SIZE);
 			IRBinOp byteMultiplier = new IRBinOp(OpType.MUL, sizeVariable, new IRConst(8));

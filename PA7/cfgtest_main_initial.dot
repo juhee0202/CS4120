@@ -1,0 +1,22 @@
+digraph {
+{	rankdir=LR
+	node[shape=box]
+}	"func
+jl2755.controlflow.AACFGNode@1698c449" -> {"movq	$5, %temp
+jl2755.controlflow.AACFGNode@5ef04b5"}
+	"movq	$5, %temp
+jl2755.controlflow.AACFGNode@5ef04b5" -> {"jnz	l2
+jl2755.controlflow.AACFGNode@5f4da5c3"}
+	"jnz	l2
+jl2755.controlflow.AACFGNode@5f4da5c3" -> {"callq	func2
+jl2755.controlflow.AACFGNode@443b7951", "ret
+jl2755.controlflow.AACFGNode@69663380"}
+	"callq	func2
+jl2755.controlflow.AACFGNode@443b7951" -> {"jmp	l2
+jl2755.controlflow.AACFGNode@14514713"}
+	"jmp	l2
+jl2755.controlflow.AACFGNode@14514713" -> {"ret
+jl2755.controlflow.AACFGNode@69663380"}
+	"ret
+jl2755.controlflow.AACFGNode@69663380" -> {}
+}

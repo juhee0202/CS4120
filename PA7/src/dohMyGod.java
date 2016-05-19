@@ -343,6 +343,26 @@ public class dohMyGod {
 //		v.z = 1;
 		
 	}
+	
+	@Test
+	public void testClass2() {
+		Student student = new Student();
+		student.name = "Thomas";
+		student.id = 8;
+		
+		Person thomas = student;
+		assert(!thomas.name.equals(student.name));
+	}
+	
+	class Person {
+		private String name;
+	}
+	
+	class Student extends Person {
+		private String name;
+		private int id;
+	}
+	
 	class Dog extends Animal{
 		private int[][] x;
 		

@@ -34,6 +34,9 @@ public class MIRVisitor implements ASTVisitor{
 	private ClassType classType;
 	private IRExpr thisNode;
 	
+	// Handles field access vs modify
+	private boolean isLeftSide;
+	
 	// Global for Method Dispatch
 	private Map<String, IRDispatchVector> classToDispatch =  new HashMap<String, IRDispatchVector>();
 	
@@ -42,6 +45,7 @@ public class MIRVisitor implements ASTVisitor{
 	
 	// Global Environment
 	private Environment env;
+
 	
 	public IRNode program;
 	
@@ -116,8 +120,11 @@ public class MIRVisitor implements ASTVisitor{
 	// ADD LOGIC FOR CLASSES
 	@Override
 	public void visit(AssignmentStmt as) {
+		isLeftSide = true;
 		as.getDotableExpr().accept(this);
 		IRExpr de = (IRExpr) tempNode;
+		
+		isLeftSide = false;
 		as.getExpr().accept(this);
 		IRExpr e = (IRExpr) tempNode;
 		tempNode = new IRMove(de,e);
@@ -1327,9 +1334,16 @@ public class MIRVisitor implements ASTVisitor{
 	public void visit(DotableExpr de) {
 		switch (de.getType()) {
 		case DOT:
+			boolean isFieldAssigment = false;
+			if (isLeftSide) {
+				isFieldAssigment = true;
+				isLeftSide = false; // set to false in case of recursive DOTs
+			}
 			de.getDotableExpr().accept(this);
+			List<IRStmt> stmts = new ArrayList<IRStmt>();
 			IRTemp freshTemp = new IRTemp("t" + tempCount++);
 			IRMove tempClean = new IRMove(freshTemp, (IRExpr) tempNode);
+			stmts.add(tempClean);
 			VType compileTimeTypeOfDotable = de.getDotableExpr().getCompileTimeType();
             assert(compileTimeTypeOfDotable instanceof VarType);
             VarType compileVType = (VarType) compileTimeTypeOfDotable;
@@ -1340,13 +1354,24 @@ public class MIRVisitor implements ASTVisitor{
             int indexOfFieldInObjectLayout = fieldList.indexOf(de.getId().toString()) + 1;
             IRBinOp getFieldElement = new IRBinOp(OpType.ADD, freshTemp, new IRConst(indexOfFieldInObjectLayout*8));
             IRMem offsetMem = new IRMem(getFieldElement);
-            IRTemp resultTemp = new IRTemp("t" + tempCount++);
-            IRMove moveResult = new IRMove(resultTemp, offsetMem);
-            List<IRStmt> stmts = new ArrayList<IRStmt>();
-            stmts.add(tempClean);
-            stmts.add(moveResult);
+            
+            /* 
+             * Return a different result depending on whether we want to 
+             * access or modify the field 
+             */
+            IRExpr result;
+            // return mem(field)
+            if (isFieldAssigment) {
+            	result = offsetMem;
+            	
+            // return temp(mem(field))
+            } else {
+            	result = new IRTemp("t" + tempCount++);
+                IRMove moveResult = new IRMove(result, offsetMem);
+                stmts.add(moveResult);
+            }
             IRSeq seqResult = new IRSeq(stmts);
-            IRESeq wholeResult = new IRESeq(seqResult, resultTemp);
+            IRESeq wholeResult = new IRESeq(seqResult, result);
             tempNode = wholeResult;
 			break;
 		case FUNCTION_CALL:

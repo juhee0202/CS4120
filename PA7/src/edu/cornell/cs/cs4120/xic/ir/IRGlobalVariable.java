@@ -29,6 +29,13 @@ public class IRGlobalVariable extends IRNode {
 	 */
 	private IRSeq createArray;
 	
+	public IRGlobalVariable(String n, String abi) {
+		name = n;
+		ABIName = abi;
+		isInitialized = false;
+		isInitialized = false;
+	}
+	
 	public IRGlobalVariable(String n, String abi, long v) {
 		name = n;
 		ABIName = abi;
@@ -42,6 +49,7 @@ public class IRGlobalVariable extends IRNode {
 		ABIName = abi;
 		expr = v;
 		createArray = s;
+		isInitialized = true;
 		isArray = true;
 	}
 

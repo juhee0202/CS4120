@@ -18,16 +18,29 @@ public class IRFuncDecl extends IRNode {
     private int numArgs;
     private int numReturns;
     private int numSavedCalleeRegs;
+    private boolean isInit;
 
     public IRFuncDecl(String name, String ABIName, IRStmt stmt) {
         this.name = name;
         this.ABIName = ABIName;
         body = stmt;
+        isInit = false;
     }
     
     public IRFuncDecl(String name, IRStmt stmt) {
         this.name = name;
         body = stmt;
+        isInit = false;
+    }
+    
+    public IRFuncDecl(String abiName, IRStmt stmt, boolean is) {
+    	name = ABIName = abiName;
+    	body = stmt;
+    	isInit = is;
+    }
+    
+    public boolean isInit() {
+    	return isInit;
     }
 
     public String getABIName() {

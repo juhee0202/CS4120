@@ -54,6 +54,10 @@ public class GlobalVariableSection {
 		assert(false);
 	}
 	
+	public void setvalueType(GlobalVarValueType gvt) {
+		valueType = gvt;
+	}
+	
 	public String generateInitialization() {
 		String s = "\n\n";
 		if (type == GlobalVarType.DISPATCHVECTOR) {
@@ -94,7 +98,7 @@ public class GlobalVariableSection {
 				s += "\t.text\n\n";
 				s += ".section .ctors\n";
 				s += "\t.align 8\n";
-				s += "\t.quad " + abiVariableName + "\n";
+				s += "\t.quad " + "_I_init" + abiVariableName.substring(4) + "\n";
 				s += "\t.text";
 			}
 			else {

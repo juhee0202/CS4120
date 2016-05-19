@@ -1415,8 +1415,11 @@ public class MIRVisitor implements ASTVisitor{
 						stmts.add(moveExprToTemp);
 					}
 					IRESeq array = (IRESeq) createArray(0, sizes);
-					stmts.addAll(0, ((IRSeq) array.stmt()).stmts());
+					stmts.addAll(((IRSeq) array.stmt()).stmts());
 					ABIName = translateVarTypeToABI(vType, name);
+					IRGlobalReference gr = new IRGlobalReference(ABIName, GlobalType.REGULAR);
+					IRMove moveResultToGlobal = new IRMove(gr, array.expr());
+					stmts.add(moveResultToGlobal);
 					gv = new IRGlobalVariable(name, ABIName, 
 											array.expr(),
 											new IRSeq(stmts));
@@ -1464,8 +1467,11 @@ public class MIRVisitor implements ASTVisitor{
 					stmts.add(moveExprToTemp);
 				}
 				IRESeq array = (IRESeq) createArray(0, sizes);
-				stmts.addAll(0, ((IRSeq) array.stmt()).stmts());
+				stmts.addAll(((IRSeq) array.stmt()).stmts());
 				ABIName1 = translateVarTypeToABI(type1, id);
+				IRGlobalReference gr = new IRGlobalReference(ABIName1, GlobalType.REGULAR);
+				IRMove moveResultToGlobal = new IRMove(gr, array.expr());
+				stmts.add(moveResultToGlobal);
 				tempNode = new IRGlobalVariable(id, ABIName1, 
 											array.expr(), new IRSeq(stmts));
 			} else {
